@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:honey_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_honey_suit"
+        },
+        {
+          "item": "minecraft:honey_block"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_honey_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_honey_suit"
+        },
+        {
+          "item": "minecraft:shears"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_honey_suit"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:incomplete_honey_suit"
+  }
+}

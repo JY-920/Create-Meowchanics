@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "C C",
+    "CCC"
+  ],
+  "key": {
+    "C": { "item": "laowu:cat_sheet" }
+  },
+  "result": { "item": "laowu:cat_box" }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:calico",
+      "terminator": false
+    },
+    {
+      "item": "laowu:terminator_suit"
+    }
+  ],
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:calico",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/calico.png",
+        "LaoWuTamedPancake": true,
+        "LaoWuHasClothes": true
+      }
+    }
+  ]
+}

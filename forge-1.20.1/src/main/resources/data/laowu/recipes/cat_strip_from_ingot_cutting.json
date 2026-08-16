@@ -1,0 +1,6 @@
+{
+  "type": "create:cutting",
+  "ingredients": [{"item": "laowu:cat_ingot"}],
+  "processingTime": 50,
+  "results": [{"item": "laowu:cat_strip", "count": 2}]
+}

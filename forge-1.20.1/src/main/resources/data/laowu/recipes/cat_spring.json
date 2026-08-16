@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["S", "S", "S"],
+  "key": {"S": {"item": "laowu:cat_strip"}},
+  "result": {"item": "laowu:cat_spring"}
+}

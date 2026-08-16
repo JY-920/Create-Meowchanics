@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [{"item": "laowu:cat_ingot"}],
+  "result": {"item": "laowu:cat_pellet", "count": 9}
+}

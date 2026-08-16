@@ -1,0 +1,27 @@
+{
+  "type": "create:mechanical_crafting",
+  "acceptMirrored": false,
+  "key": {
+    "B": {
+      "tag": "forge:ingots/brass"
+    },
+    "C": {
+      "item": "laowu:cat_ingot"
+    },
+    "D": {
+      "item": "create:item_drain"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  },
+  "pattern": [
+    "BCCB",
+    "BGGB",
+    "BGGB",
+    "BDDB"
+  ],
+  "result": {
+    "item": "laowu:infiltration_tank"
+  }
+}

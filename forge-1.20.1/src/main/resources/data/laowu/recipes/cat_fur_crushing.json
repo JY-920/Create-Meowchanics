@@ -1,0 +1,10 @@
+{
+  "type": "create:crushing",
+  "ingredients": [
+    { "item": "laowu:cat_fur" }
+  ],
+  "processingTime": 100,
+  "results": [
+    { "item": "minecraft:string" }
+  ]
+}

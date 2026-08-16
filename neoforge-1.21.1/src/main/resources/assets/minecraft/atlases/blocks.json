@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "laowu:fluid/hakimi_honey_still"
+    },
+    {
+      "type": "single",
+      "resource": "laowu:fluid/hakimi_honey_flow"
+    }
+  ]
+}

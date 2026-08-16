@@ -1,0 +1,20 @@
+{
+  "type": "laowu:infiltrating",
+  "heat_requirement": "superheated",
+  "ingredients": [
+    {
+      "item": "laowu:cat_ball"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 1000,
+      "fluid": "laowu:hissing_gas"
+    }
+  ],
+  "processing_time": 100,
+  "results": [
+    {
+      "id": "laowu:devouring_cat"
+    }
+  ]
+}

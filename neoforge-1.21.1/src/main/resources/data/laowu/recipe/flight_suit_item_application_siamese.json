@@ -1,0 +1,27 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:siamese",
+      "outfit": "none"
+    },
+    {
+      "item": "laowu:flight_suit"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:cat_pancake",
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuCatVariant": "minecraft:siamese",
+          "LaoWuCatTexture": "minecraft:textures/entity/cat/siamese.png",
+          "LaoWuTamedPancake": true,
+          "LaoWuHasClothes": true,
+          "LaoWuCatOutfit": "flight"
+        }
+      }
+    }
+  ]
+}

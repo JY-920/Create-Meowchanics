@@ -1,0 +1,21 @@
+{
+  "type": "create:deploying",
+  "ingredients": [
+    {
+      "item": "laowu:cat_totem"
+    },
+    {
+      "item": "minecraft:totem_of_undying"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:cat_totem",
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuTotemCharges": 1
+        }
+      }
+    }
+  ]
+}

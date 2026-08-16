@@ -1,0 +1,19 @@
+{
+  "loader": "forge:separate_transforms",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "textures": { "particle": "laowu:item/cat_pickaxe" },
+  "base": {
+    "parent": "minecraft:item/generated",
+    "textures": { "layer0": "laowu:item/cat_pickaxe_empowered" }
+  },
+  "perspectives": {
+    "firstperson_righthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_pickaxe" } },
+    "firstperson_lefthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_pickaxe" } },
+    "thirdperson_righthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_pickaxe" } },
+    "thirdperson_lefthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_pickaxe" } },
+    "ground": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_pickaxe" } },
+    "fixed": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_pickaxe" } },
+    "head": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_pickaxe" } }
+  }
+}

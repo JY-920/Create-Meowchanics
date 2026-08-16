@@ -1,0 +1,26 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:white",
+      "terminator": false
+    },
+    {
+      "item": "laowu:terminator_suit"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:cat_pancake",
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuCatVariant": "minecraft:white",
+          "LaoWuCatTexture": "minecraft:textures/entity/cat/white.png",
+          "LaoWuTamedPancake": true,
+          "LaoWuHasClothes": true
+        }
+      }
+    }
+  ]
+}

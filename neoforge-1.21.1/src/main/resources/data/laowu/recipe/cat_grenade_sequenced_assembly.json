@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_shell"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:cat_grenade"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_cat_grenade"
+        },
+        {
+          "item": "laowu:cat_spring"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_cat_grenade"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_cat_grenade"
+        },
+        {
+          "item": "laowu:cat_ingot"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_cat_grenade"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:incomplete_cat_grenade"
+  }
+}

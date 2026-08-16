@@ -1,0 +1,25 @@
+{
+  "type": "laowu:random_baby_cat_pancake_filling",
+  "ingredients": [
+    {
+      "item": "laowu:cat_dough"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "fluid": "laowu:liquid_cat"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:cat_pancake",
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuCatVariant": "minecraft:red",
+          "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png",
+          "LaoWuBabyPancake": true
+        }
+      }
+    }
+  ]
+}

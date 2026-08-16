@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["G G", "ICI", "IFI"],
+  "key": {
+    "G": {"item": "laowu:cat_gear"},
+    "I": {"item": "laowu:cat_ingot"},
+    "C": {"item": "laowu:cat_component"},
+    "F": {"item": "laowu:cat_fur"}
+  },
+  "result": {"item": "laowu:cat_chestplate"}
+}

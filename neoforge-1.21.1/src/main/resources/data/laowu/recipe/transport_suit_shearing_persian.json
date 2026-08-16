@@ -1,0 +1,27 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:persian",
+      "outfit": "transport"
+    },
+    {
+      "item": "minecraft:shears"
+    }
+  ],
+  "keep_held_item": true,
+  "results": [
+    {
+      "id": "laowu:cat_pancake",
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuCatVariant": "minecraft:persian",
+          "LaoWuCatTexture": "minecraft:textures/entity/cat/persian.png",
+          "LaoWuTamedPancake": true
+        }
+      }
+    }
+  ]
+}
+

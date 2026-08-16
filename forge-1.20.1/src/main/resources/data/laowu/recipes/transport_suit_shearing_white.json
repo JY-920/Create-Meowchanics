@@ -1,0 +1,25 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:white",
+      "outfit": "transport"
+    },
+    {
+      "item": "minecraft:shears"
+    }
+  ],
+  "keepHeldItem": true,
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:white",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/white.png",
+        "LaoWuTamedPancake": true
+      }
+    }
+  ]
+}
+

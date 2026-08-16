@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/block",
+  "loader": "forge:obj",
+  "model": "laowu:models/block/infiltration_tank.obj",
+  "automatic_culling": false,
+  "shade_quads": true,
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "0": "laowu:block/infiltration_tank",
+    "particle": "laowu:block/infiltration_tank"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "hissing_intro": { "sounds": [{ "name": "laowu:hissing/intro", "stream": true }] },
+  "hissing_loop_0": { "sounds": [{ "name": "laowu:hissing/loop_0", "stream": true }] },
+  "hissing_loop_1": { "sounds": [{ "name": "laowu:hissing/loop_1", "stream": true }] },
+  "hissing_loop_2": { "sounds": [{ "name": "laowu:hissing/loop_2", "stream": true }] },
+  "hissing_loop_3": { "sounds": [{ "name": "laowu:hissing/loop_3", "stream": true }] },
+  "hissing_loop_4": { "sounds": [{ "name": "laowu:hissing/loop_4", "stream": true }] },
+  "hissing_loop_5": { "sounds": [{ "name": "laowu:hissing/loop_5", "stream": true }] },
+  "hissing_loop_6": { "sounds": [{ "name": "laowu:hissing/loop_6", "stream": true }] },
+  "hissing_loop_7": { "sounds": [{ "name": "laowu:hissing/loop_7", "stream": true }] },
+  "logistics_arrive": { "sounds": [{ "name": "laowu:logistics/wulao_arrive" }] }
+}

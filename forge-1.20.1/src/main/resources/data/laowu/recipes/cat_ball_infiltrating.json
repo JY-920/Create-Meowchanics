@@ -1,0 +1,12 @@
+{
+  "type": "laowu:infiltrating",
+  "heatRequirement": "heated",
+  "ingredients": [
+    { "type": "laowu:cat_pancake" },
+    { "fluid": "laowu:hissing_gas", "amount": 1000 }
+  ],
+  "processingTime": 100,
+  "results": [
+    { "item": "laowu:cat_ball" }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "type": "create:crushing",
+  "ingredients": [{"item": "laowu:cat_ingot"}],
+  "processingTime": 100,
+  "results": [{"item": "laowu:cat_powder", "count": 2}]
+}

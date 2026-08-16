@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" P ", "P P", " P "],
+  "key": {
+    "P": {"item": "laowu:cat_sheet"}
+  },
+  "result": {"item": "laowu:cat_gear"}
+}

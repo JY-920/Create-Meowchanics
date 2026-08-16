@@ -1,0 +1,20 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "fluid": "laowu:liquid_cat"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "fluid": "laowu:hissing_gas"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:cat_ingot"
+    }
+  ]
+}

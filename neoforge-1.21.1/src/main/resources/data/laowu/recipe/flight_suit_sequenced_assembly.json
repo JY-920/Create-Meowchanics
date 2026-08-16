@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:flight_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_flight_suit"
+        },
+        {
+          "item": "create:item_vault"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_flight_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_flight_suit"
+        },
+        {
+          "item": "create:propeller"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_flight_suit"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:incomplete_flight_suit"
+  }
+}

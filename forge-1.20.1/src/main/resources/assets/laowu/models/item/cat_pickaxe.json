@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": { "layer0": "laowu:item/cat_pickaxe" },
+  "overrides": [
+    { "predicate": { "laowu:empowered": 1.0 }, "model": "laowu:item/cat_pickaxe_empowered" }
+  ]
+}

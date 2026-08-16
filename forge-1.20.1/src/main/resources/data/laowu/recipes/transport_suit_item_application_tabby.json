@@ -1,0 +1,26 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:tabby",
+      "outfit": "none"
+    },
+    {
+      "item": "laowu:transport_suit"
+    }
+  ],
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:tabby",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/tabby.png",
+        "LaoWuTamedPancake": true,
+        "LaoWuHasClothes": true,
+        "LaoWuCatOutfit": "transport"
+      }
+    }
+  ]
+}
+

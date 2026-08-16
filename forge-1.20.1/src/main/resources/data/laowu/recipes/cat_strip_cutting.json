@@ -1,0 +1,6 @@
+{
+  "type": "create:cutting",
+  "ingredients": [{ "type": "laowu:cat_pancake" }],
+  "processingTime": 50,
+  "results": [{ "item": "laowu:cat_strip", "count": 4 }]
+}

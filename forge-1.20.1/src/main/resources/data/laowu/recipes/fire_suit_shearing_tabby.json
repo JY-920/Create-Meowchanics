@@ -1,0 +1,24 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:tabby",
+      "outfit": "fire"
+    },
+    {
+      "item": "minecraft:shears"
+    }
+  ],
+  "keepHeldItem": true,
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:tabby",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/tabby.png",
+        "LaoWuTamedPancake": true
+      }
+    }
+  ]
+}

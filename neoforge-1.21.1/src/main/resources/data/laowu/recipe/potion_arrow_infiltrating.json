@@ -1,0 +1,20 @@
+{
+  "type": "laowu:infiltrating",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "minecraft:arrow"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 70,
+      "fluid": "create:potion"
+    }
+  ],
+  "processing_time": 100,
+  "results": [
+    {
+      "id": "minecraft:tipped_arrow"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FFF",
+    "I I"
+  ],
+  "key": {
+    "F": {
+      "item": "laowu:cat_fur"
+    },
+    "I": {
+      "item": "laowu:cat_ingot"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_helmet"
+  }
+}

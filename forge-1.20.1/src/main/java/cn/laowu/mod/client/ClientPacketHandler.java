@@ -1,0 +1,70 @@
+package cn.laowu.mod.client;
+
+import cn.laowu.mod.CatClothesData;
+import cn.laowu.mod.CatOutfitType;
+import cn.laowu.mod.CatPoseData;
+import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.network.AudioSessionPacket;
+import cn.laowu.mod.network.CatPackageLoadPacket;
+import cn.laowu.mod.network.LogisticsSoundPacket;
+import cn.laowu.mod.network.SyncCatChestPacket;
+import cn.laowu.mod.network.SyncCatClothesPacket;
+import cn.laowu.mod.network.SyncCatPosePacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Cat;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+/** Physical-client endpoint for packets whose payload classes are shared with a dedicated server. */
+@OnlyIn(Dist.CLIENT)
+public final class ClientPacketHandler {
+    public static void handle(SyncCatPosePacket packet) {
+        if (Minecraft.getInstance().level == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if (entity instanceof Cat cat) CatPoseData.setPose(cat, packet.pose());
+    }
+
+    public static void handleAudio(AudioSessionPacket packet) {
+        if (packet.active()) HissingAudioManager.start(packet.entityId());
+        else HissingAudioManager.stop(packet.entityId());
+    }
+
+    public static void handleChest(SyncCatChestPacket packet) {
+        if (Minecraft.getInstance().level == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if (entity instanceof Cat cat) {
+            cat.getPersistentData().putBoolean("LaoWuHasChest", packet.hasChest());
+        }
+    }
+
+    public static void handleClothes(SyncCatClothesPacket packet) {
+        if (Minecraft.getInstance().level == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if (entity instanceof Cat cat) {
+            CatOutfitType outfit = CatOutfitType.byOrdinal(packet.outfit());
+            if (outfit == CatOutfitType.NONE) {
+                cat.getPersistentData().remove(CatClothesData.EQUIPPED_TAG);
+                cat.getPersistentData().remove(CatClothesData.OUTFIT_TAG);
+            } else {
+                cat.getPersistentData().putBoolean(CatClothesData.EQUIPPED_TAG, true);
+                cat.getPersistentData().putString(CatClothesData.OUTFIT_TAG, outfit.id());
+            }
+        }
+    }
+
+    public static void handleLogisticsSound(LogisticsSoundPacket packet) {
+        HissingAudioManager.playLogisticsSound(packet.x(), packet.y(), packet.z(), packet.arrival());
+    }
+
+    public static void handlePackageLoad(CatPackageLoadPacket packet) {
+        CatPackageLoadAnimationManager.start(packet);
+    }
+
+    public static void handleCatTotemActivation() {
+        Minecraft.getInstance().gameRenderer.displayItemActivation(
+                LaoWuMod.CAT_TOTEM.get().getDefaultInstance());
+    }
+
+    private ClientPacketHandler() {}
+}

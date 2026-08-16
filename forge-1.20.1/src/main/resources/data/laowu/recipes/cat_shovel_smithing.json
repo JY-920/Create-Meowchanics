@@ -1,0 +1,1 @@
+{"type":"minecraft:smithing_transform","template":{"item":"laowu:cat_upgrade_smithing_template"},"base":{"item":"minecraft:diamond_shovel"},"addition":{"item":"laowu:cat_ingot"},"result":{"item":"laowu:cat_shovel"}}

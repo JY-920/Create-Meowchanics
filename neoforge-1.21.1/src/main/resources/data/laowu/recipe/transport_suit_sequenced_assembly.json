@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:transport_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_transport_suit"
+        },
+        {
+          "item": "create:package_frogport"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_transport_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_transport_suit"
+        },
+        {
+          "item": "minecraft:green_wool"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_transport_suit"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:incomplete_transport_suit"
+  }
+}

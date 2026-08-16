@@ -1,0 +1,18 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "create:dough"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "fluid": "laowu:hissing_gas"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:cat_dough"
+    }
+  ]
+}

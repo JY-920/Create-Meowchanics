@@ -1,0 +1,10 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    { "item": "laowu:cat_powder" },
+    { "tag": "minecraft:fishes" }
+  ],
+  "results": [
+    { "item": "laowu:cat_food", "count": 2 }
+  ]
+}

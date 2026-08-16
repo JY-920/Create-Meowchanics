@@ -1,0 +1,10 @@
+{
+  "type": "create:emptying",
+  "ingredients": [
+    { "item": "laowu:liquid_cat_bucket" }
+  ],
+  "results": [
+    { "item": "minecraft:bucket" },
+    { "fluid": "laowu:liquid_cat", "amount": 1000 }
+  ]
+}

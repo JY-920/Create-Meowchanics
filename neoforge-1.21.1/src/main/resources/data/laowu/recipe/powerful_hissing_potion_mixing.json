@@ -1,0 +1,40 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "amount": 1000,
+      "components": {
+        "create:potion_fluid_bottle_type": "regular",
+        "minecraft:potion_contents": {
+          "potion": "laowu:strong_hissing"
+        }
+      },
+      "fluids": "create:potion"
+    },
+    {
+      "type": "neoforge:components",
+      "amount": 1000,
+      "components": {
+        "create:potion_fluid_bottle_type": "regular",
+        "minecraft:potion_contents": {
+          "potion": "minecraft:strong_strength"
+        }
+      },
+      "fluids": "create:potion"
+    }
+  ],
+  "results": [
+    {
+      "amount": 1000,
+      "id": "create:potion",
+      "components": {
+        "create:potion_fluid_bottle_type": "regular",
+        "minecraft:potion_contents": {
+          "potion": "laowu:powerful_hissing"
+        }
+      }
+    }
+  ]
+}

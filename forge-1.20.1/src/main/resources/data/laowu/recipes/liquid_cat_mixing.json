@@ -1,0 +1,10 @@
+{
+  "type": "create:mixing",
+  "heatRequirement": "superheated",
+  "ingredients": [
+    { "type": "laowu:cat_pancake" }
+  ],
+  "results": [
+    { "fluid": "laowu:liquid_cat", "amount": 250 }
+  ]
+}

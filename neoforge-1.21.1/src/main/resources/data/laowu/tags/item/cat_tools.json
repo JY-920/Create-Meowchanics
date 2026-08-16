@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "laowu:cat_sword",
+    "laowu:cat_pickaxe",
+    "laowu:cat_axe",
+    "laowu:cat_shovel",
+    "laowu:cat_hoe",
+    "laowu:cat_helmet",
+    "laowu:cat_chestplate",
+    "laowu:cat_leggings",
+    "laowu:cat_boots"
+  ]
+}

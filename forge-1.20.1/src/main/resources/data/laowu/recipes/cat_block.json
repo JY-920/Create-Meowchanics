@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["III", "III", "III"],
+  "key": {"I": {"item": "laowu:cat_ingot"}},
+  "result": {"item": "laowu:cat_block"}
+}

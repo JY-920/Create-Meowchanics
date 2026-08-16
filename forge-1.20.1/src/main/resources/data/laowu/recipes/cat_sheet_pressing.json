@@ -1,0 +1,5 @@
+{
+  "type": "create:pressing",
+  "ingredients": [{ "item": "laowu:cat_ingot" }],
+  "results": [{ "item": "laowu:cat_sheet" }]
+}

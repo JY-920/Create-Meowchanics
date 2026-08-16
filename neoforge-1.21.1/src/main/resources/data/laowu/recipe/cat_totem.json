@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ECE",
+    " I ",
+    "III"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "C": {
+      "item": "laowu:cat_component"
+    },
+    "I": {
+      "item": "laowu:cat_ingot"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_totem"
+  }
+}

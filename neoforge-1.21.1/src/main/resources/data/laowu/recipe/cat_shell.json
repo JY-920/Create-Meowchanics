@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C",
+    "B",
+    "C"
+  ],
+  "key": {
+    "C": {
+      "item": "laowu:cat_sheet"
+    },
+    "B": {
+      "item": "create:brass_sheet"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_shell"
+  }
+}

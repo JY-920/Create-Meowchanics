@@ -1,0 +1,791 @@
+{
+    "meta":  {
+                 "format_version":  "5.0",
+                 "model_format":  "bedrock",
+                 "box_uv":  false
+             },
+    "name":  "cat_ball",
+    "resolution":  {
+                       "width":  64,
+                       "height":  64
+                   },
+    "elements":  [
+                     {
+                         "name":  "cube0",
+                         "box_uv":  false,
+                         "from":  [
+                                      -1,
+                                      0,
+                                      -1
+                                  ],
+                         "to":  [
+                                    4,
+                                    5,
+                                    4
+                                ],
+                         "origin":  [
+                                        1.5,
+                                        0,
+                                        1.5
+                                    ],
+                         "rotation":  [
+                                          0,
+                                          0,
+                                          0
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                20,
+                                                                0,
+                                                                25,
+                                                                5
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               25,
+                                                               0,
+                                                               30,
+                                                               5
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                32,
+                                                                32,
+                                                                37,
+                                                                37
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               32,
+                                                               37,
+                                                               37,
+                                                               42
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             37,
+                                                             32,
+                                                             42,
+                                                             37
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               37,
+                                                               42,
+                                                               42,
+                                                               37
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-00"
+                     },
+                     {
+                         "name":  "cube1",
+                         "box_uv":  false,
+                         "from":  [
+                                      0.75,
+                                      2.25,
+                                      -1.25
+                                  ],
+                         "to":  [
+                                    2.25,
+                                    3,
+                                    -0.75
+                                ],
+                         "origin":  [
+                                        1.5,
+                                        0,
+                                        1.5
+                                    ],
+                         "rotation":  [
+                                          0,
+                                          0,
+                                          0
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                30,
+                                                                8,
+                                                                32,
+                                                                9
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               40,
+                                                               43,
+                                                               41,
+                                                               44
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                38,
+                                                                42,
+                                                                40,
+                                                                43
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               41,
+                                                               43,
+                                                               42,
+                                                               44
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             42,
+                                                             38,
+                                                             44,
+                                                             39
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               42,
+                                                               40,
+                                                               44,
+                                                               39
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-01"
+                     },
+                     {
+                         "name":  "cube2",
+                         "box_uv":  false,
+                         "from":  [
+                                      0.25,
+                                      4.5,
+                                      -0.5
+                                  ],
+                         "to":  [
+                                    1,
+                                    5.5,
+                                    0.75
+                                ],
+                         "origin":  [
+                                        1.5,
+                                        0,
+                                        1.5
+                                    ],
+                         "rotation":  [
+                                          0,
+                                          0,
+                                          0
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                43,
+                                                                41,
+                                                                44,
+                                                                42
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               42,
+                                                               43,
+                                                               43,
+                                                               44
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                43,
+                                                                42,
+                                                                44,
+                                                                43
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               43,
+                                                               43,
+                                                               44,
+                                                               44
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             44,
+                                                             34,
+                                                             45,
+                                                             35
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               44,
+                                                               36,
+                                                               45,
+                                                               35
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-02"
+                     },
+                     {
+                         "name":  "cube3",
+                         "box_uv":  false,
+                         "from":  [
+                                      2,
+                                      4.5,
+                                      -0.5
+                                  ],
+                         "to":  [
+                                    2.75,
+                                    5.5,
+                                    0.75
+                                ],
+                         "origin":  [
+                                        1.5,
+                                        0,
+                                        1.5
+                                    ],
+                         "rotation":  [
+                                          0,
+                                          0,
+                                          0
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                44,
+                                                                38,
+                                                                45,
+                                                                39
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               44,
+                                                               39,
+                                                               45,
+                                                               40
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                40,
+                                                                44,
+                                                                41,
+                                                                45
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               44,
+                                                               40,
+                                                               45,
+                                                               41
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             41,
+                                                             44,
+                                                             42,
+                                                             45
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               44,
+                                                               42,
+                                                               45,
+                                                               41
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-03"
+                     },
+                     {
+                         "name":  "cube4",
+                         "box_uv":  false,
+                         "from":  [
+                                      1.25,
+                                      0,
+                                      3.75
+                                  ],
+                         "to":  [
+                                    1.75,
+                                    0.5,
+                                    5.25
+                                ],
+                         "origin":  [
+                                        1.5,
+                                        0.25,
+                                        4.5
+                                    ],
+                         "rotation":  [
+                                          -20,
+                                          0,
+                                          0
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                42,
+                                                                44,
+                                                                43,
+                                                                45
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               40,
+                                                               42,
+                                                               42,
+                                                               43
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                44,
+                                                                42,
+                                                                45,
+                                                                43
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               42,
+                                                               40,
+                                                               44,
+                                                               41
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             42,
+                                                             41,
+                                                             43,
+                                                             43
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               30,
+                                                               45,
+                                                               31,
+                                                               43
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-04"
+                     },
+                     {
+                         "name":  "cube5",
+                         "box_uv":  false,
+                         "from":  [
+                                      0,
+                                      0.1,
+                                      -1.5
+                                  ],
+                         "to":  [
+                                    1,
+                                    1,
+                                    0.5
+                                ],
+                         "origin":  [
+                                        1.5,
+                                        0,
+                                        1.5
+                                    ],
+                         "rotation":  [
+                                          0,
+                                          0,
+                                          0
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                43,
+                                                                44,
+                                                                44,
+                                                                45
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               43,
+                                                               32,
+                                                               45,
+                                                               33
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                44,
+                                                                43,
+                                                                45,
+                                                                44
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               43,
+                                                               33,
+                                                               45,
+                                                               34
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             31,
+                                                             43,
+                                                             32,
+                                                             45
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               43,
+                                                               36,
+                                                               44,
+                                                               34
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-05"
+                     },
+                     {
+                         "name":  "cube6",
+                         "box_uv":  false,
+                         "from":  [
+                                      2,
+                                      0.1,
+                                      -1.5
+                                  ],
+                         "to":  [
+                                    3,
+                                    1,
+                                    0.5
+                                ],
+                         "origin":  [
+                                        1.5,
+                                        0,
+                                        1.5
+                                    ],
+                         "rotation":  [
+                                          0,
+                                          0,
+                                          0
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                44,
+                                                                44,
+                                                                45,
+                                                                45
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               43,
+                                                               36,
+                                                               45,
+                                                               37
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                30,
+                                                                45,
+                                                                31,
+                                                                46
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               43,
+                                                               37,
+                                                               45,
+                                                               38
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             38,
+                                                             43,
+                                                             39,
+                                                             45
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               39,
+                                                               45,
+                                                               40,
+                                                               43
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-06"
+                     },
+                     {
+                         "name":  "cube7",
+                         "box_uv":  false,
+                         "from":  [
+                                      -1.75,
+                                      1,
+                                      0
+                                  ],
+                         "to":  [
+                                    -0.75,
+                                    4,
+                                    1
+                                ],
+                         "origin":  [
+                                        -1.25,
+                                        2.5,
+                                        0.5
+                                    ],
+                         "rotation":  [
+                                          0,
+                                          0,
+                                          -15
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                32,
+                                                                42,
+                                                                33,
+                                                                45
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               42,
+                                                               32,
+                                                               43,
+                                                               35
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                33,
+                                                                42,
+                                                                34,
+                                                                45
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               34,
+                                                               42,
+                                                               35,
+                                                               45
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             31,
+                                                             45,
+                                                             32,
+                                                             46
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               32,
+                                                               46,
+                                                               33,
+                                                               45
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-07"
+                     },
+                     {
+                         "name":  "cube8",
+                         "box_uv":  false,
+                         "from":  [
+                                      3.75,
+                                      1,
+                                      0
+                                  ],
+                         "to":  [
+                                    4.75,
+                                    4,
+                                    1
+                                ],
+                         "origin":  [
+                                        4.25,
+                                        2.5,
+                                        0.5
+                                    ],
+                         "rotation":  [
+                                          0,
+                                          0,
+                                          15
+                                      ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                35,
+                                                                42,
+                                                                36,
+                                                                45
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               42,
+                                                               35,
+                                                               43,
+                                                               38
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                36,
+                                                                42,
+                                                                37,
+                                                                45
+                                                            ],
+                                                     "texture":  0
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               37,
+                                                               42,
+                                                               38,
+                                                               45
+                                                           ],
+                                                    "texture":  0
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             45,
+                                                             32,
+                                                             46,
+                                                             33
+                                                         ],
+                                                  "texture":  0
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               33,
+                                                               46,
+                                                               34,
+                                                               45
+                                                           ],
+                                                    "texture":  0
+                                                }
+                                   },
+                         "type":  "cube",
+                         "uuid":  "cat-ball-08"
+                     }
+                 ],
+    "groups":  [
+                   {
+                       "name":  "bone",
+                       "uuid":  "cat-ball-group",
+                       "origin":  [
+                                      1.5,
+                                      0,
+                                      1.5
+                                  ],
+                       "rotation":  [
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                   }
+               ],
+    "outliner":  [
+                     {
+                         "uuid":  "cat-ball-group",
+                         "children":  [
+                                          "cat-ball-00",
+                                          "cat-ball-01",
+                                          "cat-ball-02",
+                                          "cat-ball-03",
+                                          "cat-ball-04",
+                                          "cat-ball-05",
+                                          "cat-ball-06",
+                                          "cat-ball-07",
+                                          "cat-ball-08"
+                                      ]
+                     }
+                 ],
+    "textures":  [
+                     {
+                         "name":  "cat_ball.png",
+                         "uv_width":  64,
+                         "uv_height":  64
+                     }
+                 ]
+}

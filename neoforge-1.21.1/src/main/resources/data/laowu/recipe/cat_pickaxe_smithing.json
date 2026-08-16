@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "laowu:cat_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "minecraft:diamond_pickaxe"
+  },
+  "addition": {
+    "item": "laowu:cat_ingot"
+  },
+  "result": {
+    "id": "laowu:cat_pickaxe"
+  }
+}

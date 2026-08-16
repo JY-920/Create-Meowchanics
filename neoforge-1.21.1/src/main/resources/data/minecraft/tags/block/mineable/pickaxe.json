@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "laowu:cat_engine",
+    "laowu:infiltration_tank",
+    "laowu:hissing_collector",
+    "laowu:devouring_cat",
+    "laowu:cat_block"
+  ]
+}

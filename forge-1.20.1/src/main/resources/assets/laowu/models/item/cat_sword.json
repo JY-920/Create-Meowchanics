@@ -1,0 +1,43 @@
+{
+  "loader": "forge:separate_transforms",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "textures": {
+    "particle": "laowu:item/cat_sword"
+  },
+  "base": {
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "laowu:item/cat_sword"
+    }
+  },
+  "perspectives": {
+    "firstperson_righthand": {
+      "parent": "minecraft:item/handheld",
+      "textures": {
+        "layer0": "laowu:item/cat_sword_handheld"
+      }
+    },
+    "firstperson_lefthand": {
+      "parent": "minecraft:item/handheld",
+      "textures": {
+        "layer0": "laowu:item/cat_sword_handheld"
+      }
+    },
+    "thirdperson_righthand": {
+      "parent": "minecraft:item/handheld",
+      "textures": {
+        "layer0": "laowu:item/cat_sword_handheld"
+      }
+    },
+    "thirdperson_lefthand": {
+      "parent": "minecraft:item/handheld",
+      "textures": {
+        "layer0": "laowu:item/cat_sword_handheld"
+      }
+    }
+  },
+  "overrides": [
+    { "predicate": { "laowu:empowered": 1.0 }, "model": "laowu:item/cat_sword_empowered" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "loader": "forge:separate_transforms",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "textures": { "particle": "laowu:item/cat_hoe" },
+  "base": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_hoe_empowered" } },
+  "perspectives": {
+    "firstperson_righthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_hoe" } },
+    "firstperson_lefthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_hoe" } },
+    "thirdperson_righthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_hoe" } },
+    "thirdperson_lefthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_hoe" } },
+    "ground": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_hoe" } },
+    "fixed": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_hoe" } },
+    "head": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_hoe" } }
+  }
+}

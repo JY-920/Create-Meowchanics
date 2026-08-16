@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "laowu:cat_block" }
+  ],
+  "result": {
+    "item": "laowu:cat_ingot",
+    "count": 9
+  }
+}

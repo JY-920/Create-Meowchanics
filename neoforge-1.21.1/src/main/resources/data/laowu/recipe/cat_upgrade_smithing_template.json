@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EIE",
+    "OWO",
+    "OOO"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "I": {
+      "item": "laowu:cat_ingot"
+    },
+    "O": {
+      "item": "minecraft:orange_wool"
+    },
+    "W": {
+      "item": "minecraft:white_wool"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_upgrade_smithing_template"
+  }
+}

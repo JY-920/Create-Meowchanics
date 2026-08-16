@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "create:brass_block"
+    },
+    "C": {
+      "item": "laowu:cat_sheet"
+    },
+    "F": {
+      "item": "create:fluid_tank"
+    },
+    "S": {
+      "item": "minecraft:polished_blackstone_slab"
+    }
+  },
+  "pattern": [
+    "CBC",
+    "SFS"
+  ],
+  "result": {
+    "item": "laowu:cat_engine"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PPP",
+    "PPP"
+  ],
+  "key": {
+    "P": { "item": "laowu:cat_pellet" }
+  },
+  "result": {
+    "item": "laowu:cat_ingot"
+  }
+}

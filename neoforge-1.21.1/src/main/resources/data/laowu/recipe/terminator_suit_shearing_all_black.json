@@ -1,0 +1,26 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:all_black",
+      "terminator": true
+    },
+    {
+      "item": "minecraft:shears"
+    }
+  ],
+  "keep_held_item": true,
+  "results": [
+    {
+      "id": "laowu:cat_pancake",
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuCatVariant": "minecraft:all_black",
+          "LaoWuCatTexture": "minecraft:textures/entity/cat/all_black.png",
+          "LaoWuTamedPancake": true
+        }
+      }
+    }
+  ]
+}

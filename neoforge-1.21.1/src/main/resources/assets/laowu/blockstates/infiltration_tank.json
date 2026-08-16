@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "model_facing=north": { "model": "laowu:block/infiltration_tank" },
+    "model_facing=east":  { "model": "laowu:block/infiltration_tank", "y": 90 },
+    "model_facing=south": { "model": "laowu:block/infiltration_tank", "y": 180 },
+    "model_facing=west":  { "model": "laowu:block/infiltration_tank", "y": 270 }
+  }
+}

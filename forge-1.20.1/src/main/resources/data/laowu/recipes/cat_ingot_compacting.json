@@ -1,0 +1,8 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    { "fluid": "laowu:liquid_cat", "amount": 250 },
+    { "fluid": "laowu:hissing_gas", "amount": 250 }
+  ],
+  "results": [{ "item": "laowu:cat_ingot" }]
+}

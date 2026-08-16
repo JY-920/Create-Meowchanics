@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:fire_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_fire_suit"
+        },
+        {
+          "item": "create:fluid_tank"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_fire_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_fire_suit"
+        },
+        {
+          "item": "create:blaze_burner"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_fire_suit"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:incomplete_fire_suit"
+  }
+}

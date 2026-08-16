@@ -1,0 +1,16 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "textures": { "particle": "laowu:item/cat_shovel" },
+  "base": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_shovel_empowered" } },
+  "perspectives": {
+    "firstperson_righthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_shovel" } },
+    "firstperson_lefthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_shovel" } },
+    "thirdperson_righthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_shovel" } },
+    "thirdperson_lefthand": { "parent": "minecraft:item/handheld", "textures": { "layer0": "laowu:item/cat_shovel" } },
+    "ground": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_shovel" } },
+    "fixed": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_shovel" } },
+    "head": { "parent": "minecraft:item/generated", "textures": { "layer0": "laowu:item/cat_shovel" } }
+  }
+}

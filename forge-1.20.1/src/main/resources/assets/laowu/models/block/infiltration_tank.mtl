@@ -1,0 +1,3 @@
+# Material for the supplied P4 model. #0 is resolved by the Forge OBJ loader.
+newmtl tank
+map_Kd #0

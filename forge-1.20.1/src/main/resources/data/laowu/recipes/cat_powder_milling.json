@@ -1,0 +1,10 @@
+{
+  "type": "create:milling",
+  "ingredients": [
+    { "type": "laowu:cat_pancake" }
+  ],
+  "processingTime": 100,
+  "results": [
+    { "item": "laowu:cat_powder", "count": 2 }
+  ]
+}

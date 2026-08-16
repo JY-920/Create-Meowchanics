@@ -1,0 +1,27 @@
+{
+  "type": "laowu:infiltrating",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "laowu:cat_powder"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 1000,
+      "fluid": "laowu:hissing_gas"
+    }
+  ],
+  "processing_time": 100,
+  "results": [
+    {
+      "amount": 1000,
+      "id": "create:potion",
+      "components": {
+        "create:potion_fluid_bottle_type": "regular",
+        "minecraft:potion_contents": {
+          "potion": "laowu:hissing"
+        }
+      }
+    }
+  ]
+}

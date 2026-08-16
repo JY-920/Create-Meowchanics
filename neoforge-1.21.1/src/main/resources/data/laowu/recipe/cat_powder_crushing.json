@@ -1,0 +1,15 @@
+{
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake"
+    }
+  ],
+  "processing_time": 100,
+  "results": [
+    {
+      "count": 2,
+      "id": "laowu:cat_powder"
+    }
+  ]
+}

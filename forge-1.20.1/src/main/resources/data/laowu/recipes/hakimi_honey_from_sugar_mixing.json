@@ -1,0 +1,12 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    { "item": "laowu:cat_fur" },
+    { "item": "minecraft:sugar" },
+    { "item": "minecraft:sugar" },
+    { "fluid": "minecraft:water", "amount": 250 }
+  ],
+  "results": [
+    { "fluid": "laowu:liquid_cat", "amount": 250 }
+  ]
+}

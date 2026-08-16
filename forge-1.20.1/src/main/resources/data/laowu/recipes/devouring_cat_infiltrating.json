@@ -1,0 +1,12 @@
+{
+  "type": "laowu:infiltrating",
+  "heatRequirement": "superheated",
+  "ingredients": [
+    { "item": "laowu:cat_ball" },
+    { "fluid": "laowu:hissing_gas", "amount": 1000 }
+  ],
+  "processingTime": 100,
+  "results": [
+    { "item": "laowu:devouring_cat" }
+  ]
+}

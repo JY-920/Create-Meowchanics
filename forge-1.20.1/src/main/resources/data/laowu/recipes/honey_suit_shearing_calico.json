@@ -1,0 +1,24 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:calico",
+      "outfit": "honey"
+    },
+    {
+      "item": "minecraft:shears"
+    }
+  ],
+  "keepHeldItem": true,
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:calico",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/calico.png",
+        "LaoWuTamedPancake": true
+      }
+    }
+  ]
+}

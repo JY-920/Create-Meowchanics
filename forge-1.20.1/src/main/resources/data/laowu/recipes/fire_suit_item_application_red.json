@@ -1,0 +1,25 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:red",
+      "outfit": "none"
+    },
+    {
+      "item": "laowu:fire_suit"
+    }
+  ],
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:red",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png",
+        "LaoWuTamedPancake": true,
+        "LaoWuHasClothes": true,
+        "LaoWuCatOutfit": "fire"
+      }
+    }
+  ]
+}

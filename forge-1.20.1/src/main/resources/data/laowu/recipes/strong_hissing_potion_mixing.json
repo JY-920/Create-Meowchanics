@@ -1,0 +1,32 @@
+{
+  "type": "create:mixing",
+  "heatRequirement": "heated",
+  "ingredients": [
+    {
+      "fluid": "create:potion",
+      "amount": 1000,
+      "nbt": {
+        "Bottle": "REGULAR",
+        "Potion": "laowu:hissing"
+      }
+    },
+    {
+      "fluid": "create:potion",
+      "amount": 1000,
+      "nbt": {
+        "Bottle": "REGULAR",
+        "Potion": "minecraft:strength"
+      }
+    }
+  ],
+  "results": [
+    {
+      "fluid": "create:potion",
+      "amount": 1000,
+      "nbt": {
+        "Bottle": "REGULAR",
+        "Potion": "laowu:strong_hissing"
+      }
+    }
+  ]
+}

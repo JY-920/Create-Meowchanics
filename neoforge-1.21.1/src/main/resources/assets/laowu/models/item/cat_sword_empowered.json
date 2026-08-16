@@ -1,0 +1,44 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "textures": {
+    "particle": "laowu:item/cat_sword_empowered"
+  },
+  "base": {
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "laowu:item/cat_sword_empowered"
+    }
+  },
+  "perspectives": {
+    "firstperson_righthand": {
+      "parent": "minecraft:item/handheld",
+      "textures": { "layer0": "laowu:item/cat_sword_handheld" }
+    },
+    "firstperson_lefthand": {
+      "parent": "minecraft:item/handheld",
+      "textures": { "layer0": "laowu:item/cat_sword_handheld" }
+    },
+    "thirdperson_righthand": {
+      "parent": "minecraft:item/handheld",
+      "textures": { "layer0": "laowu:item/cat_sword_handheld" }
+    },
+    "thirdperson_lefthand": {
+      "parent": "minecraft:item/handheld",
+      "textures": { "layer0": "laowu:item/cat_sword_handheld" }
+    },
+    "ground": {
+      "parent": "minecraft:item/generated",
+      "textures": { "layer0": "laowu:item/cat_sword" }
+    },
+    "fixed": {
+      "parent": "minecraft:item/generated",
+      "textures": { "layer0": "laowu:item/cat_sword" }
+    },
+    "head": {
+      "parent": "minecraft:item/generated",
+      "textures": { "layer0": "laowu:item/cat_sword" }
+    }
+  }
+}

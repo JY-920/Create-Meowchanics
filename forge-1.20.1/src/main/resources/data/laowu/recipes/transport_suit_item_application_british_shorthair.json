@@ -1,0 +1,26 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:british_shorthair",
+      "outfit": "none"
+    },
+    {
+      "item": "laowu:transport_suit"
+    }
+  ],
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:british_shorthair",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/british_shorthair.png",
+        "LaoWuTamedPancake": true,
+        "LaoWuHasClothes": true,
+        "LaoWuCatOutfit": "transport"
+      }
+    }
+  ]
+}
+

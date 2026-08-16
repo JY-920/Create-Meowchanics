@@ -1,0 +1,10 @@
+{
+  "type": "laowu:infiltrating",
+  "heatRequirement": "heated",
+  "ingredients": [
+    { "tag": "laowu:cat_tools" },
+    { "fluid": "laowu:hissing_gas", "amount": 250 }
+  ],
+  "processingTime": 100,
+  "results": []
+}

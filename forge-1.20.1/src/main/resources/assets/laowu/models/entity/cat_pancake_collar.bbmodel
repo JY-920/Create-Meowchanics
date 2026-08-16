@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "format_version": "5.0",
+    "model_format": "free",
+    "box_uv": false
+  },
+  "name": "cat_pancake_collar",
+  "resolution": {
+    "width": 1,
+    "height": 1
+  },
+  "elements": [
+    {
+      "name": "collar_ring",
+      "box_uv": false,
+      "from": [-2.01, 3.99, -7.005],
+      "to": [2.01, 6.01, -5.995],
+      "origin": [0, 5, -6.5],
+      "rotation": [0, 0, 0],
+      "faces": {
+        "north": { "uv": [0, 0, 1, 1], "texture": 0 },
+        "east":  { "uv": [0, 0, 1, 1], "texture": 0 },
+        "south": { "uv": [0, 0, 1, 1], "texture": 0 },
+        "west":  { "uv": [0, 0, 1, 1], "texture": 0 },
+        "up":    { "uv": [0, 0, 1, 1], "texture": 0 },
+        "down":  { "uv": [0, 0, 1, 1], "texture": 0 }
+      },
+      "type": "cube",
+      "uuid": "61000000-0000-4000-8000-000000000001"
+    }
+  ],
+  "groups": [
+    {
+      "name": "collar",
+      "uuid": "6a000000-0000-4000-8000-000000000001",
+      "origin": [0, 24, 0],
+      "rotation": [0, 0, 0]
+    }
+  ],
+  "outliner": [
+    {
+      "uuid": "6a000000-0000-4000-8000-000000000001",
+      "children": ["61000000-0000-4000-8000-000000000001"]
+    }
+  ],
+  "textures": [
+    {
+      "name": "white.png",
+      "id": "0",
+      "width": 1,
+      "height": 1,
+      "uv_width": 1,
+      "uv_height": 1
+    }
+  ]
+}

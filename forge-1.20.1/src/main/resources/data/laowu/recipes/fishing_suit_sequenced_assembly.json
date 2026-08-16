@@ -1,0 +1,25 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {"item": "laowu:cat_component"},
+  "loops": 1,
+  "results": [{"item": "laowu:fishing_suit"}],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {"item": "laowu:incomplete_fishing_suit"},
+        {"item": "minecraft:hay_block"}
+      ],
+      "results": [{"item": "laowu:incomplete_fishing_suit"}]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {"item": "laowu:incomplete_fishing_suit"},
+        {"item": "minecraft:fishing_rod"}
+      ],
+      "results": [{"item": "laowu:incomplete_fishing_suit"}]
+    }
+  ],
+  "transitionalItem": {"item": "laowu:incomplete_fishing_suit"}
+}

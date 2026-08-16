@@ -1,0 +1,19 @@
+{
+  "type": "laowu:infiltrating",
+  "heatRequirement": "heated",
+  "ingredients": [
+    { "item": "laowu:cat_powder" },
+    { "fluid": "laowu:hissing_gas", "amount": 1000 }
+  ],
+  "processingTime": 100,
+  "results": [
+    {
+      "fluid": "create:potion",
+      "amount": 1000,
+      "nbt": {
+        "Bottle": "REGULAR",
+        "Potion": "laowu:hissing"
+      }
+    }
+  ]
+}

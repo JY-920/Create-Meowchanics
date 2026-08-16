@@ -1,0 +1,24 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "laowu:cat_fur"
+    },
+    {
+      "type": "neoforge:tag",
+      "amount": 250,
+      "tag": "c:honey"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 750,
+      "fluid": "minecraft:water"
+    }
+  ],
+  "results": [
+    {
+      "amount": 1000,
+      "id": "laowu:liquid_cat"
+    }
+  ]
+}

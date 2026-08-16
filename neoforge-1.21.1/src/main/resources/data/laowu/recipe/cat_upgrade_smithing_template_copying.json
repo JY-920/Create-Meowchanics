@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FIF",
+    "FTF",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "item": "laowu:cat_fur"
+    },
+    "I": {
+      "item": "laowu:cat_ingot"
+    },
+    "T": {
+      "item": "laowu:cat_upgrade_smithing_template"
+    }
+  },
+  "result": {
+    "count": 2,
+    "id": "laowu:cat_upgrade_smithing_template"
+  }
+}

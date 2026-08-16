@@ -1,0 +1,74 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "create:iron_sheet"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "chance": 8.0,
+      "id": "laowu:cat_component"
+    },
+    {
+      "chance": 1.0,
+      "id": "create:iron_sheet"
+    },
+    {
+      "chance": 1.0,
+      "id": "laowu:cat_pellet"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_cat_component"
+        },
+        {
+          "item": "laowu:cat_gear"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_cat_component"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_cat_component"
+        },
+        {
+          "item": "laowu:cat_spring"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_cat_component"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_cat_component"
+        },
+        {
+          "item": "laowu:cat_pellet"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_cat_component"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:incomplete_cat_component"
+  }
+}

@@ -1,0 +1,37 @@
+# Gradle and build outputs
+**/.gradle/
+**/build/
+**/repo/
+**/mcmodsrepo/
+
+# Local reference dumps, model backups, and one-off exports are not required
+# to build the published source trees.
+**/reference/
+**/exports/
+
+# Minecraft development instances
+**/run/
+**/run-*/
+**/logs/
+**/crash-reports/
+**/saves/
+
+# Local dependency fallbacks and IDE files
+**/libs/
+**/.idea/
+**/.vscode/
+**/.settings/
+**/bin/
+**/out/
+*.iml
+*.ipr
+*.iws
+*.launch
+.classpath
+.project
+
+# Operating-system and transient files
+.DS_Store
+Thumbs.db
+*.log
+*.tmp

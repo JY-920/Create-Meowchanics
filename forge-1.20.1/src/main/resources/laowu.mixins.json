@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "cn.laowu.mod.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "CatShearableMixin",
+    "CatToolBreakProtectionMixin",
+    "CatToolItemMixin",
+    "LivingEntityCatTotemMixin",
+    "ContraptionCatPancakeCollisionMixin",
+    "PloughMovementBehaviourMixin",
+    "PotatoCannonAmmoMixin",
+    "BlazeBurnerBlockEntityAccessor",
+    "NozzleBlockEntityAccessor",
+    "RollerMovementBehaviourMixin"
+  ],
+  "client": [
+    "AirCurrentFluidParticleMixin",
+    "HeldItemTransformMixin",
+    "NozzleFluidParticleMixin",
+    "PotionFluidTooltipMixin",
+    "PotatoProjectileRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

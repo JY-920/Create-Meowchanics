@@ -1,0 +1,26 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake_variant",
+      "variant": "minecraft:black",
+      "outfit": "none"
+    },
+    {
+      "item": "laowu:transport_suit"
+    }
+  ],
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:black",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/black.png",
+        "LaoWuTamedPancake": true,
+        "LaoWuHasClothes": true,
+        "LaoWuCatOutfit": "transport"
+      }
+    }
+  ]
+}
+

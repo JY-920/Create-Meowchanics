@@ -1,0 +1,9 @@
+{
+  "damage": 30,
+  "items": "laowu:cat_grenade",
+  "knockback": 0.8,
+  "reload_ticks": 30,
+  "render_mode": { "type": "create:tumble" },
+  "sound_pitch": 0.65,
+  "velocity_multiplier": 1.1
+}

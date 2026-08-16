@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["GCG", "S S", "I I"],
+  "key": {
+    "G": {"item": "laowu:cat_gear"},
+    "C": {"item": "laowu:cat_component"},
+    "S": {"item": "laowu:cat_spring"},
+    "I": {"item": "laowu:cat_ingot"}
+  },
+  "result": {"item": "laowu:cat_leggings"}
+}

@@ -1,0 +1,20 @@
+{
+  "type": "laowu:infiltrating",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "minecraft:cobblestone"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 100,
+      "fluid": "minecraft:lava"
+    }
+  ],
+  "processing_time": 100,
+  "results": [
+    {
+      "id": "minecraft:magma_block"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "laowu:cat_upgrade_smithing_template" },
+  "base": { "item": "create:goggles" },
+  "addition": { "item": "laowu:cat_ingot" },
+  "result": { "item": "laowu:cat_engineer_goggles" }
+}

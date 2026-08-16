@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "laowu:item/cat_pouch_empty" },
+  "overrides": [
+    { "predicate": { "laowu:filled": 1.0 }, "model": "laowu:item/cat_pouch_filled" }
+  ]
+}

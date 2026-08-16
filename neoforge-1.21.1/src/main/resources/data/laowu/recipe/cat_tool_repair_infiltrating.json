@@ -1,0 +1,16 @@
+{
+  "type": "laowu:infiltrating",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "tag": "laowu:cat_tools"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "fluid": "laowu:hissing_gas"
+    }
+  ],
+  "processing_time": 100,
+  "results": []
+}

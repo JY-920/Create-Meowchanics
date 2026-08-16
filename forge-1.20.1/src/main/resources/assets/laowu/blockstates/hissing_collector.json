@@ -1,0 +1,33 @@
+{
+  "variants": {
+    "facing=up,model_facing=north": { "model": "laowu:block/hissing_collector", "y": 270 },
+    "facing=up,model_facing=east": { "model": "laowu:block/hissing_collector" },
+    "facing=up,model_facing=south": { "model": "laowu:block/hissing_collector", "y": 90 },
+    "facing=up,model_facing=west": { "model": "laowu:block/hissing_collector", "y": 180 },
+
+    "facing=down,model_facing=north": { "model": "laowu:block/hissing_collector", "x": 180, "y": 270 },
+    "facing=down,model_facing=east": { "model": "laowu:block/hissing_collector", "x": 180 },
+    "facing=down,model_facing=south": { "model": "laowu:block/hissing_collector", "x": 180, "y": 90 },
+    "facing=down,model_facing=west": { "model": "laowu:block/hissing_collector", "x": 180, "y": 180 },
+
+    "facing=north,model_facing=north": { "model": "laowu:block/hissing_collector", "x": 90 },
+    "facing=north,model_facing=east": { "model": "laowu:block/hissing_collector", "x": 90 },
+    "facing=north,model_facing=south": { "model": "laowu:block/hissing_collector", "x": 90 },
+    "facing=north,model_facing=west": { "model": "laowu:block/hissing_collector", "x": 90 },
+
+    "facing=east,model_facing=north": { "model": "laowu:block/hissing_collector", "x": 90, "y": 90 },
+    "facing=east,model_facing=east": { "model": "laowu:block/hissing_collector", "x": 90, "y": 90 },
+    "facing=east,model_facing=south": { "model": "laowu:block/hissing_collector", "x": 90, "y": 90 },
+    "facing=east,model_facing=west": { "model": "laowu:block/hissing_collector", "x": 90, "y": 90 },
+
+    "facing=south,model_facing=north": { "model": "laowu:block/hissing_collector", "x": 90, "y": 180 },
+    "facing=south,model_facing=east": { "model": "laowu:block/hissing_collector", "x": 90, "y": 180 },
+    "facing=south,model_facing=south": { "model": "laowu:block/hissing_collector", "x": 90, "y": 180 },
+    "facing=south,model_facing=west": { "model": "laowu:block/hissing_collector", "x": 90, "y": 180 },
+
+    "facing=west,model_facing=north": { "model": "laowu:block/hissing_collector", "x": 90, "y": 270 },
+    "facing=west,model_facing=east": { "model": "laowu:block/hissing_collector", "x": 90, "y": 270 },
+    "facing=west,model_facing=south": { "model": "laowu:block/hissing_collector", "x": 90, "y": 270 },
+    "facing=west,model_facing=west": { "model": "laowu:block/hissing_collector", "x": 90, "y": 270 }
+  }
+}
