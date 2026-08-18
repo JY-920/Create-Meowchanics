@@ -18,6 +18,6 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
 
     @Override
     public ResourceLocation getTextureLocation(Cat cat) {
-        return cat.getVariant().texture();
+        return CatGenomeTextureManager.resolve(cat);
     }
 }

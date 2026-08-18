@@ -18,12 +18,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterItemDecorationsEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.ModList;
 
 @Mod.EventBusSubscriber(modid = LaoWuMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class ClientModEvents {
@@ -53,6 +55,11 @@ public final class ClientModEvents {
     }
 
     @SubscribeEvent
+    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("cat_stats", CatStatsGoggleOverlay.OVERLAY);
+    }
+
+    @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(LaoWuMod.NOZZLE_FLUID_PUFF.get(),
                 NozzleFluidPuffParticle.Provider::new);
@@ -62,12 +69,15 @@ public final class ClientModEvents {
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
                 NozzleFluidPuffParticle.clearColourCache());
+        event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
+                CatGenomeTextureManager.clear());
     }
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             MenuScreens.register(LaoWuMod.CAT_PACKAGE_MENU.get(), CatPackageScreen::new);
+            MenuScreens.register(LaoWuMod.BREEDING_BOX_MENU.get(), BreedingBoxScreen::new);
             // KineticBlockEntityRenderer deliberately leaves rotating parts to
             // Flywheel whenever visualization is available. Keep our animated
             // Blockbench body in the normal BER and let Create's native shaft
@@ -90,6 +100,9 @@ public final class ClientModEvents {
             // Preserve the supplied model's one-pixel face details; mipmapping
             // turns those small UV islands into large solid colour squares.
             ItemBlockRenderTypes.setRenderLayer(LaoWuMod.HISSING_COLLECTOR.get(), RenderType.cutout());
+            if (ModList.get().isLoaded("curios")) {
+                cn.laowu.mod.compat.curios.CatGogglesCuriosClientCompat.registerRenderer();
+            }
         });
     }
 
@@ -103,6 +116,7 @@ public final class ClientModEvents {
         event.registerBlockEntityRenderer(LaoWuMod.CAT_ENGINE_BE.get(), CatEngineRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.DEVOURING_CAT_BE.get(), DevouringCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
+        event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), BreedingBoxRenderer::new);
     }
 
     @SubscribeEvent

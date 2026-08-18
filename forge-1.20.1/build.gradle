@@ -116,6 +116,10 @@ repositories {
     maven { url = 'https://maven.createmod.net' }
     maven { url = 'https://maven.tterrag.com' }
     maven { url = 'https://maven.blamejared.com' }
+    maven {
+        name = 'Curios'
+        url = uri('https://maven.theillusivec4.top/')
+    }
 }
 
 dependencies {
@@ -139,6 +143,11 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
+
+    // Optional Curios integration. The API is compile-only and the runtime
+    // artifact is used by development runs; neither is bundled into our jar.
+    compileOnly "top.theillusivec4.curios:curios-forge:${curios_version}:api"
+    runtimeOnly "top.theillusivec4.curios:curios-forge:${curios_version}"
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

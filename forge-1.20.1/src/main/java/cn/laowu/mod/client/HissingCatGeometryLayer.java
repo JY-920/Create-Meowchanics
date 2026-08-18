@@ -35,7 +35,8 @@ public final class HissingCatGeometryLayer extends RenderLayer<Cat, CatModel<Cat
         // Keep the authored head pitch, turn the face 30 degrees by default, and
         // visibly sway only the head around that angle. Vanilla yaw tracking remains.
         RuntimeBlockbenchModel.HeadMotion headMotion = headMotion(cat, model, ageInTicks);
-        var vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(cat.getVariant().texture()));
+        var vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(
+                CatGenomeTextureManager.resolve(cat)));
         RuntimeBlockbenchModel.get(MODEL).render(
                 poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY,
                 RuntimeBlockbenchModel.GroupSelection.ALL, headMotion);

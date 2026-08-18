@@ -76,7 +76,8 @@ public final class CatPancakeItemRenderer extends BlockEntityWithoutLevelRendere
             poseStack.mulPose(Axis.ZP.rotationDegrees(52.0F));
         }
         poseStack.scale(-scale, -scale, scale);
-        var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(CatPancakeItem.texture(stack)));
+        var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(
+                CatGenomeTextureManager.resolve(stack, CatPancakeItem.texture(stack))));
         RuntimeBlockbenchModel.get(MODEL).render(
                 poseStack, consumer, packedLight, packedOverlay,
                 RuntimeBlockbenchModel.GroupSelection.ALL,

@@ -7,6 +7,8 @@ import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.network.ModNetwork;
+import cn.laowu.mod.genetics.CatGenomeData;
+import cn.laowu.mod.genetics.CatAttributeData;
 import com.simibubi.create.content.kinetics.fan.EncasedFanBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -26,6 +28,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
@@ -66,6 +69,9 @@ public final class CatPancakeItem extends Item {
 
     public static ItemStack capture(Cat cat) {
         ItemStack pancake = new ItemStack(LaoWuMod.CAT_PANCAKE.get());
+        // Ensure the six-dimensional genes enter both the full entity snapshot
+        // and the compact top-level pancake bridge before the cat is removed.
+        CatAttributeData.ensure(cat);
         CompoundTag root = pancake.getOrCreateTag();
         CompoundTag catData = cat.saveWithoutId(new CompoundTag());
         removePositionAndIdentity(catData);
@@ -83,6 +89,8 @@ public final class CatPancakeItem extends Item {
         ResourceLocation variant = BuiltInRegistries.CAT_VARIANT.getKey(cat.getVariant());
         if (variant != null) root.putString(CAT_VARIANT_TAG, variant.toString());
         root.putString(CAT_TEXTURE_TAG, cat.getVariant().texture().toString());
+        CatGenomeData.copyToStack(cat, pancake);
+        CatAttributeData.copyToStack(cat, pancake);
         if (cat.hasCustomName()) {
             pancake.setHoverName(Component.translatable("item.laowu.cat_pancake.named", cat.getDisplayName()));
         }
@@ -114,12 +122,19 @@ public final class CatPancakeItem extends Item {
 
     /** Stable orange-cat representative used by the creative tab and recipe viewers. */
     public static ItemStack defaultDisplayStack() {
-        return variantStack(DEFAULT_VARIANT);
+        return withDisplayGenes(variantStack(DEFAULT_VARIANT), 0x4C414F57554CL);
     }
 
     /** Stable orange kitten representative used by JEI for the spout recipe. */
     public static ItemStack defaultBabyDisplayStack() {
-        return babyVariantStack(DEFAULT_VARIANT);
+        return withDisplayGenes(babyVariantStack(DEFAULT_VARIANT), 0x42414259434154L);
+    }
+
+    private static ItemStack withDisplayGenes(ItemStack stack, long seed) {
+        CatGenomeData.set(stack, cn.laowu.mod.genetics.CatGenome.uniform(DEFAULT_VARIANT));
+        CatAttributeData.set(stack, cn.laowu.mod.genetics.CatAttributeProfile.founder(
+                RandomSource.create(seed)));
+        return stack;
     }
 
     /** JEI intentionally shows one stable skin while recipes still match every cat variant. */
@@ -462,6 +477,8 @@ public final class CatPancakeItem extends Item {
         }
 
         clearTransientState(cat.getPersistentData());
+        CatGenomeData.applyFromStack(stack, cat);
+        CatAttributeData.applyFromStack(stack, cat);
         CatOutfitType outfit = getOutfit(stack);
         if (outfit != CatOutfitType.NONE) {
             cat.getPersistentData().putBoolean(CatClothesData.EQUIPPED_TAG, true);
@@ -477,6 +494,8 @@ public final class CatPancakeItem extends Item {
         ModNetwork.syncToTracking(cat, 0);
         ModNetwork.syncCatChestToTracking(cat);
         ModNetwork.syncCatClothesToTracking(cat);
+        if (CatGenomeData.has(cat)) ModNetwork.syncCatGenomeToTracking(cat);
+        ModNetwork.syncCatAttributesToTracking(cat);
         level.sendParticles(ParticleTypes.POOF, cat.getX(), cat.getY() + 0.4D, cat.getZ(),
                 16, 0.25D, 0.2D, 0.25D, 0.04D);
         level.playSound(null, cat.blockPosition(), SoundEvents.WOOL_BREAK, SoundSource.NEUTRAL, 1.0F, 0.65F);

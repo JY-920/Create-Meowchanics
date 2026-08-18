@@ -2,10 +2,13 @@ package cn.laowu.mod;
 
 import cn.laowu.mod.network.ModNetwork;
 import cn.laowu.mod.item.CatPancakeItem;
+import cn.laowu.mod.item.FusionDebugWandItem;
 import cn.laowu.mod.item.CatToolBehavior;
 import cn.laowu.mod.item.CatTotemItem;
 import cn.laowu.mod.item.KimiArmorItem;
 import cn.laowu.mod.item.TerminatorSuitItem;
+import cn.laowu.mod.genetics.CatAttributeData;
+import cn.laowu.mod.genetics.CatAttributeProfile;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
@@ -45,6 +48,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -431,12 +435,47 @@ public final class CommonEvents {
             ModNetwork.syncAudioToPlayer(player, cat);
             CatChestData.syncToPlayer(player, cat);
             CatClothesData.syncToPlayer(player, cat);
+            if (cn.laowu.mod.genetics.CatGenomeData.has(cat)) {
+                ModNetwork.syncCatGenomeToPlayer(player, cat);
+            }
+            CatAttributeData.ensure(cat);
+            ModNetwork.syncCatAttributesToPlayer(player, cat);
         }
+    }
+
+    /**
+     * Natural kittens use the same inheritance contract as the fusion debug
+     * wand: one distinct complete locus from each parent and four fresh rolls.
+     * The profile is written before players can begin tracking the child.
+     */
+    @SubscribeEvent
+    public static void onCatBred(BabyEntitySpawnEvent event) {
+        if (!(event.getParentA() instanceof Cat first)
+                || !(event.getParentB() instanceof Cat second)
+                || !(event.getChild() instanceof Cat child)
+                || child.level().isClientSide) return;
+
+        CatAttributeData.set(child, CatAttributeProfile.fuse(
+                CatAttributeData.ensure(first),
+                CatAttributeData.ensure(second),
+                child.getRandom()));
     }
 
     @SubscribeEvent
     public static void onCatInteract(PlayerInteractEvent.EntityInteract event) {
         if (!(event.getTarget() instanceof Cat cat)) return;
+
+        // A tamed cat consumes ordinary interaction before Item#interactLivingEntity
+        // (it toggles sitting), so route the debug wand through the Forge hook first.
+        if (event.getItemStack().getItem() instanceof FusionDebugWandItem wand) {
+            InteractionResult result = wand.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            if (result.consumesAction()) {
+                event.setCancellationResult(result);
+                event.setCanceled(true);
+            }
+            return;
+        }
 
         // This runs before vanilla cat interaction, so it works for seated pets
         // and inert living cat pancakes alike. Create's stationary

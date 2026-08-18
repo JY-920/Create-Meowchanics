@@ -35,7 +35,8 @@ public final class PancakeCatGeometryLayer extends RenderLayer<Cat, CatModel<Cat
             poseStack.scale(0.5F, 0.5F, 0.5F);
             poseStack.translate(0.0D, 1.5D, 0.0D);
         }
-        var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(cat.getVariant().texture()));
+        var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(
+                CatGenomeTextureManager.resolve(cat)));
         RuntimeBlockbenchModel.get(MODEL).render(
                 poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                 RuntimeBlockbenchModel.GroupSelection.ALL,
