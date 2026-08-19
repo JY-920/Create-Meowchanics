@@ -3,7 +3,6 @@ package cn.laowu.mod;
 import cn.laowu.mod.item.CatPancakeItem;
 import cn.laowu.mod.item.CatCannonItem;
 import cn.laowu.mod.item.CatSmithingTemplateItem;
-import cn.laowu.mod.item.CatToolTier;
 import cn.laowu.mod.item.HissingGasBucketItem;
 import cn.laowu.mod.item.CatBallItem;
 import cn.laowu.mod.item.CatPouchItem;
@@ -70,6 +69,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
@@ -217,19 +217,39 @@ public final class LaoWuMod {
     public static final RegistryObject<Item> CAT_UPGRADE_SMITHING_TEMPLATE = ITEMS.register(
             "cat_upgrade_smithing_template", CatSmithingTemplateItem::new);
     public static final RegistryObject<Item> CAT_SWORD = ITEMS.register("cat_sword",
-            () -> new SwordItem(CatToolTier.INSTANCE, 3, -2.4F,
-                    new Item.Properties().durability(Items.DIAMOND_SWORD.getMaxDamage())));
+            () -> new SwordItem(Tiers.DIAMOND, 3, -2.4F,
+                    new Item.Properties().durability(Items.DIAMOND_SWORD.getMaxDamage())) {
+                @Override
+                public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
+                    return ingredient.is(CAT_INGOT.get());
+                }
+            });
     public static final RegistryObject<Item> CAT_PICKAXE = ITEMS.register("cat_pickaxe",
-            () -> new PickaxeItem(CatToolTier.INSTANCE, 1, -2.8F,
-                    new Item.Properties().durability(Items.DIAMOND_PICKAXE.getMaxDamage())));
+            () -> new PickaxeItem(Tiers.DIAMOND, 1, -2.8F,
+                    new Item.Properties().durability(Items.DIAMOND_PICKAXE.getMaxDamage())) {
+                @Override
+                public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
+                    return ingredient.is(CAT_INGOT.get());
+                }
+            });
     public static final RegistryObject<Item> CAT_AXE = ITEMS.register("cat_axe",
-            () -> new AxeItem(CatToolTier.INSTANCE, 5.0F, -3.0F,
-                    new Item.Properties().durability(Items.DIAMOND_AXE.getMaxDamage())));
+            () -> new AxeItem(Tiers.DIAMOND, 5.0F, -3.0F,
+                    new Item.Properties().durability(Items.DIAMOND_AXE.getMaxDamage())) {
+                @Override
+                public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
+                    return ingredient.is(CAT_INGOT.get());
+                }
+            });
     public static final RegistryObject<Item> CAT_SHOVEL = ITEMS.register("cat_shovel",
-            () -> new ShovelItem(CatToolTier.INSTANCE, 1.5F, -3.0F,
-                    new Item.Properties().durability(Items.DIAMOND_SHOVEL.getMaxDamage())));
+            () -> new ShovelItem(Tiers.DIAMOND, 1.5F, -3.0F,
+                    new Item.Properties().durability(Items.DIAMOND_SHOVEL.getMaxDamage())) {
+                @Override
+                public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
+                    return ingredient.is(CAT_INGOT.get());
+                }
+            });
     public static final RegistryObject<Item> CAT_HOE = ITEMS.register("cat_hoe",
-            () -> new CatHoeItem(CatToolTier.INSTANCE, -3, 0.0F,
+            () -> new CatHoeItem(Tiers.DIAMOND, -3, 0.0F,
                     new Item.Properties().durability(Items.DIAMOND_HOE.getMaxDamage())));
     public static final RegistryObject<Item> CAT_CANNON = ITEMS.register("cat_cannon",
             () -> new CatCannonItem(new Item.Properties().stacksTo(1)));
