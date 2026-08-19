@@ -32,6 +32,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.sounds.SoundSource;
+import com.simibubi.create.AllItems;
 import com.simibubi.create.AllDamageTypes;
 import com.simibubi.create.AllBlocks;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -52,7 +53,6 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.bus.api.EventPriority;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -331,7 +331,7 @@ public final class CommonEvents {
                 SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.35F, 0.85F);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onCardboardSwordAttack(AttackEntityEvent event) {
         if (!(event.getTarget() instanceof Cat cat)
                 || !isCardboardSword(event.getEntity().getMainHandItem())) return;
@@ -363,9 +363,7 @@ public final class CommonEvents {
     }
 
     private static boolean isCardboardSword(ItemStack stack) {
-        var itemKey = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        return itemKey != null && itemKey.getNamespace().equals("create")
-                && itemKey.getPath().equals("cardboard_sword");
+        return AllItems.CARDBOARD_SWORD.isIn(stack);
     }
 
     @SubscribeEvent
