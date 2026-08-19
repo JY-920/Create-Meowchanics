@@ -17,8 +17,14 @@ public final class CatToolTier {
                     BlockTags.NEEDS_DIAMOND_TOOL,
                     () -> Ingredient.of(LaoWuMod.CAT_INGOT.get())),
             LaoWuMod.id("cat"),
-            List.of(net.minecraft.world.item.Tiers.DIAMOND),
-            List.of(net.minecraft.world.item.Tiers.NETHERITE));
+            // Forge interprets this ordering when deciding which tiers satisfy
+            // NEEDS_DIAMOND_TOOL. Placing the custom tier after DIAMOND raises
+            // every vanilla diamond-required block to the custom tier and
+            // prevents diamond tools from receiving drops. Put Cat directly
+            // below Diamond: Cat can still mine the tag, while Diamond and
+            // Netherite remain valid as vanilla intended.
+            List.of(net.minecraft.world.item.Tiers.IRON),
+            List.of(net.minecraft.world.item.Tiers.DIAMOND));
 
     private CatToolTier() {
     }

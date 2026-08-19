@@ -35,6 +35,7 @@ import net.minecraft.sounds.SoundSource;
 import com.simibubi.create.AllDamageTypes;
 import com.simibubi.create.AllBlocks;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -331,6 +332,18 @@ public final class CommonEvents {
     }
 
     @SubscribeEvent
+    public static void onCardboardSwordAttack(AttackEntityEvent event) {
+        if (!(event.getTarget() instanceof Cat cat)
+                || !isCardboardSword(event.getEntity().getMainHandItem())) return;
+
+        // The cardboard sword can deal zero damage. NeoForge 1.21 may reject
+        // that hit before LivingIncomingDamageEvent is posted, while the
+        // player/deployer attack event still fires for the actual contact.
+        event.setCanceled(true);
+        if (!cat.level().isClientSide) CatPancakeBehavior.flatten(cat);
+    }
+
+    @SubscribeEvent
     public static void onCatAttacked(LivingIncomingDamageEvent event) {
         if (!(event.getEntity() instanceof Cat cat) || cat.level().isClientSide) return;
 
@@ -343,13 +356,16 @@ public final class CommonEvents {
 
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
 
-        var held = attacker.getMainHandItem();
-        var itemKey = BuiltInRegistries.ITEM.getKey(held.getItem());
-        if (itemKey == null || !itemKey.getNamespace().equals("create")
-                || !itemKey.getPath().equals("cardboard_sword")) return;
+        if (!isCardboardSword(attacker.getMainHandItem())) return;
 
         event.setCanceled(true);
         CatPancakeBehavior.flatten(cat);
+    }
+
+    private static boolean isCardboardSword(ItemStack stack) {
+        var itemKey = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return itemKey != null && itemKey.getNamespace().equals("create")
+                && itemKey.getPath().equals("cardboard_sword");
     }
 
     @SubscribeEvent
