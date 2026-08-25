@@ -46,12 +46,18 @@ public final class ClientModEvents {
             InputConstants.Type.KEYSYM,
             InputConstants.KEY_LALT,
             "key.categories.laowu");
+    public static final KeyMapping HISSING_VOLUME = new KeyMapping(
+            "key.laowu.hissing_volume",
+            InputConstants.Type.KEYSYM,
+            InputConstants.KEY_V,
+            "key.categories.laowu");
 
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(OPEN_HELD_ITEM_TRANSFORM);
         event.register(CAT_ARMOR_POUNCE);
         event.register(CAT_TOOL_EMPOWER);
+        event.register(HISSING_VOLUME);
     }
 
     @SubscribeEvent
@@ -78,6 +84,12 @@ public final class ClientModEvents {
         event.enqueueWork(() -> {
             MenuScreens.register(LaoWuMod.CAT_PACKAGE_MENU.get(), CatPackageScreen::new);
             MenuScreens.register(LaoWuMod.BREEDING_BOX_MENU.get(), BreedingBoxScreen::new);
+            MenuScreens.register(LaoWuMod.ADOPTION_BOX_MENU.get(), AdoptionBoxScreen::new);
+            MenuScreens.register(LaoWuMod.CAT_ATTRIBUTE_EDITOR_MENU.get(),
+                    CatAttributeEditorScreen::new);
+            MenuScreens.register(LaoWuMod.CAT_TRAIT_EDITOR_MENU.get(),
+                    CatTraitEditorScreen::new);
+            MenuScreens.register(LaoWuMod.CAT_PROFILE_MENU.get(), CatProfileScreen::new);
             // KineticBlockEntityRenderer deliberately leaves rotating parts to
             // Flywheel whenever visualization is available. Keep our animated
             // Blockbench body in the normal BER and let Create's native shaft
@@ -113,10 +125,12 @@ public final class ClientModEvents {
                 context -> new ThrownItemRenderer<>(context, 1.1F, false));
         event.registerEntityRenderer(LaoWuMod.CAT_BALL_ENTITY.get(),
                 CatBallEntityRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.BUTTER_CAT.get(), ButterCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_ENGINE_BE.get(), CatEngineRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.DEVOURING_CAT_BE.get(), DevouringCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), BreedingBoxRenderer::new);
+        event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
     }
 
     @SubscribeEvent

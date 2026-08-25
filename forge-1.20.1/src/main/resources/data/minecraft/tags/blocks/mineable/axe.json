@@ -3,6 +3,7 @@
   "values": [
     "laowu:basic_breeding_box",
     "laowu:intermediate_breeding_box",
-    "laowu:advanced_breeding_box"
+    "laowu:advanced_breeding_box",
+    "laowu:adoption_box"
   ]
 }

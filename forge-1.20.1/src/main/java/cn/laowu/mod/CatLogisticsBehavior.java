@@ -50,6 +50,10 @@ public final class CatLogisticsBehavior {
 
     public static boolean tick(Cat cat) {
         if (!(cat.level() instanceof ServerLevel level) || !CatChestData.hasChest(cat)) return false;
+        if (HissingCatBehavior.isHissingForbidden(cat) && CatPoseData.isHissing(cat)) {
+            setHissing(cat, false);
+            ModNetwork.setAudioSession(cat, false);
+        }
         migrateOldLoadAnimation(level, cat);
         if (tickPackageLoadAnimation(level, cat)) return true;
         CompoundTag data = cat.getPersistentData();
@@ -475,6 +479,7 @@ public final class CatLogisticsBehavior {
     }
 
     private static void setHissing(Cat cat, boolean active) {
+        if (active && HissingCatBehavior.isHissingForbidden(cat)) active = false;
         int pose = active ? 1 : 0;
         if (CatPoseData.getPose(cat) == pose) return;
         CatPoseData.setPose(cat, pose);

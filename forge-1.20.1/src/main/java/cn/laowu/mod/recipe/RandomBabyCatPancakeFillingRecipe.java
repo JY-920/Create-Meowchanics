@@ -4,6 +4,7 @@ import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.item.CatPancakeItem;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatAttributeProfile;
+import cn.laowu.mod.genetics.CatTraitData;
 import com.simibubi.create.content.fluids.transfer.FillingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -30,9 +31,9 @@ public final class RandomBabyCatPancakeFillingRecipe extends FillingRecipe {
                 ? CatPancakeItem.DEFAULT_VARIANT
                 : variants.get(ThreadLocalRandom.current().nextInt(variants.size()));
         ItemStack pancake = CatPancakeItem.babyVariantStack(chosen);
-        CatAttributeData.set(pancake,
-                CatAttributeProfile.founder(RandomSource.create(
-                        ThreadLocalRandom.current().nextLong())));
+        RandomSource random = RandomSource.create(ThreadLocalRandom.current().nextLong());
+        CatAttributeData.set(pancake, CatAttributeProfile.founder(random));
+        CatTraitData.setInjected(pancake, random);
         return List.of(pancake);
     }
 

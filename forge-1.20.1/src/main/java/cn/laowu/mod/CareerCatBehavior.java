@@ -1,6 +1,9 @@
 package cn.laowu.mod;
 
 import cn.laowu.mod.mixin.BlazeBurnerBlockEntityAccessor;
+import cn.laowu.mod.genetics.CatAttributeEffects;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
 import com.simibubi.create.content.contraptions.actors.seat.SeatEntity;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlockEntity;
@@ -79,6 +82,7 @@ public final class CareerCatBehavior {
     private static final int MAX_WATER_BLOCKS = 300;
     private static final int WATER_SEARCH_RANGE = 32;
     private static final int HONEY_INTERVAL = 20 * 10;
+    private static final int SUPERHEAT_DURATION = 20 * 5;
 
     /** Transient bookkeeping avoids serialising modifiers or rescanning goal lists. */
     private static final Map<Cat, CatOutfitType> APPLIED_OUTFITS = new WeakHashMap<>();
@@ -113,6 +117,7 @@ public final class CareerCatBehavior {
     public static void onOutfitChanged(Cat cat, boolean preserveMissingHealth) {
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
         applyAttributes(cat, outfit, preserveMissingHealth);
+        CatAttributeEffects.refresh(cat);
         APPLIED_OUTFITS.put(cat, outfit);
         if (outfit != CatOutfitType.TERMINATOR) cat.setTarget(null);
     }
@@ -176,6 +181,16 @@ public final class CareerCatBehavior {
             cat.setTarget(null);
             cat.getNavigation().stop();
             target = null;
+        }
+        int longFurLevel = CatTraitData.ensure(cat).level(CatTrait.LONG_FUR);
+        if (target != null && longFurLevel > 0) {
+            double sight = Math.max(1.0D,
+                    cat.getAttributeValue(Attributes.FOLLOW_RANGE));
+            if (cat.distanceToSqr(target) > sight * sight) {
+                cat.setTarget(null);
+                cat.getNavigation().stop();
+                target = null;
+            }
         }
         if (isForbiddenTerminatorTarget(cat.getLastHurtByMob())) {
             cat.setLastHurtByMob(null);
@@ -295,7 +310,7 @@ public final class CareerCatBehavior {
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(water))
                 .withParameter(LootContextParams.TOOL, new ItemStack(Items.FISHING_ROD))
                 .withParameter(LootContextParams.THIS_ENTITY, cat)
-                .withLuck(0.0F)
+                .withLuck(CatAttributeEffects.fishingLootLuck(cat))
                 .create(LootContextParamSets.FISHING);
         var table = level.getServer().getLootData().getLootTable(BuiltInLootTables.FISHING);
         for (ItemStack caught : table.getRandomItems(params)) {
@@ -397,11 +412,30 @@ public final class CareerCatBehavior {
         if (cat.tickCount % 10 != 0) return;
         BlockPos seat = findSeat(cat);
         if (seat == null) return;
+        var traits = CatTraitData.ensure(cat);
+        boolean sustainedSuperheat = traits.has(CatTrait.SUPERHEAT_GENE);
+        int level = traits.level(CatTrait.BLAZING_FORM);
+        boolean superheat = level > 0 && cat.tickCount % (20 * 10) == 0
+                && cat.getRandom().nextInt(100)
+                < CatTrait.BLAZING_FORM.blazingSuperheatChance(level);
         for (Direction direction : Direction.Plane.HORIZONTAL) {
             if (!(cat.level().getBlockEntity(seat.relative(direction))
                     instanceof BlazeBurnerBlockEntity burner) || burner.isCreative()) continue;
-            keepBurnerKindled(burner);
+            if (sustainedSuperheat || superheat) superheatBurner(burner);
+            else keepBurnerKindled(burner);
         }
+    }
+
+    private static void superheatBurner(BlazeBurnerBlockEntity burner) {
+        if (burner.getActiveFuel() == BlazeBurnerBlockEntity.FuelType.SPECIAL
+                && burner.getRemainingBurnTime() > 40) return;
+        boolean changedHeat = burner.getActiveFuel()
+                != BlazeBurnerBlockEntity.FuelType.SPECIAL;
+        BlazeBurnerBlockEntityAccessor accessor = (BlazeBurnerBlockEntityAccessor) burner;
+        accessor.laowu$setActiveFuel(BlazeBurnerBlockEntity.FuelType.SPECIAL);
+        accessor.laowu$setRemainingBurnTime(SUPERHEAT_DURATION);
+        burner.setChanged();
+        if (changedHeat) burner.updateBlockState();
     }
 
     private static void keepBurnerKindled(BlazeBurnerBlockEntity burner) {
@@ -431,12 +465,18 @@ public final class CareerCatBehavior {
 
         CompoundTag data = cat.getPersistentData();
         long now = level.getGameTime();
+        int traitLevel = CatTraitData.ensure(cat).level(CatTrait.BEEBEE_GENE);
+        int interval = traitLevel <= 0 ? HONEY_INTERVAL
+                : CatTrait.BEEBEE_GENE.beebeeWorkIntervalSeconds(traitLevel) * 20;
         if (!data.contains(NEXT_HONEY_TAG, Tag.TAG_LONG)) {
-            data.putLong(NEXT_HONEY_TAG, now + HONEY_INTERVAL);
+            data.putLong(NEXT_HONEY_TAG, now + interval);
             return;
         }
+        if (data.getLong(NEXT_HONEY_TAG) > now + interval) {
+            data.putLong(NEXT_HONEY_TAG, now + interval);
+        }
         if (now < data.getLong(NEXT_HONEY_TAG)) return;
-        data.putLong(NEXT_HONEY_TAG, now + HONEY_INTERVAL);
+        data.putLong(NEXT_HONEY_TAG, now + interval);
 
         int honey = state.getValue(BeehiveBlock.HONEY_LEVEL);
         if (honey >= BeehiveBlock.MAX_HONEY_LEVELS) return;
@@ -468,10 +508,49 @@ public final class CareerCatBehavior {
 
     private static final class TerminatorMeleeGoal extends MeleeAttackGoal {
         private final Cat cat;
+        private int attributeAttackCooldown;
 
         private TerminatorMeleeGoal(Cat cat) {
             super(cat, 1.25D, true);
             this.cat = cat;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            attributeAttackCooldown = 0;
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            attributeAttackCooldown = 0;
+        }
+
+        @Override
+        public void tick() {
+            if (attributeAttackCooldown > 0) attributeAttackCooldown--;
+            super.tick();
+        }
+
+        @Override
+        protected void resetAttackCooldown() {
+            attributeAttackCooldown = CatAttributeEffects.attackIntervalTicks(cat);
+        }
+
+        @Override
+        protected boolean isTimeToAttack() {
+            return attributeAttackCooldown <= 0;
+        }
+
+        @Override
+        protected int getTicksUntilNextAttack() {
+            return attributeAttackCooldown;
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return CatAttributeEffects.attackIntervalTicks(cat);
         }
 
         @Override

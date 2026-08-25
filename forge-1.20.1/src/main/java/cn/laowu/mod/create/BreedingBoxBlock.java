@@ -1,6 +1,7 @@
 package cn.laowu.mod.create;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.item.BreedingCatFoodItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -72,9 +73,9 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
 
         ItemStack held = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            ItemStack parent = box.extractParent();
-            if (!parent.isEmpty()) {
-                giveOrDrop(player, parent);
+            ItemStack extracted = box.extractManual();
+            if (!extracted.isEmpty()) {
+                giveOrDrop(player, extracted);
                 playTransferSound(level, pos, 0.9F);
             }
             return InteractionResult.CONSUME;
@@ -91,7 +92,7 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
 
-        if (held.is(LaoWuMod.CAT_FOOD.get())) {
+        if (BreedingCatFoodItem.isBreedingFood(held)) {
             ItemStack offered = held.copy();
             ItemStack remainder = box.insertFood(offered);
             int inserted = offered.getCount() - remainder.getCount();
@@ -102,15 +103,8 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
 
-        if (held.isEmpty()) {
-            ItemStack child = box.extractChild();
-            if (!child.isEmpty()) {
-                giveOrDrop(player, child);
-                playTransferSound(level, pos, 1.35F);
-                return InteractionResult.CONSUME;
-            }
-        }
-
+        // Every non-sneaking interaction with something other than a valid
+        // parent pancake or dedicated breeding food opens the status panel.
         if (player instanceof ServerPlayer serverPlayer) {
             NetworkHooks.openScreen(serverPlayer, box, buffer -> buffer.writeBlockPos(pos));
         }

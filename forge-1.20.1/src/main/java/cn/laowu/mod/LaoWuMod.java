@@ -10,6 +10,9 @@ import cn.laowu.mod.item.CatPouchItem;
 import cn.laowu.mod.item.CatGrenadeBoxItem;
 import cn.laowu.mod.item.CatStripItem;
 import cn.laowu.mod.item.CatFoodItem;
+import cn.laowu.mod.item.BreedingCatFoodItem;
+import cn.laowu.mod.item.AttributeDebugWandItem;
+import cn.laowu.mod.item.TraitDebugWandItem;
 import cn.laowu.mod.item.CatGrenadeItem;
 import cn.laowu.mod.item.CatEngineBlockItem;
 import cn.laowu.mod.item.DevouringCatBlockItem;
@@ -21,9 +24,13 @@ import cn.laowu.mod.item.CatFurItem;
 import cn.laowu.mod.item.CatTotemItem;
 import cn.laowu.mod.item.FusionDebugWandItem;
 import cn.laowu.mod.item.BreedingBoxBlockItem;
+import cn.laowu.mod.item.AdoptionBoxBlockItem;
+import cn.laowu.mod.item.CatScannerItem;
+import cn.laowu.mod.genetics.CatBreedingMode;
 import cn.laowu.mod.loot.CatToolEmpoweredLootModifier;
 import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.entity.CatBallEntity;
+import cn.laowu.mod.entity.ButterCatBoss;
 import cn.laowu.mod.effect.HissingAttackEffect;
 import cn.laowu.mod.fluid.HissingGasFluidType;
 import cn.laowu.mod.fluid.LiquidCatFluidType;
@@ -44,6 +51,8 @@ import cn.laowu.mod.create.DevouringCatBlockEntity;
 import cn.laowu.mod.create.BreedingBoxBlock;
 import cn.laowu.mod.create.BreedingBoxBlockEntity;
 import cn.laowu.mod.create.BreedingBoxTier;
+import cn.laowu.mod.create.AdoptionBoxBlock;
+import cn.laowu.mod.create.AdoptionBoxBlockEntity;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.ItemDescription;
@@ -62,6 +71,7 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.item.CreativeModeTab;
@@ -86,6 +96,9 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
@@ -101,6 +114,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import com.mojang.serialization.Codec;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 
@@ -185,10 +199,36 @@ public final class LaoWuMod {
                     .of(BreedingBoxBlockEntity::new, BASIC_BREEDING_BOX.get(),
                             INTERMEDIATE_BREEDING_BOX.get(), ADVANCED_BREEDING_BOX.get())
                     .build(null));
+    public static final RegistryObject<Block> ADOPTION_BOX = BLOCKS.register("adoption_box",
+            () -> new AdoptionBoxBlock(BlockBehaviour.Properties.copy(Blocks.BARREL)
+                    .noOcclusion().strength(0.8F)));
+    public static final RegistryObject<BlockEntityType<AdoptionBoxBlockEntity>> ADOPTION_BOX_BE =
+            BLOCK_ENTITIES.register("adoption_box", () -> BlockEntityType.Builder
+                    .of(AdoptionBoxBlockEntity::new, ADOPTION_BOX.get()).build(null));
+    public static final RegistryObject<EntityType<ButterCatBoss>> BUTTER_CAT =
+            ENTITY_TYPES.register("butter_cat", () -> EntityType.Builder
+                    .<ButterCatBoss>of(ButterCatBoss::new, MobCategory.MONSTER)
+                    .sized(ButterCatBoss.BASE_WIDTH * ButterCatBoss.MODEL_SCALE,
+                            ButterCatBoss.BASE_HEIGHT * ButterCatBoss.MODEL_SCALE)
+                    .clientTrackingRange(12)
+                    .updateInterval(1)
+                    .build("butter_cat"));
     public static final RegistryObject<Item> CAT_PANCAKE = ITEMS.register("cat_pancake",
             () -> new CatPancakeItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> FUSION_DEBUG_WAND = ITEMS.register("fusion_debug_wand",
             () -> new FusionDebugWandItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> ATTRIBUTE_DEBUG_WAND = ITEMS.register(
+            "attribute_debug_wand",
+            () -> new AttributeDebugWandItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> TRAIT_DEBUG_WAND = ITEMS.register(
+            "trait_debug_wand",
+            () -> new TraitDebugWandItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> CAT_SCANNER = ITEMS.register("cat_scanner",
+            () -> new CatScannerItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> BUTTER_CAT_SPAWN_EGG = ITEMS.register(
+            "butter_cat_spawn_egg", () -> new ForgeSpawnEggItem(
+                    () -> BUTTER_CAT.get(), 0xE8B94F, 0xFFF1A3,
+                    new Item.Properties()));
     public static final RegistryObject<Item> TERMINATOR_SUIT = ITEMS.register("terminator_suit",
             () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.TERMINATOR));
     public static final RegistryObject<Item> FISHING_SUIT = ITEMS.register("fishing_suit",
@@ -264,6 +304,33 @@ public final class LaoWuMod {
             () -> new CatGrenadeBoxItem(new Item.Properties()));
     public static final RegistryObject<Item> CAT_FOOD = ITEMS.register("cat_food",
             () -> new CatFoodItem(new Item.Properties()));
+    public static final RegistryObject<Item> BREEDING_CAT_FOOD = ITEMS.register(
+            "breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.NORMAL));
+    public static final RegistryObject<Item> SUPER_BREEDING_CAT_FOOD = ITEMS.register(
+            "super_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.SUPER));
+    public static final RegistryObject<Item> MUTATION_CAT_FOOD = ITEMS.register(
+            "mutation_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.MUTATION));
+    public static final RegistryObject<Item> ATTACK_BREEDING_CAT_FOOD = ITEMS.register(
+            "attack_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.ATTACK));
+    public static final RegistryObject<Item> HEALTH_BREEDING_CAT_FOOD = ITEMS.register(
+            "health_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.HEALTH));
+    public static final RegistryObject<Item> SPEED_BREEDING_CAT_FOOD = ITEMS.register(
+            "speed_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.SPEED));
+    public static final RegistryObject<Item> STAMINA_BREEDING_CAT_FOOD = ITEMS.register(
+            "stamina_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.STAMINA));
+    public static final RegistryObject<Item> INTELLIGENCE_BREEDING_CAT_FOOD = ITEMS.register(
+            "intelligence_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.INTELLIGENCE));
+    public static final RegistryObject<Item> LUCK_BREEDING_CAT_FOOD = ITEMS.register(
+            "luck_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.LUCK));
     public static final RegistryObject<Item> CAT_GRENADE = ITEMS.register("cat_grenade",
             () -> new CatGrenadeItem(new Item.Properties()));
     public static final RegistryObject<Item> CAT_SHELL = ITEMS.register("cat_shell",
@@ -315,6 +382,8 @@ public final class LaoWuMod {
     public static final RegistryObject<Item> ADVANCED_BREEDING_BOX_ITEM = ITEMS.register(
             "advanced_breeding_box", () -> new BreedingBoxBlockItem(
                     ADVANCED_BREEDING_BOX.get(), new Item.Properties()));
+    public static final RegistryObject<Item> ADOPTION_BOX_ITEM = ITEMS.register("adoption_box",
+            () -> new AdoptionBoxBlockItem(ADOPTION_BOX.get(), new Item.Properties()));
     public static final RegistryObject<FluidType> HISSING_GAS_TYPE = FLUID_TYPES.register(
             "hissing_gas", HissingGasFluidType::new);
     public static final RegistryObject<FlowingFluid> HISSING_GAS = FLUIDS.register(
@@ -349,6 +418,7 @@ public final class LaoWuMod {
                         output.accept(BASIC_BREEDING_BOX_ITEM.get());
                         output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
                         output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                        output.accept(ADOPTION_BOX_ITEM.get());
                         output.accept(CAT_BLOCK_ITEM.get());
                         output.accept(CAT_INGOT.get());
                         output.accept(CAT_SHEET.get());
@@ -371,10 +441,23 @@ public final class LaoWuMod {
                         output.accept(CAT_POUCH.get());
                         output.accept(CAT_BOX.get());
                         output.accept(CAT_FOOD.get());
+                        output.accept(BREEDING_CAT_FOOD.get());
+                        output.accept(SUPER_BREEDING_CAT_FOOD.get());
+                        output.accept(MUTATION_CAT_FOOD.get());
+                        output.accept(ATTACK_BREEDING_CAT_FOOD.get());
+                        output.accept(HEALTH_BREEDING_CAT_FOOD.get());
+                        output.accept(SPEED_BREEDING_CAT_FOOD.get());
+                        output.accept(STAMINA_BREEDING_CAT_FOOD.get());
+                        output.accept(INTELLIGENCE_BREEDING_CAT_FOOD.get());
+                        output.accept(LUCK_BREEDING_CAT_FOOD.get());
                         output.accept(CAT_POWDER.get());
                         output.accept(CAT_DOUGH.get());
                         output.accept(CatPancakeItem.defaultDisplayStack());
+                        output.accept(CAT_SCANNER.get());
+                        output.accept(BUTTER_CAT_SPAWN_EGG.get());
                         output.accept(FUSION_DEBUG_WAND.get());
+                        output.accept(ATTRIBUTE_DEBUG_WAND.get());
+                        output.accept(TRAIT_DEBUG_WAND.get());
                         output.accept(AllItems.CARDBOARD_SWORD.get());
                         output.accept(AllBlocks.SEATS.get(DyeColor.RED).get());
                         output.accept(TERMINATOR_SUIT.get());
@@ -403,6 +486,16 @@ public final class LaoWuMod {
             "cat_package", () -> IForgeMenuType.create(CatPackageMenu::new));
     public static final RegistryObject<MenuType<BreedingBoxMenu>> BREEDING_BOX_MENU = MENUS.register(
             "breeding_box", () -> IForgeMenuType.create(BreedingBoxMenu::new));
+    public static final RegistryObject<MenuType<AdoptionBoxMenu>> ADOPTION_BOX_MENU = MENUS.register(
+            "adoption_box", () -> IForgeMenuType.create(AdoptionBoxMenu::new));
+    public static final RegistryObject<MenuType<CatAttributeEditorMenu>> CAT_ATTRIBUTE_EDITOR_MENU =
+            MENUS.register("cat_attribute_editor",
+                    () -> IForgeMenuType.create(CatAttributeEditorMenu::new));
+    public static final RegistryObject<MenuType<CatTraitEditorMenu>> CAT_TRAIT_EDITOR_MENU =
+            MENUS.register("cat_trait_editor",
+                    () -> IForgeMenuType.create(CatTraitEditorMenu::new));
+    public static final RegistryObject<MenuType<CatProfileMenu>> CAT_PROFILE_MENU =
+            MENUS.register("cat_profile", () -> IForgeMenuType.create(CatProfileMenu::new));
     public static final RegistryObject<EntityType<CatPancakeProjectile>> CAT_PANCAKE_PROJECTILE =
             ENTITY_TYPES.register("cat_pancake_projectile", () -> EntityType.Builder
                     .<CatPancakeProjectile>of(CatPancakeProjectile::new, MobCategory.MISC)
@@ -456,6 +549,29 @@ public final class LaoWuMod {
         ModNetwork.register();
         modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) ->
                 event.enqueueWork(() -> {
+                    DispenserBlock.registerBehavior(CAT_PANCAKE.get(),
+                            new AbstractProjectileDispenseBehavior() {
+                                @Override
+                                protected Projectile getProjectile(
+                                        net.minecraft.world.level.Level level,
+                                        Position position, ItemStack stack) {
+                                    boolean highExplosive =
+                                            cn.laowu.mod.genetics.CatTraitData.read(stack)
+                                                    .map(profile -> profile.has(
+                                                            cn.laowu.mod.genetics.CatTrait
+                                                                    .HIGH_EXPLOSIVE_FUEL))
+                                                    .orElse(false);
+                                    return new CatPancakeProjectile(level,
+                                            position.x(), position.y(), position.z(),
+                                            stack, highExplosive ? 20.0F : 8.0F,
+                                            highExplosive ? 3.5F : 2.0F);
+                                }
+
+                                @Override
+                                protected float getPower() {
+                                    return 1.55F;
+                                }
+                            });
                     // Register this as an ordinary Create kinetic source:
                     // 64 SU/RPM * 96 RPM = 6144 SU total capacity.
                     BlockStressValues.CAPACITIES.register(CAT_ENGINE.get(),
@@ -472,7 +588,17 @@ public final class LaoWuMod {
                     registerDescription(CAT_CANNON.get());
                     registerDescription(CAT_BALL.get());
                     registerDescription(CAT_STRIP.get());
-                    registerDescription(CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(SUPER_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(MUTATION_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(ATTACK_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(HEALTH_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(SPEED_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(STAMINA_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(INTELLIGENCE_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(LUCK_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(CAT_SCANNER.get());
                     registerDescription(CAT_ENGINEER_GOGGLES.get());
                     registerAlwaysVisibleDescription(TERMINATOR_SUIT.get());
                     registerAlwaysVisibleDescription(FISHING_SUIT.get());

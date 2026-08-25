@@ -5,15 +5,18 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
  * A versioned six-dimensional profile containing current values and immutable
- * potential ceilings. Values are descriptive genes for now; gameplay effects
- * can consume them later without changing the saved format.
+ * potential ceilings. Gameplay consumes these raw genes through
+ * {@link CatAttributeEffects}, keeping temporary effects out of saved heredity.
  */
 public final class CatAttributeProfile {
     public static final int DATA_VERSION = 3;
@@ -49,41 +52,56 @@ public final class CatAttributeProfile {
     }
 
     /**
-     * Pokemon-style breeding: five complete loci are inherited from randomly
-     * selected parents while the sixth is a fresh roll. Current value and
-     * Attribute Limit always travel together as one indivisible locus.
+     * Compatibility entry point used by natural cat breeding. It keeps the
+     * original five-locus behaviour but delegates to the food-aware engine.
      */
     public static CatAttributeProfile fuse(CatAttributeProfile first,
                                            CatAttributeProfile second,
                                            RandomSource random) {
-        CatAttributeProfile randomProfile = founder(random);
+        return breed(first, second, CatBreedingMode.SUPER, 0.0F, random);
+    }
+
+    /**
+     * Food-driven Pokemon-style inheritance. Current value and Attribute Limit
+     * always travel as one locus. Uninherited loci receive a full 0..100 roll;
+     * a successful mutation adds a second roll and keeps the better candidate.
+     */
+    public static CatAttributeProfile breed(CatAttributeProfile first,
+                                            CatAttributeProfile second,
+                                            CatBreedingMode mode,
+                                            float mutationChance,
+                                            RandomSource random) {
         EnumMap<CatStat, Integer> current = new EnumMap<>(CatStat.class);
         EnumMap<CatStat, Integer> potential = new EnumMap<>(CatStat.class);
-        CatStat[] stats = CatStat.values();
-        int randomIndex = random.nextInt(stats.length);
-        boolean[] fromFirst = new boolean[stats.length];
-        int inheritedFromFirst = 0;
-        for (int index = 0; index < stats.length; index++) {
-            if (index == randomIndex) continue;
-            fromFirst[index] = random.nextBoolean();
-            if (fromFirst[index]) inheritedFromFirst++;
+        EnumSet<CatStat> inherited = EnumSet.noneOf(CatStat.class);
+        CatStat targeted = mode.targetedStat();
+        if (targeted != null) inherited.add(targeted);
+
+        List<CatStat> candidates = new ArrayList<>(List.of(CatStat.values()));
+        if (targeted != null) candidates.remove(targeted);
+        shuffle(candidates, random);
+        int remaining = Math.max(0, mode.inheritedLoci() - inherited.size());
+        for (int index = 0; index < remaining && index < candidates.size(); index++) {
+            inherited.add(candidates.get(index));
         }
 
-        // "From both parents" is a firm contract: avoid the rare all-five
-        // result from only one parent without biasing which actual loci win.
-        if (inheritedFromFirst == 0 || inheritedFromFirst == stats.length - 1) {
-            int forcedIndex = random.nextInt(stats.length - 1);
-            if (forcedIndex >= randomIndex) forcedIndex++;
-            fromFirst[forcedIndex] = inheritedFromFirst == 0;
-        }
-
-        for (int index = 0; index < stats.length; index++) {
-            CatStat stat = stats[index];
-            if (index == randomIndex) {
-                inheritLocus(stat, randomProfile, current, potential);
-            } else {
-                inheritLocus(stat, fromFirst[index] ? first : second, current, potential);
+        for (CatStat stat : CatStat.values()) {
+            if (inherited.contains(stat)) {
+                if (stat == targeted) {
+                    inheritTargetedLocus(stat, first, second, current, potential);
+                } else {
+                    inheritLocus(stat, random.nextBoolean() ? first : second,
+                            current, potential);
+                }
+                continue;
             }
+
+            Locus rolled = rollRandomLocus(random);
+            if (random.nextFloat() < mutationChance) {
+                rolled = better(rolled, rollRandomLocus(random));
+            }
+            current.put(stat, rolled.current());
+            potential.put(stat, rolled.potential());
         }
         return new CatAttributeProfile(current, potential);
     }
@@ -92,10 +110,53 @@ public final class CatAttributeProfile {
                                         EnumMap<CatStat, Integer> current,
                                         EnumMap<CatStat, Integer> potential,
                                         RandomSource random) {
-        int value = random.nextInt(FOUNDER_MAX_CURRENT + 1);
-        int ceiling = value + random.nextInt(MAX_VALUE - value + 1);
-        current.put(stat, value);
+        Locus locus = rollRandomLocus(random);
+        current.put(stat, locus.current());
+        potential.put(stat, locus.potential());
+    }
+
+    private static Locus rollRandomLocus(RandomSource random) {
+        int ceiling = random.nextInt(MAX_VALUE + 1);
+        int value = random.nextInt(Math.min(FOUNDER_MAX_CURRENT, ceiling) + 1);
+        return new Locus(value, ceiling);
+    }
+
+    private static Locus better(Locus first, Locus second) {
+        if (second.potential() != first.potential()) {
+            return second.potential() > first.potential() ? second : first;
+        }
+        return second.current() > first.current() ? second : first;
+    }
+
+    private static void inheritTargetedLocus(CatStat stat,
+                                             CatAttributeProfile first,
+                                             CatAttributeProfile second,
+                                             EnumMap<CatStat, Integer> current,
+                                             EnumMap<CatStat, Integer> potential) {
+        CatAttributeProfile donor = first.potential(stat) > second.potential(stat) ? first
+                : second.potential(stat) > first.potential(stat) ? second
+                : first.current(stat) >= second.current(stat) ? first : second;
+        int ceiling = donor.potential(stat);
+        int value = donor.current(stat);
+        int firstCeiling = first.potential(stat);
+        int secondCeiling = second.potential(stat);
+        if (firstCeiling >= 90 && secondCeiling >= 90
+                && Math.abs(firstCeiling - secondCeiling) <= 5) {
+            ceiling = Math.min(MAX_VALUE, Math.max(firstCeiling, secondCeiling) + 1);
+            // A targeted breakthrough must be visible in the ordinary NOW
+            // panel as well as the crouched MAX panel. Advance the inherited
+            // current value by the same single step without exceeding its new
+            // limit; otherwise two 91/91 parents appeared to produce 91 again.
+            value = Math.min(ceiling, value + 1);
+        }
+        current.put(stat, Math.min(value, ceiling));
         potential.put(stat, ceiling);
+    }
+
+    private static void shuffle(List<CatStat> values, RandomSource random) {
+        for (int index = values.size() - 1; index > 0; index--) {
+            Collections.swap(values, index, random.nextInt(index + 1));
+        }
     }
 
     private static void inheritLocus(CatStat stat, CatAttributeProfile parent,
@@ -111,6 +172,17 @@ public final class CatAttributeProfile {
 
     public int potential(CatStat stat) {
         return potential.get(stat);
+    }
+
+    /** Immutable editor operation used by the development attribute wand. */
+    public CatAttributeProfile withValues(CatStat stat, int value, int ceiling) {
+        int clampedCeiling = Mth.clamp(ceiling, MIN_VALUE, MAX_VALUE);
+        int clampedValue = Mth.clamp(value, MIN_VALUE, clampedCeiling);
+        EnumMap<CatStat, Integer> editedCurrent = new EnumMap<>(current);
+        EnumMap<CatStat, Integer> editedPotential = new EnumMap<>(potential);
+        editedCurrent.put(stat, clampedValue);
+        editedPotential.put(stat, clampedCeiling);
+        return new CatAttributeProfile(editedCurrent, editedPotential);
     }
 
     public CompoundTag save() {
@@ -177,4 +249,6 @@ public final class CatAttributeProfile {
                 && root.contains(VERSION_TAG, Tag.TAG_INT)
                 && root.getInt(VERSION_TAG) == DATA_VERSION;
     }
+
+    private record Locus(int current, int potential) {}
 }

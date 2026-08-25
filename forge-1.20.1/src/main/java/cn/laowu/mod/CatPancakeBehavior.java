@@ -46,6 +46,9 @@ public final class CatPancakeBehavior {
         cat.setTarget(null);
         cat.setOrderedToSit(false);
         cat.setInSittingPose(false);
+        cat.setLying(false);
+        cat.setRelaxStateOne(false);
+        cat.setNoGravity(false);
 
         CompoundTag data = cat.getPersistentData();
         data.putBoolean(PREVIOUS_NO_AI_TAG, cat.isNoAi());

@@ -5,6 +5,8 @@ import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatChestData;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatGenomeData;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitEffects;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.core.BlockPos;
@@ -15,7 +17,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String VERSION = "6";
+    private static final String VERSION = "9";
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "main"),
             () -> VERSION, VERSION::equals, VERSION::equals);
@@ -45,6 +47,14 @@ public final class ModNetwork {
                 SyncCatGenomePacket::decode, SyncCatGenomePacket::handle);
         CHANNEL.registerMessage(11, SyncCatAttributesPacket.class, SyncCatAttributesPacket::encode,
                 SyncCatAttributesPacket::decode, SyncCatAttributesPacket::handle);
+        CHANNEL.registerMessage(12, SyncCatTraitsPacket.class, SyncCatTraitsPacket::encode,
+                SyncCatTraitsPacket::decode, SyncCatTraitsPacket::handle);
+        CHANNEL.registerMessage(13, SyncCatTraitStatePacket.class,
+                SyncCatTraitStatePacket::encode, SyncCatTraitStatePacket::decode,
+                SyncCatTraitStatePacket::handle);
+        CHANNEL.registerMessage(14, SetCatProfileNamePacket.class,
+                SetCatProfileNamePacket::encode, SetCatProfileNamePacket::decode,
+                SetCatProfileNamePacket::handle);
     }
 
     public static void syncToTracking(Cat cat, int pose) {
@@ -109,8 +119,39 @@ public final class ModNetwork {
                 new SyncCatAttributesPacket(cat.getId(), CatAttributeData.serialized(cat)));
     }
 
+    public static void syncCatTraitsToTracking(Cat cat) {
+        CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat),
+                new SyncCatTraitsPacket(cat.getId(), CatTraitData.serialized(cat)));
+    }
+
+    public static void syncCatTraitsToPlayer(net.minecraft.server.level.ServerPlayer player, Cat cat) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
+                new SyncCatTraitsPacket(cat.getId(), CatTraitData.serialized(cat)));
+    }
+
+    public static void syncCatTraitStateToTracking(Cat cat) {
+        CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat),
+                traitState(cat));
+    }
+
+    public static void syncCatTraitStateToPlayer(
+            net.minecraft.server.level.ServerPlayer player, Cat cat) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), traitState(cat));
+    }
+
+    private static SyncCatTraitStatePacket traitState(Cat cat) {
+        return new SyncCatTraitStatePacket(cat.getId(),
+                CatTraitEffects.isBristlingRageActive(cat),
+                CatTraitEffects.isLuBuOutnumbered(cat),
+                CatTraitEffects.isTimidOutnumbered(cat));
+    }
+
     public static void setCatAddress(int catId, String address) {
         CHANNEL.sendToServer(new SetCatAddressPacket(catId, address));
+    }
+
+    public static void setCatProfileName(int catId, String name) {
+        CHANNEL.sendToServer(new SetCatProfileNamePacket(catId, name));
     }
 
     public static void playLogisticsSound(ServerLevel level, BlockPos position, boolean arrival) {

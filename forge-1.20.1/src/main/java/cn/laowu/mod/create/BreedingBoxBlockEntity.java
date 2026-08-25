@@ -3,8 +3,14 @@ package cn.laowu.mod.create;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatAttributeProfile;
+import cn.laowu.mod.genetics.CatBreedingLogic;
+import cn.laowu.mod.genetics.CatBreedingMode;
 import cn.laowu.mod.genetics.CatGenome;
 import cn.laowu.mod.genetics.CatGenomeData;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitProfile;
+import cn.laowu.mod.item.BreedingCatFoodItem;
 import cn.laowu.mod.item.CatPancakeItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -57,15 +63,15 @@ public final class BreedingBoxBlockEntity extends BlockEntity implements MenuPro
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
-                case FATHER_SLOT, MOTHER_SLOT -> isAdultPancake(stack);
-                case FOOD_SLOT -> stack.is(LaoWuMod.CAT_FOOD.get());
+                case FATHER_SLOT, MOTHER_SLOT -> isBreedableParent(stack);
+                case FOOD_SLOT -> BreedingCatFoodItem.isBreedingFood(stack);
                 default -> false;
             };
         }
 
         @Override
         protected void onContentsChanged(int slot) {
-            if (slot == FATHER_SLOT || slot == MOTHER_SLOT) progress = 0;
+            if (slot == FATHER_SLOT || slot == MOTHER_SLOT || slot == FOOD_SLOT) progress = 0;
             setChangedAndSync();
         }
     };
@@ -81,8 +87,9 @@ public final class BreedingBoxBlockEntity extends BlockEntity implements MenuPro
         public int get(int index) {
             return switch (index) {
                 case 0 -> progress;
-                case 1 -> tier().durationTicks();
+                case 1 -> effectiveDurationTicks();
                 case 2 -> tier().ordinal();
+                case 3 -> effectiveMutationBasisPoints();
                 default -> 0;
             };
         }
@@ -94,7 +101,7 @@ public final class BreedingBoxBlockEntity extends BlockEntity implements MenuPro
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
     };
 
@@ -117,8 +124,8 @@ public final class BreedingBoxBlockEntity extends BlockEntity implements MenuPro
         if (isAdultPancake(father)) initializedParent |= ensureParentData(father);
         if (isAdultPancake(mother)) initializedParent |= ensureParentData(mother);
         if (initializedParent) setChangedAndSync();
-        if (!isAdultPancake(father) || !isAdultPancake(mother)
-                || !food.is(LaoWuMod.CAT_FOOD.get())
+        if (!isBreedableParent(father) || !isBreedableParent(mother)
+                || !BreedingCatFoodItem.isBreedingFood(food)
                 || !inventory.getStackInSlot(CHILD_SLOT).isEmpty()) {
             if (progress != 0) {
                 progress = 0;
@@ -128,14 +135,15 @@ public final class BreedingBoxBlockEntity extends BlockEntity implements MenuPro
         }
 
         progress++;
-        if (progress < tier().durationTicks()) {
+        int duration = effectiveDurationTicks();
+        if (progress < duration) {
             if ((progress & 15) == 0) setChangedAndSync();
             return;
         }
 
-        ItemStack child = createChild(father, mother);
+        ItemStack child = createChild(father, mother, food);
         if (child.isEmpty()) {
-            progress = tier().durationTicks() - 1;
+            progress = duration - 1;
             return;
         }
         inventory.extractItem(FOOD_SLOT, 1, false);
@@ -156,24 +164,74 @@ public final class BreedingBoxBlockEntity extends BlockEntity implements MenuPro
             CatGenomeData.set(stack, CatGenome.uniform(CatPancakeItem.variantId(stack)));
             changed = true;
         }
+        if (CatTraitData.read(stack).isEmpty()) {
+            CatTraitData.set(stack, CatTraitProfile.founder(level.random));
+            changed = true;
+        }
         return changed;
     }
 
-    private ItemStack createChild(ItemStack father, ItemStack mother) {
+    private ItemStack createChild(ItemStack father, ItemStack mother, ItemStack food) {
         CatAttributeProfile firstAttributes = CatAttributeData.read(father).orElse(null);
         CatAttributeProfile secondAttributes = CatAttributeData.read(mother).orElse(null);
         CatGenome firstGenome = CatGenomeData.read(father).orElse(null);
         CatGenome secondGenome = CatGenomeData.read(mother).orElse(null);
-        if (firstAttributes == null || secondAttributes == null
+        CatTraitProfile firstTraits = CatTraitData.read(father).orElse(CatTraitProfile.EMPTY);
+        CatTraitProfile secondTraits = CatTraitData.read(mother).orElse(CatTraitProfile.EMPTY);
+        CatBreedingMode mode = BreedingCatFoodItem.mode(food).orElse(null);
+        if (firstAttributes == null || secondAttributes == null || mode == null
                 || firstGenome == null || secondGenome == null) return ItemStack.EMPTY;
+
+        float mutationChance = CatBreedingLogic.effectiveMutationChance(
+                tier().mutationChance(), mode, firstAttributes, firstTraits,
+                secondAttributes, secondTraits);
 
         ItemStack child = CatPancakeItem.babyVariantStack(level.random.nextBoolean()
                 ? CatPancakeItem.variantId(father) : CatPancakeItem.variantId(mother));
-        CatAttributeData.set(child, CatAttributeProfile.fuse(
-                firstAttributes, secondAttributes, level.random));
+        CatAttributeData.set(child, CatAttributeProfile.breed(
+                firstAttributes, secondAttributes, mode, mutationChance, level.random));
         CatGenomeData.set(child, CatGenome.fuse(firstGenome, secondGenome,
-                BuiltInRegistries.CAT_VARIANT.keySet(), tier().mutationChance(), level.random));
+                BuiltInRegistries.CAT_VARIANT.keySet(), mutationChance, level.random));
+        CatTraitData.set(child, CatTraitProfile.breed(
+                firstTraits, secondTraits, mutationChance, level.random));
         return child;
+    }
+
+    public float effectiveMutationChance() {
+        ItemStack food = inventory.getStackInSlot(FOOD_SLOT);
+        CatBreedingMode mode = BreedingCatFoodItem.mode(food).orElse(CatBreedingMode.NORMAL);
+        CatAttributeProfile first = CatAttributeData.read(
+                inventory.getStackInSlot(FATHER_SLOT)).orElse(null);
+        CatAttributeProfile second = CatAttributeData.read(
+                inventory.getStackInSlot(MOTHER_SLOT)).orElse(null);
+        CatTraitProfile firstTraits = CatTraitData.read(
+                inventory.getStackInSlot(FATHER_SLOT)).orElse(CatTraitProfile.EMPTY);
+        CatTraitProfile secondTraits = CatTraitData.read(
+                inventory.getStackInSlot(MOTHER_SLOT)).orElse(CatTraitProfile.EMPTY);
+        return CatBreedingLogic.effectiveMutationChance(
+                tier().mutationChance(), mode, first, firstTraits, second, secondTraits);
+    }
+
+    public int effectiveMutationBasisPoints() {
+        return CatBreedingLogic.basisPoints(effectiveMutationChance());
+    }
+
+    /** Both parents contribute, while the five-second test tier is never lengthened. */
+    public int effectiveDurationTicks() {
+        int base = tier().durationTicks();
+        int reduction = prosperousReductionTicks(
+                inventory.getStackInSlot(FATHER_SLOT))
+                + prosperousReductionTicks(inventory.getStackInSlot(MOTHER_SLOT));
+        int minimum = Math.min(base, 20 * 20);
+        return Math.max(minimum, base - reduction);
+    }
+
+    private static int prosperousReductionTicks(ItemStack parent) {
+        int level = CatTraitData.read(parent).orElse(CatTraitProfile.EMPTY)
+                .level(CatTrait.PROSPEROUS_LITTER);
+        return level <= 0 ? 0
+                : CatTrait.PROSPEROUS_LITTER
+                .prosperousBreedingReductionSeconds(level) * 20;
     }
 
     public BreedingBoxTier tier() {
@@ -204,14 +262,15 @@ public final class BreedingBoxBlockEntity extends BlockEntity implements MenuPro
         return inventory.insertItem(FOOD_SLOT, stack, false);
     }
 
-    /** Manual removal is deliberately the reverse of insertion: mother, father. */
-    public ItemStack extractParent() {
+    /** Manual sneak-removal order: child, all food, mother, then father. */
+    public ItemStack extractManual() {
+        ItemStack child = inventory.extractItem(CHILD_SLOT, 1, false);
+        if (!child.isEmpty()) return child;
+        int foodCount = inventory.getStackInSlot(FOOD_SLOT).getCount();
+        ItemStack food = inventory.extractItem(FOOD_SLOT, foodCount, false);
+        if (!food.isEmpty()) return food;
         ItemStack mother = inventory.extractItem(MOTHER_SLOT, 1, false);
         return mother.isEmpty() ? inventory.extractItem(FATHER_SLOT, 1, false) : mother;
-    }
-
-    public ItemStack extractChild() {
-        return inventory.extractItem(CHILD_SLOT, 1, false);
     }
 
     public void setCustomName(Component customName) {
@@ -335,6 +394,11 @@ public final class BreedingBoxBlockEntity extends BlockEntity implements MenuPro
 
     public static boolean isAdultPancake(ItemStack stack) {
         return stack.getItem() instanceof CatPancakeItem && !CatPancakeItem.isBaby(stack);
+    }
+
+    public static boolean isBreedableParent(ItemStack stack) {
+        return isAdultPancake(stack) && !CatTraitData.read(stack)
+                .orElse(CatTraitProfile.EMPTY).has(CatTrait.CUDDLE_ONLY);
     }
 
     private final class SlotAccessHandler implements IItemHandler {

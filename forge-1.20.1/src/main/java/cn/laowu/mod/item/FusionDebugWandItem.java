@@ -5,6 +5,10 @@ import cn.laowu.mod.genetics.CatGenomeData;
 import cn.laowu.mod.genetics.CatRegion;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatAttributeProfile;
+import cn.laowu.mod.genetics.CatBreedingLogic;
+import cn.laowu.mod.genetics.CatBreedingMode;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitProfile;
 import cn.laowu.mod.network.ModNetwork;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
@@ -33,7 +37,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-/** Development tool for testing region-based cat texture inheritance. */
+/** Development tool for simulating one normal-food advanced-box breeding. */
 public final class FusionDebugWandItem extends Item {
     private static final String FIRST_UUID = "LaoWuFusionParent1";
     private static final String SECOND_UUID = "LaoWuFusionParent2";
@@ -114,11 +118,19 @@ public final class FusionDebugWandItem extends Item {
         Registry<CatVariant> variants = serverLevel.registryAccess()
                 .registryOrThrow(Registries.CAT_VARIANT);
         RandomSource random = serverLevel.getRandom();
+        CatAttributeProfile firstAttributes = CatAttributeData.ensure(first);
+        CatAttributeProfile secondAttributes = CatAttributeData.ensure(second);
+        CatTraitProfile firstTraits = CatTraitData.ensure(first);
+        CatTraitProfile secondTraits = CatTraitData.ensure(second);
+        float mutationChance = CatBreedingLogic.effectiveMutationChance(
+                0.30F, CatBreedingMode.NORMAL, firstAttributes, firstTraits,
+                secondAttributes, secondTraits);
         CatGenome genome = CatGenome.fuse(
                 CatGenomeData.ensure(first), CatGenomeData.ensure(second),
-                variants.keySet(), random);
-        CatAttributeProfile attributes = CatAttributeProfile.fuse(
-                CatAttributeData.ensure(first), CatAttributeData.ensure(second), random);
+                variants.keySet(), mutationChance, random);
+        CatAttributeProfile attributes = CatAttributeProfile.breed(
+                firstAttributes, secondAttributes, CatBreedingMode.NORMAL,
+                mutationChance, random);
 
         Vec3 spawn = Vec3.atBottomCenterOf(context.getClickedPos().relative(context.getClickedFace()));
         child.moveTo(spawn.x, spawn.y, spawn.z, player.getYRot() + 180.0F, 0.0F);
@@ -130,10 +142,13 @@ public final class FusionDebugWandItem extends Item {
         if (compatibilityVariant != null) child.setVariant(compatibilityVariant);
         CatGenomeData.set(child, genome);
         CatAttributeData.set(child, attributes);
+        CatTraitData.set(child, CatTraitProfile.breed(
+                firstTraits, secondTraits, mutationChance, random));
 
         if (!serverLevel.addFreshEntity(child)) return InteractionResult.FAIL;
         ModNetwork.syncCatGenomeToTracking(child);
         ModNetwork.syncCatAttributesToTracking(child);
+        ModNetwork.syncCatTraitsToTracking(child);
         serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
                 child.getX(), child.getY() + 0.5D, child.getZ(),
                 24, 0.35D, 0.35D, 0.35D, 0.08D);

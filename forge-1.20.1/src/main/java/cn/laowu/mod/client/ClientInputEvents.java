@@ -43,6 +43,11 @@ public final class ClientInputEvents {
                 ModNetwork.requestCatToolEmpowerToggle();
             }
         }
+        while (ClientModEvents.HISSING_VOLUME.consumeClick()) {
+            if (minecraft.player != null && minecraft.screen == null) {
+                minecraft.setScreen(new HissingVolumeScreen());
+            }
+        }
     }
 
     private ClientInputEvents() {}

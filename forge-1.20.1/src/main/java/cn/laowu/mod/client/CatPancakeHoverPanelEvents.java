@@ -2,9 +2,10 @@ package cn.laowu.mod.client;
 
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.genetics.CatAttributeData;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitProfile;
 import cn.laowu.mod.item.CatPancakeItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderTooltipEvent;
@@ -21,9 +22,7 @@ public final class CatPancakeHoverPanelEvents {
         if (!CatStatsGoggleOverlay.isWearingCatGoggles(
                 Minecraft.getInstance().player)) return;
 
-        boolean limits = Screen.hasShiftDown();
-        int panelWidth = limits ? CatStatsGoggleOverlay.LIMITS_PANEL_WIDTH
-                : CatStatsGoggleOverlay.PANEL_WIDTH;
+        int panelWidth = CatStatsGoggleOverlay.LIMITS_PANEL_WIDTH;
         int panelX = Mth.clamp(event.getX() - panelWidth - 6, 4,
                 Math.max(4, event.getScreenWidth() - panelWidth - 4));
         int panelY = Mth.clamp(event.getY() - CatStatsGoggleOverlay.PANEL_HEIGHT / 2,
@@ -37,7 +36,12 @@ public final class CatPancakeHoverPanelEvents {
         pose.translate(0.0D, 0.0D, 400.0D);
         CatStatsGoggleOverlay.renderPanel(event.getGraphics(),
                 CatAttributeData.read(event.getItemStack()).orElse(null),
-                limits, panelX, panelY);
+                CatTraitData.read(event.getItemStack()).orElse(CatTraitProfile.EMPTY),
+                true, panelX, panelY,
+                cn.laowu.mod.genetics.CatTraitEffects.isNight(
+                        Minecraft.getInstance().level),
+                cn.laowu.mod.genetics.CatTraitEffects.isDay(
+                        Minecraft.getInstance().level), null);
         pose.popPose();
 
         // The ordinary tooltip keeps its vanilla position on the mouse's right;

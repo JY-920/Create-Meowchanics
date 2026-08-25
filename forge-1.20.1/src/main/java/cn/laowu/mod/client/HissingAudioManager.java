@@ -1,6 +1,9 @@
 package cn.laowu.mod.client;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.ClientConfig;
+import net.minecraft.client.resources.sounds.AbstractSoundInstance;
+import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -117,15 +120,61 @@ public final class HissingAudioManager {
             if (mc.level == null) return;
             Entity owner = mc.level.getEntity(entityId);
             if (owner == null) return;
-            current = new SimpleSoundInstance(event, SoundSource.HOSTILE, 1.0F, 1.0F,
-                    RandomSource.create(), false, 0, SoundInstance.Attenuation.LINEAR,
-                    owner.getX(), owner.getY(), owner.getZ(), false);
+            current = new ConfigurableHissingSound(event, owner);
             graceTicks = 20;
             mc.getSoundManager().play(current);
         }
 
         private void stopCurrent() {
             if (current != null) Minecraft.getInstance().getSoundManager().stop(current);
+        }
+    }
+
+    /** Tickable so changing the V-screen slider also affects an active clip. */
+    private static final class ConfigurableHissingSound extends AbstractSoundInstance
+            implements TickableSoundInstance {
+        private final Entity owner;
+        private boolean stopped;
+
+        private ConfigurableHissingSound(ResourceLocation event, Entity owner) {
+            super(event, SoundSource.HOSTILE, RandomSource.create());
+            this.owner = owner;
+            this.pitch = 1.0F;
+            this.looping = false;
+            this.delay = 0;
+            this.attenuation = SoundInstance.Attenuation.LINEAR;
+            this.relative = false;
+            updatePosition();
+        }
+
+        @Override
+        public void tick() {
+            if (!owner.isAlive()) {
+                stopped = true;
+                return;
+            }
+            updatePosition();
+        }
+
+        private void updatePosition() {
+            x = owner.getX();
+            y = owner.getY();
+            z = owner.getZ();
+        }
+
+        @Override
+        public float getVolume() {
+            float multiplier = owner instanceof net.minecraft.world.entity.animal.Cat cat
+                    && cn.laowu.mod.genetics.CatTraitData.read(cat)
+                    .filter(profile -> profile.has(
+                            cn.laowu.mod.genetics.CatTrait.AIR_RAID_SIREN))
+                    .isPresent() ? 2.0F : 1.0F;
+            return ClientConfig.HISSING_PAIR_VOLUME.get().floatValue() * multiplier;
+        }
+
+        @Override
+        public boolean isStopped() {
+            return stopped;
         }
     }
 
