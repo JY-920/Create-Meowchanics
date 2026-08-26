@@ -327,8 +327,18 @@ public final class RuntimeBlockbenchModel {
                 }
 
                 List<GroupDef> roots = new ArrayList<>();
+                List<ElementDef> directRoots = new ArrayList<>();
                 for (JsonElement raw : root.getAsJsonArray("outliner")) {
-                    if (raw.isJsonObject()) roots.add(readGroup(raw.getAsJsonObject(), groups, elements));
+                    if (raw.isJsonObject()) {
+                        roots.add(readGroup(raw.getAsJsonObject(), groups, elements));
+                    } else if (raw.isJsonPrimitive() && raw.getAsJsonPrimitive().isString()) {
+                        ElementDef element = elements.get(raw.getAsString());
+                        if (element != null) directRoots.add(element);
+                    }
+                }
+                if (!directRoots.isEmpty()) {
+                    roots.add(new GroupDef("root", Vec.ZERO, Vec.ZERO,
+                            List.copyOf(directRoots), List.of()));
                 }
                 return new RuntimeBlockbenchModel(List.copyOf(roots));
             }
