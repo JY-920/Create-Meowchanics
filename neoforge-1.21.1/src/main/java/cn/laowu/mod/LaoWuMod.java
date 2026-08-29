@@ -1,6 +1,7 @@
 package cn.laowu.mod;
 
 import cn.laowu.mod.item.CatPancakeItem;
+import cn.laowu.mod.item.CatFilterItem;
 import cn.laowu.mod.item.CatCannonItem;
 import cn.laowu.mod.item.CatSmithingTemplateItem;
 import cn.laowu.mod.item.CatToolTier;
@@ -39,6 +40,11 @@ import cn.laowu.mod.create.CatEngineBlock;
 import cn.laowu.mod.create.CatEngineBlockEntity;
 import cn.laowu.mod.create.DevouringCatBlock;
 import cn.laowu.mod.create.DevouringCatBlockEntity;
+import cn.laowu.mod.create.BreedingBoxBlock;
+import cn.laowu.mod.create.BreedingBoxBlockEntity;
+import cn.laowu.mod.create.BreedingBoxTier;
+import cn.laowu.mod.BreedingBoxMenu;
+import cn.laowu.mod.item.BreedingBoxBlockItem;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
@@ -50,6 +56,7 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import com.mojang.serialization.MapCodec;
 import net.createmod.catnip.lang.FontHelper;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -185,8 +192,32 @@ public final class LaoWuMod {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DevouringCatBlockEntity>> DEVOURING_CAT_BE =
             BLOCK_ENTITIES.register("devouring_cat", () -> BlockEntityType.Builder
                     .of(DevouringCatBlockEntity::new, DEVOURING_CAT.get()).build(null));
+    public static final DeferredBlock<BreedingBoxBlock> BASIC_BREEDING_BOX = BLOCKS.register("basic_breeding_box",
+            () -> new BreedingBoxBlock(BreedingBoxTier.BASIC, BlockBehaviour.Properties.of().noOcclusion().strength(3.0F, 6.0F)));
+    public static final DeferredBlock<BreedingBoxBlock> INTERMEDIATE_BREEDING_BOX = BLOCKS.register("intermediate_breeding_box",
+            () -> new BreedingBoxBlock(BreedingBoxTier.INTERMEDIATE, BlockBehaviour.Properties.of().noOcclusion().strength(3.0F, 6.0F)));
+    public static final DeferredBlock<BreedingBoxBlock> ADVANCED_BREEDING_BOX = BLOCKS.register("advanced_breeding_box",
+            () -> new BreedingBoxBlock(BreedingBoxTier.ADVANCED, BlockBehaviour.Properties.of().noOcclusion().strength(3.0F, 6.0F)));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BreedingBoxBlockEntity>> BREEDING_BOX_BE =
+            BLOCK_ENTITIES.register("breeding_box", () -> BlockEntityType.Builder
+                    .of(BreedingBoxBlockEntity::new, BASIC_BREEDING_BOX.get(), INTERMEDIATE_BREEDING_BOX.get(), ADVANCED_BREEDING_BOX.get())
+                    .build(null));
     public static final DeferredItem<CatPancakeItem> CAT_PANCAKE = ITEMS.register("cat_pancake",
             () -> new CatPancakeItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<CatFilterItem> CAT_FILTER = ITEMS.register("cat_filter",
+            () -> new CatFilterItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<cn.laowu.mod.item.FusionDebugWandItem> FUSION_DEBUG_WAND =
+            ITEMS.register("fusion_debug_wand",
+                    () -> new cn.laowu.mod.item.FusionDebugWandItem(new Item.Properties()
+                            .stacksTo(1).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
+    public static final DeferredItem<cn.laowu.mod.item.AttributeDebugWandItem> ATTRIBUTE_DEBUG_WAND =
+            ITEMS.register("attribute_debug_wand",
+                    () -> new cn.laowu.mod.item.AttributeDebugWandItem(new Item.Properties()
+                            .stacksTo(1).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
+    public static final DeferredItem<cn.laowu.mod.item.TraitDebugWandItem> TRAIT_DEBUG_WAND =
+            ITEMS.register("trait_debug_wand",
+                    () -> new cn.laowu.mod.item.TraitDebugWandItem(new Item.Properties()
+                            .stacksTo(1).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
     public static final DeferredItem<TerminatorSuitItem> TERMINATOR_SUIT = ITEMS.register("terminator_suit",
             () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.TERMINATOR));
     public static final DeferredItem<TerminatorSuitItem> FISHING_SUIT = ITEMS.register("fishing_suit",
@@ -312,6 +343,12 @@ public final class LaoWuMod {
             () -> new BlockItem(HISSING_COLLECTOR.get(), new Item.Properties()));
     public static final DeferredItem<DevouringCatBlockItem> DEVOURING_CAT_ITEM = ITEMS.register("devouring_cat",
             () -> new DevouringCatBlockItem(DEVOURING_CAT.get(), new Item.Properties()));
+    public static final DeferredItem<BreedingBoxBlockItem> BASIC_BREEDING_BOX_ITEM = ITEMS.register("basic_breeding_box",
+            () -> new BreedingBoxBlockItem(BASIC_BREEDING_BOX.get(), new Item.Properties()));
+    public static final DeferredItem<BreedingBoxBlockItem> INTERMEDIATE_BREEDING_BOX_ITEM = ITEMS.register("intermediate_breeding_box",
+            () -> new BreedingBoxBlockItem(INTERMEDIATE_BREEDING_BOX.get(), new Item.Properties()));
+    public static final DeferredItem<BreedingBoxBlockItem> ADVANCED_BREEDING_BOX_ITEM = ITEMS.register("advanced_breeding_box",
+            () -> new BreedingBoxBlockItem(ADVANCED_BREEDING_BOX.get(), new Item.Properties()));
     public static final DeferredHolder<FluidType, HissingGasFluidType> HISSING_GAS_TYPE = FLUID_TYPES.register(
             "hissing_gas", HissingGasFluidType::new);
     public static final DeferredHolder<Fluid, FlowingFluid> HISSING_GAS = FLUIDS.register(
@@ -343,6 +380,9 @@ public final class LaoWuMod {
                         output.accept(INFILTRATION_TANK_ITEM.get());
                         output.accept(HISSING_COLLECTOR_ITEM.get());
                         output.accept(DEVOURING_CAT_ITEM.get());
+                        output.accept(BASIC_BREEDING_BOX_ITEM.get());
+                        output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
+                        output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
                         output.accept(CAT_BLOCK_ITEM.get());
                         output.accept(CAT_INGOT.get());
                         output.accept(CAT_SHEET.get());
@@ -368,6 +408,10 @@ public final class LaoWuMod {
                         output.accept(CAT_POWDER.get());
                         output.accept(CAT_DOUGH.get());
                         output.accept(CatPancakeItem.defaultDisplayStack());
+                        output.accept(CAT_FILTER.get());
+                        output.accept(FUSION_DEBUG_WAND.get());
+                        output.accept(ATTRIBUTE_DEBUG_WAND.get());
+                        output.accept(TRAIT_DEBUG_WAND.get());
                         output.accept(AllItems.CARDBOARD_SWORD.get());
                         output.accept(AllBlocks.SEATS.get(DyeColor.RED).get());
                         output.accept(TERMINATOR_SUIT.get());
@@ -391,6 +435,19 @@ public final class LaoWuMod {
                     .build());
     public static final DeferredHolder<MenuType<?>, MenuType<CatPackageMenu>> CAT_PACKAGE_MENU = MENUS.register(
             "cat_package", () -> IMenuTypeExtension.create(CatPackageMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<BreedingBoxMenu>> BREEDING_BOX_MENU = MENUS.register(
+            "breeding_box", () -> IMenuTypeExtension.create(BreedingBoxMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<CatTraitEditorMenu>> CAT_TRAIT_EDITOR_MENU =
+            MENUS.register("cat_trait_editor",
+                    () -> IMenuTypeExtension.create(CatTraitEditorMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<CatAttributeEditorMenu>> CAT_ATTRIBUTE_EDITOR_MENU =
+            MENUS.register("cat_attribute_editor",
+                    () -> IMenuTypeExtension.create(CatAttributeEditorMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<CatProfileMenu>> CAT_PROFILE_MENU =
+            MENUS.register("cat_profile",
+                    () -> IMenuTypeExtension.create(CatProfileMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<CatFilterMenu>> CAT_FILTER_MENU =
+            MENUS.register("cat_filter", () -> IMenuTypeExtension.create(CatFilterMenu::new));
     public static final DeferredHolder<EntityType<?>, EntityType<CatPancakeProjectile>> CAT_PANCAKE_PROJECTILE =
             ENTITY_TYPES.register("cat_pancake_projectile", () -> EntityType.Builder
                     .<CatPancakeProjectile>of(CatPancakeProjectile::new, MobCategory.MISC)
@@ -474,6 +531,9 @@ public final class LaoWuMod {
                     GogglesItem.addIsWearingPredicate(player ->
                             player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD)
                                     .is(CAT_ENGINEER_GOGGLES.get()));
+                    if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
+                        cn.laowu.mod.compat.curios.CatGogglesCuriosCompat.registerCurio();
+                    }
                     registerDescription(CAT_HELMET.get());
                     registerDescription(CAT_CHESTPLATE.get());
                     registerDescription(CAT_LEGGINGS.get());
@@ -503,6 +563,8 @@ public final class LaoWuMod {
                 DevouringCatBlockEntity::getItemHandler);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, DEVOURING_CAT_BE.get(),
                 DevouringCatBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BREEDING_BOX_BE.get(),
+                BreedingBoxBlockEntity::getItemHandler);
     }
 
     private static TooltipModifier createDescription(Item item) {

@@ -6,6 +6,9 @@ import cn.laowu.mod.item.CatToolBehavior;
 import cn.laowu.mod.item.CatTotemItem;
 import cn.laowu.mod.item.KimiArmorItem;
 import cn.laowu.mod.item.TerminatorSuitItem;
+import cn.laowu.mod.item.FusionDebugWandItem;
+import cn.laowu.mod.item.AttributeDebugWandItem;
+import cn.laowu.mod.item.TraitDebugWandItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
@@ -435,6 +438,39 @@ public final class CommonEvents {
                 event.setCanceled(true);
                 return;
             }
+        }
+
+        // A tamed cat consumes ordinary interaction before Item#interactLivingEntity
+        // (it toggles sitting), so route the debug wands through the hook first so
+        // they work on owned cats too.
+        if (event.getItemStack().getItem() instanceof FusionDebugWandItem wand) {
+            InteractionResult result = wand.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            if (result.consumesAction()) {
+                event.setCancellationResult(result);
+                event.setCanceled(true);
+            }
+            return;
+        }
+
+        if (event.getItemStack().getItem() instanceof AttributeDebugWandItem wand) {
+            InteractionResult result = wand.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            if (result.consumesAction()) {
+                event.setCancellationResult(result);
+                event.setCanceled(true);
+            }
+            return;
+        }
+
+        if (event.getItemStack().getItem() instanceof TraitDebugWandItem wand) {
+            InteractionResult result = wand.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            if (result.consumesAction()) {
+                event.setCancellationResult(result);
+                event.setCanceled(true);
+            }
+            return;
         }
 
         boolean fakePlayer = event.getEntity()

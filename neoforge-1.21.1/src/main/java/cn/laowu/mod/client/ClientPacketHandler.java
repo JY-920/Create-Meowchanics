@@ -4,12 +4,17 @@ import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatPoseData;
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.genetics.CatTraitEffects;
 import cn.laowu.mod.network.AudioSessionPacket;
 import cn.laowu.mod.network.CatPackageLoadPacket;
 import cn.laowu.mod.network.LogisticsSoundPacket;
 import cn.laowu.mod.network.SyncCatChestPacket;
 import cn.laowu.mod.network.SyncCatClothesPacket;
 import cn.laowu.mod.network.SyncCatPosePacket;
+import cn.laowu.mod.network.SyncCatTraitStatePacket;
+import cn.laowu.mod.network.SyncCatGenomePacket;
+import cn.laowu.mod.network.SyncCatAttributesPacket;
+import cn.laowu.mod.network.SyncCatTraitsPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Cat;
@@ -55,6 +60,39 @@ public final class ClientPacketHandler {
 
     public static void handleLogisticsSound(LogisticsSoundPacket packet) {
         HissingAudioManager.playLogisticsSound(packet.x(), packet.y(), packet.z(), packet.arrival());
+    }
+
+    public static void handleTraitState(SyncCatTraitStatePacket packet) {
+        if (Minecraft.getInstance().level == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if (entity instanceof Cat cat) {
+            CatTraitEffects.setClientState(cat, packet.rageActive(),
+                    packet.luBuOutnumbered(), packet.timidOutnumbered());
+        }
+    }
+
+    public static void handleGenome(SyncCatGenomePacket packet) {
+        if (Minecraft.getInstance().level == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if (entity instanceof Cat cat) {
+            cn.laowu.mod.genetics.CatGenomeData.setSerialized(cat, packet.genome());
+        }
+    }
+
+    public static void handleAttributes(SyncCatAttributesPacket packet) {
+        if (Minecraft.getInstance().level == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if (entity instanceof Cat cat) {
+            cn.laowu.mod.genetics.CatAttributeData.setSerialized(cat, packet.attributes());
+        }
+    }
+
+    public static void handleTraits(SyncCatTraitsPacket packet) {
+        if (Minecraft.getInstance().level == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if (entity instanceof Cat cat) {
+            cn.laowu.mod.genetics.CatTraitData.setSerialized(cat, packet.traits());
+        }
     }
 
     public static void handlePackageLoad(CatPackageLoadPacket packet) {

@@ -41,6 +41,16 @@ public final class ModNetwork {
                 ToggleCatToolEmpowerPacket.STREAM_CODEC, ToggleCatToolEmpowerPacket::handle);
         registrar.playToClient(CatTotemActivationPacket.TYPE,
                 CatTotemActivationPacket.STREAM_CODEC, CatTotemActivationPacket::handle);
+        registrar.playToClient(SyncCatTraitStatePacket.TYPE,
+                SyncCatTraitStatePacket.STREAM_CODEC, SyncCatTraitStatePacket::handle);
+        registrar.playToClient(SyncCatTraitsPacket.TYPE,
+                SyncCatTraitsPacket.STREAM_CODEC, SyncCatTraitsPacket::handle);
+        registrar.playToClient(SyncCatGenomePacket.TYPE,
+                SyncCatGenomePacket.STREAM_CODEC, SyncCatGenomePacket::handle);
+        registrar.playToClient(SyncCatAttributesPacket.TYPE,
+                SyncCatAttributesPacket.STREAM_CODEC, SyncCatAttributesPacket::handle);
+        registrar.playToServer(SetCatProfileNamePacket.TYPE,
+                SetCatProfileNamePacket.STREAM_CODEC, SetCatProfileNamePacket::handle);
     }
 
     public static void syncToTracking(Cat cat, int pose) {
@@ -83,8 +93,38 @@ public final class ModNetwork {
                 new SyncCatClothesPacket(cat.getId(), CatClothesData.getOutfit(cat).ordinal()));
     }
 
+    public static void syncCatTraitStateToTracking(Cat cat) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                new SyncCatTraitStatePacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatTraitEffects.isBristlingRageActive(cat),
+                        cn.laowu.mod.genetics.CatTraitEffects.isLuBuOutnumbered(cat),
+                        cn.laowu.mod.genetics.CatTraitEffects.isTimidOutnumbered(cat)));
+    }
+
+    public static void syncCatGenomeToTracking(Cat cat) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                new SyncCatGenomePacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatGenomeData.serialized(cat)));
+    }
+
+    public static void syncCatAttributesToTracking(Cat cat) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                new SyncCatAttributesPacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatAttributeData.serialized(cat)));
+    }
+
+    public static void syncCatTraitsToTracking(Cat cat) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                new SyncCatTraitsPacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatTraitData.serialized(cat)));
+    }
+
     public static void setCatAddress(int catId, String address) {
         PacketDistributor.sendToServer(new SetCatAddressPacket(catId, address));
+    }
+
+    public static void setCatProfileName(int catId, String name) {
+        PacketDistributor.sendToServer(new SetCatProfileNamePacket(catId, name));
     }
 
     public static void playLogisticsSound(ServerLevel level, BlockPos position, boolean arrival) {

@@ -33,6 +33,8 @@ repositories {
     maven { url = "https://maven.blamejared.com" }
     // NeoForge config API port used by Ponder.
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven" }
+    // Curios API (optional dependency for the cat engineer goggles head slot).
+    maven { name = 'Curios'; url = uri('https://maven.theillusivec4.top/') }
 }
 
 // Optional development-only fallback for networks that cannot reach the
@@ -165,6 +167,11 @@ dependencies {
     compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     localRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
+    // Curios remains optional for players, but its API is required to compile
+    // our head-slot integration for the cat engineer goggles.
+    compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
+    localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}")
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

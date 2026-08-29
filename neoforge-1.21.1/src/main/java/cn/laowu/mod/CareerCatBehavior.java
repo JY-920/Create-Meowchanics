@@ -58,6 +58,10 @@ public final class CareerCatBehavior {
     public static final double CAREER_TOUGHNESS = 0.0D;
     public static final double CAREER_HEALTH_BONUS = 30.0D;
     public static final double TERMINATOR_ATTACK_BONUS = 2.0D;
+    public static final int FISHING_LUCK_BONUS = 10;
+    public static final int FIRE_STAMINA_BONUS = 10;
+    public static final int MECHANICAL_ATTACK_BONUS = 10;
+    public static final int HONEY_SPEED_BONUS = 10;
     private static final double MAX_OWNER_DISTANCE_SQR = 32.0D * 32.0D;
 
     private static final net.minecraft.resources.ResourceLocation HEALTH_MODIFIER_ID =

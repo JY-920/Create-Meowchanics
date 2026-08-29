@@ -13,7 +13,8 @@
     "PotatoCannonAmmoMixin",
     "BlazeBurnerBlockEntityAccessor",
     "NozzleBlockEntityAccessor",
-    "RollerMovementBehaviourMixin"
+    "RollerMovementBehaviourMixin",
+    "CatMorningGiftMixin"
   ],
   "client": [
     "AirCurrentFluidParticleMixin",
