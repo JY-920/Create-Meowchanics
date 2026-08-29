@@ -12,7 +12,7 @@ import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 public final class CatGogglesCuriosClientCompat {
     public static void registerRenderer() {
         CuriosRendererRegistry.register(LaoWuMod.CAT_ENGINEER_GOGGLES.get(),
-                () -> new GogglesCurioRenderer(Minecraft.getInstance()
+                () -> new CatGogglesCurioRenderer(Minecraft.getInstance()
                         .getEntityModels().bakeLayer(GogglesCurioRenderer.LAYER)));
     }
 

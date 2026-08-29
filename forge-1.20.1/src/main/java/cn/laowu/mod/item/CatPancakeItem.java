@@ -9,6 +9,8 @@ import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.network.ModNetwork;
 import cn.laowu.mod.genetics.CatGenomeData;
 import cn.laowu.mod.genetics.CatAttributeData;
+import cn.laowu.mod.genetics.CatAttributeProfile;
+import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.genetics.CatTraitData;
 import cn.laowu.mod.genetics.CatTraitProfile;
 import com.simibubi.create.content.kinetics.fan.EncasedFanBlockEntity;
@@ -64,6 +66,7 @@ public final class CatPancakeItem extends Item {
     private static final int REQUIRED_FAN_TICKS = 30;
     private static final int FAN_SEARCH_RADIUS = 16;
     private static final int MAX_CHARGE_TICKS = 80;
+    private static final int CAREER_DEATH_POTENTIAL_LOSS = 20;
 
     public CatPancakeItem(Properties properties) {
         super(properties);
@@ -105,6 +108,14 @@ public final class CatPancakeItem extends Item {
     /** Captures a killed profession cat in a state that can later be restored alive. */
     public static ItemStack captureDeathDrop(Cat cat) {
         ItemStack pancake = capture(cat);
+        CatAttributeProfile attributes = CatAttributeData.ensure(cat);
+        CatStat[] stats = CatStat.values();
+        CatStat reducedStat = stats[cat.getRandom().nextInt(stats.length)];
+        int reducedPotential = Math.max(CatAttributeProfile.MIN_VALUE,
+                attributes.potential(reducedStat) - CAREER_DEATH_POTENTIAL_LOSS);
+        CatAttributeData.set(pancake, attributes.withValues(reducedStat,
+                attributes.current(reducedStat), reducedPotential));
+
         CompoundTag root = pancake.getTag();
         if (root != null && root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
             CompoundTag catData = root.getCompound(CAT_DATA_TAG);

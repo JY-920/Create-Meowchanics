@@ -90,6 +90,7 @@ public final class ClientModEvents {
             MenuScreens.register(LaoWuMod.CAT_TRAIT_EDITOR_MENU.get(),
                     CatTraitEditorScreen::new);
             MenuScreens.register(LaoWuMod.CAT_PROFILE_MENU.get(), CatProfileScreen::new);
+            MenuScreens.register(LaoWuMod.CAT_FILTER_MENU.get(), CatFilterScreen::new);
             // KineticBlockEntityRenderer deliberately leaves rotating parts to
             // Flywheel whenever visualization is available. Keep our animated
             // Blockbench body in the normal BER and let Create's native shaft
@@ -123,6 +124,12 @@ public final class ClientModEvents {
         event.registerEntityRenderer(EntityType.CAT, HissingCatRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_PANCAKE_PROJECTILE.get(),
                 context -> new ThrownItemRenderer<>(context, 1.1F, false));
+        event.registerEntityRenderer(LaoWuMod.FISHING_ROD_PROJECTILE.get(),
+                FishingRodProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.MECHANICAL_LASER_PROJECTILE.get(),
+                MechanicalLaserProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.HONEY_MISSILE_PROJECTILE.get(),
+                HoneyMissileProjectileRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_BALL_ENTITY.get(),
                 CatBallEntityRenderer::new);
         event.registerEntityRenderer(LaoWuMod.BUTTER_CAT.get(), ButterCatRenderer::new);

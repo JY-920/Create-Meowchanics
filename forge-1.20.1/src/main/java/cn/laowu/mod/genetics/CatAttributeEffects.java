@@ -3,6 +3,7 @@ package cn.laowu.mod.genetics;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatPoseData;
+import cn.laowu.mod.CareerCatBehavior;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -65,6 +66,7 @@ public final class CatAttributeEffects {
         if (resolved.has(CatTrait.DOUGHY)) value -= 20;
 
         if (stat == CatStat.STAMINA) {
+            if (context.blazingForm) value += CareerCatBehavior.FIRE_STAMINA_BONUS;
             int level = resolved.level(CatTrait.LONG_FUR);
             if (level > 0) value += CatTrait.LONG_FUR.longFurStaminaBonus(level);
             int chonkyLevel = resolved.level(CatTrait.CHONKY_PRESENCE);
@@ -92,6 +94,7 @@ public final class CatAttributeEffects {
                 value -= CatTrait.GLASS_CLAWS.glassClawsHealthPenalty(glassLevel);
             }
         } else if (stat == CatStat.ATTACK) {
+            if (context.mechanical) value += CareerCatBehavior.MECHANICAL_ATTACK_BONUS;
             int elderLevel = resolved.level(CatTrait.SELECTED_ELDER);
             if (elderLevel > 0) {
                 value += CatTrait.SELECTED_ELDER.selectedElderAttackBonus(elderLevel);
@@ -127,6 +130,7 @@ public final class CatAttributeEffects {
                 value += CatTrait.GLASS_CLAWS.glassClawsAttackBonus(glassLevel);
             }
         } else if (stat == CatStat.SPEED) {
+            if (context.honey) value += CareerCatBehavior.HONEY_SPEED_BONUS;
             int chonkyLevel = resolved.level(CatTrait.CHONKY_PRESENCE);
             if (chonkyLevel > 0) {
                 value -= CatTrait.CHONKY_PRESENCE.chonkySpeedPenalty(chonkyLevel);
@@ -149,6 +153,7 @@ public final class CatAttributeEffects {
                 value += CatTrait.TAIL_HELD_HIGH.highTailSpeedBonus(tailLevel);
             }
         } else if (stat == CatStat.LUCK) {
+            if (context.fishing) value += CareerCatBehavior.FISHING_LUCK_BONUS;
             int fishingLevel = resolved.level(CatTrait.ANGLERS_FORTUNE);
             if (context.fishing && fishingLevel > 0) {
                 value += CatTrait.ANGLERS_FORTUNE.anglersLuckBonus(fishingLevel);
@@ -294,7 +299,9 @@ public final class CatAttributeEffects {
 
     /** Converts the displayed Luck scale into Create/vanilla loot-table luck. */
     public static float fishingLootLuck(Cat cat) {
-        return Mth.clamp(effectiveValue(cat, CatStat.LUCK) / 50.0F,
+        // Luck 100 is equivalent to Luck of the Sea III. Values above the
+        // training ceiling can still reach the loot-context safety cap of V.
+        return Mth.clamp(effectiveValue(cat, CatStat.LUCK) * 3.0F / 100.0F,
                 0.0F, 5.0F);
     }
 
@@ -323,6 +330,8 @@ public final class CatAttributeEffects {
                 activeBody && CatTraitEffects.isBristlingRageActive(cat),
                 activeBody && outfit == CatOutfitType.FIRE,
                 activeBody && outfit == CatOutfitType.FISHING,
+                activeBody && outfit == CatOutfitType.TERMINATOR,
+                activeBody && outfit == CatOutfitType.HONEY,
                 activeBody && ownerInDanger,
                 activeBody && cat.isInWaterOrRain(),
                 activeBody && cat.getHealth() >= cat.getMaxHealth() - 0.001F,
@@ -331,18 +340,19 @@ public final class CatAttributeEffects {
     }
 
     private record TraitContext(boolean night, boolean day, boolean bristlingRage,
-                                boolean blazingForm, boolean fishing,
-                                boolean protectiveInstinct, boolean wet,
+                                 boolean blazingForm, boolean fishing,
+                                 boolean mechanical, boolean honey,
+                                 boolean protectiveInstinct, boolean wet,
                                 boolean fullHealth, boolean sitting,
                                 boolean timid) {
         private static TraitContext onlyNight(boolean night) {
             return new TraitContext(night, false, false, false, false,
-                    false, false, false, false, false);
+                    false, false, false, false, false, false, false);
         }
 
         private static TraitContext onlyTime(boolean night, boolean day) {
             return new TraitContext(night, day, false, false, false,
-                    false, false, false, false, false);
+                    false, false, false, false, false, false, false);
         }
     }
 

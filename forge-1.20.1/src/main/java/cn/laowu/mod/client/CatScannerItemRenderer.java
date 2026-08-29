@@ -3,6 +3,7 @@ package cn.laowu.mod.client;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitEffects;
 import cn.laowu.mod.genetics.CatTraitInstance;
 import cn.laowu.mod.genetics.CatTraitProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,10 +17,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.EntityHitResult;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -38,16 +37,23 @@ public final class CatScannerItemRenderer extends BlockEntityWithoutLevelRendere
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack pose,
                              MultiBufferSource buffers, int light, int overlay) {
-        Cat target = targetedCat(stack, context);
+        CatWorldTarget target = targetedTarget(stack, context);
         CatScannerTextureManager.Layers bodyTextures =
                 CatScannerTextureManager.resolveInactive();
         CatTraitProfile traits = CatTraitProfile.EMPTY;
         if (target != null) {
-            var profile = CatAttributeData.read(target);
-            traits = CatTraitData.read(target).orElse(CatTraitProfile.EMPTY);
+            var profile = target.isLiving()
+                    ? CatAttributeData.read(target.cat())
+                    : CatAttributeData.read(target.pancake());
+            traits = target.isLiving()
+                    ? CatTraitData.read(target.cat()).orElse(CatTraitProfile.EMPTY)
+                    : CatTraitData.read(target.pancake()).orElse(CatTraitProfile.EMPTY);
             if (profile.isPresent()) {
-                bodyTextures = CatScannerTextureManager.resolve(target, profile.get(),
-                        traits);
+                bodyTextures = target.isLiving()
+                        ? CatScannerTextureManager.resolve(target.cat(), profile.get(), traits)
+                        : CatScannerTextureManager.resolve(profile.get(), traits,
+                        CatTraitEffects.isNight(Minecraft.getInstance().level),
+                        CatTraitEffects.isDay(Minecraft.getInstance().level));
             } else {
                 bodyTextures = CatScannerTextureManager.resolveActive();
             }
@@ -80,7 +86,8 @@ public final class CatScannerItemRenderer extends BlockEntityWithoutLevelRendere
         pose.popPose();
     }
 
-    private static Cat targetedCat(ItemStack stack, ItemDisplayContext context) {
+    private static CatWorldTarget targetedTarget(ItemStack stack,
+                                                  ItemDisplayContext context) {
         if (context != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
                 && context != ItemDisplayContext.FIRST_PERSON_LEFT_HAND
                 && context != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND
@@ -88,10 +95,8 @@ public final class CatScannerItemRenderer extends BlockEntityWithoutLevelRendere
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null
                 || (minecraft.player.getMainHandItem() != stack
-                && minecraft.player.getOffhandItem() != stack)
-                || !(minecraft.hitResult instanceof EntityHitResult hit)
-                || !(hit.getEntity() instanceof Cat cat)) return null;
-        return cat;
+                && minecraft.player.getOffhandItem() != stack)) return null;
+        return CatWorldTarget.find(minecraft, 5.0D);
     }
 
     /** Draws localized trait titles exactly on the same authored glass face. */

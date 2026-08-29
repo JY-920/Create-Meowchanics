@@ -8,6 +8,7 @@ import cn.laowu.mod.CatPoseData;
 import cn.laowu.mod.CatProfileData;
 import cn.laowu.mod.HissingCatBehavior;
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.item.CatAttributeCanItem;
 import cn.laowu.mod.network.ModNetwork;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.belt.BeltBlock;
@@ -800,7 +801,8 @@ public final class CatBehaviorTraitEffects {
     private static boolean isFood(Cat cat, ItemStack stack) {
         return !stack.isEmpty() && (cat.isFood(stack) || stack.isEdible()
                 || stack.is(LaoWuMod.CAT_FOOD.get())
-                || stack.is(LaoWuMod.CAT_STRIP.get()));
+                || stack.is(LaoWuMod.CAT_STRIP.get())
+                || stack.getItem() instanceof CatAttributeCanItem);
     }
 
     public static float childAttackMultiplier(Cat attacker, LivingEntity target) {
