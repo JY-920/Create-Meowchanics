@@ -1,4 +1,0 @@
-{
-  "parent": "minecraft:builtin/entity",
-  "textures": { "particle": "laowu:block/intermediate_breeding_box" }
-}

@@ -1,8 +1,6 @@
 package cn.laowu.mod.client;
 
 import cn.laowu.mod.LaoWuMod;
-import cn.laowu.mod.client.BreedingBoxRenderer;
-import cn.laowu.mod.client.BreedingBoxScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.simibubi.create.content.kinetics.base.ShaftVisual;
 import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
@@ -66,7 +64,6 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void registerMenuScreens(RegisterMenuScreensEvent event) {
         event.register(LaoWuMod.CAT_PACKAGE_MENU.get(), CatPackageScreen::new);
-        event.register(LaoWuMod.BREEDING_BOX_MENU.get(), BreedingBoxScreen::new);
     }
 
     @SubscribeEvent
@@ -107,7 +104,6 @@ public final class ClientModEvents {
         event.registerBlockEntityRenderer(LaoWuMod.CAT_ENGINE_BE.get(), CatEngineRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.DEVOURING_CAT_BE.get(), DevouringCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
-        event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), BreedingBoxRenderer::new);
     }
 
     @SubscribeEvent
