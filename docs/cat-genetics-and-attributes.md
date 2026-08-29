@@ -123,11 +123,11 @@ panel and gameplay conversion layer call the same function.
 | Attribute | Runtime formula | E=0 | E=50 | E=100 |
 | --- | --- | ---: | ---: | ---: |
 | Health | `10 + 0.4E` maximum health | 10 | 30 | 50 |
-| Combat Power | `2 + 0.08E` base melee damage | 2 | 6 | 10 |
+| Combat Power | `2 + 0.08E` base attack damage | 2 | 6 | 10 |
 | Stamina | `2 + 0.16E` armour | 2 | 10 | 18 |
 | Stamina | `0.05E` armour toughness | 0 | 2.5 | 5 |
 | Speed | `0.75 + 0.005E` movement multiplier | 0.75x | 1x | 1.25x |
-| Speed | `24 - 0.12E` melee interval, nearest whole tick | 24 | 18 | 12 |
+| Speed | `24 - 0.12E` attack interval, nearest whole tick | 24 | 18 | 12 |
 | Intelligence | `0.6 + 0.009E` training multiplier | 0.6x | 1.05x | 1.5x |
 | Luck | `2% + 0.18%E` melee critical chance | 2% | 11% | 20% |
 
@@ -136,6 +136,34 @@ above 100. Critical chance is clamped to 100%; a successful critical hit uses
 vanilla's 1.5x damage convention and emits the ordinary critical particles and
 sound. Intelligence already exposes one shared training-multiplier entry point;
 the future training mechanic must call it instead of reading raw NBT.
+
+### Career-outfit combat
+
+Every tamed cat wearing a career outfit participates when its owner attacks or
+is attacked, or when the cat itself is attacked. An ordered-sitting cat, a cat
+seated on a Create seat, and a cat pancake do not fight. Active combat retains
+the 32-block owner leash and never selects a player or another cat as a target.
+
+Melee career cats use the ordinary cat attack attribute, so Combat Power
+controls damage and Speed controls the attack interval through the formulas
+above. Fishing cats are ranged fighters and cast vanilla-style bobbers with a
+curved line connected to the cat, using the same two attributes. A hook pulls
+its victim toward the cat when the victim
+implements vanilla's ranged-attacker interface or is below half maximum health;
+otherwise it knocks the victim away.
+
+Fishing-cat positioning is divided by effective Intelligence: `0..39` closes
+to short range, `40..79` maintains a middle-distance firing band, and `80+`
+maintains long range, circles the target and leads moving targets. A melee cat
+with effective Intelligence `60+` also intercepts a fresh attacker of a nearby
+same-owner fishing cat. These are effective-value checks, so traits may change
+the chosen behaviour without modifying inherited values.
+
+All career outfits supply `+10` maximum health, `+4` armour and `+2` armour
+toughness. The Fishing Suit additionally supplies `+10` effective Luck. Fishing
+loot uses the vanilla fishing loot table with `3E/100` loot luck (clamped to
+`0..5`), so effective Luck 100 is equivalent to Luck of the Sea III and values
+above the normal training ceiling can continue toward V.
 
 The deterministic attribute modifiers use stable UUIDs and coexist additively
 with career-outfit modifiers. They are refreshed only on a profile/trait change
@@ -516,8 +544,11 @@ The remaining rules compose: Anorexia blocks all hand/deployer food handling;
 Ding-Dong Cat leaves snow; Cable Biter and TOM the Lumberjack respect
 `mobGriefing`; Air-Raid Siren multiplies only its own hissing session; A Little
 Ill zeroes both current attributes and limits before a death pancake is saved;
-Xiaoting and Doraemon append independent morning-gift rolls; Cat King playback
-is client-side, positional, and limited to the nearest three sessions.
+Xiaoting rolls its registry-backed smithing-template reward independently on
+death and after a vanilla morning gift. Death rewards are spawned directly by
+the authoritative server instead of being appended to the mutable living-drop
+collection. Doraemon appends its own independent morning-gift roll; Cat King
+playback is client-side, positional, and limited to the nearest three sessions.
 
 World searches are never performed every tick. Minecarts are queried every ten
 ticks, running belts every forty, nearby heat every eighty, containers every

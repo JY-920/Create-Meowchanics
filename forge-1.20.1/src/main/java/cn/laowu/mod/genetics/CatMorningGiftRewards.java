@@ -1,13 +1,8 @@
 package cn.laowu.mod.genetics;
 
 import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SmithingTemplateItem;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.List;
 
 /** Extra trait-conditioned rolls appended to vanilla's own morning gift. */
 public final class CatMorningGiftRewards {
@@ -15,14 +10,7 @@ public final class CatMorningGiftRewards {
         if (cat.level().isClientSide || !cat.isAlive()) return;
         CatTraitProfile traits = CatTraitData.ensure(cat);
 
-        if (traits.has(CatTrait.XIAOTING) && cat.getRandom().nextFloat() < 0.20F) {
-            List<Item> templates = ForgeRegistries.ITEMS.getValues().stream()
-                    .filter(SmithingTemplateItem.class::isInstance).toList();
-            if (!templates.isEmpty()) {
-                cat.spawnAtLocation(new ItemStack(
-                        templates.get(cat.getRandom().nextInt(templates.size()))));
-            }
-        }
+        CatXiaotingRewards.tryDropTemplate(cat);
 
         if (traits.has(CatTrait.DORAEMON) && cat.getRandom().nextFloat() < 0.35F) {
             cat.spawnAtLocation(rollRareGift(cat));

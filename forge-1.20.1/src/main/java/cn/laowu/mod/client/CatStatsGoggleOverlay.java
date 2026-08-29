@@ -15,15 +15,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +50,7 @@ public final class CatStatsGoggleOverlay {
     private static final int MAX_TIER_X = 59;
 
     private static int hoverTicks;
-    private static int lastEntityId = -1;
+    private static long lastTargetIdentity = Long.MIN_VALUE;
 
     private static void render(ForgeGui forgeGui, GuiGraphics graphics, float partialTicks,
                                int screenWidth, int screenHeight) {
@@ -70,28 +64,28 @@ public final class CatStatsGoggleOverlay {
             return;
         }
 
-        Entity target = minecraft.hitResult instanceof EntityHitResult entityHit
-                ? entityHit.getEntity() : findTargetedPancake(minecraft);
-        CatAttributeProfile profile;
-        CatTraitProfile traits;
-        if (target instanceof Cat cat) {
-            profile = CatAttributeData.read(cat).orElse(null);
-            traits = CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY);
-        } else if (target instanceof ItemEntity itemEntity
-                && itemEntity.getItem().getItem() instanceof cn.laowu.mod.item.CatPancakeItem) {
-            profile = CatAttributeData.read(itemEntity.getItem()).orElse(null);
-            traits = CatTraitData.read(itemEntity.getItem()).orElse(CatTraitProfile.EMPTY);
-        } else {
+        CatWorldTarget target = CatWorldTarget.find(minecraft, 5.0D);
+        if (target == null) {
             reset();
             return;
+        }
+        CatAttributeProfile profile;
+        CatTraitProfile traits;
+        Cat liveCat = target.cat();
+        if (liveCat != null) {
+            profile = CatAttributeData.read(liveCat).orElse(null);
+            traits = CatTraitData.read(liveCat).orElse(CatTraitProfile.EMPTY);
+        } else {
+            profile = CatAttributeData.read(target.pancake()).orElse(null);
+            traits = CatTraitData.read(target.pancake()).orElse(CatTraitProfile.EMPTY);
         }
         if (profile == null) {
             reset();
             return;
         }
 
-        if (lastEntityId != target.getId()) hoverTicks = 0;
-        lastEntityId = target.getId();
+        if (lastTargetIdentity != target.identity()) hoverTicks = 0;
+        lastTargetIdentity = target.identity();
         hoverTicks++;
 
         boolean revealLimits = true;
@@ -114,7 +108,7 @@ public final class CatStatsGoggleOverlay {
         renderPanel(graphics, profile, traits, revealLimits, x, y,
                 CatTraitEffects.isNight(minecraft.level),
                 CatTraitEffects.isDay(minecraft.level),
-                target instanceof Cat cat ? cat : null);
+                liveCat);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         pose.popPose();
     }
@@ -229,37 +223,11 @@ public final class CatStatsGoggleOverlay {
 
     private static void reset() {
         hoverTicks = 0;
-        lastEntityId = -1;
+        lastTargetIdentity = Long.MIN_VALUE;
     }
 
     static boolean isWearingCatGoggles(@Nullable Player player) {
         return cn.laowu.mod.item.CatEngineerGogglesItem.isWornBy(player);
-    }
-
-    @Nullable
-    private static ItemEntity findTargetedPancake(Minecraft minecraft) {
-        if (minecraft.player == null || minecraft.level == null) return null;
-        Vec3 start = minecraft.player.getEyePosition();
-        Vec3 end = start.add(minecraft.player.getViewVector(1.0F).scale(5.0D));
-        double closest = minecraft.hitResult == null
-                || minecraft.hitResult.getType() == HitResult.Type.MISS
-                ? start.distanceToSqr(end)
-                : start.distanceToSqr(minecraft.hitResult.getLocation());
-        AABB search = minecraft.player.getBoundingBox()
-                .expandTowards(end.subtract(start)).inflate(1.0D);
-        ItemEntity result = null;
-        for (ItemEntity item : minecraft.level.getEntitiesOfClass(ItemEntity.class, search,
-                entity -> entity.getItem().getItem()
-                        instanceof cn.laowu.mod.item.CatPancakeItem)) {
-            var hit = item.getBoundingBox().inflate(0.2D).clip(start, end);
-            if (hit.isEmpty()) continue;
-            double distance = start.distanceToSqr(hit.get());
-            if (distance < closest) {
-                closest = distance;
-                result = item;
-            }
-        }
-        return result;
     }
 
     private CatStatsGoggleOverlay() {}

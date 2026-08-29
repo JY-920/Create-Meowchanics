@@ -4,6 +4,7 @@ import cn.laowu.mod.network.ModNetwork;
 import cn.laowu.mod.item.CatPancakeItem;
 import cn.laowu.mod.item.FusionDebugWandItem;
 import cn.laowu.mod.item.AttributeDebugWandItem;
+import cn.laowu.mod.item.CatAttributeCanItem;
 import cn.laowu.mod.item.TraitDebugWandItem;
 import cn.laowu.mod.item.CatToolBehavior;
 import cn.laowu.mod.item.CatTotemItem;
@@ -19,6 +20,7 @@ import cn.laowu.mod.genetics.CatTrait;
 import cn.laowu.mod.genetics.CatTraitEffects;
 import cn.laowu.mod.genetics.CatBehaviorTraitEffects;
 import cn.laowu.mod.genetics.CatTraitProfile;
+import cn.laowu.mod.genetics.CatXiaotingRewards;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
@@ -43,7 +45,6 @@ import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -574,10 +575,16 @@ public final class CommonEvents {
         if (!(event.getEntity() instanceof Cat cat) || cat.level().isClientSide
                 || !cat.isTame() || event.getAmount() <= 0.0F) return;
         // Ordinary pets forget the attacker so no vanilla reaction survives.
-        // A Terminator cat keeps it as the target for its wolf-style defence AI;
-        // its PanicGoal has already been removed, so this does not reintroduce
-        // the old random sprinting behaviour.
-        if (CatClothesData.getOutfit(cat) != CatOutfitType.TERMINATOR
+        // A standing career cat keeps it for its wolf-style defence AI; its
+        // PanicGoal has already been removed, so this does not restore random
+        // fleeing. Smart melee defenders are alerted once per accepted hit.
+        CatOutfitType outfit = CatClothesData.getOutfit(cat);
+        boolean careerCanFight = outfit != CatOutfitType.NONE
+                && !CareerCatBehavior.isCombatResting(cat);
+        if (careerCanFight) {
+            CareerCatBehavior.alertMeleeProtectors(cat, event.getSource().getEntity());
+        }
+        if (!careerCanFight
                 || CareerCatBehavior.isForbiddenTerminatorTarget(cat.getLastHurtByMob())) {
             cat.setLastHurtByMob(null);
         }
@@ -719,6 +726,17 @@ public final class CommonEvents {
                 event.setCancellationResult(result);
                 event.setCanceled(true);
             }
+            return;
+        }
+
+        // Tamed cats consume ordinary right-clicks before an item's interaction
+        // hook. Route attribute cans here so pets and living pancakes can both
+        // be trained, while still respecting the Anorexia trait above.
+        if (event.getItemStack().getItem() instanceof CatAttributeCanItem can) {
+            InteractionResult result = can.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            event.setCancellationResult(result);
+            event.setCanceled(true);
             return;
         }
 
@@ -868,7 +886,7 @@ public final class CommonEvents {
 
     /** Supplies stateful results for recipes whose NBT cannot be expressed by static JSON. */
     @SubscribeEvent
-    public static void preserveTerminatorPancakeApplicationNbt(DeployerRecipeSearchEvent event) {
+    public static void preserveStatefulDeployerApplicationNbt(DeployerRecipeSearchEvent event) {
         var inventory = event.getInventory();
         var pancake = inventory.getItem(0);
         var held = inventory.getItem(1);
@@ -886,6 +904,27 @@ public final class CommonEvents {
             return;
         }
         if (!pancake.is(LaoWuMod.CAT_PANCAKE.get())) return;
+        if (held.getItem() instanceof CatAttributeCanItem can) {
+            if (!(event.getRecipe() instanceof ProcessingRecipe<?> recipe)) return;
+            var itemId = ForgeRegistries.ITEMS.getKey(held.getItem());
+            if (itemId == null || !itemId.getNamespace().equals(LaoWuMod.MOD_ID)
+                    || !recipe.getId().equals(LaoWuMod.id(
+                    itemId.getPath() + "_item_application"))) return;
+
+            var level = event.getBlockEntity().getLevel();
+            if (level == null) return;
+            ItemStack result = pancake.copyWithCount(1);
+            CatAttributeProfile profile = CatAttributeData.ensure(result, level.getRandom());
+            var trained = can.train(profile);
+            if (trained.isEmpty()) {
+                // Do not consume a can when this attribute has reached its limit.
+                event.setCanceled(true);
+                return;
+            }
+            CatAttributeData.set(result, trained.get());
+            recipe.enforceNextResult(() -> result.copy());
+            return;
+        }
         if (held.is(LaoWuMod.CAT_FOOD.get())) {
             if (!CatPancakeItem.isBaby(pancake)) {
                 event.setCanceled(true);
@@ -940,9 +979,11 @@ public final class CommonEvents {
             ModNetwork.setAudioSession(cat, false);
             CatProfileData.dropOnDeath(cat);
             CatChestData.dropOnDeath(cat);
-            if (outfit != CatOutfitType.NONE
-                    && cat.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-                cat.spawnAtLocation(CatPancakeItem.captureDeathDrop(cat));
+            if (cat.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+                CatXiaotingRewards.tryDropTemplate(cat);
+                if (outfit != CatOutfitType.NONE) {
+                    cat.spawnAtLocation(CatPancakeItem.captureDeathDrop(cat));
+                }
             }
         }
     }
@@ -955,17 +996,6 @@ public final class CommonEvents {
             ItemStack stack = drop.getItem();
             if (!stack.is(Items.STRING)) continue;
             drop.setItem(new ItemStack(LaoWuMod.CAT_FUR.get(), stack.getCount()));
-        }
-        if (CatTraitData.ensure(cat).has(CatTrait.XIAOTING)
-                && cat.getRandom().nextFloat() < 0.2F) {
-            var templates = ForgeRegistries.ITEMS.getValues().stream()
-                    .filter(SmithingTemplateItem.class::isInstance).toList();
-            if (!templates.isEmpty()) {
-                ItemStack template = new ItemStack(
-                        templates.get(cat.getRandom().nextInt(templates.size())));
-                event.getDrops().add(new ItemEntity(cat.level(), cat.getX(),
-                        cat.getY() + 0.25D, cat.getZ(), template));
-            }
         }
         if (event.getSource().getEntity() instanceof Cat hunter) {
             CatBehaviorTraitEffects.collectHuntedDrops(hunter, event.getDrops());

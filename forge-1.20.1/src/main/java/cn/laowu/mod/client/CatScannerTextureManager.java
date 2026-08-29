@@ -85,11 +85,33 @@ public final class CatScannerTextureManager {
                                  CatTraitProfile traits) {
         int[] current = new int[CatStat.values().length];
         int[] limits = new int[current.length];
-        StringBuilder key = new StringBuilder(current.length * 9);
         for (int index = 0; index < current.length; index++) {
             CatStat stat = CatStat.values()[index];
             current[index] = CatAttributeEffects.effectiveValue(cat, profile, traits, stat);
             limits[index] = profile.potential(stat);
+        }
+        return resolveValues(current, limits, traits);
+    }
+
+    /** Resolves an NBT-backed pancake which has no live cat entity context. */
+    public static Layers resolve(CatAttributeProfile profile,
+                                 CatTraitProfile traits,
+                                 boolean night, boolean day) {
+        int[] current = new int[CatStat.values().length];
+        int[] limits = new int[current.length];
+        for (int index = 0; index < current.length; index++) {
+            CatStat stat = CatStat.values()[index];
+            current[index] = CatAttributeEffects.effectiveValue(
+                    profile, traits, stat, night, day);
+            limits[index] = profile.potential(stat);
+        }
+        return resolveValues(current, limits, traits);
+    }
+
+    private static Layers resolveValues(int[] current, int[] limits,
+                                        CatTraitProfile traits) {
+        StringBuilder key = new StringBuilder(current.length * 9);
+        for (int index = 0; index < current.length; index++) {
             key.append(current[index]).append('/').append(limits[index]).append(';');
         }
         for (CatTraitInstance instance : traits.traits()) {

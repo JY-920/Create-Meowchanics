@@ -1,0 +1,20 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake"
+    },
+    {
+      "item": "laowu:golden_attack_cat_can"
+    }
+  ],
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:red",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png"
+      }
+    }
+  ]
+}
