@@ -343,16 +343,6 @@ public final class CommonEvents {
             CatPancakeBehavior.flatten(cat);
             return;
         }
-
-        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
-
-        var held = attacker.getMainHandItem();
-        var itemKey = BuiltInRegistries.ITEM.getKey(held.getItem());
-        if (itemKey == null || !itemKey.getNamespace().equals("create")
-                || !itemKey.getPath().equals("cardboard_sword")) return;
-
-        event.setCanceled(true);
-        CatPancakeBehavior.flatten(cat);
     }
 
     @SubscribeEvent

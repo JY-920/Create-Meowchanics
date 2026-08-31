@@ -8,6 +8,7 @@
     "CatToolBreakProtectionMixin",
     "CatToolItemMixin",
     "LivingEntityCatTotemMixin",
+    "PlayerAttackMixin",
     "ContraptionCatPancakeCollisionMixin",
     "PloughMovementBehaviourMixin",
     "PotatoCannonAmmoMixin",
