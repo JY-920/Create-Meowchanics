@@ -1,0 +1,17 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "minecraft:golden_carrot"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:luck_breeding_cat_food"
+    }
+  ]
+}

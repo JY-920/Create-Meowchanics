@@ -10,7 +10,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 /** Transition-only sync for transient trait conditions used by the cat panel. */
 public record SyncCatTraitStatePacket(int entityId, boolean rageActive,
                                       boolean luBuOutnumbered,
-                                      boolean timidOutnumbered) implements CustomPacketPayload {
+                                      boolean timidOutnumbered,
+                                      boolean combatActive) implements CustomPacketPayload {
     public static final Type<SyncCatTraitStatePacket> TYPE =
             new Type<>(LaoWuMod.id("sync_cat_trait_state"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncCatTraitStatePacket> STREAM_CODEC =
@@ -21,11 +22,13 @@ public record SyncCatTraitStatePacket(int entityId, boolean rageActive,
         buf.writeBoolean(packet.rageActive);
         buf.writeBoolean(packet.luBuOutnumbered);
         buf.writeBoolean(packet.timidOutnumbered);
+        buf.writeBoolean(packet.combatActive);
     }
 
     private static SyncCatTraitStatePacket decode(RegistryFriendlyByteBuf buf) {
         return new SyncCatTraitStatePacket(buf.readVarInt(),
-                buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
+                buf.readBoolean(), buf.readBoolean(), buf.readBoolean(),
+                buf.readBoolean());
     }
 
     public static void handle(SyncCatTraitStatePacket packet, IPayloadContext context) {

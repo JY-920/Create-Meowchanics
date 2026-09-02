@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:redstone_wire",
+    "minecraft:repeater",
+    "minecraft:comparator",
+    "minecraft:redstone_torch",
+    "minecraft:redstone_wall_torch",
+    "minecraft:lever",
+    "minecraft:tripwire_hook",
+    "minecraft:daylight_detector",
+    {
+      "id": "create:redstone_link",
+      "required": false
+    },
+    {
+      "id": "create:redstone_contact",
+      "required": false
+    },
+    {
+      "id": "create:analog_lever",
+      "required": false
+    },
+    {
+      "id": "create:powered_latch",
+      "required": false
+    },
+    {
+      "id": "create:powered_toggle_latch",
+      "required": false
+    }
+  ]
+}

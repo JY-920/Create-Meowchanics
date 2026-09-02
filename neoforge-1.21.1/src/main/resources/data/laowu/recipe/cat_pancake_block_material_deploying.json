@@ -1,0 +1,38 @@
+{
+  "type": "create:deploying",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake"
+    },
+    {
+      "type": "laowu:any_block"
+    }
+  ],
+  "results": [
+    {
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuCatVariant": "minecraft:red",
+          "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png",
+          "LaoWuCatGenome": {
+            "Version": 2,
+            "Regions": {
+              "head_primary": "laowu:block/minecraft/stone",
+              "head_secondary": "laowu:block/minecraft/stone",
+              "left_eye": "laowu:block/minecraft/stone",
+              "right_eye": "laowu:block/minecraft/stone",
+              "ears": "laowu:block/minecraft/stone",
+              "muzzle": "laowu:block/minecraft/stone",
+              "body_front": "laowu:block/minecraft/stone",
+              "body_rear": "laowu:block/minecraft/stone",
+              "front_legs": "laowu:block/minecraft/stone",
+              "hind_legs": "laowu:block/minecraft/stone",
+              "tail": "laowu:block/minecraft/stone"
+            }
+          }
+        }
+      },
+      "id": "laowu:cat_pancake"
+    }
+  ]
+}

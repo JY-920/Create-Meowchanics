@@ -1,6 +1,9 @@
 package cn.laowu.mod.client;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.ClientConfig;
+import net.minecraft.client.resources.sounds.AbstractSoundInstance;
+import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -62,6 +65,7 @@ public final class HissingAudioManager {
         private final int entityId;
         private Stage stage = Stage.INTRO_DELAY;
         private SoundInstance current;
+        private SoundInstance currentBoost;
         private int graceTicks;
         private int waitTicks;
 
@@ -116,15 +120,67 @@ public final class HissingAudioManager {
             if (mc.level == null) return;
             Entity owner = mc.level.getEntity(entityId);
             if (owner == null) return;
-            current = new SimpleSoundInstance(event, SoundSource.HOSTILE, 1.0F, 1.0F,
-                    RandomSource.create(), false, 0, SoundInstance.Attenuation.LINEAR,
-                    owner.getX(), owner.getY(), owner.getZ(), false);
+            current = new ConfigurableHissingSound(event, owner);
+            boolean boosted = owner instanceof net.minecraft.world.entity.animal.Cat cat
+                    && cn.laowu.mod.genetics.CatTraitData.read(cat)
+                    .filter(profile -> profile.has(
+                            cn.laowu.mod.genetics.CatTrait.AIR_RAID_SIREN))
+                    .isPresent();
+            currentBoost = boosted ? new ConfigurableHissingSound(event, owner) : null;
             graceTicks = 20;
             mc.getSoundManager().play(current);
+            if (currentBoost != null) mc.getSoundManager().play(currentBoost);
         }
 
         private void stopCurrent() {
             if (current != null) Minecraft.getInstance().getSoundManager().stop(current);
+            if (currentBoost != null) {
+                Minecraft.getInstance().getSoundManager().stop(currentBoost);
+                currentBoost = null;
+            }
+        }
+    }
+
+    /** Tickable so changing the V-screen slider also affects an active clip. */
+    private static final class ConfigurableHissingSound extends AbstractSoundInstance
+            implements TickableSoundInstance {
+        private final Entity owner;
+        private boolean stopped;
+
+        private ConfigurableHissingSound(ResourceLocation event, Entity owner) {
+            super(event, SoundSource.HOSTILE, RandomSource.create());
+            this.owner = owner;
+            this.pitch = 1.0F;
+            this.looping = false;
+            this.delay = 0;
+            this.attenuation = SoundInstance.Attenuation.LINEAR;
+            this.relative = false;
+            updatePosition();
+        }
+
+        @Override
+        public void tick() {
+            if (!owner.isAlive()) {
+                stopped = true;
+                return;
+            }
+            updatePosition();
+        }
+
+        private void updatePosition() {
+            x = owner.getX();
+            y = owner.getY();
+            z = owner.getZ();
+        }
+
+        @Override
+        public float getVolume() {
+            return ClientConfig.HISSING_PAIR_VOLUME.get().floatValue();
+        }
+
+        @Override
+        public boolean isStopped() {
+            return stopped;
         }
     }
 

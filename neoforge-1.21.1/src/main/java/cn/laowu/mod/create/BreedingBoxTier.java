@@ -2,9 +2,9 @@ package cn.laowu.mod.create;
 
 /** Immutable machine properties shared by blocks, menus and client rendering. */
 public enum BreedingBoxTier {
-    BASIC(1, 20 * 60 * 3, 0.05F, "basic_breeding_box"),
-    INTERMEDIATE(2, 20 * 60 * 2, 0.075F, "intermediate_breeding_box"),
-    ADVANCED(3, 20 * 60, 0.10F, "advanced_breeding_box");
+    BASIC(1, 20 * 60 * 2, 0.10F, "basic_breeding_box"),
+    INTERMEDIATE(2, 20 * 90, 0.15F, "intermediate_breeding_box"),
+    ADVANCED(3, 20 * 60, 0.20F, "advanced_breeding_box");
 
     private final int level;
     private final int durationTicks;

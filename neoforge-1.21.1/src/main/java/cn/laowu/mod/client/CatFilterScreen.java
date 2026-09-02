@@ -5,6 +5,7 @@ import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.genetics.CatTrait;
 import cn.laowu.mod.item.CatFilterRules;
+import cn.laowu.mod.network.ModNetwork;
 import com.simibubi.create.content.logistics.filter.AbstractFilterScreen;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.widget.IconButton;
@@ -15,7 +16,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +29,7 @@ import net.minecraft.world.entity.player.Inventory;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Create-style two-page range editor for the six cat attributes. */
+/** Create-style attribute, trait and identity editor for the cat filter. */
 public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
     private static final ResourceLocation CREATE_FILTERS =
             ResourceLocation.fromNamespaceAndPath("create", "textures/gui/filters.png");
@@ -34,7 +37,9 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
             LaoWuMod.id("textures/gui/cat_attribute_icons.png");
 
     private static final int EXTENSION_HEIGHT = 40;
-    private static final int FILTER_WIDTH = 241;
+    private static final int SOURCE_FILTER_WIDTH = 241;
+    private static final int FILTER_WIDTH = 273;
+    private static final int HORIZONTAL_EXTENSION = FILTER_WIDTH - SOURCE_FILTER_WIDTH;
     private static final int FILTER_HEIGHT = 125;
     private static final int FOOTER_Y = 95;
 
@@ -43,10 +48,21 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
     private static final int COLUMN_WIDTH = 112;
     private static final int BAR_OFFSET_X = 36;
     private static final int BAR_WIDTH = 70;
+    private static final int IDENTITY_PAGE = 2;
+    private static final int IDENTITY_ROW_Y = 18;
+    private static final int NAME_FIELD_Y = 40;
 
     private int page = CatFilterRules.CURRENT_PAGE;
     private Button currentButton;
     private Button potentialButton;
+    private Button identityButton;
+    private SelectionScrollInput growthSelector;
+    private SelectionScrollInput ownershipSelector;
+    private SelectionScrollInput careerSelector;
+    private Label growthLabel;
+    private Label ownershipLabel;
+    private Label careerLabel;
+    private EditBox nameBox;
     private SelectionScrollInput traitSelector;
     private Label traitSelectorLabel;
     private Button addTraitButton;
@@ -65,27 +81,35 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
         // AbstractFilterScreen lays out the 85px Attribute Filter first. Add
         // two real 20px trait rows, then recenter the taller complete window.
         topPos -= EXTENSION_HEIGHT / 2;
+        leftPos -= HORIZONTAL_EXTENSION / 2;
         setWindowSize(FILTER_WIDTH, FILTER_HEIGHT + 4
                 + AllGuiTextures.PLAYER_INVENTORY.getHeight());
         for (GuiEventListener listener : children()) {
             if (listener instanceof IconButton button) {
                 button.setY(button.getY() + EXTENSION_HEIGHT / 2);
+                button.setX(button.getX() + HORIZONTAL_EXTENSION / 2);
             }
         }
 
         currentButton = addRenderableWidget(Button.builder(
-                        Component.translatable("gui.laowu.cat_stats.current"),
+                        Component.translatable("gui.laowu.cat_filter.page.current"),
                 button -> setPage(CatFilterRules.CURRENT_PAGE))
-                .bounds(leftPos + 8, topPos + 101, 78, 18).build());
+                .bounds(leftPos + 8, topPos + 101, 62, 18).build());
         potentialButton = addRenderableWidget(Button.builder(
-                        Component.translatable("gui.laowu.cat_stats.limit"),
+                        Component.translatable("gui.laowu.cat_filter.page.limit"),
                 button -> setPage(CatFilterRules.POTENTIAL_PAGE))
-                .bounds(leftPos + 90, topPos + 101, 78, 18).build());
+                .bounds(leftPos + 74, topPos + 101, 62, 18).build());
+        identityButton = addRenderableWidget(Button.builder(
+                        Component.translatable("gui.laowu.cat_filter.page.identity"),
+                button -> setPage(IDENTITY_PAGE))
+                .bounds(leftPos + 140, topPos + 101, 62, 18).build());
+
+        initIdentityControls();
 
         traitSelectorLabel = new Label(leftPos + 13, topPos + 61,
                 Component.empty()).colored(0xF3E8D4).withShadow();
         traitSelector = new LeftTooltipSelectionScrollInput(leftPos + 8, topPos + 56,
-                184, 18);
+                216, 18);
         traitSelector.forOptions(traitOptions());
         traitSelector.setState(0);
         traitSelector.titled(Component.translatable(
@@ -94,7 +118,7 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
         traitSelector.calling(selection -> refreshTraitButtons());
         addTraitButton = addRenderableWidget(Button.builder(Component.literal("+"),
                         button -> addSelectedTrait())
-                .bounds(leftPos + 196, topPos + 56, 32, 18).build());
+                .bounds(leftPos + 228, topPos + 56, 32, 18).build());
         addRenderableWidget(traitSelector);
         addRenderableWidget(traitSelectorLabel);
 
@@ -104,11 +128,60 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
             selectedTraitButtons.add(addRenderableWidget(Button.builder(
                             Component.literal("—"),
                             button -> removeSelectedTrait(selectedSlot))
-                    .bounds(leftPos + 8 + slot * 55, topPos + 76,
-                            52, 18).build()));
+                    .bounds(leftPos + 8 + slot * 63, topPos + 76,
+                            60, 18).build()));
         }
         updatePageButtons();
         refreshTraitButtons();
+    }
+
+    private void initIdentityControls() {
+        growthLabel = new Label(leftPos + 12, topPos + IDENTITY_ROW_Y + 5,
+                Component.empty()).colored(0x3F3027);
+        growthSelector = new SelectionScrollInput(leftPos + 8,
+                topPos + IDENTITY_ROW_Y, 72, 18);
+        configureIdentitySelector(growthSelector, growthLabel, growthOptions(),
+                menu.growthSelection(), CatFilterMenu.GROWTH_FIELD);
+
+        ownershipLabel = new Label(leftPos + 88, topPos + IDENTITY_ROW_Y + 5,
+                Component.empty()).colored(0x3F3027);
+        ownershipSelector = new SelectionScrollInput(leftPos + 84,
+                topPos + IDENTITY_ROW_Y, 72, 18);
+        configureIdentitySelector(ownershipSelector, ownershipLabel, ownershipOptions(),
+                menu.ownershipSelection(), CatFilterMenu.OWNERSHIP_FIELD);
+
+        careerLabel = new Label(leftPos + 164, topPos + IDENTITY_ROW_Y + 5,
+                Component.empty()).colored(0x3F3027);
+        careerSelector = new SelectionScrollInput(leftPos + 160,
+                topPos + IDENTITY_ROW_Y, 100, 18);
+        configureIdentitySelector(careerSelector, careerLabel, careerOptions(),
+                menu.careerSelection(), CatFilterMenu.CAREER_FIELD);
+
+        nameBox = new EditBox(font, leftPos + 43, topPos + NAME_FIELD_Y + 2,
+                213, 12, Component.translatable("gui.laowu.cat_filter.name"));
+        nameBox.setBordered(false);
+        nameBox.setTextColor(0x3F3027);
+        nameBox.setTextColorUneditable(0x6A5A4B);
+        nameBox.setMaxLength(CatFilterRules.MAX_NAME_LENGTH);
+        nameBox.setHint(Component.translatable("gui.laowu.cat_filter.name.hint")
+                .withStyle(ChatFormatting.DARK_GRAY));
+        nameBox.setValue(menu.nameQuery());
+        nameBox.setResponder(value -> {
+            menu.setNameQuery(value);
+            ModNetwork.setCatFilterName(menu.containerId, value);
+        });
+        addRenderableWidget(nameBox);
+    }
+
+    private void configureIdentitySelector(SelectionScrollInput selector, Label label,
+                                           List<Component> options, int state,
+                                           int field) {
+        selector.forOptions(options);
+        selector.setState(Mth.clamp(state, 0, options.size() - 1));
+        selector.writingTo(label);
+        selector.calling(selection -> sendIdentity(field, selection));
+        addRenderableWidget(selector);
+        addRenderableWidget(label);
     }
 
     private static List<Component> traitOptions() {
@@ -121,20 +194,84 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
         return options;
     }
 
+    private static List<Component> growthOptions() {
+        List<Component> options = new ArrayList<>();
+        for (CatFilterRules.GrowthFilter value : CatFilterRules.GrowthFilter.values()) {
+            options.add(Component.translatable("gui.laowu.cat_filter.selector.growth",
+                    Component.translatable("gui.laowu.cat_filter.growth." + value.id())));
+        }
+        return options;
+    }
+
+    private static List<Component> ownershipOptions() {
+        List<Component> options = new ArrayList<>();
+        for (CatFilterRules.OwnershipFilter value
+                : CatFilterRules.OwnershipFilter.values()) {
+            options.add(Component.translatable("gui.laowu.cat_filter.selector.ownership",
+                    Component.translatable("gui.laowu.cat_filter.ownership." + value.id())));
+        }
+        return options;
+    }
+
+    private static List<Component> careerOptions() {
+        List<Component> options = new ArrayList<>();
+        for (CatFilterRules.CareerFilter value : CatFilterRules.CareerFilter.values()) {
+            options.add(Component.translatable("gui.laowu.cat_filter.selector.career",
+                    Component.translatable("gui.laowu.cat_filter.career." + value.id())));
+        }
+        return options;
+    }
+
     private void setPage(int selectedPage) {
-        page = selectedPage;
+        page = Mth.clamp(selectedPage, CatFilterRules.CURRENT_PAGE, IDENTITY_PAGE);
+        draggingStat = -1;
+        if (page != IDENTITY_PAGE && nameBox != null) nameBox.setFocused(false);
         updatePageButtons();
     }
 
     private void updatePageButtons() {
         if (currentButton != null) currentButton.active = page != CatFilterRules.CURRENT_PAGE;
         if (potentialButton != null) potentialButton.active = page != CatFilterRules.POTENTIAL_PAGE;
+        if (identityButton != null) identityButton.active = page != IDENTITY_PAGE;
+        boolean identityVisible = page == IDENTITY_PAGE;
+        setVisible(growthSelector, identityVisible);
+        setVisible(ownershipSelector, identityVisible);
+        setVisible(careerSelector, identityVisible);
+        setVisible(growthLabel, identityVisible);
+        setVisible(ownershipLabel, identityVisible);
+        setVisible(careerLabel, identityVisible);
+        if (nameBox != null) {
+            nameBox.visible = identityVisible;
+            nameBox.active = identityVisible;
+        }
+    }
+
+    private static void setVisible(net.minecraft.client.gui.components.AbstractWidget widget,
+                                   boolean visible) {
+        if (widget == null) return;
+        widget.visible = visible;
+        widget.active = visible;
     }
 
     @Override
     protected void containerTick() {
         super.containerTick();
         refreshTraitButtons();
+        syncIdentityControls();
+    }
+
+    private void syncIdentityControls() {
+        syncSelector(growthSelector, menu.growthSelection());
+        syncSelector(ownershipSelector, menu.ownershipSelection());
+        syncSelector(careerSelector, menu.careerSelection());
+        if (nameBox != null && !nameBox.isFocused()
+                && !nameBox.getValue().equals(menu.nameQuery())) {
+            nameBox.setValue(menu.nameQuery());
+        }
+    }
+
+    private static void syncSelector(SelectionScrollInput selector, int state) {
+        if (selector != null && selector.getState() != state) selector.setState(state);
     }
 
     private void refreshTraitButtons() {
@@ -179,7 +316,20 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
                         topPos + FILTER_HEIGHT - 52.0F, -200.0F)
                 .render(graphics);
 
-        for (CatStat stat : CatStat.values()) renderRange(graphics, stat);
+        if (page == IDENTITY_PAGE) {
+            renderIdentityFields(graphics);
+        } else {
+            for (CatStat stat : CatStat.values()) renderRange(graphics, stat);
+        }
+    }
+
+    private void renderIdentityFields(GuiGraphics graphics) {
+        int x = leftPos + 40;
+        int y = topPos + NAME_FIELD_Y;
+        graphics.drawString(font, Component.translatable("gui.laowu.cat_filter.name"),
+                leftPos + 8, y + 4, 0x3F3027, false);
+        graphics.fill(x, y, leftPos + 260, y + 16, 0xFF5A4638);
+        graphics.fill(x + 1, y + 1, leftPos + 259, y + 15, 0xFFE6D2AE);
     }
 
     /**
@@ -188,25 +338,39 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
      * and the original footer moved down intact.
      */
     private void renderExtendedFilterBackground(GuiGraphics graphics) {
-        graphics.blit(CREATE_FILTERS, leftPos, topPos,
-                0, 99, FILTER_WIDTH, 15, 256, 256);
-        graphics.blit(CREATE_FILTERS, leftPos, topPos + 15,
-                0, 114, FILTER_WIDTH, 1, 256, 256);
+        blitExtendedRow(graphics, topPos, 99, 15);
+        blitExtendedRow(graphics, topPos + 15, 114, 1);
         for (int row = 0; row < 78; row++) {
-            graphics.blit(CREATE_FILTERS,
-                    leftPos, topPos + 16 + row,
-                    0, 115 + (row & 1),
-                    FILTER_WIDTH, 1, 256, 256);
+            blitExtendedRow(graphics, topPos + 16 + row, 115 + (row & 1), 1);
         }
-        graphics.blit(CREATE_FILTERS, leftPos, topPos + 94,
-                0, 153, FILTER_WIDTH, 1, 256, 256);
-        graphics.blit(CREATE_FILTERS, leftPos, topPos + FOOTER_Y,
-                0, 154, FILTER_WIDTH, 30, 256, 256);
+        blitExtendedRow(graphics, topPos + 94, 153, 1);
+        blitExtendedRow(graphics, topPos + FOOTER_Y, 154, 30);
 
         // Remove the four pre-drawn mode cells but retain the authored border,
         // highlight, separator, reset button area and confirmation arrow.
         graphics.fill(leftPos + 3, topPos + FOOTER_Y + 2,
-                leftPos + 202, topPos + FOOTER_Y + 28, 0xFFC6C6C6);
+                leftPos + FILTER_WIDTH - 39, topPos + FOOTER_Y + 28, 0xFFC6C6C6);
+    }
+
+    /** Inserts a tiled centre strip while preserving both authored side edges. */
+    private void blitExtendedRow(GuiGraphics graphics, int destinationY,
+                                 int sourceY, int height) {
+        int split = SOURCE_FILTER_WIDTH / 2;
+        graphics.blit(CREATE_FILTERS, leftPos, destinationY,
+                0, sourceY, split, height, 256, 256);
+        for (int offset = 0; offset < HORIZONTAL_EXTENSION; offset++) {
+            graphics.blit(CREATE_FILTERS, leftPos + split + offset, destinationY,
+                    split + (offset & 1), sourceY, 1, height, 256, 256);
+        }
+        graphics.blit(CREATE_FILTERS, leftPos + split + HORIZONTAL_EXTENSION,
+                destinationY, split, sourceY,
+                SOURCE_FILTER_WIDTH - split, height, 256, 256);
+    }
+
+    @Override
+    public List<Rect2i> getExtraAreas() {
+        return List.of(new Rect2i(leftPos + FILTER_WIDTH,
+                topPos + FILTER_HEIGHT - 40, 80, 48));
     }
 
     private void renderRange(GuiGraphics graphics, CatStat stat) {
@@ -224,7 +388,7 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
                 x + 10, y, 0x3F3027, false);
 
         int barX = x + BAR_OFFSET_X;
-        String value = minimum + "—" + maximum;
+        String value = minimum + "–" + maximum;
         int valueX = barX + (BAR_WIDTH - font.width(value)) / 2;
         graphics.drawString(font, value, valueX, y + 1, 0x3F3027, false);
 
@@ -239,7 +403,7 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        RangeHit hit = findRange(mouseX, mouseY);
+        RangeHit hit = page == IDENTITY_PAGE ? null : findRange(mouseX, mouseY);
         if (hit != null) {
             int value = valueAt(hit.barX(), mouseX);
             int minimum = menu.min(page, hit.stat());
@@ -299,6 +463,13 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
     private void sendRange(CatStat stat, boolean maximum, int value) {
         if (minecraft == null || minecraft.player == null || minecraft.gameMode == null) return;
         int id = CatFilterMenu.rangeButton(page, stat, maximum, value);
+        menu.clickMenuButton(minecraft.player, id);
+        minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
+    }
+
+    private void sendIdentity(int field, int selection) {
+        if (minecraft == null || minecraft.player == null || minecraft.gameMode == null) return;
+        int id = CatFilterMenu.identityButton(field, selection);
         menu.clickMenuButton(minecraft.player, id);
         minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
     }

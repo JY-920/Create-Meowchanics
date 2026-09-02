@@ -9,6 +9,7 @@ public final class ClientConfig {
     public static final Pose POSE;
     public static final ModConfigSpec.ConfigValue<List<? extends String>> HELD_ITEM_TRANSFORMS;
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GUI_ITEM_TRANSFORMS;
+    public static final ModConfigSpec.DoubleValue HISSING_PAIR_VOLUME;
 
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
@@ -23,6 +24,10 @@ public final class ClientConfig {
                         "每项格式：物品注册名|X旋转|Y旋转|Z旋转|X位移|Y位移|Z位移|缩放。",
                         "该配置与手持显示参数独立保存，不影响掉落物和方块展示框。")
                 .defineListAllowEmpty("gui_item_transforms", List.of(), value -> value instanceof String);
+        HISSING_PAIR_VOLUME = b
+                .comment("两只及以上猫咪进入哈气状态时，专属哈气音频的客户端音量倍率。",
+                        "0.0 为静音，1.0 为默认音量，2.0 为双倍音量；游戏内按 V 调整。")
+                .defineInRange("hissing_pair_volume", 1.0D, 0.0D, 2.0D);
         SPEC = b.build();
     }
 

@@ -5,6 +5,7 @@ import cn.laowu.mod.client.BreedingBoxRenderer;
 import cn.laowu.mod.client.BreedingBoxScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.simibubi.create.content.kinetics.base.ShaftVisual;
+import com.simibubi.create.foundation.item.TooltipModifier;
 import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -18,6 +19,7 @@ import net.minecraft.world.entity.EntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -43,12 +45,24 @@ public final class ClientModEvents {
     public static final KeyMapping CAT_TOOL_EMPOWER = new KeyMapping(
             "key.laowu.cat_tool_empower", InputConstants.Type.KEYSYM,
             InputConstants.KEY_LALT, "key.categories.laowu");
+    public static final KeyMapping HISSING_VOLUME = new KeyMapping(
+            "key.laowu.hissing_volume",
+            InputConstants.Type.KEYSYM,
+            InputConstants.KEY_V,
+            "key.categories.laowu");
 
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(OPEN_HELD_ITEM_TRANSFORM);
         event.register(CAT_ARMOR_POUNCE);
         event.register(CAT_TOOL_EMPOWER);
+        event.register(HISSING_VOLUME);
+    }
+
+    @SubscribeEvent
+    public static void registerGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(LaoWuMod.id("cat_stats"),
+                CatStatsGoggleOverlay.OVERLAY);
     }
 
     @SubscribeEvent
@@ -61,14 +75,20 @@ public final class ClientModEvents {
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
                 NozzleFluidPuffParticle.clearColourCache());
+        event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
+                CatGenomeTextureManager.clear());
+        event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
+                CatAppearanceTextures.clear());
     }
 
     @SubscribeEvent
     public static void registerMenuScreens(RegisterMenuScreensEvent event) {
         event.register(LaoWuMod.CAT_PACKAGE_MENU.get(), CatPackageScreen::new);
         event.register(LaoWuMod.BREEDING_BOX_MENU.get(), BreedingBoxScreen::new);
+        event.register(LaoWuMod.ADOPTION_BOX_MENU.get(), AdoptionBoxScreen::new);
         event.register(LaoWuMod.CAT_TRAIT_EDITOR_MENU.get(), CatTraitEditorScreen::new);
         event.register(LaoWuMod.CAT_ATTRIBUTE_EDITOR_MENU.get(), CatAttributeEditorScreen::new);
+        event.register(LaoWuMod.CAT_MATERIAL_EDITOR_MENU.get(), CatMaterialEditorScreen::new);
         event.register(LaoWuMod.CAT_PROFILE_MENU.get(), CatProfileScreen::new);
         event.register(LaoWuMod.CAT_FILTER_MENU.get(), CatFilterScreen::new);
     }
@@ -101,6 +121,13 @@ public final class ClientModEvents {
             if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
                 cn.laowu.mod.compat.curios.CatGogglesCuriosClientCompat.registerRenderer();
             }
+            registerCareerSuitDescription(LaoWuMod.TERMINATOR_SUIT.get());
+            registerCareerSuitDescription(LaoWuMod.FISHING_SUIT.get());
+            registerCareerSuitDescription(LaoWuMod.FLIGHT_SUIT.get());
+            registerCareerSuitDescription(LaoWuMod.FIRE_SUIT.get());
+            registerCareerSuitDescription(LaoWuMod.HONEY_SUIT.get());
+            registerCareerSuitDescription(LaoWuMod.TRANSPORT_SUIT.get());
+            registerCareerSuitDescription(LaoWuMod.DYNAMITE_SUIT.get());
         });
     }
 
@@ -109,17 +136,33 @@ public final class ClientModEvents {
         event.registerEntityRenderer(EntityType.CAT, HissingCatRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_PANCAKE_PROJECTILE.get(),
                 context -> new ThrownItemRenderer<>(context, 1.1F, false));
+        event.registerEntityRenderer(LaoWuMod.FISHING_ROD_PROJECTILE.get(),
+                FishingRodProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.MECHANICAL_LASER_PROJECTILE.get(),
+                MechanicalLaserProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.HONEY_MISSILE_PROJECTILE.get(),
+                HoneyMissileProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.DYNAMITE_PROJECTILE.get(),
+                DynamiteProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.LOGISTICS_SUPPORT_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 0.75F, false));
         event.registerEntityRenderer(LaoWuMod.CAT_BALL_ENTITY.get(),
                 CatBallEntityRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.BUTTER_CAT.get(), ButterCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_ENGINE_BE.get(), CatEngineRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.DEVOURING_CAT_BE.get(), DevouringCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), BreedingBoxRenderer::new);
+        event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(ModelResourceLocation.standalone(CAT_ENGINEER_GOGGLES_WORN_MODEL));
+        event.register(ModelResourceLocation.standalone(
+                CatScannerItemRenderer.INVENTORY_MODEL));
+        event.register(ModelResourceLocation.standalone(
+                CatScannerItemRenderer.HANDHELD_MODEL));
     }
 
     @SubscribeEvent
@@ -133,6 +176,18 @@ public final class ClientModEvents {
         if (inventoryModel != null && wornModel != null) {
             event.getModels().put(inventoryId,
                     new CatEngineerGogglesModel(inventoryModel, wornModel));
+        }
+
+        ModelResourceLocation scannerId = ModelResourceLocation.inventory(
+                LaoWuMod.id("cat_scanner"));
+        var scannerFlatModel = event.getModels().get(scannerId);
+        var scannerHandheldModel = event.getModels().get(
+                ModelResourceLocation.standalone(
+                        CatScannerItemRenderer.HANDHELD_MODEL));
+        if (scannerFlatModel != null && scannerHandheldModel != null) {
+            event.getModels().put(scannerId,
+                    new CatScannerBakedModel(scannerFlatModel,
+                            scannerHandheldModel));
         }
     }
 
@@ -166,6 +221,8 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(HissingCatModel.LAYER, HissingCatModel::createLayer);
+        event.registerLayerDefinition(CatAppearanceModel.LAYER,
+                CatAppearanceModel::createLayer);
         event.registerLayerDefinition(KimiArmorModel.LAYER, KimiArmorModel::createLayer);
         event.registerLayerDefinition(KimiArmorModel.SLIM_LAYER, KimiArmorModel::createSlimLayer);
     }
@@ -174,6 +231,12 @@ public final class ClientModEvents {
         ItemProperties.register(item, LaoWuMod.id("empowered"),
                 (stack, level, entity, seed) ->
                         cn.laowu.mod.item.CatToolBehavior.isEmpowered(stack) ? 1.0F : 0.0F);
+    }
+
+    private static void registerCareerSuitDescription(net.minecraft.world.item.Item item) {
+        if (!(item instanceof cn.laowu.mod.item.TerminatorSuitItem suit)) return;
+        TooltipModifier.REGISTRY.register(item,
+                event -> CareerSuitTooltip.modify(event, item, suit.outfit()));
     }
     private ClientModEvents() {}
 }

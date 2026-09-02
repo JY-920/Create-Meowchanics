@@ -65,6 +65,20 @@ public final class CatAttributeEffects {
             }
         }
         if (resolved.has(CatTrait.DOUGHY)) value -= 20;
+        if (resolved.has(CatTrait.RAINBOW_CAT)) {
+            if (stat == CatStat.SPEED) {
+                value += CatTrait.RAINBOW_CAT.rainbowSpeedBonus();
+            } else if (stat == CatStat.LUCK) {
+                value += CatTrait.RAINBOW_CAT.rainbowLuckBonus();
+            }
+        }
+        if (resolved.has(CatTrait.NEKOMATA)) {
+            if (stat == CatStat.ATTACK) {
+                value += CatTrait.NEKOMATA.nekomataAttackBonus();
+            } else if (stat == CatStat.INTELLIGENCE) {
+                value += CatTrait.NEKOMATA.nekomataIntelligenceBonus();
+            }
+        }
 
         if (stat == CatStat.STAMINA) {
             if (context.blazingForm) value += CareerCatBehavior.FIRE_STAMINA_BONUS;
@@ -96,6 +110,8 @@ public final class CatAttributeEffects {
             }
         } else if (stat == CatStat.ATTACK) {
             if (context.mechanical) value += CareerCatBehavior.MECHANICAL_ATTACK_BONUS;
+            if (context.flight) value += CareerCatBehavior.FLIGHT_ATTACK_BONUS;
+            if (context.dynamite) value += CareerCatBehavior.DYNAMITE_ATTACK_BONUS;
             int elderLevel = resolved.level(CatTrait.SELECTED_ELDER);
             if (elderLevel > 0) {
                 value += CatTrait.SELECTED_ELDER.selectedElderAttackBonus(elderLevel);
@@ -132,6 +148,7 @@ public final class CatAttributeEffects {
             }
         } else if (stat == CatStat.SPEED) {
             if (context.honey) value += CareerCatBehavior.HONEY_SPEED_BONUS;
+            if (context.transport) value += CareerCatBehavior.TRANSPORT_SPEED_BONUS;
             int chonkyLevel = resolved.level(CatTrait.CHONKY_PRESENCE);
             if (chonkyLevel > 0) {
                 value -= CatTrait.CHONKY_PRESENCE.chonkySpeedPenalty(chonkyLevel);
@@ -235,9 +252,16 @@ public final class CatAttributeEffects {
             cat.setHealth(Math.min(cat.getMaxHealth(), cat.getMaxHealth() * ratio));
         }
 
+        // Combat Power is a career input, not a universal replacement for a
+        // vanilla cat's biological attack. Only an equipped career cat gets
+        // this base damage; CareerCatBehavior then applies that outfit's own
+        // damage multiplier and attack-speed formula.
+        boolean careerCombat = CatClothesData.getOutfit(cat) != CatOutfitType.NONE;
         setModifier(cat, Attributes.ATTACK_DAMAGE, ATTACK_MODIFIER,
-                "Create Meowchanics attack",
-                attackDamage(attack) - VANILLA_CAT_ATTACK_DAMAGE,
+                "Create Meowchanics career combat power",
+                careerCombat
+                        ? attackDamage(attack) - VANILLA_CAT_ATTACK_DAMAGE
+                        : 0.0D,
                 AttributeModifier.Operation.ADD_VALUE);
         setModifier(cat, Attributes.ARMOR, ARMOR_MODIFIER,
                 "Create Meowchanics armor", armor(stamina),
@@ -300,10 +324,14 @@ public final class CatAttributeEffects {
 
     /** Converts the displayed Luck scale into Create/vanilla loot-table luck. */
     public static float fishingLootLuck(Cat cat) {
+        return fishingLootLuck(effectiveValue(cat, CatStat.LUCK));
+    }
+
+    /** Formula-only overload used by item and GUI previews. */
+    public static float fishingLootLuck(int effectiveLuck) {
         // Luck 100 is equivalent to Luck of the Sea III. Values above the
         // training ceiling can still reach the loot-context safety cap of V.
-        return Mth.clamp(effectiveValue(cat, CatStat.LUCK) * 3.0F / 100.0F,
-                0.0F, 5.0F);
+        return Mth.clamp(effectiveLuck * 3.0F / 100.0F, 0.0F, 5.0F);
     }
 
     public static boolean rollCriticalHit(Cat cat) {
@@ -333,6 +361,9 @@ public final class CatAttributeEffects {
                 activeBody && outfit == CatOutfitType.FISHING,
                 activeBody && outfit == CatOutfitType.TERMINATOR,
                 activeBody && outfit == CatOutfitType.HONEY,
+                activeBody && outfit == CatOutfitType.FLIGHT,
+                activeBody && outfit == CatOutfitType.TRANSPORT,
+                activeBody && outfit == CatOutfitType.DYNAMITE,
                 activeBody && ownerInDanger,
                 activeBody && cat.isInWaterOrRain(),
                 activeBody && cat.getHealth() >= cat.getMaxHealth() - 0.001F,
@@ -343,17 +374,21 @@ public final class CatAttributeEffects {
     private record TraitContext(boolean night, boolean day, boolean bristlingRage,
                                  boolean blazingForm, boolean fishing,
                                  boolean mechanical, boolean honey,
+                                 boolean flight, boolean transport,
+                                 boolean dynamite,
                                  boolean protectiveInstinct, boolean wet,
                                 boolean fullHealth, boolean sitting,
                                 boolean timid) {
         private static TraitContext onlyNight(boolean night) {
             return new TraitContext(night, false, false, false, false,
-                    false, false, false, false, false, false, false);
+                    false, false, false, false, false, false, false, false,
+                    false, false);
         }
 
         private static TraitContext onlyTime(boolean night, boolean day) {
             return new TraitContext(night, day, false, false, false,
-                    false, false, false, false, false, false, false);
+                    false, false, false, false, false, false, false, false,
+                    false, false);
         }
     }
 

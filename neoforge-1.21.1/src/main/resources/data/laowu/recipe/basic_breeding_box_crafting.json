@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["CCC", "CWC", "CCC"],
+  "key": {
+    "C": {"item": "create:cardboard"},
+    "W": {"tag": "minecraft:wool"}
+  },
+  "result": {"id": "laowu:basic_breeding_box"}
+}

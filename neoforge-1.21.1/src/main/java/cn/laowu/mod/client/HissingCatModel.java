@@ -3,13 +3,20 @@ package cn.laowu.mod.client;
 import cn.laowu.mod.CatPoseData;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitEffects;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.CatModel;
 import net.minecraft.client.model.OcelotModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Cat;
 import org.joml.Quaternionf;
@@ -30,13 +37,37 @@ public final class HissingCatModel extends CatModel<Cat> {
     private boolean pancake;
     private float liveHeadXRot;
     private float liveHeadYRot;
+    private final ModelPart leftEar;
+    private final ModelPart rightEar;
 
     public HissingCatModel(ModelPart root) {
         super(root);
+        leftEar = head.getChild("left_ear");
+        rightEar = head.getChild("right_ear");
     }
 
     public static LayerDefinition createLayer() {
-        return LayerDefinition.create(OcelotModel.createBodyMesh(CubeDeformation.NONE), 64, 32);
+        CubeDeformation deformation = CubeDeformation.NONE;
+        MeshDefinition mesh = OcelotModel.createBodyMesh(deformation);
+        PartDefinition root = mesh.getRoot();
+        PartDefinition separatedHead = root.addOrReplaceChild("head",
+                CubeListBuilder.create()
+                        .texOffs(0, 0).addBox(-2.5F, -2.0F, -3.0F,
+                                5.0F, 4.0F, 5.0F, deformation)
+                        .texOffs(0, 24).addBox(-1.5F, -0.001F, -4.0F,
+                                3.0F, 2.0F, 2.0F, deformation),
+                PartPose.offset(0.0F, 15.0F, -9.0F));
+        separatedHead.addOrReplaceChild("left_ear",
+                CubeListBuilder.create().texOffs(0, 10)
+                        .addBox(-2.0F, -3.0F, 0.0F,
+                                1.0F, 1.0F, 2.0F, deformation),
+                PartPose.ZERO);
+        separatedHead.addOrReplaceChild("right_ear",
+                CubeListBuilder.create().texOffs(6, 10)
+                        .addBox(1.0F, -3.0F, 0.0F,
+                                1.0F, 1.0F, 2.0F, deformation),
+                PartPose.ZERO);
+        return LayerDefinition.create(mesh, 64, 32);
     }
 
     @Override
@@ -47,7 +78,17 @@ public final class HissingCatModel extends CatModel<Cat> {
         liveHeadYRot = head.yRot;
         hissing = CatPoseData.isHissing(cat);
         pancake = CatPoseData.isPancake(cat);
-        setVanillaGeometryVisible(!hissing && !pancake);
+        boolean vanillaVisible = !hissing && !pancake;
+        setVanillaGeometryVisible(vanillaVisible);
+        var traits = CatTraitData.read(cat).orElse(null);
+        boolean roundHeadInCombat = traits != null
+                && traits.has(CatTrait.ROUND_HEAD)
+                && CatTraitEffects.isCombatActive(cat);
+        leftEar.visible = vanillaVisible && !roundHeadInCombat;
+        rightEar.visible = vanillaVisible && !roundHeadInCombat;
+        boolean splitTail = traits != null && traits.has(CatTrait.NEKOMATA);
+        tail1.visible = vanillaVisible && !splitTail;
+        tail2.visible = vanillaVisible && !splitTail;
     }
 
     private void setVanillaGeometryVisible(boolean visible) {
@@ -59,6 +100,8 @@ public final class HissingCatModel extends CatModel<Cat> {
         rightFrontLeg.visible = visible;
         tail1.visible = visible;
         tail2.visible = visible;
+        leftEar.visible = visible;
+        rightEar.visible = visible;
     }
 
     public boolean isHissing() {
@@ -75,6 +118,34 @@ public final class HissingCatModel extends CatModel<Cat> {
 
     public float liveHeadYRot() {
         return liveHeadYRot;
+    }
+
+    ModelPart headPart() {
+        return head;
+    }
+
+    ModelPart leftHindLegPart() {
+        return leftHindLeg;
+    }
+
+    ModelPart rightHindLegPart() {
+        return rightHindLeg;
+    }
+
+    ModelPart leftFrontLegPart() {
+        return leftFrontLeg;
+    }
+
+    ModelPart rightFrontLegPart() {
+        return rightFrontLeg;
+    }
+
+    ModelPart tailBasePart() {
+        return tail1;
+    }
+
+    ModelPart tailTipPart() {
+        return tail2;
     }
 
     /**

@@ -30,6 +30,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
     private static final int ROW_HEIGHT = 27;
     private static final int INSTALLED_ROWS = 4;
     private static final int CATALOG_ROWS = 6;
+    private static final int SCROLLBAR_WIDTH = 5;
 
     private static final List<CatTrait> CATALOG = Arrays.stream(CatTrait.values())
             .sorted(Comparator.comparingInt(CatTraitEditorScreen::rarityOrder)
@@ -44,6 +45,8 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
     private EditBox searchBox;
     private List<CatTrait> filteredCatalog = CATALOG;
     private int catalogOffset;
+    private boolean draggingScrollbar;
+    private double scrollbarGrabOffset;
 
     public CatTraitEditorScreen(CatTraitEditorMenu menu, Inventory inventory,
                                 Component title) {
@@ -60,6 +63,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         catalogAdd.clear();
         filteredCatalog = CATALOG;
         catalogOffset = 0;
+        draggingScrollbar = false;
 
         searchBox = new EditBox(font, leftPos + CATALOG_X + 4, topPos + 27,
                 137, 18, Component.translatable(
@@ -73,7 +77,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         for (int slot = 0; slot < INSTALLED_ROWS; slot++) {
             int row = slot;
             int y = topPos + FIRST_ROW_Y + slot * ROW_HEIGHT + 4;
-            installedMinus.add(addRenderableWidget(Button.builder(Component.literal("\u2212"), button -> {
+            installedMinus.add(addRenderableWidget(Button.builder(Component.literal("−"), button -> {
                         CatTrait trait = installedTrait(row);
                         if (trait != null) sendButton(trait, false);
                     }).bounds(leftPos + INSTALLED_X + 151, y, 17, 18).build()));
@@ -92,9 +96,9 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
                     }).bounds(leftPos + CATALOG_X + 174, y, 17, 18).build()));
         }
 
-        scrollUp = addRenderableWidget(Button.builder(Component.literal("\u25B2"), button -> scroll(-1))
+        scrollUp = addRenderableWidget(Button.builder(Component.literal("▲"), button -> scroll(-1))
                 .bounds(leftPos + CATALOG_X + 145, topPos + 27, 17, 18).build());
-        scrollDown = addRenderableWidget(Button.builder(Component.literal("\u25BC"), button -> scroll(1))
+        scrollDown = addRenderableWidget(Button.builder(Component.literal("▼"), button -> scroll(1))
                 .bounds(leftPos + CATALOG_X + 165, topPos + 27, 17, 18).build());
         setInitialFocus(searchBox);
         refreshButtons();
@@ -105,6 +109,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         filteredCatalog = needle.isEmpty() ? CATALOG : CATALOG.stream()
                 .filter(trait -> matchesSearch(trait, needle)).toList();
         catalogOffset = 0;
+        draggingScrollbar = false;
         refreshButtons();
     }
 
@@ -147,6 +152,64 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && isOverScrollbar(mouseX, mouseY)
+                && maximumCatalogOffset() > 0) {
+            int thumbY = scrollbarThumbY();
+            int thumbHeight = scrollbarThumbHeight();
+            if (mouseY >= thumbY && mouseY < thumbY + thumbHeight) {
+                scrollbarGrabOffset = mouseY - thumbY;
+            } else {
+                scrollbarGrabOffset = thumbHeight / 2.0D;
+                updateScrollbarDrag(mouseY);
+            }
+            draggingScrollbar = true;
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button,
+                                double dragX, double dragY) {
+        if (button == 0 && draggingScrollbar) {
+            updateScrollbarDrag(mouseY);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && draggingScrollbar) {
+            draggingScrollbar = false;
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    private boolean isOverScrollbar(double mouseX, double mouseY) {
+        int trackX = scrollbarTrackX();
+        int trackY = scrollbarTrackY();
+        return mouseX >= trackX - 2 && mouseX < trackX + SCROLLBAR_WIDTH + 2
+                && mouseY >= trackY && mouseY < trackY + scrollbarTrackHeight();
+    }
+
+    private void updateScrollbarDrag(double mouseY) {
+        int maximum = maximumCatalogOffset();
+        int travel = scrollbarTrackHeight() - scrollbarThumbHeight();
+        if (maximum <= 0 || travel <= 0) {
+            catalogOffset = 0;
+        } else {
+            double thumbTop = mouseY - scrollbarGrabOffset - scrollbarTrackY();
+            catalogOffset = Mth.clamp((int) Math.round(
+                    Mth.clamp(thumbTop / travel, 0.0D, 1.0D) * maximum),
+                    0, maximum);
+        }
+        refreshButtons();
     }
 
     private void refreshButtons() {
@@ -242,17 +305,45 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
     }
 
     private void renderScrollbar(GuiGraphics graphics) {
-        int trackX = leftPos + CATALOG_X + CATALOG_WIDTH - 5;
-        int trackY = topPos + FIRST_ROW_Y + 3;
-        int trackHeight = CATALOG_ROWS * ROW_HEIGHT - 6;
-        graphics.fill(trackX, trackY, trackX + 2, trackY + trackHeight, 0xFF4A4A4A);
-        int maximum = Math.max(0, filteredCatalog.size() - CATALOG_ROWS);
-        int thumbHeight = filteredCatalog.isEmpty() ? trackHeight
+        int trackX = scrollbarTrackX();
+        int trackY = scrollbarTrackY();
+        int trackHeight = scrollbarTrackHeight();
+        graphics.fill(trackX, trackY, trackX + SCROLLBAR_WIDTH,
+                trackY + trackHeight, 0xFF4A4A4A);
+        int thumbY = scrollbarThumbY();
+        int thumbHeight = scrollbarThumbHeight();
+        graphics.fill(trackX, thumbY, trackX + SCROLLBAR_WIDTH,
+                thumbY + thumbHeight, draggingScrollbar ? 0xFFFFFFFF : 0xFFD8D8D8);
+    }
+
+    private int maximumCatalogOffset() {
+        return Math.max(0, filteredCatalog.size() - CATALOG_ROWS);
+    }
+
+    private int scrollbarTrackX() {
+        return leftPos + CATALOG_X + CATALOG_WIDTH - 8;
+    }
+
+    private int scrollbarTrackY() {
+        return topPos + FIRST_ROW_Y + 3;
+    }
+
+    private int scrollbarTrackHeight() {
+        return CATALOG_ROWS * ROW_HEIGHT - 6;
+    }
+
+    private int scrollbarThumbHeight() {
+        int trackHeight = scrollbarTrackHeight();
+        return filteredCatalog.isEmpty() ? trackHeight
                 : Math.max(12, Math.min(trackHeight,
                 trackHeight * CATALOG_ROWS / filteredCatalog.size()));
-        int travel = trackHeight - thumbHeight;
-        int thumbY = trackY + (maximum == 0 ? 0 : travel * catalogOffset / maximum);
-        graphics.fill(trackX, thumbY, trackX + 2, thumbY + thumbHeight, 0xFFD8D8D8);
+    }
+
+    private int scrollbarThumbY() {
+        int maximum = maximumCatalogOffset();
+        int travel = scrollbarTrackHeight() - scrollbarThumbHeight();
+        return scrollbarTrackY()
+                + (maximum == 0 ? 0 : travel * catalogOffset / maximum);
     }
 
     @Override
