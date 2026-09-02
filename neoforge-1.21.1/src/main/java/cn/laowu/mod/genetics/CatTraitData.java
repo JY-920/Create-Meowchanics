@@ -57,6 +57,12 @@ public final class CatTraitData {
     public static void set(Cat cat, CatTraitProfile profile) {
         cat.getPersistentData().put(TAG, profile.save());
         CACHE.put(cat, profile);
+        if (profile.has(CatTrait.LOLI) && cat.getAge() >= 0) {
+            cat.setAge(-24_000);
+        }
+        // Appearance traits can alter the per-entity physical scale. Refresh
+        // after updating the cache so Forge's Size event reads the new profile.
+        cat.refreshDimensions();
         if (!cat.level().isClientSide) {
             CatAttributeData.read(cat).ifPresent(attributes ->
                     CatAttributeEffects.refresh(cat, attributes, profile));

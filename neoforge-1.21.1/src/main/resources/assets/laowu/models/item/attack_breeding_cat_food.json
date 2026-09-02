@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "laowu:item/attack_breeding_cat_food"
+  }
+}

@@ -1,7 +1,10 @@
 package cn.laowu.mod.genetics;
 
+import cn.laowu.mod.CatClothesData;
+import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatProfileData;
 import cn.laowu.mod.CatPoseData;
+import cn.laowu.mod.HissingCatBehavior;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.network.ModNetwork;
 import net.minecraft.sounds.SoundEvents;
@@ -24,6 +27,7 @@ public final class CatTraitEffects {
     private static final String RAGE_CLIENT_ACTIVE_TAG = "LaoWuTraitRageClientActive";
     private static final String LU_BU_OUTNUMBERED_TAG = "LaoWuTraitLuBuOutnumbered";
     private static final String TIMID_OUTNUMBERED_TAG = "LaoWuTraitTimidOutnumbered";
+    private static final String COMBAT_ACTIVE_TAG = "LaoWuTraitCombatActive";
     private static final String NINE_LIVES_COOLDOWN_UNTIL_TAG =
             "LaoWuTraitNineLivesCooldownUntil";
     private static final String ENERGY_RECOVERY_COOLDOWN_UNTIL_TAG =
@@ -38,6 +42,12 @@ public final class CatTraitEffects {
     public static void tick(Cat cat) {
         if (cat.level().isClientSide) return;
         CatTraitProfile traits = CatTraitData.ensure(cat);
+        // Reset only near the end of the growth timer. This keeps LOLI cats
+        // permanently young without dirtying synchronized age data every tick.
+        if (traits.has(CatTrait.LOLI) && cat.getAge() > -23_000) {
+            cat.setAge(-24_000);
+        }
+        updateCombatState(cat, traits);
         if (traits.has(CatTrait.HEAT_RESISTANCE) && cat.isOnFire()) {
             cat.setRemainingFireTicks(0);
         }
@@ -97,6 +107,11 @@ public final class CatTraitEffects {
         return cat.getPersistentData().getBoolean(TIMID_OUTNUMBERED_TAG);
     }
 
+    /** Synced combat flag used by the Round Head appearance renderer. */
+    public static boolean isCombatActive(Cat cat) {
+        return cat.getPersistentData().getBoolean(COMBAT_ACTIVE_TAG);
+    }
+
     /** Starts the event-driven retaliation buff only after accepted final damage. */
     public static void onAcceptedDamage(Cat cat) {
         if (cat.level().isClientSide || CatPoseData.isPancake(cat)) return;
@@ -116,7 +131,8 @@ public final class CatTraitEffects {
     /** Applies a transition-only packet; no transient timer is written client-side. */
     public static void setClientState(Cat cat, boolean rageActive,
                                       boolean luBuOutnumbered,
-                                      boolean timidOutnumbered) {
+                                      boolean timidOutnumbered,
+                                      boolean combatActive) {
         if (rageActive) cat.getPersistentData().putBoolean(RAGE_CLIENT_ACTIVE_TAG, true);
         else cat.getPersistentData().remove(RAGE_CLIENT_ACTIVE_TAG);
         if (luBuOutnumbered) {
@@ -129,6 +145,23 @@ public final class CatTraitEffects {
         } else {
             cat.getPersistentData().remove(TIMID_OUTNUMBERED_TAG);
         }
+        if (combatActive) {
+            cat.getPersistentData().putBoolean(COMBAT_ACTIVE_TAG, true);
+        } else {
+            cat.getPersistentData().remove(COMBAT_ACTIVE_TAG);
+        }
+    }
+
+    private static void updateCombatState(Cat cat, CatTraitProfile traits) {
+        boolean recentRetaliation = cat.getLastHurtByMob() != null
+                && cat.tickCount - cat.getLastHurtByMobTimestamp() <= 100;
+        boolean active = traits.has(CatTrait.ROUND_HEAD)
+                && ((cat.getTarget() != null && cat.getTarget().isAlive())
+                || HissingCatBehavior.isFighting(cat) || recentRetaliation);
+        if (isCombatActive(cat) == active) return;
+        if (active) cat.getPersistentData().putBoolean(COMBAT_ACTIVE_TAG, true);
+        else cat.getPersistentData().remove(COMBAT_ACTIVE_TAG);
+        ModNetwork.syncCatTraitStateToTracking(cat);
     }
 
     private static void updateHostileConditions(Cat cat, CatTraitProfile traits) {
@@ -202,7 +235,10 @@ public final class CatTraitEffects {
         if (level <= 0 || cat.getRandom().nextInt(100)
                 >= CatTrait.THORNS.thornsChance(level)) return;
 
-        float damage = (float) cat.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        CatOutfitType outfit = CatClothesData.getOutfit(cat);
+        if (outfit == CatOutfitType.NONE || outfit == CatOutfitType.TRANSPORT) return;
+        float damage = (float) (cat.getAttributeValue(Attributes.ATTACK_DAMAGE)
+                * CatTrait.THORNS.thornsDamagePercent(level) / 100.0D);
         if (damage <= 0.0F) return;
         if (attacker.hurt(cat.damageSources().thorns(cat), damage)) {
             cat.playSound(SoundEvents.THORNS_HIT, 0.8F, 1.0F);

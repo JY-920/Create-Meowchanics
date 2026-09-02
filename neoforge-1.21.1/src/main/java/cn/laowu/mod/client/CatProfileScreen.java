@@ -3,7 +3,9 @@ package cn.laowu.mod.client;
 import cn.laowu.mod.CatProfileData;
 import cn.laowu.mod.CatProfileMenu;
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitEffects;
 import cn.laowu.mod.genetics.CatTraitProfile;
 import cn.laowu.mod.network.ModNetwork;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -104,8 +106,16 @@ public final class CatProfileScreen extends AbstractContainerScreen<CatProfileMe
 
         Cat cat = currentCat();
         if (cat != null) {
+            CatTraitProfile traits = CatTraitData.read(cat)
+                    .orElse(CatTraitProfile.EMPTY);
+            boolean night = CatTraitEffects.isNight(minecraft.level);
+            boolean day = CatTraitEffects.isDay(minecraft.level);
+            if (CatStatsGoggleOverlay.renderProfileValueTooltip(
+                    graphics, font, CatAttributeData.read(cat).orElse(null), traits,
+                    leftPos + STATS_X, topPos + STATS_Y, mouseX, mouseY,
+                    night, day, cat)) return;
             CatTraitCardRenderer.renderTooltip(graphics, font,
-                    CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY),
+                    traits,
                     leftPos + TRAITS_X, topPos + TRAITS_Y,
                     TRAIT_SPACING, mouseX, mouseY);
         }
@@ -138,6 +148,11 @@ public final class CatProfileScreen extends AbstractContainerScreen<CatProfileMe
         if (cat == null) return;
         renderCat(graphics, cat, mouseX, mouseY, partialTick);
         CatTraitProfile traits = CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY);
+        CatStatsGoggleOverlay.renderProfilePanel(graphics,
+                CatAttributeData.read(cat).orElse(null), traits,
+                leftPos + STATS_X, topPos + STATS_Y,
+                CatTraitEffects.isNight(minecraft.level),
+                CatTraitEffects.isDay(minecraft.level), cat);
         CatTraitCardRenderer.renderCards(graphics, font, traits,
                 leftPos + TRAITS_X, topPos + TRAITS_Y, TRAIT_SPACING);
     }

@@ -1,6 +1,7 @@
 package cn.laowu.mod.create;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.item.BreedingCatFoodItem;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,6 +29,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import org.jetbrains.annotations.Nullable;
 
 /** A front-facing, menu-backed cat-pancake breeding machine. */
@@ -78,11 +80,14 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
         if (!(level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+        if (tier == BreedingBoxTier.BASIC && player instanceof FakePlayer) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
 
         if (player.isShiftKeyDown()) {
-            ItemStack parent = box.extractParent();
-            if (!parent.isEmpty()) {
-                giveOrDrop(player, parent);
+            ItemStack extracted = box.extractManual();
+            if (!extracted.isEmpty()) {
+                giveOrDrop(player, extracted);
                 playTransferSound(level, pos, 0.9F);
             }
             return ItemInteractionResult.CONSUME;
@@ -99,7 +104,7 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
             return ItemInteractionResult.CONSUME;
         }
 
-        if (stack.is(LaoWuMod.CAT_FOOD.get())) {
+        if (BreedingCatFoodItem.isBreedingFood(stack)) {
             ItemStack offered = stack.copy();
             ItemStack remainder = box.insertFood(offered);
             int inserted = offered.getCount() - remainder.getCount();
@@ -123,20 +128,16 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
         if (!(level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box)) {
             return InteractionResult.PASS;
         }
-
-        if (player.isShiftKeyDown()) {
-            ItemStack parent = box.extractParent();
-            if (!parent.isEmpty()) {
-                giveOrDrop(player, parent);
-                playTransferSound(level, pos, 0.9F);
-            }
-            return InteractionResult.CONSUME;
+        if (tier == BreedingBoxTier.BASIC && player instanceof FakePlayer) {
+            return InteractionResult.PASS;
         }
 
-        ItemStack child = box.extractChild();
-        if (!child.isEmpty()) {
-            giveOrDrop(player, child);
-            playTransferSound(level, pos, 1.35F);
+        if (player.isShiftKeyDown()) {
+            ItemStack extracted = box.extractManual();
+            if (!extracted.isEmpty()) {
+                giveOrDrop(player, extracted);
+                playTransferSound(level, pos, 0.9F);
+            }
             return InteractionResult.CONSUME;
         }
 
@@ -160,7 +161,10 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
                          BlockState newState, boolean moving) {
         if (!oldState.is(newState.getBlock())) {
             if (level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box) {
-                box.dropContents(level, pos);
+                if (!level.isClientSide) {
+                    box.dropContents(level, pos);
+                    box.destroy();
+                }
             }
             super.onRemove(oldState, level, pos, newState, moving);
         }
@@ -185,8 +189,7 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null
-                : createTickerHelper(type, LaoWuMod.BREEDING_BOX_BE.get(),
-                BreedingBoxBlockEntity::serverTick);
+        return createTickerHelper(type, LaoWuMod.BREEDING_BOX_BE.get(),
+                BreedingBoxBlockEntity::tickBox);
     }
 }

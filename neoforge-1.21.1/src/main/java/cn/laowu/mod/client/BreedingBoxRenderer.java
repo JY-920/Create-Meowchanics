@@ -4,19 +4,21 @@ import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.create.BreedingBoxBlock;
 import cn.laowu.mod.create.BreedingBoxBlockEntity;
 import cn.laowu.mod.create.BreedingBoxTier;
+import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.AABB;
 
 /** Static BER preserving the complete supplied Blockbench geometry and exact UVs. */
-public final class BreedingBoxRenderer implements BlockEntityRenderer<BreedingBoxBlockEntity> {
-    public BreedingBoxRenderer(BlockEntityRendererProvider.Context context) {}
+public final class BreedingBoxRenderer
+        extends SmartBlockEntityRenderer<BreedingBoxBlockEntity> {
+    public BreedingBoxRenderer(BlockEntityRendererProvider.Context context) {
+        super(context);
+    }
 
     public static ResourceLocation model(BreedingBoxTier tier) {
         return LaoWuMod.id("models/block/" + tier.serializedName() + ".bbmodel");
@@ -27,13 +29,9 @@ public final class BreedingBoxRenderer implements BlockEntityRenderer<BreedingBo
     }
 
     @Override
-    public AABB getRenderBoundingBox(BreedingBoxBlockEntity box) {
-        return new AABB(box.getBlockPos()).expandTowards(0.0D, 0.25D, 0.0D);
-    }
-
-    @Override
-    public void render(BreedingBoxBlockEntity box, float partialTick, PoseStack pose,
-                       MultiBufferSource buffers, int light, int overlay) {
+    protected void renderSafe(BreedingBoxBlockEntity box, float partialTick,
+                              PoseStack pose, MultiBufferSource buffers,
+                              int light, int overlay) {
         Direction facing = box.getBlockState().getValue(BreedingBoxBlock.FACING);
         pose.pushPose();
         // Direct-root Blockbench projects are evaluated around the renderer's
@@ -51,5 +49,10 @@ public final class BreedingBoxRenderer implements BlockEntityRenderer<BreedingBo
                 light, overlay, RuntimeBlockbenchModel.GroupSelection.ALL,
                 RuntimeBlockbenchModel.HeadMotion.NONE);
         pose.popPose();
+
+        // Keep Create's native SmartBlockEntity overlays. This renders the
+        // configured Cat Filter item into each sided value box; the previous
+        // standalone BER drew only the cardboard model and skipped this pass.
+        super.renderSafe(box, partialTick, pose, buffers, light, overlay);
     }
 }

@@ -24,7 +24,7 @@ public enum CatTrait {
     BEEBEE_GENE("beebee_gene", CatTraitRarity.GOOD, true),
     BLAZING_FORM("blazing_form", CatTraitRarity.GOOD, true,
             CatTraitSlot.FIRE_CAREER),
-    PROSPEROUS_LITTER("prosperous_litter", CatTraitRarity.GOOD, true),
+    PROSPEROUS_LITTER("prosperous_litter", CatTraitRarity.EXCELLENT, true),
     ANGLERS_FORTUNE("anglers_fortune", CatTraitRarity.GOOD, true),
     SUPERHEAT_GENE("superheat_gene", CatTraitRarity.EXCELLENT, false,
             CatTraitSlot.FIRE_CAREER),
@@ -47,6 +47,22 @@ public enum CatTrait {
             CatTraitSlot.DAMAGE_AVOIDANCE),
     ENERGY_RECOVERY("energy_recovery", CatTraitRarity.EXCELLENT, false),
 
+    // Appearance traits. They all occupy the same exclusive channel so a cat
+    // cannot combine silhouettes or animations that would fight each other.
+    LOLI("loli", CatTraitRarity.GOOD, false, CatTraitSlot.APPEARANCE),
+    HIM("him", CatTraitRarity.GOOD, false, CatTraitSlot.APPEARANCE),
+    ISAAC("isaac", CatTraitRarity.COMMON, false, CatTraitSlot.APPEARANCE),
+    ROUND_HEAD("round_head", CatTraitRarity.COMMON, false, CatTraitSlot.APPEARANCE),
+    OIIAI("oiiai", CatTraitRarity.COMMON, false, CatTraitSlot.APPEARANCE),
+    RAINBOW_CAT("rainbow_cat", CatTraitRarity.EXCELLENT, false,
+            CatTraitSlot.APPEARANCE),
+    NEKOMATA("nekomata", CatTraitRarity.EXCELLENT, false,
+            CatTraitSlot.APPEARANCE),
+    PUSS_IN_BOOTS("puss_in_boots", CatTraitRarity.GOOD, false,
+            CatTraitSlot.APPEARANCE),
+    BIG_CHONKY_CAT("big_chonky_cat", CatTraitRarity.GOOD, true,
+            CatTraitSlot.APPEARANCE),
+
     // Behaviour traits. The narrow slots prevent competing AI targets while
     // still allowing compatible passive, environmental and audio behaviours.
     ANOREXIA("anorexia", CatTraitRarity.DEFECT, false),
@@ -58,8 +74,8 @@ public enum CatTrait {
             CatTraitSlot.MOVEMENT_BEHAVIOUR),
     STITCH("stitch", CatTraitRarity.DEFECT, false,
             CatTraitSlot.COMBAT_BEHAVIOUR),
-    XIAOTING("xiaoting", CatTraitRarity.EXCELLENT, false),
-    DORAEMON("doraemon", CatTraitRarity.EXCELLENT, false),
+    XIAOTING("xiaoting", CatTraitRarity.GOOD, false),
+    DORAEMON("doraemon", CatTraitRarity.GOOD, false),
     EDWARD("edward", CatTraitRarity.DEFECT, false,
             CatTraitSlot.COMBAT_BEHAVIOUR),
     CAT_KING("cat_king", CatTraitRarity.GOOD, false),
@@ -76,17 +92,15 @@ public enum CatTrait {
     CABLE_BITER("cable_biter", CatTraitRarity.DEFECT, false),
     AIR_RAID_SIREN("air_raid_siren", CatTraitRarity.COMMON, false),
     MINOR_ILLNESS("minor_illness", CatTraitRarity.DEFECT, false),
-    COZY("cozy", CatTraitRarity.GOOD, false,
-            CatTraitSlot.MOVEMENT_BEHAVIOUR),
     CUDDLE_ONLY("cuddle_only", CatTraitRarity.DEFECT, false,
             CatTraitSlot.REPRODUCTION_BEHAVIOUR),
-    SELECTED_ELDER("selected_elder", CatTraitRarity.EXCELLENT, true,
+    SELECTED_ELDER("selected_elder", CatTraitRarity.GOOD, true,
             CatTraitSlot.HISSING_BEHAVIOUR),
     TOM_TREE_FELLER("tom_tree_feller", CatTraitRarity.COMMON, false),
     HUNTER_KIMI("hunter_kimi", CatTraitRarity.DEFECT, false,
             CatTraitSlot.MOVEMENT_BEHAVIOUR, CatTraitSlot.COMBAT_BEHAVIOUR),
     HIGH_STEP("high_step", CatTraitRarity.GOOD, false),
-    SKY_CAT("sky_cat", CatTraitRarity.EXCELLENT, false,
+    SKY_CAT("sky_cat", CatTraitRarity.GOOD, false,
             CatTraitSlot.MOVEMENT_BEHAVIOUR),
     AUTO_ATTACH("auto_attach", CatTraitRarity.COMMON, false,
             CatTraitSlot.MOVEMENT_BEHAVIOUR),
@@ -218,6 +232,10 @@ public enum CatTrait {
 
     public int thornsChance(int level) {
         return this == THORNS ? scaledLevelValue(level, 25, 40) : 0;
+    }
+
+    public int thornsDamagePercent(int level) {
+        return this == THORNS ? 60 + (clampLevel(level) - 1) * 10 : 0;
     }
 
     public int nightAttackBonus(int level) {
@@ -376,6 +394,27 @@ public enum CatTrait {
         return this == SELECTED_ELDER ? 10 + (clampLevel(level) - 1) * 5 : 0;
     }
 
+    /** Visual and physical size used by Big Chonky Cat, from 115% to 175%. */
+    public int bigCatScalePercent(int level) {
+        return this == BIG_CHONKY_CAT ? 115 + (clampLevel(level) - 1) * 10 : 100;
+    }
+
+    public int rainbowSpeedBonus() {
+        return this == RAINBOW_CAT ? 10 : 0;
+    }
+
+    public int rainbowLuckBonus() {
+        return this == RAINBOW_CAT ? 20 : 0;
+    }
+
+    public int nekomataAttackBonus() {
+        return this == NEKOMATA ? 20 : 0;
+    }
+
+    public int nekomataIntelligenceBonus() {
+        return this == NEKOMATA ? 10 : 0;
+    }
+
     private int scaledLevelValue(int level, int minimum, int maximum) {
         int progress = clampLevel(level) - 1;
         return minimum + Math.round((maximum - minimum) * progress / 6.0F);
@@ -397,7 +436,7 @@ public enum CatTrait {
         }
         return switch (this) {
             case THORNS -> Component.translatable("trait.laowu.thorns.summary",
-                    thornsChance(clamped));
+                    thornsChance(clamped), thornsDamagePercent(clamped));
             case NIGHT_OWL -> Component.translatable("trait.laowu.night_owl.summary",
                     nightAttackBonus(clamped), nightSpeedBonus(clamped));
             case HEAT_RESISTANCE -> Component.translatable(
@@ -458,13 +497,24 @@ public enum CatTrait {
             case SELECTED_ELDER -> Component.translatable(
                     "trait.laowu.selected_elder.summary",
                     selectedElderAttackBonus(clamped));
+            case BIG_CHONKY_CAT -> Component.translatable(
+                    "trait.laowu.big_chonky_cat.summary",
+                    bigCatScalePercent(clamped));
+            case RAINBOW_CAT -> Component.translatable(
+                    "trait.laowu.rainbow_cat.summary",
+                    rainbowSpeedBonus(), rainbowLuckBonus());
+            case NEKOMATA -> Component.translatable(
+                    "trait.laowu.nekomata.summary",
+                    nekomataAttackBonus(), nekomataIntelligenceBonus());
             case ANOREXIA, GOOD_CAT, LOW_LEVEL_CODE, SHEDDING, STITCH,
                     XIAOTING, DORAEMON, EDWARD, CAT_KING, DING_DONG_CAT,
                     CODE_CONFLICT, FOOD_GUARD, MISCHIEVOUS, FILICIDE,
                     DROWNING, CABLE_BITER, AIR_RAID_SIREN, MINOR_ILLNESS,
-                    COZY, CUDDLE_ONLY, TOM_TREE_FELLER, HUNTER_KIMI,
+                    CUDDLE_ONLY, TOM_TREE_FELLER, HUNTER_KIMI,
                     HIGH_STEP, SKY_CAT, AUTO_ATTACH, TRIPOD_CAT,
-                    HIGH_EXPLOSIVE_FUEL, ROLLING_LOG -> Component.translatable(
+                    HIGH_EXPLOSIVE_FUEL, ROLLING_LOG, LOLI, HIM, ISAAC,
+                    ROUND_HEAD, OIIAI,
+                    PUSS_IN_BOOTS -> Component.translatable(
                     "trait.laowu." + serializedName + ".summary");
             default -> Component.empty();
         };
@@ -478,7 +528,7 @@ public enum CatTrait {
         }
         return switch (this) {
             case THORNS -> Component.translatable("trait.laowu.thorns.description",
-                    thornsChance(clamped));
+                    thornsChance(clamped), thornsDamagePercent(clamped));
             case NIGHT_OWL -> Component.translatable("trait.laowu.night_owl.description",
                     nightAttackBonus(clamped), nightSpeedBonus(clamped));
             case HEAT_RESISTANCE -> Component.translatable(
@@ -539,13 +589,24 @@ public enum CatTrait {
             case SELECTED_ELDER -> Component.translatable(
                     "trait.laowu.selected_elder.description",
                     selectedElderAttackBonus(clamped));
+            case BIG_CHONKY_CAT -> Component.translatable(
+                    "trait.laowu.big_chonky_cat.description",
+                    bigCatScalePercent(clamped));
+            case RAINBOW_CAT -> Component.translatable(
+                    "trait.laowu.rainbow_cat.description",
+                    rainbowSpeedBonus(), rainbowLuckBonus());
+            case NEKOMATA -> Component.translatable(
+                    "trait.laowu.nekomata.description",
+                    nekomataAttackBonus(), nekomataIntelligenceBonus());
             case ANOREXIA, GOOD_CAT, LOW_LEVEL_CODE, SHEDDING, STITCH,
                     XIAOTING, DORAEMON, EDWARD, CAT_KING, DING_DONG_CAT,
                     CODE_CONFLICT, FOOD_GUARD, MISCHIEVOUS, FILICIDE,
                     DROWNING, CABLE_BITER, AIR_RAID_SIREN, MINOR_ILLNESS,
-                    COZY, CUDDLE_ONLY, TOM_TREE_FELLER, HUNTER_KIMI,
+                    CUDDLE_ONLY, TOM_TREE_FELLER, HUNTER_KIMI,
                     HIGH_STEP, SKY_CAT, AUTO_ATTACH, TRIPOD_CAT,
-                    HIGH_EXPLOSIVE_FUEL, ROLLING_LOG -> Component.translatable(
+                    HIGH_EXPLOSIVE_FUEL, ROLLING_LOG, LOLI, HIM, ISAAC,
+                    ROUND_HEAD, OIIAI,
+                    PUSS_IN_BOOTS -> Component.translatable(
                     "trait.laowu." + serializedName + ".description");
             default -> Component.empty();
         };
@@ -559,7 +620,7 @@ public enum CatTrait {
         }
         return switch (this) {
             case THORNS -> Component.translatable("trait.laowu.thorns.next",
-                    thornsChance(next));
+                    thornsChance(next), thornsDamagePercent(next));
             case NIGHT_OWL -> Component.translatable("trait.laowu.night_owl.next",
                     nightAttackBonus(next), nightSpeedBonus(next));
             case LONG_FUR -> Component.translatable("trait.laowu.long_fur.next",
@@ -604,6 +665,9 @@ public enum CatTrait {
             case SELECTED_ELDER -> Component.translatable(
                     "trait.laowu.selected_elder.next",
                     selectedElderAttackBonus(next));
+            case BIG_CHONKY_CAT -> Component.translatable(
+                    "trait.laowu.big_chonky_cat.next",
+                    bigCatScalePercent(next));
             default -> Component.empty();
         };
     }

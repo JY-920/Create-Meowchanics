@@ -129,7 +129,7 @@ public final class FusionDebugWandItem extends Item {
                 secondAttributes, secondTraits);
         CatGenome genome = CatGenome.fuse(
                 CatGenomeData.ensure(first), CatGenomeData.ensure(second),
-                variants.keySet(), mutationChance, random);
+                variants.keySet().stream().toList(), mutationChance, random);
         CatAttributeProfile attributes = CatAttributeProfile.fuse(
                 firstAttributes, secondAttributes, random);
 

@@ -37,7 +37,7 @@ public final class BreedingBoxMenu extends AbstractContainerMenu {
         super(LaoWuMod.BREEDING_BOX_MENU.get(), id);
         if (box == null) {
             this.machineInventory = new ItemStackHandler(MACHINE_SLOTS);
-            this.data = new SimpleContainerData(3);
+            this.data = new SimpleContainerData(4);
             this.access = ContainerLevelAccess.NULL;
         } else {
             this.machineInventory = box.inventory();
@@ -101,6 +101,10 @@ public final class BreedingBoxMenu extends AbstractContainerMenu {
 
     public BreedingBoxTier tier() {
         return BreedingBoxTier.byOrdinal(data.get(2));
+    }
+
+    public float effectiveMutationPercent() {
+        return data.get(3) / 100.0F;
     }
 
     public int progressWidth(int width) {

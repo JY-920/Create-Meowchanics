@@ -1,0 +1,22 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake"
+    },
+    {
+      "item": "laowu:super_dried_fish"
+    }
+  ],
+  "results": [
+    {
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuCatVariant": "minecraft:red",
+          "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png"
+        }
+      },
+      "id": "laowu:cat_pancake"
+    }
+  ]
+}

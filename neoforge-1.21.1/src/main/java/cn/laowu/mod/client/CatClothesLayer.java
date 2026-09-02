@@ -3,6 +3,7 @@ package cn.laowu.mod.client;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatPoseData;
 import cn.laowu.mod.CatOutfitType;
+import cn.laowu.mod.DynamiteCatLastStand;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.CatModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -28,7 +29,8 @@ public final class CatClothesLayer extends RenderLayer<Cat, CatModel<Cat>> {
                 || outfit == CatOutfitType.TRANSPORT
                 || !(getParentModel() instanceof HissingCatModel model)) return;
 
-        int overlay = LivingEntityRenderer.getOverlayCoords(cat, 0.0F);
+        int overlay = LivingEntityRenderer.getOverlayCoords(cat,
+                DynamiteCatLastStand.whiteOverlayProgress(cat, partialTick));
         var transforms = model.catOutfitTransforms(outfit);
         renderTextureLayer(poseStack, buffer, packedLight, overlay, cat, model, outfit,
                 definition, transforms, definition.texture(), 1);

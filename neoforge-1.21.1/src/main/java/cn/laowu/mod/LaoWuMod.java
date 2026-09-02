@@ -11,6 +11,14 @@ import cn.laowu.mod.item.CatPouchItem;
 import cn.laowu.mod.item.CatGrenadeBoxItem;
 import cn.laowu.mod.item.CatStripItem;
 import cn.laowu.mod.item.CatFoodItem;
+import cn.laowu.mod.item.PheromoneCatFoodItem;
+import cn.laowu.mod.item.CatAttributeCanItem;
+import cn.laowu.mod.item.CatTraitFishItem;
+import cn.laowu.mod.item.BreedingOnlyCatCanItem;
+import cn.laowu.mod.item.BreedingCatFoodItem;
+import cn.laowu.mod.item.MaterialDebugWandItem;
+import cn.laowu.mod.item.CatScannerItem;
+import cn.laowu.mod.item.ButterBreadItem;
 import cn.laowu.mod.item.CatGrenadeItem;
 import cn.laowu.mod.item.CatEngineBlockItem;
 import cn.laowu.mod.item.DevouringCatBlockItem;
@@ -20,14 +28,24 @@ import cn.laowu.mod.item.CatFurItem;
 import cn.laowu.mod.item.CatHoeItem;
 import cn.laowu.mod.item.CatTotemItem;
 import cn.laowu.mod.item.TerminatorSuitItem;
+import cn.laowu.mod.item.AdoptionBoxBlockItem;
 import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.entity.CatBallEntity;
+import cn.laowu.mod.entity.ButterCatBoss;
+import cn.laowu.mod.entity.FishingRodProjectile;
+import cn.laowu.mod.entity.MechanicalLaserProjectile;
+import cn.laowu.mod.entity.HoneyMissileProjectile;
+import cn.laowu.mod.entity.LogisticsSupportProjectile;
+import cn.laowu.mod.entity.DynamiteProjectile;
 import cn.laowu.mod.effect.HissingAttackEffect;
 import cn.laowu.mod.fluid.HissingGasFluidType;
 import cn.laowu.mod.fluid.LiquidCatFluidType;
 import cn.laowu.mod.recipe.InfiltratingRecipe;
 import cn.laowu.mod.recipe.CatPancakeIngredient;
 import cn.laowu.mod.recipe.CatPancakeVariantIngredient;
+import cn.laowu.mod.recipe.AnyBlockIngredient;
+import cn.laowu.mod.recipe.NamedPlayerNameTagIngredient;
+import cn.laowu.mod.recipe.PheromoneCatFoodMixingRecipe;
 import cn.laowu.mod.recipe.RandomBabyCatPancakeFillingRecipe;
 import cn.laowu.mod.loot.CatToolEmpoweredLootModifier;
 import cn.laowu.mod.particle.NozzleFluidPuffData;
@@ -43,6 +61,10 @@ import cn.laowu.mod.create.DevouringCatBlockEntity;
 import cn.laowu.mod.create.BreedingBoxBlock;
 import cn.laowu.mod.create.BreedingBoxBlockEntity;
 import cn.laowu.mod.create.BreedingBoxTier;
+import cn.laowu.mod.create.AdoptionBoxBlock;
+import cn.laowu.mod.create.AdoptionBoxBlockEntity;
+import cn.laowu.mod.genetics.CatBreedingMode;
+import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.BreedingBoxMenu;
 import cn.laowu.mod.item.BreedingBoxBlockItem;
 import com.simibubi.create.api.stress.BlockStressValues;
@@ -67,11 +89,13 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
@@ -81,6 +105,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
@@ -202,6 +227,20 @@ public final class LaoWuMod {
             BLOCK_ENTITIES.register("breeding_box", () -> BlockEntityType.Builder
                     .of(BreedingBoxBlockEntity::new, BASIC_BREEDING_BOX.get(), INTERMEDIATE_BREEDING_BOX.get(), ADVANCED_BREEDING_BOX.get())
                     .build(null));
+    public static final DeferredBlock<AdoptionBoxBlock> ADOPTION_BOX = BLOCKS.register("adoption_box",
+            () -> new AdoptionBoxBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL)
+                    .noOcclusion().strength(0.8F)));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AdoptionBoxBlockEntity>> ADOPTION_BOX_BE =
+            BLOCK_ENTITIES.register("adoption_box", () -> BlockEntityType.Builder
+                    .of(AdoptionBoxBlockEntity::new, ADOPTION_BOX.get()).build(null));
+    public static final DeferredHolder<EntityType<?>, EntityType<ButterCatBoss>> BUTTER_CAT =
+            ENTITY_TYPES.register("butter_cat", () -> EntityType.Builder
+                    .<ButterCatBoss>of(ButterCatBoss::new, MobCategory.MONSTER)
+                    .sized(ButterCatBoss.BASE_WIDTH * ButterCatBoss.MODEL_SCALE,
+                            ButterCatBoss.BASE_HEIGHT * ButterCatBoss.MODEL_SCALE)
+                    .clientTrackingRange(12)
+                    .updateInterval(1)
+                    .build("butter_cat"));
     public static final DeferredItem<CatPancakeItem> CAT_PANCAKE = ITEMS.register("cat_pancake",
             () -> new CatPancakeItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<CatFilterItem> CAT_FILTER = ITEMS.register("cat_filter",
@@ -218,6 +257,17 @@ public final class LaoWuMod {
             ITEMS.register("trait_debug_wand",
                     () -> new cn.laowu.mod.item.TraitDebugWandItem(new Item.Properties()
                             .stacksTo(1).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
+    public static final DeferredItem<MaterialDebugWandItem> MATERIAL_DEBUG_WAND =
+            ITEMS.register("material_debug_wand",
+                    () -> new MaterialDebugWandItem(new Item.Properties().stacksTo(1)
+                            .component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)));
+    public static final DeferredItem<CatScannerItem> CAT_SCANNER = ITEMS.register("cat_scanner",
+            () -> new CatScannerItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<ButterBreadItem> BUTTER_BREAD = ITEMS.register("butter_bread",
+            () -> new ButterBreadItem(new Item.Properties()));
+    public static final DeferredItem<SpawnEggItem> BUTTER_CAT_SPAWN_EGG = ITEMS.register(
+            "butter_cat_spawn_egg", () -> new SpawnEggItem(BUTTER_CAT.get(),
+                    0xE8B94F, 0xFFF1A3, new Item.Properties()));
     public static final DeferredItem<TerminatorSuitItem> TERMINATOR_SUIT = ITEMS.register("terminator_suit",
             () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.TERMINATOR));
     public static final DeferredItem<TerminatorSuitItem> FISHING_SUIT = ITEMS.register("fishing_suit",
@@ -230,6 +280,8 @@ public final class LaoWuMod {
             () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.HONEY));
     public static final DeferredItem<TerminatorSuitItem> TRANSPORT_SUIT = ITEMS.register("transport_suit",
             () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.TRANSPORT));
+    public static final DeferredItem<TerminatorSuitItem> DYNAMITE_SUIT = ITEMS.register("dynamite_suit",
+            () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.DYNAMITE));
     public static final DeferredItem<Item> CAT_INGOT = ITEMS.register("cat_ingot",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> CAT_SHEET = ITEMS.register("cat_sheet",
@@ -258,6 +310,8 @@ public final class LaoWuMod {
             "incomplete_fire_suit", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_HONEY_SUIT = ITEMS.register(
             "incomplete_honey_suit", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> INCOMPLETE_DYNAMITE_SUIT = ITEMS.register(
+            "incomplete_dynamite_suit", () -> new Item(new Item.Properties()));
     public static final DeferredItem<CatTotemItem> CAT_TOTEM = ITEMS.register("cat_totem",
             () -> new CatTotemItem(new Item.Properties()));
     public static final DeferredItem<CatEngineerGogglesItem> CAT_ENGINEER_GOGGLES =
@@ -299,6 +353,83 @@ public final class LaoWuMod {
             () -> new CatGrenadeBoxItem(new Item.Properties()));
     public static final DeferredItem<CatFoodItem> CAT_FOOD = ITEMS.register("cat_food",
             () -> new CatFoodItem(new Item.Properties()));
+    public static final DeferredItem<PheromoneCatFoodItem> PHEROMONE_CAT_FOOD = ITEMS.register(
+            "pheromone_cat_food", () -> new PheromoneCatFoodItem(new Item.Properties()));
+    public static final DeferredItem<BreedingOnlyCatCanItem> CAT_CAN = ITEMS.register("cat_can",
+            () -> new BreedingOnlyCatCanItem(new Item.Properties()));
+    public static final DeferredItem<BreedingOnlyCatCanItem> GOLDEN_CAT_CAN = ITEMS.register(
+            "golden_cat_can", () -> new BreedingOnlyCatCanItem(new Item.Properties()));
+    public static final DeferredItem<CatAttributeCanItem> ATTACK_CAT_CAN = registerAttributeCan(
+            "attack_cat_can", CatStat.ATTACK, CatAttributeCanItem.Tier.NORMAL);
+    public static final DeferredItem<CatAttributeCanItem> HEALTH_CAT_CAN = registerAttributeCan(
+            "health_cat_can", CatStat.HEALTH, CatAttributeCanItem.Tier.NORMAL);
+    public static final DeferredItem<CatAttributeCanItem> SPEED_CAT_CAN = registerAttributeCan(
+            "speed_cat_can", CatStat.SPEED, CatAttributeCanItem.Tier.NORMAL);
+    public static final DeferredItem<CatAttributeCanItem> STAMINA_CAT_CAN = registerAttributeCan(
+            "stamina_cat_can", CatStat.STAMINA, CatAttributeCanItem.Tier.NORMAL);
+    public static final DeferredItem<CatAttributeCanItem> INTELLIGENCE_CAT_CAN = registerAttributeCan(
+            "intelligence_cat_can", CatStat.INTELLIGENCE, CatAttributeCanItem.Tier.NORMAL);
+    public static final DeferredItem<CatAttributeCanItem> LUCK_CAT_CAN = registerAttributeCan(
+            "luck_cat_can", CatStat.LUCK, CatAttributeCanItem.Tier.NORMAL);
+    public static final DeferredItem<CatAttributeCanItem> GOLDEN_ATTACK_CAT_CAN = registerAttributeCan(
+            "golden_attack_cat_can", CatStat.ATTACK, CatAttributeCanItem.Tier.GOLDEN);
+    public static final DeferredItem<CatAttributeCanItem> GOLDEN_HEALTH_CAT_CAN = registerAttributeCan(
+            "golden_health_cat_can", CatStat.HEALTH, CatAttributeCanItem.Tier.GOLDEN);
+    public static final DeferredItem<CatAttributeCanItem> GOLDEN_SPEED_CAT_CAN = registerAttributeCan(
+            "golden_speed_cat_can", CatStat.SPEED, CatAttributeCanItem.Tier.GOLDEN);
+    public static final DeferredItem<CatAttributeCanItem> GOLDEN_STAMINA_CAT_CAN = registerAttributeCan(
+            "golden_stamina_cat_can", CatStat.STAMINA, CatAttributeCanItem.Tier.GOLDEN);
+    public static final DeferredItem<CatAttributeCanItem> GOLDEN_INTELLIGENCE_CAT_CAN = registerAttributeCan(
+            "golden_intelligence_cat_can", CatStat.INTELLIGENCE, CatAttributeCanItem.Tier.GOLDEN);
+    public static final DeferredItem<CatAttributeCanItem> GOLDEN_LUCK_CAT_CAN = registerAttributeCan(
+            "golden_luck_cat_can", CatStat.LUCK, CatAttributeCanItem.Tier.GOLDEN);
+    public static final DeferredItem<CatAttributeCanItem> SUPER_ATTACK_CAT_CAN = registerAttributeCan(
+            "super_attack_cat_can", CatStat.ATTACK, CatAttributeCanItem.Tier.SUPER);
+    public static final DeferredItem<CatAttributeCanItem> SUPER_HEALTH_CAT_CAN = registerAttributeCan(
+            "super_health_cat_can", CatStat.HEALTH, CatAttributeCanItem.Tier.SUPER);
+    public static final DeferredItem<CatAttributeCanItem> SUPER_SPEED_CAT_CAN = registerAttributeCan(
+            "super_speed_cat_can", CatStat.SPEED, CatAttributeCanItem.Tier.SUPER);
+    public static final DeferredItem<CatAttributeCanItem> SUPER_STAMINA_CAT_CAN = registerAttributeCan(
+            "super_stamina_cat_can", CatStat.STAMINA, CatAttributeCanItem.Tier.SUPER);
+    public static final DeferredItem<CatAttributeCanItem> SUPER_INTELLIGENCE_CAT_CAN = registerAttributeCan(
+            "super_intelligence_cat_can", CatStat.INTELLIGENCE, CatAttributeCanItem.Tier.SUPER);
+    public static final DeferredItem<CatAttributeCanItem> SUPER_LUCK_CAT_CAN = registerAttributeCan(
+            "super_luck_cat_can", CatStat.LUCK, CatAttributeCanItem.Tier.SUPER);
+    public static final DeferredItem<CatTraitFishItem> DRIED_FISH = ITEMS.register("dried_fish",
+            () -> new CatTraitFishItem(new Item.Properties().food(
+                    new FoodProperties.Builder().nutrition(5).saturationModifier(0.6F).build()),
+                    CatTraitFishItem.Tier.NORMAL));
+    public static final DeferredItem<CatTraitFishItem> GOLDEN_DRIED_FISH = ITEMS.register(
+            "golden_dried_fish", () -> new CatTraitFishItem(new Item.Properties().food(
+                    new FoodProperties.Builder().nutrition(6).saturationModifier(0.8F).build()),
+                    CatTraitFishItem.Tier.GOLDEN));
+    public static final DeferredItem<CatTraitFishItem> SUPER_DRIED_FISH = ITEMS.register(
+            "super_dried_fish", () -> new CatTraitFishItem(new Item.Properties(),
+                    CatTraitFishItem.Tier.SUPER));
+    public static final DeferredItem<BreedingCatFoodItem> BREEDING_CAT_FOOD = ITEMS.register(
+            "breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.NORMAL));
+    public static final DeferredItem<BreedingCatFoodItem> MUTATION_CAT_FOOD = ITEMS.register(
+            "mutation_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.MUTATION));
+    public static final DeferredItem<BreedingCatFoodItem> ATTACK_BREEDING_CAT_FOOD = ITEMS.register(
+            "attack_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.ATTACK));
+    public static final DeferredItem<BreedingCatFoodItem> HEALTH_BREEDING_CAT_FOOD = ITEMS.register(
+            "health_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.HEALTH));
+    public static final DeferredItem<BreedingCatFoodItem> SPEED_BREEDING_CAT_FOOD = ITEMS.register(
+            "speed_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.SPEED));
+    public static final DeferredItem<BreedingCatFoodItem> STAMINA_BREEDING_CAT_FOOD = ITEMS.register(
+            "stamina_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.STAMINA));
+    public static final DeferredItem<BreedingCatFoodItem> INTELLIGENCE_BREEDING_CAT_FOOD = ITEMS.register(
+            "intelligence_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.INTELLIGENCE));
+    public static final DeferredItem<BreedingCatFoodItem> LUCK_BREEDING_CAT_FOOD = ITEMS.register(
+            "luck_breeding_cat_food", () -> new BreedingCatFoodItem(
+                    new Item.Properties(), CatBreedingMode.LUCK));
     public static final DeferredItem<CatGrenadeItem> CAT_GRENADE = ITEMS.register("cat_grenade",
             () -> new CatGrenadeItem(new Item.Properties()));
     public static final DeferredItem<Item> CAT_SHELL = ITEMS.register("cat_shell",
@@ -349,6 +480,8 @@ public final class LaoWuMod {
             () -> new BreedingBoxBlockItem(INTERMEDIATE_BREEDING_BOX.get(), new Item.Properties()));
     public static final DeferredItem<BreedingBoxBlockItem> ADVANCED_BREEDING_BOX_ITEM = ITEMS.register("advanced_breeding_box",
             () -> new BreedingBoxBlockItem(ADVANCED_BREEDING_BOX.get(), new Item.Properties()));
+    public static final DeferredItem<AdoptionBoxBlockItem> ADOPTION_BOX_ITEM = ITEMS.register("adoption_box",
+            () -> new AdoptionBoxBlockItem(ADOPTION_BOX.get(), new Item.Properties()));
     public static final DeferredHolder<FluidType, HissingGasFluidType> HISSING_GAS_TYPE = FLUID_TYPES.register(
             "hissing_gas", HissingGasFluidType::new);
     public static final DeferredHolder<Fluid, FlowingFluid> HISSING_GAS = FLUIDS.register(
@@ -380,9 +513,7 @@ public final class LaoWuMod {
                         output.accept(INFILTRATION_TANK_ITEM.get());
                         output.accept(HISSING_COLLECTOR_ITEM.get());
                         output.accept(DEVOURING_CAT_ITEM.get());
-                        output.accept(BASIC_BREEDING_BOX_ITEM.get());
-                        output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
-                        output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                        output.accept(ADOPTION_BOX_ITEM.get());
                         output.accept(CAT_BLOCK_ITEM.get());
                         output.accept(CAT_INGOT.get());
                         output.accept(CAT_SHEET.get());
@@ -405,13 +536,12 @@ public final class LaoWuMod {
                         output.accept(CAT_POUCH.get());
                         output.accept(CAT_BOX.get());
                         output.accept(CAT_FOOD.get());
+                        output.accept(PHEROMONE_CAT_FOOD.get());
                         output.accept(CAT_POWDER.get());
                         output.accept(CAT_DOUGH.get());
                         output.accept(CatPancakeItem.defaultDisplayStack());
-                        output.accept(CAT_FILTER.get());
-                        output.accept(FUSION_DEBUG_WAND.get());
-                        output.accept(ATTRIBUTE_DEBUG_WAND.get());
-                        output.accept(TRAIT_DEBUG_WAND.get());
+                        output.accept(BUTTER_BREAD.get());
+                        output.accept(BUTTER_CAT_SPAWN_EGG.get());
                         output.accept(AllItems.CARDBOARD_SWORD.get());
                         output.accept(AllBlocks.SEATS.get(DyeColor.RED).get());
                         output.accept(TERMINATOR_SUIT.get());
@@ -420,6 +550,7 @@ public final class LaoWuMod {
                         output.accept(FIRE_SUIT.get());
                         output.accept(HONEY_SUIT.get());
                         output.accept(TRANSPORT_SUIT.get());
+                        output.accept(DYNAMITE_SUIT.get());
                         output.accept(CAT_HELMET.get());
                         output.accept(CAT_CHESTPLATE.get());
                         output.accept(CAT_LEGGINGS.get());
@@ -433,10 +564,60 @@ public final class LaoWuMod {
                         output.accept(PotionContents.createItemStack(Items.POTION, POWERFUL_HISSING_POTION));
                     })
                     .build());
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CAT_PROGRESSION_TAB =
+            CREATIVE_TABS.register("cat_progression", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.laowu.cat_progression"))
+                    .icon(() -> ADVANCED_BREEDING_BOX_ITEM.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
+                        output.accept(BASIC_BREEDING_BOX_ITEM.get());
+                        output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
+                        output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                        output.accept(BREEDING_CAT_FOOD.get());
+                        output.accept(MUTATION_CAT_FOOD.get());
+                        output.accept(ATTACK_BREEDING_CAT_FOOD.get());
+                        output.accept(HEALTH_BREEDING_CAT_FOOD.get());
+                        output.accept(SPEED_BREEDING_CAT_FOOD.get());
+                        output.accept(STAMINA_BREEDING_CAT_FOOD.get());
+                        output.accept(INTELLIGENCE_BREEDING_CAT_FOOD.get());
+                        output.accept(LUCK_BREEDING_CAT_FOOD.get());
+                        output.accept(CAT_CAN.get());
+                        output.accept(GOLDEN_CAT_CAN.get());
+                        output.accept(ATTACK_CAT_CAN.get());
+                        output.accept(HEALTH_CAT_CAN.get());
+                        output.accept(SPEED_CAT_CAN.get());
+                        output.accept(STAMINA_CAT_CAN.get());
+                        output.accept(INTELLIGENCE_CAT_CAN.get());
+                        output.accept(LUCK_CAT_CAN.get());
+                        output.accept(GOLDEN_ATTACK_CAT_CAN.get());
+                        output.accept(GOLDEN_HEALTH_CAT_CAN.get());
+                        output.accept(GOLDEN_SPEED_CAT_CAN.get());
+                        output.accept(GOLDEN_STAMINA_CAT_CAN.get());
+                        output.accept(GOLDEN_INTELLIGENCE_CAT_CAN.get());
+                        output.accept(GOLDEN_LUCK_CAT_CAN.get());
+                        output.accept(SUPER_ATTACK_CAT_CAN.get());
+                        output.accept(SUPER_HEALTH_CAT_CAN.get());
+                        output.accept(SUPER_SPEED_CAT_CAN.get());
+                        output.accept(SUPER_STAMINA_CAT_CAN.get());
+                        output.accept(SUPER_INTELLIGENCE_CAT_CAN.get());
+                        output.accept(SUPER_LUCK_CAT_CAN.get());
+                        output.accept(DRIED_FISH.get());
+                        output.accept(GOLDEN_DRIED_FISH.get());
+                        output.accept(SUPER_DRIED_FISH.get());
+                        output.accept(CAT_SCANNER.get());
+                        output.accept(CAT_FILTER.get());
+                        output.accept(CAT_ENGINEER_GOGGLES.get());
+                        output.accept(FUSION_DEBUG_WAND.get());
+                        output.accept(ATTRIBUTE_DEBUG_WAND.get());
+                        output.accept(TRAIT_DEBUG_WAND.get());
+                        output.accept(MATERIAL_DEBUG_WAND.get());
+                    })
+                    .build());
     public static final DeferredHolder<MenuType<?>, MenuType<CatPackageMenu>> CAT_PACKAGE_MENU = MENUS.register(
             "cat_package", () -> IMenuTypeExtension.create(CatPackageMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<BreedingBoxMenu>> BREEDING_BOX_MENU = MENUS.register(
             "breeding_box", () -> IMenuTypeExtension.create(BreedingBoxMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<AdoptionBoxMenu>> ADOPTION_BOX_MENU = MENUS.register(
+            "adoption_box", () -> IMenuTypeExtension.create(AdoptionBoxMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<CatTraitEditorMenu>> CAT_TRAIT_EDITOR_MENU =
             MENUS.register("cat_trait_editor",
                     () -> IMenuTypeExtension.create(CatTraitEditorMenu::new));
@@ -448,6 +629,8 @@ public final class LaoWuMod {
                     () -> IMenuTypeExtension.create(CatProfileMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<CatFilterMenu>> CAT_FILTER_MENU =
             MENUS.register("cat_filter", () -> IMenuTypeExtension.create(CatFilterMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<CatMaterialEditorMenu>> CAT_MATERIAL_EDITOR_MENU =
+            MENUS.register("cat_material_editor", () -> IMenuTypeExtension.create(CatMaterialEditorMenu::new));
     public static final DeferredHolder<EntityType<?>, EntityType<CatPancakeProjectile>> CAT_PANCAKE_PROJECTILE =
             ENTITY_TYPES.register("cat_pancake_projectile", () -> EntityType.Builder
                     .<CatPancakeProjectile>of(CatPancakeProjectile::new, MobCategory.MISC)
@@ -455,6 +638,35 @@ public final class LaoWuMod {
                     .clientTrackingRange(8)
                     .updateInterval(1)
                     .build("cat_pancake_projectile"));
+    public static final DeferredHolder<EntityType<?>, EntityType<FishingRodProjectile>> FISHING_ROD_PROJECTILE =
+            ENTITY_TYPES.register("fishing_rod_projectile", () -> EntityType.Builder
+                    .<FishingRodProjectile>of(FishingRodProjectile::new, MobCategory.MISC)
+                    .sized(0.28F, 0.28F).clientTrackingRange(10).updateInterval(1)
+                    .build("fishing_rod_projectile"));
+    public static final DeferredHolder<EntityType<?>, EntityType<MechanicalLaserProjectile>>
+            MECHANICAL_LASER_PROJECTILE = ENTITY_TYPES.register("mechanical_laser_projectile",
+                    () -> EntityType.Builder
+                            .<MechanicalLaserProjectile>of(MechanicalLaserProjectile::new, MobCategory.MISC)
+                            .sized(0.14F, 0.14F).clientTrackingRange(18).updateInterval(1)
+                            .build("mechanical_laser_projectile"));
+    public static final DeferredHolder<EntityType<?>, EntityType<HoneyMissileProjectile>>
+            HONEY_MISSILE_PROJECTILE = ENTITY_TYPES.register("honey_missile_projectile",
+                    () -> EntityType.Builder
+                            .<HoneyMissileProjectile>of(HoneyMissileProjectile::new, MobCategory.MISC)
+                            .sized(0.28F, 0.28F).clientTrackingRange(14).updateInterval(1)
+                            .build("honey_missile_projectile"));
+    public static final DeferredHolder<EntityType<?>, EntityType<DynamiteProjectile>>
+            DYNAMITE_PROJECTILE = ENTITY_TYPES.register("dynamite_projectile",
+                    () -> EntityType.Builder
+                            .<DynamiteProjectile>of(DynamiteProjectile::new, MobCategory.MISC)
+                            .sized(0.30F, 0.30F).clientTrackingRange(12).updateInterval(1)
+                            .build("dynamite_projectile"));
+    public static final DeferredHolder<EntityType<?>, EntityType<LogisticsSupportProjectile>>
+            LOGISTICS_SUPPORT_PROJECTILE = ENTITY_TYPES.register("logistics_support_projectile",
+                    () -> EntityType.Builder
+                            .<LogisticsSupportProjectile>of(LogisticsSupportProjectile::new, MobCategory.MISC)
+                            .sized(0.42F, 0.32F).clientTrackingRange(14).updateInterval(1)
+                            .build("logistics_support_projectile"));
     public static final DeferredHolder<EntityType<?>, EntityType<CatBallEntity>> CAT_BALL_ENTITY =
             ENTITY_TYPES.register("cat_ball", () -> EntityType.Builder
                     .<CatBallEntity>of(CatBallEntity::new, MobCategory.MISC)
@@ -476,11 +688,20 @@ public final class LaoWuMod {
             RECIPE_SERIALIZERS.register("random_baby_cat_pancake_filling",
                     () -> new StandardProcessingRecipe.Serializer<>(
                             RandomBabyCatPancakeFillingRecipe::new));
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PheromoneCatFoodMixingRecipe>>
+            PHEROMONE_CAT_FOOD_MIXING_SERIALIZER = RECIPE_SERIALIZERS.register(
+                    "pheromone_cat_food_mixing",
+                    () -> new StandardProcessingRecipe.Serializer<>(PheromoneCatFoodMixingRecipe::new));
     public static final DeferredHolder<IngredientType<?>, IngredientType<CatPancakeIngredient>> CAT_PANCAKE_INGREDIENT =
             INGREDIENT_TYPES.register("cat_pancake", CatPancakeIngredient::createType);
     public static final DeferredHolder<IngredientType<?>, IngredientType<CatPancakeVariantIngredient>>
             CAT_PANCAKE_VARIANT_INGREDIENT = INGREDIENT_TYPES.register(
             "cat_pancake_variant", CatPancakeVariantIngredient::createType);
+    public static final DeferredHolder<IngredientType<?>, IngredientType<AnyBlockIngredient>>
+            ANY_BLOCK_INGREDIENT = INGREDIENT_TYPES.register("any_block", AnyBlockIngredient::createType);
+    public static final DeferredHolder<IngredientType<?>, IngredientType<NamedPlayerNameTagIngredient>>
+            NAMED_PLAYER_NAME_TAG_INGREDIENT = INGREDIENT_TYPES.register(
+                    "named_player_name_tag", NamedPlayerNameTagIngredient::createType);
 
     public LaoWuMod(IEventBus modBus, ModContainer modContainer) {
         ITEMS.register(modBus);
@@ -505,6 +726,7 @@ public final class LaoWuMod {
         ModNetwork.register(modBus);
         modBus.addListener((net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent event) ->
                 event.enqueueWork(() -> {
+                    DispenserBlock.registerProjectileBehavior(CAT_PANCAKE.get());
                     BlockStressValues.CAPACITIES.register(CAT_ENGINE.get(),
                             () -> (double) CatEngineBlockEntity.STRESS_CAPACITY_PER_RPM);
                     BlockStressValues.setGeneratorSpeed((int) CatEngineBlockEntity.GENERATED_RPM)
@@ -517,20 +739,48 @@ public final class LaoWuMod {
                     registerAlwaysVisibleDescription(INFILTRATION_TANK_ITEM.get());
                     registerAlwaysVisibleDescription(HISSING_COLLECTOR_ITEM.get());
                     registerAlwaysVisibleDescription(DEVOURING_CAT_ITEM.get());
+                    registerAlwaysVisibleDescription(BASIC_BREEDING_BOX_ITEM.get());
+                    registerAlwaysVisibleDescription(INTERMEDIATE_BREEDING_BOX_ITEM.get());
+                    registerAlwaysVisibleDescription(ADVANCED_BREEDING_BOX_ITEM.get());
+                    registerAlwaysVisibleDescription(ADOPTION_BOX_ITEM.get());
                     registerDescription(CAT_CANNON.get());
                     registerDescription(CAT_BALL.get());
                     registerDescription(CAT_STRIP.get());
-                    registerDescription(CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(CAT_CAN.get());
+                    registerAlwaysVisibleDescription(GOLDEN_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(ATTACK_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(HEALTH_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(SPEED_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(STAMINA_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(INTELLIGENCE_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(LUCK_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(GOLDEN_ATTACK_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(GOLDEN_HEALTH_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(GOLDEN_SPEED_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(GOLDEN_STAMINA_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(GOLDEN_INTELLIGENCE_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(GOLDEN_LUCK_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(SUPER_ATTACK_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(SUPER_HEALTH_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(SUPER_SPEED_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(SUPER_STAMINA_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(SUPER_INTELLIGENCE_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(SUPER_LUCK_CAT_CAN.get());
+                    registerAlwaysVisibleDescription(DRIED_FISH.get());
+                    registerAlwaysVisibleDescription(GOLDEN_DRIED_FISH.get());
+                    registerAlwaysVisibleDescription(SUPER_DRIED_FISH.get());
+                    registerAlwaysVisibleDescription(BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(MUTATION_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(ATTACK_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(HEALTH_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(SPEED_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(STAMINA_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(INTELLIGENCE_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(LUCK_BREEDING_CAT_FOOD.get());
+                    registerAlwaysVisibleDescription(CAT_SCANNER.get());
                     registerDescription(CAT_ENGINEER_GOGGLES.get());
-                    registerAlwaysVisibleDescription(TERMINATOR_SUIT.get());
-                    registerAlwaysVisibleDescription(FISHING_SUIT.get());
-                    registerAlwaysVisibleDescription(FLIGHT_SUIT.get());
-                    registerAlwaysVisibleDescription(FIRE_SUIT.get());
-                    registerAlwaysVisibleDescription(HONEY_SUIT.get());
-                    registerAlwaysVisibleDescription(TRANSPORT_SUIT.get());
-                    GogglesItem.addIsWearingPredicate(player ->
-                            player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD)
-                                    .is(CAT_ENGINEER_GOGGLES.get()));
+                    GogglesItem.addIsWearingPredicate(CatEngineerGogglesItem::isWornBy);
                     if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
                         cn.laowu.mod.compat.curios.CatGogglesCuriosCompat.registerCurio();
                     }
@@ -565,6 +815,8 @@ public final class LaoWuMod {
                 DevouringCatBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BREEDING_BOX_BE.get(),
                 BreedingBoxBlockEntity::getItemHandler);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ADOPTION_BOX_BE.get(),
+                AdoptionBoxBlockEntity::getItemHandler);
     }
 
     private static TooltipModifier createDescription(Item item) {
@@ -588,6 +840,12 @@ public final class LaoWuMod {
 
     private static void registerAlwaysVisibleDescription(Item item) {
         TooltipModifier.REGISTRY.register(item, createAlwaysVisibleDescription(item));
+    }
+
+    private static DeferredItem<CatAttributeCanItem> registerAttributeCan(
+            String name, CatStat stat, CatAttributeCanItem.Tier tier) {
+        return ITEMS.register(name,
+                () -> new CatAttributeCanItem(new Item.Properties(), stat, tier));
     }
 
     private static ArmorMaterial createCatArmorMaterial() {

@@ -4,9 +4,18 @@ import cn.laowu.mod.CatPoseData;
 import cn.laowu.mod.CatPancakeBehavior;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatOutfitType;
+import cn.laowu.mod.DynamiteCatLastStand;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.network.ModNetwork;
+import cn.laowu.mod.genetics.CatGenome;
+import cn.laowu.mod.genetics.CatGenomeData;
+import cn.laowu.mod.genetics.CatAttributeData;
+import cn.laowu.mod.genetics.CatAttributeProfile;
+import cn.laowu.mod.genetics.CatStat;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitProfile;
 import com.simibubi.create.content.kinetics.fan.EncasedFanBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -14,6 +23,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,6 +39,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
@@ -36,8 +49,10 @@ import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.CatVariant;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
@@ -47,18 +62,24 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public final class CatPancakeItem extends Item {
+public final class CatPancakeItem extends Item implements ProjectileItem {
     public static final ResourceLocation DEFAULT_VARIANT = CatVariant.RED.location();
     public static final String CAT_DATA_TAG = "LaoWuCatData";
     public static final String CAT_TEXTURE_TAG = "LaoWuCatTexture";
     public static final String CAT_VARIANT_TAG = "LaoWuCatVariant";
     public static final String BABY_TAG = "LaoWuBabyPancake";
     private static final String TAMED_TAG = "LaoWuTamedPancake";
+    private static final String PRE_TERMINATOR_NAME_TAG = "LaoWuPreTerminatorName";
     private static final String FAN_TICKS_TAG = "LaoWuCatPancakeFanTicks";
+    private static final String PROJECTILE_DAMAGE_TAG = "LaoWuPancakeDamage";
+    private static final String PROJECTILE_RADIUS_TAG = "LaoWuPancakeRadius";
     private static final int FAN_CHECK_INTERVAL = 5;
     private static final int REQUIRED_FAN_TICKS = 30;
     private static final int FAN_SEARCH_RADIUS = 16;
     private static final int MAX_CHARGE_TICKS = 80;
+    private static final int CAREER_DEATH_POTENTIAL_LOSS = 20;
+    private static final RegistryAccess.Frozen BUILTIN_REGISTRIES =
+            RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
 
     public CatPancakeItem(Properties properties) {
         super(properties);
@@ -66,6 +87,8 @@ public final class CatPancakeItem extends Item {
 
     public static ItemStack capture(Cat cat) {
         ItemStack pancake = new ItemStack(LaoWuMod.CAT_PANCAKE.get());
+        CatAttributeData.ensure(cat);
+        CatTraitData.ensure(cat);
         CompoundTag root = new CompoundTag();
         CompoundTag catData = cat.saveWithoutId(new CompoundTag());
         removePositionAndIdentity(catData);
@@ -84,16 +107,27 @@ public final class CatPancakeItem extends Item {
                 .ifPresent(variant -> root.putString(CAT_VARIANT_TAG, variant.location().toString()));
         root.putString(CAT_TEXTURE_TAG, cat.getVariant().value().texture().toString());
         ItemCustomData.set(pancake, root);
+        CatGenomeData.copyToStack(cat, pancake);
+        CatAttributeData.copyToStack(cat, pancake);
+        CatTraitData.copyToStack(cat, pancake);
         if (cat.hasCustomName()) {
             pancake.set(DataComponents.CUSTOM_NAME,
                     Component.translatable("item.laowu.cat_pancake.named", cat.getDisplayName()));
         }
+        if (outfit != CatOutfitType.NONE) applyOutfitDisplayName(pancake, outfit);
         return pancake;
     }
 
     /** Captures a killed profession cat in a state that can later be restored alive. */
     public static ItemStack captureDeathDrop(Cat cat) {
         ItemStack pancake = capture(cat);
+        CatAttributeProfile attributes = CatAttributeData.ensure(cat);
+        CatStat[] stats = CatStat.values();
+        CatStat reducedStat = stats[cat.getRandom().nextInt(stats.length)];
+        int reducedPotential = Math.max(CatAttributeProfile.MIN_VALUE,
+                attributes.potential(reducedStat) - CAREER_DEATH_POTENTIAL_LOSS);
+        CatAttributeData.set(pancake, attributes.withValues(reducedStat,
+                attributes.current(reducedStat), reducedPotential));
         CompoundTag root = ItemCustomData.copy(pancake);
         if (root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
             CompoundTag catData = root.getCompound(CAT_DATA_TAG);
@@ -116,12 +150,21 @@ public final class CatPancakeItem extends Item {
 
     /** Stable orange-cat representative used by the creative tab and recipe viewers. */
     public static ItemStack defaultDisplayStack() {
-        return variantStack(DEFAULT_VARIANT);
+        return withDisplayGenes(variantStack(DEFAULT_VARIANT), 0x4C414F57554CL, false);
     }
 
     /** Stable orange kitten representative used by JEI for the spout recipe. */
     public static ItemStack defaultBabyDisplayStack() {
-        return babyVariantStack(DEFAULT_VARIANT);
+        return withDisplayGenes(babyVariantStack(DEFAULT_VARIANT), 0x42414259434154L, true);
+    }
+
+    private static ItemStack withDisplayGenes(ItemStack stack, long seed, boolean injected) {
+        CatGenomeData.set(stack, CatGenome.uniform(DEFAULT_VARIANT));
+        RandomSource random = RandomSource.create(seed);
+        CatAttributeData.set(stack, CatAttributeProfile.founder(random));
+        CatTraitData.set(stack, injected
+                ? CatTraitProfile.injected(random) : CatTraitProfile.founder(random));
+        return stack;
     }
 
     /** JEI intentionally shows one stable skin while recipes still match every cat variant. */
@@ -163,10 +206,26 @@ public final class CatPancakeItem extends Item {
     }
 
     public static boolean isBaby(ItemStack stack) {
+        if (CatTraitData.read(stack)
+                .map(profile -> profile.has(CatTrait.LOLI)).orElse(false)) return true;
         CompoundTag root = ItemCustomData.copy(stack);
         if (root.getBoolean(BABY_TAG)) return true;
         return root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)
                 && root.getCompound(CAT_DATA_TAG).getInt("Age") < 0;
+    }
+
+    /** Makes a generated kitten pancake adult while preserving every other component. */
+    public static void makeAdult(ItemStack stack) {
+        if (CatTraitData.read(stack)
+                .map(profile -> profile.has(CatTrait.LOLI)).orElse(false)) return;
+        ItemCustomData.update(stack, root -> {
+            root.remove(BABY_TAG);
+            if (root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
+                CompoundTag catData = root.getCompound(CAT_DATA_TAG);
+                catData.putInt("Age", 0);
+                root.put(CAT_DATA_TAG, catData);
+            }
+        });
     }
 
     public static ResourceLocation variantId(ItemStack stack) {
@@ -216,6 +275,10 @@ public final class CatPancakeItem extends Item {
     }
 
     public static boolean isTamed(ItemStack stack) {
+        return hasOwner(stack);
+    }
+
+    public static boolean hasOwner(ItemStack stack) {
         CompoundTag root = ItemCustomData.copy(stack);
         if (root.getBoolean(TAMED_TAG)) return true;
         if (!root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) return false;
@@ -223,6 +286,21 @@ public final class CatPancakeItem extends Item {
         return catData.hasUUID("Owner")
                 || catData.contains("OwnerUUID", Tag.TAG_STRING)
                 && !catData.getString("OwnerUUID").isBlank();
+    }
+
+    /** Returns the cat entity's true custom name rather than its pancake/outfit label. */
+    public static String customCatName(ItemStack stack) {
+        CompoundTag root = ItemCustomData.copy(stack);
+        if (!root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) return "";
+        CompoundTag catData = root.getCompound(CAT_DATA_TAG);
+        if (!catData.contains("CustomName", Tag.TAG_STRING)) return "";
+        try {
+            Component parsed = Component.Serializer.fromJson(
+                    catData.getString("CustomName"), BUILTIN_REGISTRIES);
+            return parsed == null ? "" : parsed.getString().trim();
+        } catch (RuntimeException ignored) {
+            return "";
+        }
     }
 
     public static void equipTerminatorSuit(ItemStack stack) {
@@ -244,6 +322,7 @@ public final class CatPancakeItem extends Item {
                 root.put(CAT_DATA_TAG, catData);
             }
         });
+        rememberOriginalDisplayName(stack);
     }
 
     public static void removeTerminatorSuit(ItemStack stack) {
@@ -251,28 +330,122 @@ public final class CatPancakeItem extends Item {
     }
 
     public static void removeOutfit(ItemStack stack) {
-        ItemCustomData.update(stack, root -> {
-            root.remove(CatClothesData.EQUIPPED_TAG);
-            root.remove(CatClothesData.OUTFIT_TAG);
-            if (!root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) return;
+        CompoundTag root = ItemCustomData.copy(stack);
+        root.remove(CatClothesData.EQUIPPED_TAG);
+        root.remove(CatClothesData.OUTFIT_TAG);
+        if (root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
             CompoundTag catData = root.getCompound(CAT_DATA_TAG);
-            if (!catData.contains("NeoForgeData", Tag.TAG_COMPOUND)) return;
-            CompoundTag neoData = catData.getCompound("NeoForgeData");
-            neoData.remove(CatClothesData.EQUIPPED_TAG);
-            neoData.remove(CatClothesData.OUTFIT_TAG);
-            catData.put("NeoForgeData", neoData);
-            root.put(CAT_DATA_TAG, catData);
-        });
+            if (catData.contains("NeoForgeData", Tag.TAG_COMPOUND)) {
+                CompoundTag neoData = catData.getCompound("NeoForgeData");
+                neoData.remove(CatClothesData.EQUIPPED_TAG);
+                neoData.remove(CatClothesData.OUTFIT_TAG);
+                catData.put("NeoForgeData", neoData);
+                root.put(CAT_DATA_TAG, catData);
+            }
+        }
+
+        String previousName = root.contains(PRE_TERMINATOR_NAME_TAG, Tag.TAG_STRING)
+                ? root.getString(PRE_TERMINATOR_NAME_TAG) : "";
+        root.remove(PRE_TERMINATOR_NAME_TAG);
+        ItemCustomData.set(stack, root);
+        if (!previousName.isEmpty()) {
+            try {
+                Component parsed = Component.Serializer.fromJson(previousName, BUILTIN_REGISTRIES);
+                if (parsed != null) stack.set(DataComponents.CUSTOM_NAME, parsed);
+            } catch (RuntimeException ignored) {
+                // Corrupt legacy display data leaves the current component untouched.
+            }
+        }
+    }
+
+    private static void applyOutfitDisplayName(ItemStack stack, CatOutfitType outfit) {
+        if (outfit == CatOutfitType.NONE || stack.get(DataComponents.CUSTOM_NAME) == null) return;
+        rememberOriginalDisplayName(stack);
+    }
+
+    private static void rememberOriginalDisplayName(ItemStack stack) {
+        Component currentName = stack.get(DataComponents.CUSTOM_NAME);
+        if (currentName == null) return;
+        CompoundTag root = ItemCustomData.copy(stack);
+        if (root.contains(PRE_TERMINATOR_NAME_TAG, Tag.TAG_STRING)) return;
+
+        // Older builds stored their generated outfit name as a literal custom
+        // name. Do not preserve that stale prefix when migrating.
+        boolean generatedOutfitName = currentName.getContents()
+                instanceof net.minecraft.network.chat.contents.TranslatableContents translated
+                && translated.getKey().startsWith("item.laowu.cat_pancake.");
+        if (!generatedOutfitName) {
+            try {
+                String serialized = Component.Serializer.toJson(currentName, BUILTIN_REGISTRIES);
+                ItemCustomData.update(stack,
+                        tag -> tag.putString(PRE_TERMINATOR_NAME_TAG, serialized));
+            } catch (RuntimeException ignored) {
+                // An unencodable custom component remains on the stack unchanged.
+            }
+        }
     }
 
     @Override
     public Component getName(ItemStack stack) {
         CatOutfitType outfit = getOutfit(stack);
-        if (outfit == CatOutfitType.NONE) return super.getName(stack);
-        Component baseName = stack.get(DataComponents.CUSTOM_NAME);
-        if (baseName == null) baseName = Component.translatable(getDescriptionId());
-        return Component.translatable("item.laowu.cat_pancake.outfit_named",
-                Component.translatable("item.laowu.cat_pancake.prefix." + outfit.id()), baseName);
+        if (outfit != CatOutfitType.NONE) {
+            clearLegacyGeneratedDisplayName(stack);
+            Component baseName = savedBaseName(stack);
+            return Component.translatable("item.laowu.cat_pancake.outfit_named",
+                    Component.translatable(outfitItemNameKey(outfit)), baseName);
+        }
+        return super.getName(stack);
+    }
+
+    private static void clearLegacyGeneratedDisplayName(ItemStack stack) {
+        Component current = stack.get(DataComponents.CUSTOM_NAME);
+        if (current == null) return;
+        CompoundTag root = ItemCustomData.copy(stack);
+        if (root.contains(PRE_TERMINATOR_NAME_TAG, Tag.TAG_STRING)) return;
+        if (current.getContents()
+                instanceof net.minecraft.network.chat.contents.TranslatableContents translated
+                && translated.getKey().startsWith("item.laowu.cat_pancake.")) {
+            stack.remove(DataComponents.CUSTOM_NAME);
+        }
+    }
+
+    private static Component savedBaseName(ItemStack stack) {
+        CompoundTag root = ItemCustomData.copy(stack);
+        if (root.contains(PRE_TERMINATOR_NAME_TAG, Tag.TAG_STRING)) {
+            try {
+                Component parsed = Component.Serializer.fromJson(
+                        root.getString(PRE_TERMINATOR_NAME_TAG), BUILTIN_REGISTRIES);
+                if (parsed != null) return parsed;
+            } catch (RuntimeException ignored) {
+                // Corrupt legacy display data falls back to the normal item name.
+            }
+        }
+        return Component.translatable(stack.getItem().getDescriptionId());
+    }
+
+    private static String outfitItemNameKey(CatOutfitType outfit) {
+        return "item.laowu.cat_pancake.prefix." + outfit.id();
+    }
+
+    @Override
+    public Projectile asProjectile(Level level, Position position, ItemStack stack,
+                                   Direction direction) {
+        boolean highExplosive = CatTraitData.read(stack)
+                .map(profile -> profile.has(CatTrait.HIGH_EXPLOSIVE_FUEL)).orElse(false);
+        CatPancakeProjectile projectile = new CatPancakeProjectile(
+                LaoWuMod.CAT_PANCAKE_PROJECTILE.get(), level);
+        projectile.setPos(position.x(), position.y(), position.z());
+        CompoundTag projectileData = new CompoundTag();
+        projectileData.putFloat(PROJECTILE_DAMAGE_TAG, highExplosive ? 20.0F : 8.0F);
+        projectileData.putFloat(PROJECTILE_RADIUS_TAG, highExplosive ? 3.5F : 2.0F);
+        projectile.readAdditionalSaveData(projectileData);
+        projectile.setItem(stack);
+        return projectile;
+    }
+
+    @Override
+    public DispenseConfig createDispenseConfig() {
+        return DispenseConfig.builder().power(1.55F).build();
     }
 
     @Override
@@ -380,6 +553,9 @@ public final class CatPancakeItem extends Item {
         }
 
         clearTransientState(cat.getPersistentData());
+        CatGenomeData.applyFromStack(stack, cat);
+        CatAttributeData.applyFromStack(stack, cat);
+        CatTraitData.applyFromStack(stack, cat);
         CatOutfitType outfit = getOutfit(stack);
         if (outfit != CatOutfitType.NONE) {
             cat.getPersistentData().putBoolean(CatClothesData.EQUIPPED_TAG, true);
@@ -395,6 +571,9 @@ public final class CatPancakeItem extends Item {
         ModNetwork.syncToTracking(cat, 0);
         ModNetwork.syncCatChestToTracking(cat);
         ModNetwork.syncCatClothesToTracking(cat);
+        if (CatGenomeData.has(cat)) ModNetwork.syncCatGenomeToTracking(cat);
+        ModNetwork.syncCatAttributesToTracking(cat);
+        ModNetwork.syncCatTraitsToTracking(cat);
         level.sendParticles(ParticleTypes.POOF, cat.getX(), cat.getY() + 0.4D, cat.getZ(),
                 16, 0.25D, 0.2D, 0.25D, 0.04D);
         level.playSound(null, cat.blockPosition(), SoundEvents.WOOL_BREAK, SoundSource.NEUTRAL, 1.0F, 0.65F);
@@ -413,6 +592,7 @@ public final class CatPancakeItem extends Item {
     }
 
     private static void clearTransientState(CompoundTag data) {
+        DynamiteCatLastStand.clearTransientState(data);
         data.remove(CatPoseData.TAG);
         data.remove("LaoWuAudioSession");
         data.remove("LaoWuHissingFightTarget");

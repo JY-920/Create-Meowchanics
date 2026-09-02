@@ -1,0 +1,19 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "fluid": "laowu:hissing_gas"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:attack_breeding_cat_food"
+    }
+  ]
+}

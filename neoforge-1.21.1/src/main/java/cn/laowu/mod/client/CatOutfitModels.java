@@ -14,6 +14,7 @@ final class CatOutfitModels {
             case FIRE -> definition("fire_suit", false, null);
             case HONEY -> definition("honey_suit", false, "honey_suit_translucent");
             case TRANSPORT -> definition("transport_suit", false, null);
+            case DYNAMITE -> definition("dynamite_suit", false, null);
             case NONE -> null;
         };
     }

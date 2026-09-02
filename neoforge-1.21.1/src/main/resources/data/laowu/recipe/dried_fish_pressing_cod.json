@@ -1,0 +1,13 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    {
+      "item": "minecraft:cooked_cod"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:dried_fish"
+    }
+  ]
+}

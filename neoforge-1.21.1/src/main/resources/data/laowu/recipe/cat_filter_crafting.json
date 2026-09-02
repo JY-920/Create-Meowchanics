@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PWP"
+  ],
+  "key": {
+    "P": {
+      "item": "laowu:cat_pellet"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_filter"
+  }
+}

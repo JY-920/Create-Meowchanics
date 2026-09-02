@@ -51,6 +51,8 @@ public final class RuntimeBlockbenchModel {
     // mesh uses XYZ order, so preserve that order instead of the legacy
     // RuntimeBlockbenchModel order used by older assets.
     private static final String FISHING_RIGHT_FISH = "7a93e707-a768-2d9a-989e-1fccc7045619";
+    private static final String CAT_LEFT_EAR = "51000000-0000-4000-8000-000000000003";
+    private static final String CAT_RIGHT_EAR = "51000000-0000-4000-8000-000000000004";
     private static final int OUTFIT_TEXTURE_INDEX = 1;
     private static final float OUTFIT_TEXTURE_SIZE = 64.0F;
 
@@ -609,13 +611,13 @@ public final class RuntimeBlockbenchModel {
     public void render(PoseStack poseStack, VertexConsumer consumer, int light, int overlay,
                        GroupSelection selection, HeadMotion headMotion) {
         render(poseStack, consumer, light, overlay, selection, headMotion,
-                GroupMotion.NONE, Map.of(), 255, 255, 255, 255, -1);
+                GroupMotion.NONE, Map.of(), 255, 255, 255, 255, -1, 1.0F, false);
     }
 
     public void render(PoseStack poseStack, VertexConsumer consumer, int light, int overlay,
                        GroupSelection selection, HeadMotion headMotion, GroupMotion groupMotion) {
         render(poseStack, consumer, light, overlay, selection, headMotion,
-                groupMotion, Map.of(), 255, 255, 255, 255, -1);
+                groupMotion, Map.of(), 255, 255, 255, 255, -1, 1.0F, false);
     }
 
     /** Renders multiple Blockbench groups with independent keyframed transforms. */
@@ -623,7 +625,7 @@ public final class RuntimeBlockbenchModel {
                        GroupSelection selection, HeadMotion headMotion,
                        Map<String, GroupTransform> groupTransforms) {
         render(poseStack, consumer, light, overlay, selection, headMotion,
-                GroupMotion.NONE, groupTransforms, 255, 255, 255, 255, -1);
+                GroupMotion.NONE, groupTransforms, 255, 255, 255, 255, -1, 1.0F, false);
     }
 
     /**
@@ -635,7 +637,8 @@ public final class RuntimeBlockbenchModel {
                               GroupSelection selection, HeadMotion headMotion,
                               Map<String, GroupTransform> groupTransforms, int textureIndex) {
         render(poseStack, consumer, light, overlay, selection, headMotion,
-                GroupMotion.NONE, groupTransforms, 255, 255, 255, 255, textureIndex);
+                GroupMotion.NONE, groupTransforms, 255, 255, 255, 255,
+                textureIndex, 1.0F, false);
     }
 
     /**
@@ -647,15 +650,34 @@ public final class RuntimeBlockbenchModel {
                                     HeadMotion headMotion, Map<String, GroupTransform> groupTransforms,
                                     boolean headPart) {
         renderFiltered(poseStack, consumer, light, overlay, headMotion, groupTransforms,
-                FLIGHT_HEAD_SHELL, headPart);
+                FLIGHT_HEAD_SHELL, headPart, OUTFIT_TEXTURE_INDEX, 1.0F, false);
+    }
+
+    /** Renders exactly one authored element without redrawing the rest of the model. */
+    public void renderExactElement(PoseStack poseStack, VertexConsumer consumer,
+                                   int light, int overlay, String elementUuid) {
+        renderFiltered(poseStack, consumer, light, overlay, HeadMotion.NONE, Map.of(),
+                elementUuid, true, -1, 1.0F, false);
+    }
+
+    /** Exact-element variant for shader packs that light from face winding. */
+    public void renderExactElementReversedWinding(PoseStack poseStack,
+                                                  VertexConsumer consumer,
+                                                  int light, int overlay,
+                                                  String elementUuid) {
+        renderFiltered(poseStack, consumer, light, overlay, HeadMotion.NONE, Map.of(),
+                elementUuid, true, -1, 1.0F, true);
     }
 
     private void renderFiltered(PoseStack poseStack, VertexConsumer consumer, int light, int overlay,
                                 HeadMotion headMotion, Map<String, GroupTransform> groupTransforms,
-                                String exactUuid, boolean includeExact) {
+                                String exactUuid, boolean includeExact,
+                                int textureFilter, float normalDirection,
+                                boolean reverseWinding) {
         for (GroupDef root : roots) {
             renderGroupFiltered(root, Vec.ROOT_PIVOT, poseStack, consumer, light, overlay,
-                    headMotion, groupTransforms, exactUuid, includeExact);
+                    headMotion, groupTransforms, exactUuid, includeExact,
+                    textureFilter, normalDirection, reverseWinding);
         }
     }
 
@@ -663,7 +685,9 @@ public final class RuntimeBlockbenchModel {
                                             VertexConsumer consumer, int light, int overlay,
                                             HeadMotion headMotion,
                                             Map<String, GroupTransform> groupTransforms,
-                                            String exactUuid, boolean includeExact) {
+                                            String exactUuid, boolean includeExact,
+                                            int textureFilter, float normalDirection,
+                                            boolean reverseWinding) {
         poseStack.pushPose();
         GroupTransform animation = groupTransforms.getOrDefault(group.name, GroupTransform.IDENTITY);
         poseStack.translate((group.origin.x - parentOrigin.x + animation.x) / 16.0F,
@@ -686,11 +710,13 @@ public final class RuntimeBlockbenchModel {
             boolean exact = exactUuid != null && exactUuid.equals(element.uuid);
             if (exact != includeExact) continue;
             renderElement(element, group.origin, poseStack, consumer, light, overlay,
-                    255, 255, 255, 255, OUTFIT_TEXTURE_INDEX);
+                    255, 255, 255, 255, textureFilter, normalDirection,
+                    reverseWinding);
         }
         for (GroupDef child : group.children) {
             renderGroupFiltered(child, group.origin, poseStack, consumer, light, overlay,
-                    headMotion, groupTransforms, exactUuid, includeExact);
+                    headMotion, groupTransforms, exactUuid, includeExact,
+                    textureFilter, normalDirection, reverseWinding);
         }
         poseStack.popPose();
     }
@@ -699,18 +725,43 @@ public final class RuntimeBlockbenchModel {
                        GroupSelection selection, HeadMotion headMotion,
                        int red, int green, int blue, int alpha) {
         render(poseStack, consumer, light, overlay, selection, headMotion,
-                GroupMotion.NONE, Map.of(), red, green, blue, alpha, -1);
+                GroupMotion.NONE, Map.of(), red, green, blue, alpha,
+                -1, 1.0F, false);
+    }
+
+    /** Renders one model with only its lighting normals reversed. */
+    public void renderInvertedNormals(PoseStack poseStack, VertexConsumer consumer,
+                                      int light, int overlay,
+                                      GroupSelection selection, HeadMotion headMotion) {
+        render(poseStack, consumer, light, overlay, selection, headMotion,
+                GroupMotion.NONE, Map.of(), 255, 255, 255, 255,
+                -1, -1.0F, true);
+    }
+
+    /**
+     * Keeps authored vertex normals for vanilla lighting while reversing the
+     * winding used by shader packs that derive lighting from gl_FrontFacing.
+     */
+    public void renderReversedWinding(PoseStack poseStack, VertexConsumer consumer,
+                                      int light, int overlay,
+                                      GroupSelection selection, HeadMotion headMotion) {
+        render(poseStack, consumer, light, overlay, selection, headMotion,
+                GroupMotion.NONE, Map.of(), 255, 255, 255, 255,
+                -1, 1.0F, true);
     }
 
     private void render(PoseStack poseStack, VertexConsumer consumer, int light, int overlay,
                         GroupSelection selection, HeadMotion headMotion, GroupMotion groupMotion,
                         Map<String, GroupTransform> groupTransforms,
-                        int red, int green, int blue, int alpha, int textureFilter) {
+                        int red, int green, int blue, int alpha, int textureFilter,
+                        float normalDirection, boolean reverseWinding) {
         for (GroupDef root : roots) {
             boolean chestGroup = "chest".equals(root.name)
                     || ("group".equals(root.name) && root == roots.get(roots.size() - 1));
             if (selection == GroupSelection.CHEST_ONLY && !chestGroup) continue;
-            if (selection == GroupSelection.ALL && chestGroup) continue;
+            if ((selection == GroupSelection.ALL
+                    || selection == GroupSelection.CAT_WITHOUT_EARS
+                    || selection == GroupSelection.CAT_WITHOUT_TAIL) && chestGroup) continue;
             if (selection == GroupSelection.FRONT_BODY_ONLY && !"body".equals(root.name)) continue;
             if (selection == GroupSelection.CAT_HEAD_ONLY
                     && !"head".equals(root.name) && !"group".equals(root.name)) continue;
@@ -720,9 +771,13 @@ public final class RuntimeBlockbenchModel {
                     && !"head".equals(root.name)) continue;
             if (selection == GroupSelection.CAT_BODY_WITH_GENERIC
                     && "head".equals(root.name)) continue;
+            if (selection == GroupSelection.CAT_TAIL_ONLY
+                    && !"tail1".equals(root.name) && !"tail2".equals(root.name)) continue;
+            if (selection == GroupSelection.CAT_WITHOUT_TAIL
+                    && ("tail1".equals(root.name) || "tail2".equals(root.name))) continue;
             renderGroup(root, Vec.ROOT_PIVOT, poseStack, consumer, light, overlay, headMotion,
                     groupMotion, groupTransforms, selection, red, green, blue, alpha,
-                    textureFilter);
+                    textureFilter, normalDirection, reverseWinding);
         }
     }
 
@@ -731,7 +786,8 @@ public final class RuntimeBlockbenchModel {
                                     GroupMotion groupMotion, Map<String, GroupTransform> groupTransforms,
                                     GroupSelection selection,
                                     int red, int green, int blue, int alpha,
-                                    int textureFilter) {
+                                    int textureFilter, float normalDirection,
+                                    boolean reverseWinding) {
         poseStack.pushPose();
         GroupTransform animation = groupTransforms.getOrDefault(group.name, GroupTransform.IDENTITY);
         if (animation == GroupTransform.HIDDEN) {
@@ -764,13 +820,17 @@ public final class RuntimeBlockbenchModel {
                 : null;
         for (ElementDef element : group.elements) {
             if (selection == GroupSelection.FRONT_BODY_ONLY && element != frontBody) continue;
+            if (selection == GroupSelection.CAT_WITHOUT_EARS
+                    && (CAT_LEFT_EAR.equals(element.uuid)
+                    || CAT_RIGHT_EAR.equals(element.uuid))) continue;
             renderElement(element, group.origin, poseStack, consumer, light, overlay,
-                    red, green, blue, alpha, textureFilter);
+                    red, green, blue, alpha, textureFilter, normalDirection,
+                    reverseWinding);
         }
         for (GroupDef child : group.children) {
             renderGroup(child, group.origin, poseStack, consumer, light, overlay, headMotion,
                     groupMotion, groupTransforms, selection, red, green, blue, alpha,
-                    textureFilter);
+                    textureFilter, normalDirection, reverseWinding);
         }
         poseStack.popPose();
     }
@@ -778,7 +838,8 @@ public final class RuntimeBlockbenchModel {
     private static void renderElement(ElementDef element, Vec parentOrigin, PoseStack poseStack,
                                       VertexConsumer consumer, int light, int overlay,
                                       int red, int green, int blue, int alpha,
-                                      int textureFilter) {
+                                      int textureFilter, float normalDirection,
+                                      boolean reverseWinding) {
         poseStack.pushPose();
         poseStack.translate((element.origin.x - parentOrigin.x) / 16.0F,
                 (parentOrigin.y - element.origin.y) / 16.0F,
@@ -794,14 +855,16 @@ public final class RuntimeBlockbenchModel {
         for (FaceDef face : element.faces) {
             if (textureFilter >= 0 && face.textureIndex != textureFilter) continue;
             renderFace(face, element.origin, element.localMeshVertices,
-                    poseStack, consumer, light, overlay, red, green, blue, alpha);
+                    poseStack, consumer, light, overlay, red, green, blue, alpha,
+                    normalDirection, reverseWinding);
         }
         poseStack.popPose();
     }
 
     private static void renderFace(FaceDef face, Vec origin, boolean localVertices, PoseStack poseStack,
                                    VertexConsumer consumer, int light, int overlay,
-                                   int red, int green, int blue, int alpha) {
+                                   int red, int green, int blue, int alpha,
+                                   float normalDirection, boolean reverseWinding) {
         if (face.vertices.size() < 3) return;
         List<LocalVertex> vertices = new ArrayList<>(face.vertices.size());
         for (VertexDef vertex : face.vertices) {
@@ -819,10 +882,14 @@ public final class RuntimeBlockbenchModel {
         Vector3f edge2 = new Vector3f(p2.x - p0.x, p2.y - p0.y, p2.z - p0.z);
         Vector3f normal = edge1.cross(edge2, new Vector3f()).negate();
         if (normal.lengthSquared() < 1.0E-8F) return;
-        normal.normalize();
+        normal.normalize().mul(normalDirection);
 
         PoseStack.Pose pose = poseStack.last();
-        for (LocalVertex vertex : vertices) {
+        int index = reverseWinding ? vertices.size() - 1 : 0;
+        int end = reverseWinding ? -1 : vertices.size();
+        int step = reverseWinding ? -1 : 1;
+        for (; index != end; index += step) {
+            LocalVertex vertex = vertices.get(index);
             consumer.addVertex(pose, vertex.x, vertex.y, vertex.z)
                     .setColor(red, green, blue, alpha)
                     .setUv(vertex.u, vertex.v)
@@ -891,7 +958,13 @@ public final class RuntimeBlockbenchModel {
         /** Only the named vanilla head root; generic roots are body accessories. */
         CAT_HEAD_ONLY_PLAIN,
         /** All roots except the head, including a generic body/back accessory root. */
-        CAT_BODY_WITH_GENERIC
+        CAT_BODY_WITH_GENERIC,
+        /** The complete cat silhouette with both authored ear elements omitted. */
+        CAT_WITHOUT_EARS,
+        /** The complete cat silhouette without either tail root. */
+        CAT_WITHOUT_TAIL,
+        /** Only the two vanilla-style tail roots, used for Nekomata's copy. */
+        CAT_TAIL_ONLY
     }
 
     public record HeadMotion(float xRot, float yRot, float zRot) {

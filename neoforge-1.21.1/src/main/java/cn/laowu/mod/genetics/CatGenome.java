@@ -5,7 +5,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -35,6 +34,21 @@ public final class CatGenome {
 
     public ResourceLocation material(CatRegion region) {
         return materials.get(region);
+    }
+
+    /** Returns a new phenotype with one semantic region replaced. */
+    public CatGenome withMaterial(CatRegion region, ResourceLocation material) {
+        Objects.requireNonNull(region, "region");
+        Objects.requireNonNull(material, "material");
+        EnumMap<CatRegion, ResourceLocation> values = new EnumMap<>(CatRegion.class);
+        values.putAll(materials);
+        values.put(region, material);
+        return new CatGenome(values);
+    }
+
+    /** Returns a new phenotype using the same material for every region. */
+    public CatGenome withUniformMaterial(ResourceLocation material) {
+        return uniform(material);
     }
 
     public boolean isUniform() {
@@ -92,20 +106,15 @@ public final class CatGenome {
      * 20% chance to mutate to a material used by neither parent in that region.
      */
     public static CatGenome fuse(CatGenome first, CatGenome second,
-                                 Iterable<ResourceLocation> availableMaterials,
+                                 List<ResourceLocation> availableMaterials,
                                  RandomSource random) {
         return fuse(first, second, availableMaterials, DEBUG_MUTATION_CHANCE, random);
     }
 
     /** Same region inheritance with a machine-defined mutation chance. */
     public static CatGenome fuse(CatGenome first, CatGenome second,
-                                 Iterable<ResourceLocation> availableMaterials,
+                                 List<ResourceLocation> availableMaterials,
                                  float mutationChance, RandomSource random) {
-        List<ResourceLocation> allMaterials = new ArrayList<>();
-        availableMaterials.forEach(id -> {
-            if (id != null && !allMaterials.contains(id)) allMaterials.add(id);
-        });
-
         EnumMap<CatRegion, ResourceLocation> child = new EnumMap<>(CatRegion.class);
         for (CatRegion region : CatRegion.values()) {
             ResourceLocation firstMaterial = first.material(region);
@@ -113,16 +122,41 @@ public final class CatGenome {
             ResourceLocation inherited = random.nextBoolean() ? firstMaterial : secondMaterial;
 
             if (random.nextFloat() < mutationChance) {
-                List<ResourceLocation> mutations = allMaterials.stream()
-                        .filter(id -> !id.equals(firstMaterial) && !id.equals(secondMaterial))
-                        .toList();
-                if (!mutations.isEmpty()) {
-                    inherited = mutations.get(random.nextInt(mutations.size()));
-                }
+                ResourceLocation mutation = pickMutation(availableMaterials,
+                        firstMaterial, secondMaterial, random);
+                if (mutation != null) inherited = mutation;
             }
             child.put(region, inherited);
         }
         return new CatGenome(child);
+    }
+
+    /**
+     * Avoids allocating and filtering the registry-wide block pool for every
+     * one of the eleven regions. Random rejection is effectively constant-time
+     * because only the two parent materials are excluded; the bounded scan is
+     * a deterministic fallback for very small pools.
+     */
+    private static ResourceLocation pickMutation(List<ResourceLocation> materials,
+                                                 ResourceLocation first,
+                                                 ResourceLocation second,
+                                                 RandomSource random) {
+        if (materials.isEmpty()) return null;
+        int retries = Math.min(12, materials.size());
+        for (int attempt = 0; attempt < retries; attempt++) {
+            ResourceLocation candidate = materials.get(random.nextInt(materials.size()));
+            if (candidate != null && !candidate.equals(first) && !candidate.equals(second)) {
+                return candidate;
+            }
+        }
+        int start = random.nextInt(materials.size());
+        for (int offset = 0; offset < materials.size(); offset++) {
+            ResourceLocation candidate = materials.get((start + offset) % materials.size());
+            if (candidate != null && !candidate.equals(first) && !candidate.equals(second)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     @Override

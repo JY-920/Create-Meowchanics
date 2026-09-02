@@ -2,7 +2,7 @@ package cn.laowu.mod.genetics;
 
 /** The inheritance contract selected by the food in a breeding box. */
 public enum CatBreedingMode {
-    NORMAL(3, null, 0.0F),
+    NORMAL(5, null, 0.0F),
     SUPER(5, null, 0.0F),
     MUTATION(2, null, 0.20F),
     ATTACK(5, CatStat.ATTACK, 0.0F),

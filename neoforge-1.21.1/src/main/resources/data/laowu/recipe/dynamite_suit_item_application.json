@@ -1,0 +1,26 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake",
+      "outfit": "none"
+    },
+    {
+      "item": "laowu:dynamite_suit"
+    }
+  ],
+  "results": [
+    {
+      "components": {
+        "minecraft:custom_data": {
+          "LaoWuCatVariant": "minecraft:red",
+          "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png",
+          "LaoWuTamedPancake": true,
+          "LaoWuHasClothes": true,
+          "LaoWuCatOutfit": "dynamite"
+        }
+      },
+      "id": "laowu:cat_pancake"
+    }
+  ]
+}
