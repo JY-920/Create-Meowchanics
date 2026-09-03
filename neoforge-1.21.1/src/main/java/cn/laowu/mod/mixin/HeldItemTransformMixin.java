@@ -1,5 +1,6 @@
 package cn.laowu.mod.mixin;
 
+import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.client.HeldItemTransformState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -35,6 +36,9 @@ public abstract class HeldItemTransformMixin {
         // centring and must not inherit the inventory editor's large offsets.
         boolean gui = context == ItemDisplayContext.GUI;
         if ((!held && !gui) || stack.isEmpty()) return;
+        // The scanner intentionally uses a flat inventory sprite. Never apply
+        // a legacy GUI calibration to it; only its hand transform is editable.
+        if (gui && stack.is(LaoWuMod.CAT_SCANNER.get())) return;
 
         HeldItemTransformState.Target target = gui
                 ? HeldItemTransformState.Target.GUI

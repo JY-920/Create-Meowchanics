@@ -146,7 +146,7 @@ public final class CatProfileScreen extends AbstractContainerScreen<CatProfileMe
 
         Cat cat = currentCat();
         if (cat == null) return;
-        renderCat(graphics, cat, mouseX, mouseY, partialTick);
+        renderCat(graphics, cat, mouseX, mouseY);
         CatTraitProfile traits = CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY);
         CatStatsGoggleOverlay.renderProfilePanel(graphics,
                 CatAttributeData.read(cat).orElse(null), traits,
@@ -158,12 +158,18 @@ public final class CatProfileScreen extends AbstractContainerScreen<CatProfileMe
     }
 
     private void renderCat(GuiGraphics graphics, Cat cat,
-                           int mouseX, int mouseY, float partialTick) {
-        int x = leftPos + PREVIEW_X + PREVIEW_WIDTH / 2;
-        int y = topPos + PREVIEW_Y + PREVIEW_HEIGHT - 13;
+                           int mouseX, int mouseY) {
+        int previewLeft = leftPos + PREVIEW_X;
+        int previewTop = topPos + PREVIEW_Y;
+        int previewRight = previewLeft + PREVIEW_WIDTH;
+        int previewBottom = previewTop + PREVIEW_HEIGHT;
+        // In 1.21 this overload takes a fixed vertical entity offset, not the
+        // frame partial tick. Passing partialTick made the cat jump vertically
+        // every frame. The authored preview rectangle plus vanilla's 1/16
+        // offset reproduces the old Forge foot position while clipping cleanly.
         InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,
-                x - 32, y - 26, x + 32, y + 26, 30, partialTick,
-                (float) x - mouseX, (float) y - 30.0F - mouseY, cat);
+                previewLeft, previewTop, previewRight, previewBottom,
+                30, 0.0625F, mouseX, mouseY + 16.5F, cat);
     }
 
     private Cat currentCat() {
