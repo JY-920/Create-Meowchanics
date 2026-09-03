@@ -23,7 +23,9 @@ public final class HeldItemTransformState {
             LaoWuMod.id("cat_ball"),
             new Values(0.0D, 127.0D, 0.0D, -0.06D, 1.13D, 0.0D, 1.0D),
             LaoWuMod.id("devouring_cat"),
-            new Values(0.0D, 64.0D, 0.0D, 0.0D, 0.31D, 0.0D, 1.0D)
+            new Values(0.0D, 64.0D, 0.0D, 0.0D, 0.31D, 0.0D, 1.0D),
+            LaoWuMod.id("cat_scanner"),
+            new Values(-172.0D, -37.0D, 87.0D, -0.55D, -0.08D, -0.23D, 1.78D)
     );
     private static final Map<ResourceLocation, Values> GUI_DEFAULTS = Map.of(
             LaoWuMod.id("cat_ball"),
