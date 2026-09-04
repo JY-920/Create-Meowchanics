@@ -13,7 +13,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
@@ -24,7 +23,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 
-/** A fishing cat's visible rod shot, pulling vulnerable ranged targets and repelling others. */
+/** A fishing cat's visible rod shot, always knocking its target away. */
 public final class FishingRodProjectile extends ThrowableItemProjectile {
     private static final String DAMAGE_TAG = "LaoWuFishingRodDamage";
     private static final int MAX_LIFETIME = 60;
@@ -99,28 +98,20 @@ public final class FishingRodProjectile extends ThrowableItemProjectile {
             return;
         }
 
-        boolean reelIn = target instanceof RangedAttackMob
-                || target.getHealth() < target.getMaxHealth() * 0.5F;
         if (target.hurt(level.damageSources().thrown(this, cat), attackDamage)) {
-            Vec3 direction = reelIn
-                    ? cat.position().subtract(target.position())
-                    : target.position().subtract(cat.position());
+            Vec3 direction = target.position().subtract(cat.position());
             Vec3 horizontal = new Vec3(direction.x, 0.0D, direction.z);
             if (horizontal.lengthSqr() > 1.0E-5D) {
-                double distance = Math.sqrt(horizontal.lengthSqr());
-                double strength = reelIn
-                        ? Math.min(0.85D, 0.35D + distance * 0.04D)
-                        : 0.45D;
-                Vec3 impulse = horizontal.normalize().scale(strength);
+                Vec3 impulse = horizontal.normalize().scale(0.45D);
                 target.setDeltaMovement(target.getDeltaMovement().scale(0.35D)
-                        .add(impulse.x, reelIn ? 0.22D : 0.16D, impulse.z));
+                        .add(impulse.x, 0.16D, impulse.z));
                 target.hasImpulse = true;
             }
         }
 
-        level.sendParticles(reelIn ? ParticleTypes.BUBBLE : ParticleTypes.POOF,
+        level.sendParticles(ParticleTypes.POOF,
                 target.getX(), target.getY(0.55D), target.getZ(),
-                reelIn ? 10 : 8, target.getBbWidth() * 0.3D,
+                8, target.getBbWidth() * 0.3D,
                 target.getBbHeight() * 0.2D, target.getBbWidth() * 0.3D, 0.08D);
         discard();
     }

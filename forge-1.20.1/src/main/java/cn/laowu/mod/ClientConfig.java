@@ -8,6 +8,7 @@ public final class ClientConfig {
     public static final ForgeConfigSpec SPEC;
     public static final Pose POSE;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> HELD_ITEM_TRANSFORMS;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> THIRD_PERSON_ITEM_TRANSFORMS;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GUI_ITEM_TRANSFORMS;
     public static final ForgeConfigSpec.DoubleValue HISSING_PAIR_VOLUME;
 
@@ -15,10 +16,15 @@ public final class ClientConfig {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
         POSE = definePose(b, "hissing_pose", "哈气姿势");
         HELD_ITEM_TRANSFORMS = b
-                .comment("游戏内按 K 调整过的手持物品显示参数。",
+                .comment("游戏内按 K 调整过的第一人称手持物品显示参数。",
                         "每项格式：物品注册名|X旋转|Y旋转|Z旋转|X位移|Y位移|Z位移|缩放。",
-                        "不同物品会分别保存，只影响第一人称和第三人称手持显示。")
+                        "不同物品会分别保存，只影响第一人称手持显示。")
                 .defineListAllowEmpty("held_item_transforms", List.of(), value -> value instanceof String);
+        THIRD_PERSON_ITEM_TRANSFORMS = b
+                .comment("游戏内按 K 调整过的第三人称手持物品显示参数。",
+                        "每项格式：物品注册名|X旋转|Y旋转|Z旋转|X位移|Y位移|Z位移|缩放。",
+                        "不同物品会分别保存，只影响第三人称手持显示。")
+                .defineListAllowEmpty("third_person_item_transforms", List.of(), value -> value instanceof String);
         GUI_ITEM_TRANSFORMS = b
                 .comment("游戏内按 K 调整过的物品栏与容器 GUI 物品显示参数。",
                         "每项格式：物品注册名|X旋转|Y旋转|Z旋转|X位移|Y位移|Z位移|缩放。",

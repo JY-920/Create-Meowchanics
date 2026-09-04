@@ -29,7 +29,7 @@ public final class HoneyMissileProjectile extends ThrowableItemProjectile {
     public static final double MAX_TRAVEL_DISTANCE = 13.0D;
     private static final String DAMAGE_TAG = "LaoWuHoneyMissileDamage";
     private static final String DISTANCE_TAG = "LaoWuHoneyMissileDistance";
-    private static final int SLOWNESS_DURATION_TICKS = 30;
+    private static final int SLOWNESS_DURATION_TICKS = 60;
 
     private float attackDamage = 2.0F;
     private double travelledDistance;

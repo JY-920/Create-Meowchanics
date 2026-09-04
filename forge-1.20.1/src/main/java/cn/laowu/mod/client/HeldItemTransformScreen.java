@@ -78,16 +78,20 @@ public final class HeldItemTransformScreen extends Screen {
     }
 
     private Component modeLabel() {
-        return Component.translatable(target == HeldItemTransformState.Target.GUI
-                ? "screen.laowu.held_item_transform.mode_gui"
-                : "screen.laowu.held_item_transform.mode_held");
+        return Component.translatable(switch (target) {
+            case GUI -> "screen.laowu.held_item_transform.mode_gui";
+            case FIRST_PERSON -> "screen.laowu.held_item_transform.mode_first_person";
+            case THIRD_PERSON -> "screen.laowu.held_item_transform.mode_third_person";
+        });
     }
 
     private void switchTarget() {
         HeldItemTransformState.cancelPreview();
-        target = target == HeldItemTransformState.Target.GUI
-                ? HeldItemTransformState.Target.HELD
-                : HeldItemTransformState.Target.GUI;
+        target = switch (target) {
+            case GUI -> HeldItemTransformState.Target.FIRST_PERSON;
+            case FIRST_PERSON -> HeldItemTransformState.Target.THIRD_PERSON;
+            case THIRD_PERSON -> HeldItemTransformState.Target.GUI;
+        };
         load(HeldItemTransformState.configured(previewStack, target));
         sliders.forEach(TransformSlider::syncFromValues);
         modeButton.setMessage(modeLabel());
@@ -148,9 +152,11 @@ public final class HeldItemTransformScreen extends Screen {
             graphics.pose().scale(64.0F, -64.0F, 64.0F);
             Lighting.setupFor3DItems();
             minecraft.getItemRenderer().renderStatic(previewStack,
-                    target == HeldItemTransformState.Target.GUI
-                            ? ItemDisplayContext.GUI
-                            : ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,
+                    switch (target) {
+                        case GUI -> ItemDisplayContext.GUI;
+                        case FIRST_PERSON -> ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
+                        case THIRD_PERSON -> ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+                    },
                     LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
                     graphics.pose(), graphics.bufferSource(), minecraft.level, 0);
             graphics.flush();
@@ -161,9 +167,11 @@ public final class HeldItemTransformScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         graphics.drawCenteredString(font, title, width / 2, 12, 0xFFFFFF);
         graphics.drawCenteredString(font,
-                Component.translatable(target == HeldItemTransformState.Target.GUI
-                        ? "screen.laowu.held_item_transform.preview_gui"
-                        : "screen.laowu.held_item_transform.preview_held"),
+                Component.translatable(switch (target) {
+                    case GUI -> "screen.laowu.held_item_transform.preview_gui";
+                    case FIRST_PERSON -> "screen.laowu.held_item_transform.preview_first_person";
+                    case THIRD_PERSON -> "screen.laowu.held_item_transform.preview_third_person";
+                }),
                 (previewLeft + previewRight) / 2, previewTop + 6, 0xC8C8C8);
     }
 

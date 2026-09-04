@@ -106,7 +106,7 @@ value as the tie breaker.
 
 The Breeding Wand simulates Normal Breeding Food with an Advanced Box base
 mutation chance, including both parents' Luck. Vanilla cat breeding uses the
-same three-inherited-locus numeric contract without a machine mutation bonus.
+same five-inherited-locus numeric contract without a machine mutation bonus.
 
 The raw values in this compound remain the heritable genetic layer. Traits may
 derive a temporary effective value from them, but never write that temporary
@@ -117,25 +117,39 @@ time-of-day bonuses and negative traits from contaminating later inheritance.
 
 Every consumer first calculates an effective value `E` from the raw current
 value plus active trait/equipment bonuses and penalties. `E` may exceed the
-heritable 0..100 range, but is never written back into genetics. The goggles
-panel and gameplay conversion layer call the same function.
+heritable 0..100 range, but is never written back into genetics. Effective
+values are normalised to `0..999` so every panel remains within its fixed
+three-digit layout; the genetic Current value and Attribute Limit themselves
+remain `0..100`. The goggles panel and gameplay conversion layer call the same
+function.
 
 | Attribute | Runtime formula | E=0 | E=50 | E=100 |
 | --- | --- | ---: | ---: | ---: |
 | Health | `10 + 0.4E` maximum health | 10 | 30 | 50 |
-| Combat Power | `2 + 0.08E` base attack damage | 2 | 6 | 10 |
+| Combat Power | `2 + 0.08E` career damage input | 2 | 6 | 10 |
 | Stamina | `2 + 0.16E` armour | 2 | 10 | 18 |
 | Stamina | `0.05E` armour toughness | 0 | 2.5 | 5 |
 | Speed | `0.75 + 0.005E` movement multiplier | 0.75x | 1x | 1.25x |
 | Speed | `24 - 0.12E` attack interval, nearest whole tick | 24 | 18 | 12 |
-| Intelligence | `0.6 + 0.009E` training multiplier | 0.6x | 1.05x | 1.5x |
-| Luck | `2% + 0.18%E` melee critical chance | 2% | 11% | 20% |
+| Intelligence | `1 + 0.01E` critical-damage multiplier | 1x | 1.5x | 2x |
+| Luck | `2% + 0.18%E` cat-attack critical chance | 2% | 11% | 20% |
 
-Attack interval is clamped to at least one tick when temporary effects push E
-above 100. Critical chance is clamped to 100%; a successful critical hit uses
-vanilla's 1.5x damage convention and emits the ordinary critical particles and
-sound. Intelligence already exposes one shared training-multiplier entry point;
-the future training mechanic must call it instead of reading raw NBT.
+Combat Power does not replace an unequipped vanilla cat's biological attack.
+The conversion is installed only while a career outfit is present, then that
+outfit applies its own damage multiplier. Attack interval is clamped to at
+least one tick when temporary effects push E above 100. Critical chance is
+clamped to 100%; a successful critical hit multiplies its total damage by
+`1 + 0.01E` using Intelligence and emits the ordinary critical particles and
+sound. The damage multiplier does not stop growing at Intelligence 100: for
+example, 150 Intelligence yields 2.5x. Intelligence also selects the existing
+ranged-behaviour tiers: instinctive below 40, competent from 40 to 79, and
+tactical at 80 or above.
+
+Cat Filter ranges deliberately use two different domains. `Current Attributes`
+compare the same effective values as the panels, including trait and current
+day/night modifiers, and can select `0..999`; `Attribute Limits` continue to
+select only genetic `0..100` values. Legacy untouched `0..100` Current ranges
+are migrated to the new unrestricted `0..999` default.
 
 ### Career-outfit combat
 
@@ -144,13 +158,12 @@ is attacked, or when the cat itself is attacked. An ordered-sitting cat, a cat
 seated on a Create seat, and a cat pancake do not fight. Active combat retains
 the 32-block owner leash and never selects a player or another cat as a target.
 
-Melee career cats use the ordinary cat attack attribute, so Combat Power
+Melee career cats use the career-scaled cat attack attribute, so Combat Power
 controls damage and Speed controls the attack interval through the formulas
 above. Fishing cats are ranged fighters and cast vanilla-style bobbers with a
-curved line connected to the cat, using the same two attributes. A hook pulls
-its victim toward the cat when the victim
-implements vanilla's ranged-attacker interface or is below half maximum health;
-otherwise it knocks the victim away.
+curved line connected to the cat, using the same two attributes. Every
+successful hook hit knocks its victim away; fishing cats no longer reel in
+ranged or wounded targets.
 
 Fishing-cat positioning is divided by effective Intelligence: `0..39` closes
 to short range, `40..79` maintains a middle-distance firing band, and `80+`
@@ -201,7 +214,7 @@ shared trait-inheritance contract documented in the Breeding Box section.
 
 | Trait | Rarity | Upgrade | Implemented effect |
 | --- | --- | --- | --- |
-| Thorn-Wreathed (`荆棘环绕`) | Excellent | I-VII | `25, 28, 30, 33, 35, 38, 40%` retaliation chance; retaliation equals the cat's current melee damage |
+| Thorn-Wreathed (`反伤荆棘`) | Excellent | I-VII | `25, 28, 30, 33, 35, 38, 40%` retaliation chance; damage is `60, 70, 80, 90, 100, 110, 120%` of the equipped career suit's current attack damage |
 | Night Owl (`夜猫子`) | Common | I-VII | At night, Combat Power uses `3, 5, 7, 9, 11, 13, 15`; Speed uses `1, 2, 3, 4, 5, 6, 7`, reduced because one conditional trait grants two advantages |
 | Heat Resistance (`耐热性`) | Good | No | Cancels fire- and lava-tagged damage and clears the burning state |
 | Doughy (`面团团`) | Defect | No | All six effective current attributes -20; this trait is never inherited |
@@ -236,13 +249,12 @@ The first conditional batch follows that same total-budget rule:
 | Trait | Rarity | Levels | Implemented effect |
 | --- | --- | --- | --- |
 | Night Owl (`夜猫子`) | Common | I-VII | At night, Combat Power `3..15` and Speed `1..7` |
-| Fur in Force (`毛多势众`) | Good | I-VII | Stamina `12..30`; shearing yields `ceil(level/2)` extra fur; targeting range is reduced by `level` blocks |
-| Bristling Rage (`挨打就炸毛`) | Good | I-VII | Accepted damage grants Combat Power `15..30` for 8 seconds; 16-second cooldown |
-| Healing Purr (`呼噜疗愈`) | Excellent | I-VII | Health `17..35`; restores `ceil(level/2)` health every 4 seconds |
+| Fur in Force (`长毛护体`) | Good | I-VII | Stamina `12..30`; shearing yields `ceil(level/2)` extra fur; targeting range is reduced by `level` blocks |
+| Bristling Rage (`炸毛反击`) | Good | I-VII | Accepted damage grants Combat Power `15..30` for 8 seconds; 16-second cooldown |
+| Healing Purr (`治愈呼噜`) | Excellent | I-VII | Health `17..35`; restores `ceil(level/2)` health every 4 seconds |
 | Lu Bu Reborn (`吕布在世`) | Excellent | Fixed | Combat Power +20; maximum health doubles while at least three hostile mobs are within 8 blocks |
 | BeeBee Gene (`BeeBee基`) | Good | I-VII | Honey-outfit work interval becomes `9..3` seconds |
-| Blazing Form (`刚燃形态`) | Good | I-VII | In the fire outfit, Combat Power `3..21`; every 10 seconds has an `8..26%` chance to superheat adjacent burners for 5 seconds |
-| Prosperous Litter (`猫丁兴旺`) | Good | I-VII | Each parent reduces Breeding Box time by 5 seconds per level; both parents stack, with a 20-second floor |
+| Prosperous Litter (`猫丁兴旺`) | Excellent | I-VII | Each parent reduces Breeding Box time by 5 seconds per level; both parents stack, with a 20-second floor |
 
 The second conditional and trade-off batch adds nine more traits:
 
@@ -250,13 +262,13 @@ The second conditional and trade-off batch adds nine more traits:
 | --- | --- | --- | --- |
 | Angler's Fortune (`渔运亨通`) | Good | I-VII | While wearing the Fishing Suit, Luck `15..30`; the same effective Luck is supplied to the vanilla fishing loot table |
 | Superheat Gene (`超燃基因`) | Excellent | Fixed | A seated Fire-Suit cat continuously keeps adjacent Blaze Burners superheated; mutually exclusive with Blazing Form |
-| Protective Instinct (`护主心切`) | Good | I-VII | Combat Power `15..30` while the living owner is at or below half health |
-| Wet-Fur Fury (`湿毛暴怒`) | Good | I-VII | While wet, Combat Power `18..36` and Speed `-6..-18` |
+| Protective Instinct (`护主本能`) | Good | I-VII | Combat Power `15..30` while the living owner is at or below half health |
+| Wet-Fur Fury (`嘉豪`) | Good | I-VII | While wet, Combat Power `18..36` and Speed `-6..-18` |
 | Chonky Presence (`橘势膨胀`) | Good | I-VII | Health `18..42`, Stamina `12..30`, Speed `-8..-20` |
-| Glass Claws (`玻璃爪`) | Good | I-VII | Combat Power `20..44`, Health `-10..-28` |
-| Tail Held High (`尾巴翘上天`) | Common | I-VII | At full health, Speed `3..15` and Luck `1..7` |
-| Loaf Thoughts (`香箱思考`) | Common | I-VII | While sitting or riding a seat, Intelligence `4..16` and Stamina `2..8` |
-| Nine Lives (`九条命`) | Excellent | I-VII | A lethal final hit has a `7..25%` chance to be negated; 180-second saved cooldown |
+| Glass Claws (`玻璃利爪`) | Good | I-VII | Combat Power `20..44`, Health `-10..-28` |
+| Tail Held High (`无伤速通`) | Common | I-VII | At full health, Speed `3..15` and Luck `1..7` |
+| Loaf Thoughts (`深度思考`) | Common | I-VII | While sitting or riding a seat, Intelligence `4..16` and Stamina `2..8` |
+| Nine Lives (`九命庇护`) | Excellent | I-VII | A lethal final hit has a `7..25%` chance to be negated; 180-second saved cooldown |
 
 The third conditional batch fills out the Defect pool and adds three active
 utility traits:
@@ -264,23 +276,42 @@ utility traits:
 | Trait | Rarity | Levels | Implemented effect |
 | --- | --- | --- | --- |
 | Water-Shy (`怕水`) | Defect | Fixed | While wet, Combat Power Attribute -15 and Speed Attribute -20; conflicts with Wet-Fur Fury |
-| Daytime Drowsiness (`见光犯困`) | Defect | Fixed | In daytime skylit dimensions, Speed Attribute -15 and Intelligence Attribute -15 |
+| Daytime Drowsiness (`睡不醒`) | Defect | Fixed | In daytime skylit dimensions, Speed Attribute -15 and Intelligence Attribute -15 |
 | Timid as a Mouse (`胆小如鼠`) | Defect | Fixed | With at least two hostile mobs within 8 blocks, Combat Power Attribute -15 and Speed Attribute +8; conflicts with Lu Bu Reborn |
 | Punching Bag (`受气包`) | Good | I-VII | Stamina Attribute `15..30`; hostile mobs that acquire a target prefer an eligible carrier within 16 blocks |
-| Mark of Cain (`该隐印记`) | Excellent | I-VII | Luck Attribute `15..30`; ordinary-damage avoidance starts at `3..9%`, gains 1% per 25 effective Luck, and is capped at 15%; conflicts with Nine Lives |
-| Energy Recovery (`能量回收`) | Excellent | Fixed | At or below half health, consumes one Cat Pancake from the nine cat-inventory slots to heal 30% maximum health; 60-second saved cooldown |
+| Mark of Cain (`幸运庇护`) | Excellent | I-VII | Luck Attribute `15..30`; ordinary-damage avoidance starts at `3..9%`, gains 1% per 25 effective Luck, and is capped at 15%; conflicts with Nine Lives |
+| Energy Recovery (`猫饼充能`) | Excellent | Fixed | At or below half health, consumes one Cat Pancake from the nine cat-inventory slots to heal 30% maximum health; 60-second saved cooldown |
 
 Wet-Fur Fury, Chonky Presence and Glass Claws deliberately exceed the ordinary
 single-stat positive budget because their disadvantages are always evaluated by
 the same effective-attribute layer. A player can therefore build a specialised
-cat without receiving the upside for free. Superheat Gene and Blazing Form
-occupy one fire-career conflict slot, preventing contradictory burner rules on
-the same cat. Water-Shy/Wet-Fur Fury, Timid/Lu Bu Reborn and Mark of Cain/Nine
-Lives likewise share dedicated conflict slots.
+cat without receiving the upside for free. Water-Shy/Wet-Fur Fury, Timid/Lu Bu
+Reborn and Mark of Cain/Nine Lives share dedicated conflict slots.
 
-The five-second Basic Box development timer is never increased to the normal
-20-second floor. Searchable descriptions use one canonical numeric style such
-as `生命+5` and never alternate between synonyms for addition.
+Every Breeding Box now uses its release duration and retains the common
+20-second Prosperous Litter floor. Searchable descriptions use one canonical
+numeric style such as `生命+5` and never alternate between synonyms for addition.
+
+The first appearance batch occupies one shared Appearance conflict slot, so no
+two entries in this table can coexist on one cat:
+
+| Trait | Rarity | Levels | Implemented appearance |
+| --- | --- | --- | --- |
+| LOLI (`LOLI猫`) | Good | Fixed | Permanently remains a kitten; Cat Food and automated growing cannot remove the juvenile state |
+| him (`Him猫`) | Good | Fixed | Full-bright white eyes |
+| Isaac (`以撒猫`) | Common | Fixed | Blue tear streaks plus client-local falling tear particles |
+| Round Head (`圆头猫`) | Common | Fixed | Both separated ear meshes disappear while the server-synchronised combat flag is active |
+| oiiai (`oiiai猫`) | Common | Fixed | Rotates the complete rendered cat around its vertical axis |
+| Rainbow Cat (`彩虹猫`) | Excellent | Fixed | Recolours the current genome/material texture into six rainbow bands, emits a moving six-band trail, Speed +10 and Luck +20 |
+| Nekomata (`猫又`) | Excellent | Fixed | Renders two animated tails spread from one central root, Combat +20 and Intelligence +10 |
+| Puss in Boots (`穿靴子的猫`) | Good | Fixed | Four brown boot meshes follow the live leg bones |
+| Big Chonky Cat (`猪咪`) | Good | I-VII | Model, collision box and eye height scale to `115, 125, 135, 145, 155, 165, 175%` |
+
+Rainbow textures are derived lazily from the already resolved genome or block
+material and share the existing bounded dynamic-texture cache. Tears and the
+rainbow trail are client-local particles emitted by each cat's own client tick;
+they require no world scan or particle network packets. Big Chonky Cat refreshes
+Forge's per-entity dimensions whenever synchronized trait data changes.
 
 All non-probability progression uses whole numbers. Percentage-point growth is
 reserved for an effect that is itself a probability, such as Thorn-Wreathed.
@@ -313,7 +344,7 @@ per second. Heat Resistance, Thorn-Wreathed, Bristling Rage and Luck criticals
 use Forge damage events; Nine Lives checks only accepted lethal damage and saves
 its cooldown in the cat's persistent data. Fur uses Forge's shearable pipeline,
 and career/breeding traits reuse their existing machine events. Angler's Fortune
-feeds the existing fishing loot context, and both fire traits reuse the existing
+feeds the existing fishing loot context, and Superheat Gene reuses the existing
 burner work pass. Lu Bu Reborn and Timid share one bounded 8-block hostile query
 per second when either is present. Punching Bag redirects only an existing
 hostile target-change event and performs no manual tick polling. Transient
@@ -370,8 +401,9 @@ The profile renders the live cat model, the shared six-attribute panel and the
 same shared 72x27 trait-card renderer used by Breeding Boxes. Both current
 values and Attribute Limits are always visible in this full profile view; the
 current-number glyphs begin two visible pixels after their attribute icon. Four
-accessory compatibility slots and nine general cat
-inventory slots currently accept arbitrary items without applying effects. A
+reserved accessory slots reject insertion until the actual accessory system
+exists; old development-test contents remain removable. The nine general cat
+inventory slots accept arbitrary items. A
 normal player inventory is appended below the authored cat panel. All thirteen
 cat slots are immediately persisted in `LaoWuProfileItems`, including their
 exact logical slot indices, and are copied naturally by the existing full cat
@@ -406,8 +438,9 @@ profile.
 ## Breeding boxes
 
 The three breeding boxes are persistent four-slot block entities. They never
-scan the world or poll neighbouring inventories. Forge sided item capabilities
-expose exactly one logical slot per face:
+scan the world. Intermediate and Advanced boxes expose Forge sided item
+capabilities with exactly one logical slot per face; the Basic box deliberately
+exposes none:
 
 - Front: kitten-pancake output only.
 - Visual front-left: adult father pancake input/output.
@@ -415,27 +448,28 @@ expose exactly one logical slot per face:
 - Back, top and bottom: dedicated breeding-food input/output.
 
 With both adult parents present, at least one breeding food available and an
-empty output slot, the server advances a saved progress counter. During this
-development iteration the Basic box takes five seconds for rapid testing;
-Intermediate and Advanced boxes retain two and one real-time minutes.
+empty output slot, the server advances a saved progress counter. Basic,
+Intermediate and Advanced boxes take two minutes, ninety seconds, and one
+minute respectively.
 Completion consumes one breeding food and writes one baby cat pancake into the
 output slot; parents are retained for later cycles.
 
 Ordinary Cat Food is exclusively a kitten-growth item and is rejected by every
-breeding box. Boxes accept nine dedicated breeding foods:
+breeding box. Boxes accept eight dedicated breeding foods:
 
 | Food | Numeric inheritance |
 | --- | --- |
-| Breeding Cat Food | Three inherited loci and three fresh loci |
-| Super Breeding Cat Food | Five inherited loci and one fresh locus |
+| Breeding Cat Food | Five inherited loci and one fresh locus |
 | Mutation Cat Food | Two inherited loci, four fresh loci, and mutation chance +20% |
 | One of six stat foods | The better targeted parent locus plus four randomly inherited loci |
 
 Targeted food compares the selected Attribute Limit first, breaking ties with
-current value. If both parent limits are at least 90 and differ by at most five,
-the offspring receives `min(100, better limit + 1)` for that target. Its
-inherited current value advances by the same one-point breakthrough, capped by
-the new limit, so the improvement is also visible in the ordinary `NOW` panel.
+current value. If both parent limits are at least 90, the offspring receives
+`min(100, better limit + 1)` for that target. Its inherited current value
+advances by the same one-point breakthrough, capped by the new limit, so the
+improvement is also visible in the ordinary `NOW` panel. This single 90+
+requirement replaces the former additional "limits differ by at most five"
+condition.
 
 Targeted food intentionally lets one high-value donor propagate that locus to a
 second breeding parent. This makes establishing a single specialised 100-point
@@ -443,7 +477,7 @@ line approachable. It does not trivialise a six-perfect-limit cat: every food
 still leaves at least one of the six loci uninherited, so the final missing
 perfect locus must be rolled fresh and then consolidated in later generations.
 
-The machine base chances are 10%, 20% and 30%. Mutation Cat Food adds 20% to
+The machine base chances are 10%, 15% and 20%. Mutation Cat Food adds 20% to
 the displayed base value. Parent Luck then adjusts the
 food-modified chance as follows:
 
@@ -456,7 +490,8 @@ The effective server value is synchronised into the pixel GUI and is used for
 both uninherited numeric loci and appearance regions. Appearance regions are
 otherwise selected independently from either parent's saved genome. The four
 
-Trait inheritance uses a separate, deliberately visible rule:
+Trait inheritance uses one shared rule for every breeding food. It is explained
+once by the Breeding Box rather than repeated on every food tooltip:
 
 1. A trait carried by both parents is guaranteed to appear on the offspring.
 2. A trait carried by exactly one parent independently has a 50% inheritance
@@ -514,6 +549,40 @@ actual pancake NBT, without duplicate pancake item icons. The compact stat grid 
 current values normally and switches to Attribute Limits with the supplied
 blue number glyphs while Shift is held. Mutation rate and machine tier use the
 pixel glyphs authored in the supplied sheet rather than Minecraft text.
+Hovering the mutation panel explains its box, food and parent-Luck sources and
+its numeric, appearance and trait effects. Hovering the `i` panel explains hand
+insertion/extraction plus attribute, trait and appearance inheritance, and
+explicitly states that holding Shift replaces current values with the parents'
+Attribute Limits. Hovering the tier panel reports the current Roman tier, base
+mutation chance and exact configured breeding duration.
+
+The Advanced box additionally exposes a Create-style mode control on top and a
+Cat Filter slot on each visual side. `Locked` retains both parents. `Automatic`
+evaluates the adjacent side containers after every successful cycle, while
+`Redstone Activated` evaluates once on each rising edge. Parent replacement
+ranks Attribute Limits only: trained Current Attributes never make a parent
+genetically better. A side Cat Filter may set Limit and trait targets; a missing
+or untouched filter instead treats 100 as the ideal for all six Limits. Range
+filters treat their upper bound as the ideal score, while a single target value
+rewards the closest match. Only a strictly higher-scoring adult pancake is
+exchanged with the current parent, and every failed insertion is rolled back
+without item loss.
+
+The Adoption Box reward table includes genuine randomly enchanted books from
+its middle quality tier onward. Enchantment power rises with cat quality and is
+capped at the vanilla enchanting-table maximum, while ordinary books remain in
+the low-quality villager-resource pool.
+
+The Cat Filter has a third `Identity` page in addition to Current Attributes
+and Attribute Limits. It can require an adult or kitten pancake, an owned or
+unowned cat, no career, any career, or one exact career outfit. An optional cat
+name condition compares the captured entity's real custom name (not the
+generated pancake/outfit display prefix) as a case-insensitive exact match.
+Blank identity controls remain unrestricted. These conditions participate in
+ordinary Create item filtering and act as exact candidate gates for Advanced
+Box parent replacement; a matching candidate can therefore replace a current
+parent that fails the configured identity even when its raw Limit score is
+lower.
 
 Cat pancakes in this and all other container screens display the normal side
 attribute panel to the left of the cursor when hovered, but only while Engineer
@@ -530,7 +599,7 @@ audio and gift traits, while incompatible target selectors cannot fight over
 the same navigation or attack state.
 
 - Hissing: `Good Cat` and `Select Elder` are mutually exclusive.
-- Movement target: `Low-Level Code`, `Shedding`, `So Warm`, `Hunter Kimi`,
+- Movement target: `Low-Level Code`, `Shedding`, `Hunter Kimi`,
   `Sky Cat`, `Auto-Attach`, and `Three-Legged Cat` are mutually exclusive.
 - Combat target: `Stitch`, `Edward`, `Food Guarding`, `Meddlesome`, `Filicide`,
   and `Hunter Kimi` are mutually exclusive.
@@ -542,21 +611,87 @@ the same navigation or attack state.
 
 The remaining rules compose: Anorexia blocks all hand/deployer food handling;
 Ding-Dong Cat leaves snow; Cable Biter and TOM the Lumberjack respect
-`mobGriefing`; Air-Raid Siren multiplies only its own hissing session; A Little
+`mobGriefing`; Air-Raid Siren makes its carrier the pair's audio source and adds
+a second synchronised sound layer; A Little
 Ill zeroes both current attributes and limits before a death pancake is saved;
-Xiaoting rolls its registry-backed smithing-template reward independently on
-death and after a vanilla morning gift. Death rewards are spawned directly by
-the authoritative server instead of being appended to the mutable living-drop
-collection. Doraemon appends its own independent morning-gift roll; Cat King
+Xiaoting appends one random registry-backed smithing template to the cat's
+normal death-drop collection. Its vanilla morning gift independently has a 20%
+chance to include another random template. Death handling uses Forge's
+authoritative `LivingDropsEvent`, so the reward is emitted exactly once and
+continues to respect `doMobLoot`. Doraemon appends its own independent morning-gift roll; Cat King
 playback is client-side, positional, and limited to the nearest three sessions.
+Select Elder now retains the creature it selected for hissing and attacks that
+target after taking damage. Auto-Attach rushes toward the entity the nearby
+player attacked rather than toward the player. Meddlesome only selects grounded
+creatures close to an unsupported block edge. Hunter Kimi collects edible drops
+from every supported prey death, not only from cat deaths. A Code Conflict fluid
+interruption pauses and clears both members of the active hissing pair.
+
+`Select Elder`, `Xiaoting`, `Doraemon`, and `Sky Cat` are Good rarity;
+`Prosperous Litter` is Excellent. The removed `So Warm` resource id is ignored
+when old save data is read, and its legacy resting state is cleared server-side.
 
 World searches are never performed every tick. Minecarts are queried every ten
-ticks, running belts every forty, nearby heat every eighty, containers every
-eighty, and chewable redstone every sixty. Searches are staggered by entity id
+ticks, running belts every forty, containers every eighty, and chewable redstone
+every sixty. Searches are staggered by entity id
 and cache their selected entity or block position between passes. Player attack
 auto-attachment and potion splashes are event-driven. Server-side persistent
 tags hold timers and targets, while the Cat King audio manager is the only
 client-only part.
+
+## Career combat and suit previews
+
+The Flight Suit adds 10 effective Combat Power. A standing Pilot Cat uses a
+dedicated low-altitude melee pass: it stages roughly 2.65 blocks above its
+target, dives for one 125%-scaled hit, then pulls up before another pass. It
+does not inherit the Phantom's unrestricted cruising altitude. Flight and Fire
+careers are the two melee roles and receive complete knockback resistance while
+their outfit is active; sitting or mounted-on-Seat cats never enter combat.
+
+The Logistics Suit adds 10 effective Speed and defines a support role rather
+than an attack role. A standing Logistics Cat clears hostile targets and uses a
+higher-priority support goal in place of ordinary owner following whenever an
+eligible ally exists. It only selects a same-owner, non-Logistics career cat
+that is actively fighting and has not collected all five deliverable support
+effects. It paths into casting range, stops there, and launches a homing
+`create:cardboard_package_10x8` parcel carrying one uniformly selected effect
+the recipient is still missing: Strength, Speed, Resistance, Regeneration, or
+Fire Resistance. Deliveries are never selected as duplicates; all five level-I
+effects may coexist and each delivered effect lasts ten seconds.
+
+Intelligence scales the entire support decision rather than only its numeric
+cooldown. Between Intelligence 0 and 100, search range rises from 8 to 16
+blocks, casting range from 6 to 10 blocks, movement speed from 0.95 to 1.20,
+search interval falls from 40 to 15 ticks, and support interval falls from 10
+to 6 seconds. Low-Intelligence cats mostly choose the nearest eligible ally;
+high-Intelligence cats increasingly prioritise the lowest health ratio. Searches
+remain staggered and bounded rather than running every tick. A seated Logistics
+Cat retains its package-routing work and does not run combat support.
+
+A Dynamite Cat converts its first accepted lethal hit into a final charge. Its
+health is locked at 1, ordinary incoming damage is ignored, and it pursues a
+valid hostile target for up to 12 seconds. At 2.5 blocks it starts a 30-tick
+fuse, then deals ten times its current career attack damage to valid enemies in
+a four-block radius. The blast neither damages players or cats nor destroys
+blocks. If no target can be reached before the timeout, it primes in place so
+the cat cannot remain permanently invulnerable. After the blast it re-enters
+the ordinary career-cat death pipeline, including the cat-pancake drop and one
+random attribute-limit penalty. Only void damage and `/kill` bypass the final
+charge.
+
+The visual fuse deliberately follows vanilla Creeper rendering rather than a
+separate model animation: the server synchronises only the state transition and
+the client derives the white flashing overlay and nonlinear whole-model swell
+from the local fuse ticks. The same overlay progress is passed to the career
+outfit layer, so the suit flashes together with the cat without per-tick network
+traffic.
+
+Every career-suit tooltip now uses two explicit pages. Ctrl shows the job's
+attack formula, timing formula, and fixed suit bonuses. Shift computes a pair of
+reference panels with all six base attributes set to 50 and 100. Those panels
+call the same health, armor, toughness, career-damage, and career-interval
+functions used by living cats, including each suit's effective attribute bonus;
+the Logistics panel explicitly reports that the job does not attack.
 
 ## Multiplayer and performance rules
 
@@ -571,9 +706,102 @@ client-only part.
 
 ## Next integration points
 
-- Add a data-driven material registry with weights, eligibility and mutation
-  rules for materials such as obsidian, rainbow and andesite-alloy cats.
+- Move the initial code-backed material catalogue to a data-driven registry
+  with weights and per-source mutation eligibility.
 - Define training/growth sources that raise current values without exceeding
   the Attribute Limit.
-- Route the future training/growth implementation through Intelligence's shared
-  training multiplier.
+
+## Material catalogue and mapping debugger
+
+Cat genomes continue to save one stable resource id for each of the eleven
+semantic regions. The material catalogue now resolves three kinds of ids:
+
+- vanilla cat-variant ids, such as `minecraft:red`;
+- authored materials, currently `laowu:material/obsidian` and
+  `laowu:material/wood`;
+- temporary block mappings encoded as
+  `laowu:block/<block_namespace>/<block_path>`.
+
+The material debug wand uses a vanilla stick model. Right-clicking a block
+selects its particle sprite, converts it to the exact 64x32 cat UV while
+retaining the vanilla cat's luminance cues, and writes a PNG below
+`create_meowchanics/cat_material_exports/<namespace>/` in the active game
+directory. Right-clicking a cat opens a server-authoritative editor with one
+whole-cat control and all eleven semantic-region controls visible at once in
+two columns. Every region retains its own material selector. Changes are
+staged in the open menu and immediately rebuild a separate live 3D preview;
+the real cat is written and synchronized only once when Apply is pressed. A
+viewed cat is temporarily movement-locked by the same reference count used by
+the attribute and trait editors.
+
+The two eye loci remain independently selectable, but their UV structure is
+bilaterally mirrored around the vanilla face axis. Authored materials and
+automatic block mappings therefore produce matching left/right eye size and
+pixel shape while still permitting different colours or materials per eye.
+For an automatic block mapping, transparent pixels are ignored and the two
+brightest distinct colours in the particle sprite's first frame become the
+two eye pixels. Their order is mirrored on the opposite eye; a one-colour
+sprite simply uses that colour for both pixels.
+
+Authored obsidian and wood materials, all vanilla cat variants, and every
+visible item-backed block in the synchronized block registry participate in
+ordinary appearance mutation. The pool is derived once from registry ids and
+does not depend on a developer export or on textures previously viewed by one
+client. A child stores only stable `laowu:block/<namespace>/<path>` ids; each
+client maps those ids directly from its block atlas and keeps only a bounded
+in-memory render cache.
+
+## Block-material acquisition and wild spawning
+
+A Create Deployer can apply one visible, item-backed block to any Cat Pancake.
+The block is consumed and all eleven appearance regions are changed to the
+block's stable `laowu:block/<namespace>/<path>` material id; every other piece
+of pancake NBT is copied unchanged. Runtime matching is event-driven. JEI has
+one fixed stone example rather than an Ingredient containing every registered
+block, so neither recipe loading nor the viewer cycles through the block
+registry.
+
+Ordinary natural, chunk-generation, and structure cat spawns have a 4% chance
+to receive a block material. To cover the Nether, the End, and mod dimensions
+that provide no vanilla cat spawn entry, every active dimension schedules one
+special spawn 10-15 minutes after the previous successful one. A blocked
+attempt retries after one minute. It tries at most twelve loaded positions near
+one player and permits at most four of these generated cats within 96 blocks.
+Seventy-five percent of material choices sample the local floor/nearby loaded
+blocks; the remaining 25% use the registry-wide pool of visible BlockItems so
+dyed, building, functional, and modded blocks can also occur. No chunk is
+loaded by this system and no world-wide scan is performed.
+
+## Butter Cat material inheritance and summon
+
+Butter Bread now copies the source cat's complete eleven-region texture genome
+before replacing it. A legacy cat without explicit genome data is first
+represented as a uniform genome using its vanilla variant, so every conversion
+has a stable inherited appearance. The Butter Cat model uses the same 64x32 cat
+UV for its base texture and keeps the authored butter geometry in a separate
+texture layer; converted bosses therefore retain fused, authored, vanilla, and
+block-mapped materials while the butter remains visually independent. Spawn-egg
+bosses without an inherited genome continue to use the authored fallback skin.
+
+Conversion is presented as one server-authoritative 60-tick summon state. The
+future boss is temporarily invulnerable and AI-disabled, renders at ordinary
+cat scale with the inherited base texture, and has no butter layer or boss bar.
+The client derives a smooth five-block Butter Bread descent from the synchronized
+start time without per-tick packets. On contact, the server emits the explosion
+sound and particles, enables AI, reveals the butter layer, changes the model to
+1.5x scale, and exposes the boss bar to players already tracking the entity.
+The summon state, start time, and inherited genome are saved with the boss so a
+chunk unload cannot strand the transformation or replace its material.
+
+## Attribute effect hover help
+
+The parent grids in Breeding Boxes and the full panel in the Cat Profile now
+translate a hovered number into the live mechanic it controls. Health reports
+maximum health; Stamina reports armor and toughness; Speed reports movement
+multiplier and, for attacking careers, attack interval; Intelligence reports
+critical-damage multiplier and its behaviour-AI tier; Luck reports critical
+chance and fishing loot luck; and
+Combat Power reports the selected career's actual damage coefficient. Career
+equipment bonuses and currently active trait adjustments are included for a
+live cat. Hovering a maximum-value column reports the theoretical mechanics at
+that Attribute Limit instead.

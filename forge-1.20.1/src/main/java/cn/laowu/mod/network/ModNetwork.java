@@ -3,6 +3,7 @@ package cn.laowu.mod.network;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatChestData;
+import cn.laowu.mod.DynamiteCatLastStand;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatGenomeData;
 import cn.laowu.mod.genetics.CatTraitData;
@@ -17,7 +18,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String VERSION = "9";
+    private static final String VERSION = "11";
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "main"),
             () -> VERSION, VERSION::equals, VERSION::equals);
@@ -55,6 +56,14 @@ public final class ModNetwork {
         CHANNEL.registerMessage(14, SetCatProfileNamePacket.class,
                 SetCatProfileNamePacket::encode, SetCatProfileNamePacket::decode,
                 SetCatProfileNamePacket::handle);
+        CHANNEL.registerMessage(15, SyncDynamiteCatLastStandPacket.class,
+                SyncDynamiteCatLastStandPacket::encode,
+                SyncDynamiteCatLastStandPacket::decode,
+                SyncDynamiteCatLastStandPacket::handle);
+        CHANNEL.registerMessage(16, SetCatFilterNamePacket.class,
+                SetCatFilterNamePacket::encode,
+                SetCatFilterNamePacket::decode,
+                SetCatFilterNamePacket::handle);
     }
 
     public static void syncToTracking(Cat cat, int pose) {
@@ -143,7 +152,28 @@ public final class ModNetwork {
         return new SyncCatTraitStatePacket(cat.getId(),
                 CatTraitEffects.isBristlingRageActive(cat),
                 CatTraitEffects.isLuBuOutnumbered(cat),
-                CatTraitEffects.isTimidOutnumbered(cat));
+                CatTraitEffects.isTimidOutnumbered(cat),
+                CatTraitEffects.isCombatActive(cat));
+    }
+
+    public static void syncDynamiteLastStandToTracking(Cat cat) {
+        syncDynamiteLastStandToTracking(cat,
+                DynamiteCatLastStand.isActive(cat),
+                DynamiteCatLastStand.fuseTicks(cat));
+    }
+
+    public static void syncDynamiteLastStandToTracking(
+            Cat cat, boolean active, int fuseTicks) {
+        CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat),
+                new SyncDynamiteCatLastStandPacket(cat.getId(), active, fuseTicks));
+    }
+
+    public static void syncDynamiteLastStandToPlayer(
+            net.minecraft.server.level.ServerPlayer player, Cat cat) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
+                new SyncDynamiteCatLastStandPacket(cat.getId(),
+                        DynamiteCatLastStand.isActive(cat),
+                        DynamiteCatLastStand.fuseTicks(cat)));
     }
 
     public static void setCatAddress(int catId, String address) {
@@ -152,6 +182,10 @@ public final class ModNetwork {
 
     public static void setCatProfileName(int catId, String name) {
         CHANNEL.sendToServer(new SetCatProfileNamePacket(catId, name));
+    }
+
+    public static void setCatFilterName(int containerId, String name) {
+        CHANNEL.sendToServer(new SetCatFilterNamePacket(containerId, name));
     }
 
     public static void playLogisticsSound(ServerLevel level, BlockPos position, boolean arrival) {

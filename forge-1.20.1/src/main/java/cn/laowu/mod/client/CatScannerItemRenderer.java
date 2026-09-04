@@ -25,6 +25,10 @@ import java.util.List;
 
 /** Renders the supplied scanner and a live attribute panel directly on its screen. */
 public final class CatScannerItemRenderer extends BlockEntityWithoutLevelRenderer {
+    public static final ResourceLocation INVENTORY_MODEL =
+            LaoWuMod.id("item/cat_scanner_inventory");
+    public static final ResourceLocation HANDHELD_MODEL =
+            LaoWuMod.id("item/cat_scanner_handheld");
     private static final ResourceLocation MODEL =
             LaoWuMod.id("models/item/cat_scanner.bbmodel");
     private static final String SCREEN_SHELL =
@@ -37,6 +41,11 @@ public final class CatScannerItemRenderer extends BlockEntityWithoutLevelRendere
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack pose,
                              MultiBufferSource buffers, int light, int overlay) {
+        if (!isHandContext(context)) {
+            renderFlatIcon(stack, context, pose, buffers, light, overlay);
+            return;
+        }
+
         CatWorldTarget target = targetedTarget(stack, context);
         CatScannerTextureManager.Layers bodyTextures =
                 CatScannerTextureManager.resolveInactive();
@@ -84,6 +93,35 @@ public final class CatScannerItemRenderer extends BlockEntityWithoutLevelRendere
         }
 
         pose.popPose();
+    }
+
+    /** Uses the supplied 16x16 sprite in every item context except either hand. */
+    private static void renderFlatIcon(ItemStack stack, ItemDisplayContext context,
+                                       PoseStack pose,
+                                       MultiBufferSource buffers,
+                                       int light, int overlay) {
+        Minecraft minecraft = Minecraft.getInstance();
+        var itemRenderer = minecraft.getItemRenderer();
+        var model = minecraft.getModelManager().getModel(INVENTORY_MODEL);
+        pose.pushPose();
+        // Cancel the builtin/entity model's half-block offset before asking the
+        // normal item renderer to draw the generated inventory sprite.
+        pose.translate(0.5D, 0.5D, 0.5D);
+        // GUI keeps the normal generated-item framing. Other contexts already
+        // received their transform from cat_scanner.json, so NONE avoids
+        // applying a second ground/fixed transform to the flat sprite.
+        ItemDisplayContext spriteContext = context == ItemDisplayContext.GUI
+                ? ItemDisplayContext.GUI : ItemDisplayContext.NONE;
+        itemRenderer.render(stack, spriteContext, false, pose, buffers,
+                light, overlay, model);
+        pose.popPose();
+    }
+
+    private static boolean isHandContext(ItemDisplayContext context) {
+        return context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                || context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND
+                || context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND
+                || context == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
     }
 
     private static CatWorldTarget targetedTarget(ItemStack stack,

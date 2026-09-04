@@ -5,16 +5,19 @@ import cn.laowu.mod.genetics.CatStat;
 import com.simibubi.create.content.logistics.filter.FilterItem;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Configurable Create filter for the six saved cat attributes. */
+/** Configurable Create filter for cat attributes, traits and captured identity. */
 public final class CatFilterItem extends FilterItem {
     public CatFilterItem(Properties properties) {
         super(properties);
@@ -34,7 +37,7 @@ public final class CatFilterItem extends FilterItem {
                 int minimum = rules.min(page, stat);
                 int maximum = rules.max(page, stat);
                 if (minimum == CatFilterRules.MIN_VALUE
-                        && maximum == CatFilterRules.MAX_VALUE) continue;
+                        && maximum == CatFilterRules.maxValue(page)) continue;
                 summary.add(Component.translatable("item.laowu.cat_filter.summary.range",
                                 Component.translatable("attribute.laowu.cat."
                                         + stat.serializedName()),
@@ -49,7 +52,36 @@ public final class CatFilterItem extends FilterItem {
                 Component.translatable("item.laowu.cat_filter.summary.trait",
                                 trait.title())
                         .withStyle(ChatFormatting.GRAY)));
+        if (rules.growth() != CatFilterRules.GrowthFilter.ANY) {
+            summary.add(Component.translatable("item.laowu.cat_filter.summary.growth",
+                    Component.translatable("gui.laowu.cat_filter.growth."
+                            + rules.growth().id())).withStyle(ChatFormatting.GRAY));
+        }
+        if (rules.ownership() != CatFilterRules.OwnershipFilter.ANY) {
+            summary.add(Component.translatable("item.laowu.cat_filter.summary.ownership",
+                    Component.translatable("gui.laowu.cat_filter.ownership."
+                            + rules.ownership().id())).withStyle(ChatFormatting.GRAY));
+        }
+        if (rules.career() != CatFilterRules.CareerFilter.ANY) {
+            summary.add(Component.translatable("item.laowu.cat_filter.summary.career",
+                    Component.translatable("gui.laowu.cat_filter.career."
+                            + rules.career().id())).withStyle(ChatFormatting.GRAY));
+        }
+        if (!rules.catName().isEmpty()) {
+            summary.add(Component.translatable("item.laowu.cat_filter.summary.name",
+                    rules.catName()).withStyle(ChatFormatting.GRAY));
+        }
         return summary;
+    }
+
+    /** Create normally hides a configured filter's summary while Shift is held. */
+    @Override
+    public void appendHoverText(ItemStack stack, Level level,
+                                List<Component> tooltip, TooltipFlag flag) {
+        List<Component> summary = makeSummary(stack);
+        if (summary.isEmpty()) return;
+        tooltip.add(CommonComponents.SPACE);
+        tooltip.addAll(summary);
     }
 
     @Override

@@ -14,16 +14,27 @@ import java.util.Map;
 
 public final class HeldItemTransformState {
     public enum Target {
-        HELD,
+        FIRST_PERSON,
+        THIRD_PERSON,
         GUI
     }
 
     private static final Values DEFAULTS = new Values(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
-    private static final Map<ResourceLocation, Values> HELD_DEFAULTS = Map.of(
+    private static final Map<ResourceLocation, Values> FIRST_PERSON_DEFAULTS = Map.of(
             LaoWuMod.id("cat_ball"),
             new Values(0.0D, 127.0D, 0.0D, -0.06D, 1.13D, 0.0D, 1.0D),
             LaoWuMod.id("devouring_cat"),
-            new Values(0.0D, 64.0D, 0.0D, 0.0D, 0.31D, 0.0D, 1.0D)
+            new Values(0.0D, 64.0D, 0.0D, 0.0D, 0.31D, 0.0D, 1.0D),
+            LaoWuMod.id("cat_scanner"),
+            new Values(-172.0D, -37.0D, 87.0D, -0.55D, -0.08D, -0.23D, 1.78D)
+    );
+    private static final Map<ResourceLocation, Values> THIRD_PERSON_DEFAULTS = Map.of(
+            LaoWuMod.id("cat_ball"),
+            new Values(0.0D, 127.0D, 0.0D, -0.06D, 1.13D, 0.0D, 1.0D),
+            LaoWuMod.id("devouring_cat"),
+            new Values(0.0D, 64.0D, 0.0D, 0.0D, 0.31D, 0.0D, 1.0D),
+            LaoWuMod.id("cat_scanner"),
+            new Values(0.0D, 0.0D, -75.0D, 0.98D, 0.15D, 0.0D, 1.0D)
     );
     private static final Map<ResourceLocation, Values> GUI_DEFAULTS = Map.of(
             LaoWuMod.id("cat_ball"),
@@ -75,8 +86,11 @@ public final class HeldItemTransformState {
 
     private static Values defaults(ResourceLocation itemId, Target target) {
         if (itemId == null) return DEFAULTS;
-        return (target == Target.GUI ? GUI_DEFAULTS : HELD_DEFAULTS)
-                .getOrDefault(itemId, DEFAULTS);
+        return switch (target) {
+            case GUI -> GUI_DEFAULTS.getOrDefault(itemId, DEFAULTS);
+            case FIRST_PERSON -> FIRST_PERSON_DEFAULTS.getOrDefault(itemId, DEFAULTS);
+            case THIRD_PERSON -> THIRD_PERSON_DEFAULTS.getOrDefault(itemId, DEFAULTS);
+        };
     }
 
     public static void preview(ItemStack stack, Target target, Values values) {
@@ -112,9 +126,11 @@ public final class HeldItemTransformState {
     }
 
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> config(Target target) {
-        return target == Target.GUI
-                ? ClientConfig.GUI_ITEM_TRANSFORMS
-                : ClientConfig.HELD_ITEM_TRANSFORMS;
+        return switch (target) {
+            case GUI -> ClientConfig.GUI_ITEM_TRANSFORMS;
+            case FIRST_PERSON -> ClientConfig.HELD_ITEM_TRANSFORMS;
+            case THIRD_PERSON -> ClientConfig.THIRD_PERSON_ITEM_TRANSFORMS;
+        };
     }
 
     private static ResourceLocation itemId(ItemStack stack) {

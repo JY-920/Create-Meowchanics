@@ -77,6 +77,8 @@ public final class ClientModEvents {
                 NozzleFluidPuffParticle.clearColourCache());
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
                 CatGenomeTextureManager.clear());
+        event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
+                CatAppearanceTextures.clear());
     }
 
     @SubscribeEvent
@@ -89,6 +91,8 @@ public final class ClientModEvents {
                     CatAttributeEditorScreen::new);
             MenuScreens.register(LaoWuMod.CAT_TRAIT_EDITOR_MENU.get(),
                     CatTraitEditorScreen::new);
+            MenuScreens.register(LaoWuMod.CAT_MATERIAL_EDITOR_MENU.get(),
+                    CatMaterialEditorScreen::new);
             MenuScreens.register(LaoWuMod.CAT_PROFILE_MENU.get(), CatProfileScreen::new);
             MenuScreens.register(LaoWuMod.CAT_FILTER_MENU.get(), CatFilterScreen::new);
             // KineticBlockEntityRenderer deliberately leaves rotating parts to
@@ -130,6 +134,12 @@ public final class ClientModEvents {
                 MechanicalLaserProjectileRenderer::new);
         event.registerEntityRenderer(LaoWuMod.HONEY_MISSILE_PROJECTILE.get(),
                 HoneyMissileProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.DYNAMITE_PROJECTILE.get(),
+                DynamiteProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.LOGISTICS_SUPPORT_PROJECTILE.get(),
+                // The package model inherits Minecraft's 0.25x ground transform;
+                // 2.4x here produces a final 0.6x package-sized projectile.
+                context -> new ThrownItemRenderer<>(context, 2.4F, false));
         event.registerEntityRenderer(LaoWuMod.CAT_BALL_ENTITY.get(),
                 CatBallEntityRenderer::new);
         event.registerEntityRenderer(LaoWuMod.BUTTER_CAT.get(), ButterCatRenderer::new);
@@ -143,6 +153,8 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(CAT_ENGINEER_GOGGLES_WORN_MODEL);
+        event.register(CatScannerItemRenderer.INVENTORY_MODEL);
+        event.register(CatScannerItemRenderer.HANDHELD_MODEL);
     }
 
     @SubscribeEvent
@@ -154,6 +166,16 @@ public final class ClientModEvents {
         if (inventoryModel != null && wornModel != null) {
             event.getModels().put(inventoryId,
                     new CatEngineerGogglesModel(inventoryModel, wornModel));
+        }
+
+        ModelResourceLocation scannerId = new ModelResourceLocation(
+                LaoWuMod.id("cat_scanner"), "inventory");
+        var scannerFlatModel = event.getModels().get(scannerId);
+        var scannerHandheldModel = event.getModels().get(
+                CatScannerItemRenderer.HANDHELD_MODEL);
+        if (scannerFlatModel != null && scannerHandheldModel != null) {
+            event.getModels().put(scannerId,
+                    new CatScannerBakedModel(scannerFlatModel, scannerHandheldModel));
         }
     }
 
@@ -187,6 +209,8 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(HissingCatModel.LAYER, HissingCatModel::createLayer);
+        event.registerLayerDefinition(CatAppearanceModel.LAYER,
+                CatAppearanceModel::createLayer);
         event.registerLayerDefinition(KimiArmorModel.LAYER, KimiArmorModel::createLayer);
         event.registerLayerDefinition(KimiArmorModel.SLIM_LAYER, KimiArmorModel::createSlimLayer);
     }

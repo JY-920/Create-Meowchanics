@@ -1,0 +1,10 @@
+{
+  "type": "create:filling",
+  "ingredients": [
+    { "item": "create:sweet_roll" },
+    { "fluid": "laowu:liquid_cat", "amount": 250 }
+  ],
+  "results": [
+    { "item": "laowu:butter_bread" }
+  ]
+}

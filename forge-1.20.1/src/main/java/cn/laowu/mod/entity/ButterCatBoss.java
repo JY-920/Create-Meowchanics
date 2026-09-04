@@ -1,7 +1,10 @@
 package cn.laowu.mod.entity;
 
+import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.genetics.CatGenome;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -13,6 +16,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -27,17 +31,28 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.IdentityHashMap;
+import java.util.Optional;
+import java.util.Set;
 
 /** Hostile 1.5x cat boss whose authored Blockbench roll is its charge attack. */
 public final class ButterCatBoss extends Monster {
     public static final float MODEL_SCALE = 1.5F;
     public static final float BASE_WIDTH = 0.6F;
     public static final float BASE_HEIGHT = 0.7F;
+    public static final int SUMMON_DURATION_TICKS = 60;
+
+    private static final String INHERITED_GENOME_TAG = "InheritedCatGenome";
+    private static final String SUMMONING_TAG = "ButterCatSummoning";
+    private static final String SUMMON_START_TAG = "ButterCatSummonStart";
 
     /** animation2 is authored as five seconds and is sampled at 2x speed. */
     public static final int CHARGE_WINDUP_TICKS = 5 * 20 / 2;
@@ -57,9 +72,17 @@ public final class ButterCatBoss extends Monster {
             SynchedEntityData.defineId(ButterCatBoss.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Long> DATA_PHASE_ANIMATION_START =
             SynchedEntityData.defineId(ButterCatBoss.class, EntityDataSerializers.LONG);
+    private static final EntityDataAccessor<CompoundTag> DATA_INHERITED_GENOME =
+            SynchedEntityData.defineId(ButterCatBoss.class, EntityDataSerializers.COMPOUND_TAG);
+    private static final EntityDataAccessor<Boolean> DATA_SUMMONING =
+            SynchedEntityData.defineId(ButterCatBoss.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Long> DATA_SUMMON_START =
+            SynchedEntityData.defineId(ButterCatBoss.class, EntityDataSerializers.LONG);
 
     private final ServerBossEvent bossEvent = new ServerBossEvent(getDisplayName(),
             BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.NOTCHED_10);
+    private final Set<ServerPlayer> trackingPlayers =
+            Collections.newSetFromMap(new IdentityHashMap<>());
     private int chargeCooldown;
 
     public ButterCatBoss(EntityType<? extends ButterCatBoss> type, Level level) {
@@ -84,6 +107,9 @@ public final class ButterCatBoss extends Monster {
         super.defineSynchedData();
         this.entityData.define(DATA_ATTACK_PHASE, ATTACK_IDLE);
         this.entityData.define(DATA_PHASE_ANIMATION_START, 0L);
+        this.entityData.define(DATA_INHERITED_GENOME, new CompoundTag());
+        this.entityData.define(DATA_SUMMONING, false);
+        this.entityData.define(DATA_SUMMON_START, 0L);
     }
 
     @Override
@@ -114,6 +140,22 @@ public final class ButterCatBoss extends Monster {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (this.level().isClientSide || !isSummoning()) return;
+
+        this.setNoAi(true);
+        this.setTarget(null);
+        this.getNavigation().stop();
+        Vec3 motion = this.getDeltaMovement();
+        this.setDeltaMovement(0.0D, motion.y, 0.0D);
+        if (this.level().getGameTime() - getSummonStartGameTime()
+                >= SUMMON_DURATION_TICKS) {
+            finishSummoning();
+        }
+    }
+
+    @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
         if (this.chargeCooldown > 0) this.chargeCooldown--;
@@ -124,12 +166,14 @@ public final class ButterCatBoss extends Monster {
     @Override
     public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
-        this.bossEvent.addPlayer(player);
+        this.trackingPlayers.add(player);
+        if (!isSummoning()) this.bossEvent.addPlayer(player);
     }
 
     @Override
     public void stopSeenByPlayer(ServerPlayer player) {
         super.stopSeenByPlayer(player);
+        this.trackingPlayers.remove(player);
         this.bossEvent.removePlayer(player);
     }
 
@@ -156,6 +200,95 @@ public final class ButterCatBoss extends Monster {
     @Override
     protected float getSoundVolume() {
         return 1.35F;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        if (isSummoning() && !source.is(DamageTypes.FELL_OUT_OF_WORLD)
+                && !source.is(DamageTypes.GENERIC_KILL)) {
+            return true;
+        }
+        return super.isInvulnerableTo(source);
+    }
+
+    /** Starts the visible bread descent before this entity becomes an active boss. */
+    public void beginSummoning() {
+        this.entityData.set(DATA_SUMMONING, true);
+        this.entityData.set(DATA_SUMMON_START, this.level().getGameTime());
+        this.setNoAi(true);
+        this.setTarget(null);
+        this.setDeltaMovement(Vec3.ZERO);
+    }
+
+    public boolean isSummoning() {
+        return this.entityData.get(DATA_SUMMONING);
+    }
+
+    public float getSummonProgress(float partialTick) {
+        if (!isSummoning()) return 1.0F;
+        long elapsed = this.level().getGameTime() - getSummonStartGameTime();
+        return Mth.clamp((elapsed + partialTick) / SUMMON_DURATION_TICKS,
+                0.0F, 1.0F);
+    }
+
+    public void setInheritedGenome(CatGenome genome) {
+        this.entityData.set(DATA_INHERITED_GENOME, genome.save());
+    }
+
+    public Optional<CatGenome> getInheritedGenome() {
+        CompoundTag serialized = this.entityData.get(DATA_INHERITED_GENOME);
+        return serialized.isEmpty() ? Optional.empty() : CatGenome.load(serialized);
+    }
+
+    private long getSummonStartGameTime() {
+        return this.entityData.get(DATA_SUMMON_START);
+    }
+
+    private void finishSummoning() {
+        this.entityData.set(DATA_SUMMONING, false);
+        this.setNoAi(false);
+        this.setDeltaMovement(Vec3.ZERO);
+        this.chargeCooldown = 20;
+        this.trackingPlayers.forEach(this.bossEvent::addPlayer);
+        if (!(this.level() instanceof ServerLevel serverLevel)) return;
+
+        double centerY = this.getY() + BASE_HEIGHT * 0.55D;
+        serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
+                this.getX(), centerY, this.getZ(), 1,
+                0.0D, 0.0D, 0.0D, 0.0D);
+        serverLevel.sendParticles(ParticleTypes.POOF,
+                this.getX(), centerY, this.getZ(), 42,
+                0.7D, 0.45D, 0.7D, 0.14D);
+        serverLevel.sendParticles(ParticleTypes.CLOUD,
+                this.getX(), centerY, this.getZ(), 24,
+                0.8D, 0.35D, 0.8D, 0.08D);
+        serverLevel.playSound(null, this.getX(), centerY, this.getZ(),
+                SoundEvents.GENERIC_EXPLODE, this.getSoundSource(),
+                1.25F, 0.88F + this.random.nextFloat() * 0.08F);
+        this.gameEvent(net.minecraft.world.level.gameevent.GameEvent.EXPLODE);
+    }
+
+    /** Drops one to three uniformly selected super attribute cans or Super Dried Fish. */
+    @Override
+    protected void dropCustomDeathLoot(DamageSource source, int looting,
+                                       boolean recentlyHit) {
+        super.dropCustomDeathLoot(source, looting, recentlyHit);
+        int drops = Mth.nextInt(random, 1, 3);
+        for (int roll = 0; roll < drops; roll++) {
+            spawnAtLocation(new ItemStack(randomSuperReward()));
+        }
+    }
+
+    private Item randomSuperReward() {
+        return switch (random.nextInt(7)) {
+            case 0 -> LaoWuMod.SUPER_ATTACK_CAT_CAN.get();
+            case 1 -> LaoWuMod.SUPER_HEALTH_CAT_CAN.get();
+            case 2 -> LaoWuMod.SUPER_SPEED_CAT_CAN.get();
+            case 3 -> LaoWuMod.SUPER_STAMINA_CAT_CAN.get();
+            case 4 -> LaoWuMod.SUPER_INTELLIGENCE_CAT_CAN.get();
+            case 5 -> LaoWuMod.SUPER_LUCK_CAT_CAN.get();
+            default -> LaoWuMod.SUPER_DRIED_FISH.get();
+        };
     }
 
     public boolean isWindingUp() {
@@ -218,12 +351,26 @@ public final class ButterCatBoss extends Monster {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("ChargeCooldown", this.chargeCooldown);
+        CompoundTag inheritedGenome = this.entityData.get(DATA_INHERITED_GENOME);
+        if (!inheritedGenome.isEmpty()) {
+            tag.put(INHERITED_GENOME_TAG, inheritedGenome.copy());
+        }
+        tag.putBoolean(SUMMONING_TAG, isSummoning());
+        tag.putLong(SUMMON_START_TAG, getSummonStartGameTime());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.chargeCooldown = Math.max(0, tag.getInt("ChargeCooldown"));
+        if (tag.contains(INHERITED_GENOME_TAG, Tag.TAG_COMPOUND)) {
+            this.entityData.set(DATA_INHERITED_GENOME,
+                    tag.getCompound(INHERITED_GENOME_TAG).copy());
+        }
+        boolean summoning = tag.getBoolean(SUMMONING_TAG);
+        this.entityData.set(DATA_SUMMONING, summoning);
+        this.entityData.set(DATA_SUMMON_START, tag.getLong(SUMMON_START_TAG));
+        if (summoning) this.setNoAi(true);
     }
 
     private final class ChargeAttackGoal extends Goal {

@@ -2,12 +2,16 @@ package cn.laowu.mod.client;
 
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.item.CatPancakeItem;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -46,6 +50,11 @@ public final class CatPancakeItemRenderer extends BlockEntityWithoutLevelRendere
             case FIXED -> 0.96F;
             default -> 0.62F;
         };
+        CatTraitProfile traits = CatTraitData.read(stack).orElse(CatTraitProfile.EMPTY);
+        int bigCatLevel = traits.level(CatTrait.BIG_CHONKY_CAT);
+        if (bigCatLevel > 0) {
+            scale *= CatTrait.BIG_CHONKY_CAT.bigCatScalePercent(bigCatLevel) / 100.0F;
+        }
         boolean baby = CatPancakeItem.isBaby(stack);
         if (baby) {
             // A kitten pancake remains visibly smaller in-world, but no longer
@@ -78,10 +87,50 @@ public final class CatPancakeItemRenderer extends BlockEntityWithoutLevelRendere
         poseStack.scale(-scale, -scale, scale);
         var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(
                 CatGenomeTextureManager.resolve(stack, CatPancakeItem.texture(stack))));
-        RuntimeBlockbenchModel.get(MODEL).render(
+        RuntimeBlockbenchModel runtimeModel = RuntimeBlockbenchModel.get(MODEL);
+        RuntimeBlockbenchModel.GroupSelection selection = traits.has(CatTrait.NEKOMATA)
+                ? RuntimeBlockbenchModel.GroupSelection.CAT_WITHOUT_TAIL
+                : RuntimeBlockbenchModel.GroupSelection.ALL;
+        runtimeModel.render(
                 poseStack, consumer, packedLight, packedOverlay,
-                RuntimeBlockbenchModel.GroupSelection.ALL,
+                selection,
                 RuntimeBlockbenchModel.HeadMotion.NONE);
+        if (traits.has(CatTrait.HIM)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.eyes(
+                            CatAppearanceTextures.whiteEyes())),
+                    LightTexture.FULL_BRIGHT, packedOverlay,
+                    selection,
+                    RuntimeBlockbenchModel.HeadMotion.NONE);
+        }
+        if (traits.has(CatTrait.ISAAC)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.entityTranslucent(
+                            CatAppearanceTextures.tears())),
+                    packedLight, packedOverlay,
+                    selection,
+                    RuntimeBlockbenchModel.HeadMotion.NONE);
+        }
+        if (traits.has(CatTrait.PUSS_IN_BOOTS)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.entityCutoutNoCull(
+                            CatAppearanceTextures.boots())),
+                    packedLight, packedOverlay,
+                    selection,
+                    RuntimeBlockbenchModel.HeadMotion.NONE);
+        }
+        if (traits.has(CatTrait.NEKOMATA)) {
+            for (float angle : new float[] {-22.5F, 22.5F}) {
+                poseStack.pushPose();
+                poseStack.translate(0.0F, 15.0F / 16.0F, 8.0F / 16.0F);
+                poseStack.mulPose(Axis.YP.rotationDegrees(angle));
+                poseStack.translate(0.0F, -15.0F / 16.0F, -8.0F / 16.0F);
+                runtimeModel.render(poseStack, consumer, packedLight, packedOverlay,
+                        RuntimeBlockbenchModel.GroupSelection.CAT_TAIL_ONLY,
+                        RuntimeBlockbenchModel.HeadMotion.NONE);
+                poseStack.popPose();
+            }
+        }
         if (CatPancakeItem.isTamed(stack)) {
             PancakeCatCollarModel.render(poseStack, buffer, packedLight, packedOverlay);
         }

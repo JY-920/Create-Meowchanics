@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,6 +69,9 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         if (!(level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box)) {
+            return InteractionResult.PASS;
+        }
+        if (tier == BreedingBoxTier.BASIC && player instanceof FakePlayer) {
             return InteractionResult.PASS;
         }
 
@@ -125,7 +129,10 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
                          BlockState newState, boolean moving) {
         if (!oldState.is(newState.getBlock())) {
             if (level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box) {
-                box.dropContents(level, pos);
+                if (!level.isClientSide) {
+                    box.dropContents(level, pos);
+                    box.destroy();
+                }
             }
             super.onRemove(oldState, level, pos, newState, moving);
         }
@@ -150,8 +157,7 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null
-                : createTickerHelper(type, LaoWuMod.BREEDING_BOX_BE.get(),
-                BreedingBoxBlockEntity::serverTick);
+        return createTickerHelper(type, LaoWuMod.BREEDING_BOX_BE.get(),
+                BreedingBoxBlockEntity::tickBox);
     }
 }

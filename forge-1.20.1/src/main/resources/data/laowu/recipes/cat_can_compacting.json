@@ -1,0 +1,11 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    { "tag": "minecraft:fishes" },
+    { "item": "create:iron_sheet" },
+    { "item": "create:iron_sheet" }
+  ],
+  "results": [
+    { "item": "laowu:cat_can" }
+  ]
+}

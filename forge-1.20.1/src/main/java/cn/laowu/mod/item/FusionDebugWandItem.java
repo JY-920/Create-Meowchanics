@@ -2,6 +2,7 @@ package cn.laowu.mod.item;
 
 import cn.laowu.mod.genetics.CatGenome;
 import cn.laowu.mod.genetics.CatGenomeData;
+import cn.laowu.mod.genetics.CatMaterialRegistry;
 import cn.laowu.mod.genetics.CatRegion;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatAttributeProfile;
@@ -127,7 +128,7 @@ public final class FusionDebugWandItem extends Item {
                 secondAttributes, secondTraits);
         CatGenome genome = CatGenome.fuse(
                 CatGenomeData.ensure(first), CatGenomeData.ensure(second),
-                variants.keySet(), mutationChance, random);
+                CatMaterialRegistry.mutationMaterials(), mutationChance, random);
         CatAttributeProfile attributes = CatAttributeProfile.breed(
                 firstAttributes, secondAttributes, CatBreedingMode.NORMAL,
                 mutationChance, random);

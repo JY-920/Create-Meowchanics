@@ -1,0 +1,9 @@
+{
+  "type": "create:mixing",
+  "heatRequirement": "heated",
+  "ingredients": [
+    { "item": "laowu:breeding_cat_food" },
+    { "item": "minecraft:sugar" }
+  ],
+  "results": [{ "item": "laowu:speed_breeding_cat_food" }]
+}

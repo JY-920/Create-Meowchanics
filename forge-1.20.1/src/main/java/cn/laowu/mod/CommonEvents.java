@@ -5,7 +5,11 @@ import cn.laowu.mod.item.CatPancakeItem;
 import cn.laowu.mod.item.FusionDebugWandItem;
 import cn.laowu.mod.item.AttributeDebugWandItem;
 import cn.laowu.mod.item.CatAttributeCanItem;
+import cn.laowu.mod.item.CatTraitFishItem;
+import cn.laowu.mod.item.BreedingOnlyCatCanItem;
+import cn.laowu.mod.item.PheromoneCatFoodItem;
 import cn.laowu.mod.item.TraitDebugWandItem;
+import cn.laowu.mod.item.MaterialDebugWandItem;
 import cn.laowu.mod.item.CatToolBehavior;
 import cn.laowu.mod.item.CatTotemItem;
 import cn.laowu.mod.item.KimiArmorItem;
@@ -21,6 +25,12 @@ import cn.laowu.mod.genetics.CatTraitEffects;
 import cn.laowu.mod.genetics.CatBehaviorTraitEffects;
 import cn.laowu.mod.genetics.CatTraitProfile;
 import cn.laowu.mod.genetics.CatXiaotingRewards;
+import cn.laowu.mod.genetics.CatGenome;
+import cn.laowu.mod.genetics.CatGenomeData;
+import cn.laowu.mod.genetics.CatMaterialRegistry;
+import cn.laowu.mod.genetics.CatRegion;
+import cn.laowu.mod.genetics.NaturalCatMaterialSpawner;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
@@ -64,9 +74,11 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.PlayLevelSoundEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -80,6 +92,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.MobSpawnType;
 import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileEntity;
 
 import java.util.Collections;
@@ -154,9 +167,23 @@ public final class CommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void applyCainMarkAvoidance(LivingAttackEvent event) {
         if (!event.isCanceled() && event.getEntity() instanceof Cat cat
-                && !cat.level().isClientSide && event.getAmount() > 0.0F
+                && !cat.level().isClientSide
+                && !DynamiteCatLastStand.isFinishing(cat)
+                && event.getAmount() > 0.0F
                 && CatTraitEffects.tryCainAvoid(cat, event.getSource())) {
             event.setCanceled(true);
+        }
+    }
+
+    /** A charged Dynamite Cat remains at exactly one health until detonation. */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void protectDynamiteCatLastStand(LivingAttackEvent event) {
+        if (event.getEntity() instanceof Cat cat && !cat.level().isClientSide
+                && DynamiteCatLastStand.isActive(cat)
+                && !DynamiteCatLastStand.isFinishing(cat)
+                && DynamiteCatLastStand.protectsFrom(event.getSource())) {
+            event.setCanceled(true);
+            cat.setHealth(1.0F);
         }
     }
 
@@ -173,7 +200,21 @@ public final class CommonEvents {
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             CatArmorPounceBehavior.tick(event.getServer());
+            for (ServerLevel level : event.getServer().getAllLevels()) {
+                NaturalCatMaterialSpawner.tick(level);
+            }
         }
+    }
+
+    /** Rarely maps ordinary natural cats to a block sampled from their dimension. */
+    @SubscribeEvent
+    public static void assignNaturalCatMaterial(MobSpawnEvent.FinalizeSpawn event) {
+        if (!(event.getEntity() instanceof Cat cat)) return;
+        MobSpawnType type = event.getSpawnType();
+        if (type != MobSpawnType.NATURAL
+                && type != MobSpawnType.CHUNK_GENERATION
+                && type != MobSpawnType.STRUCTURE) return;
+        NaturalCatMaterialSpawner.maybeMaterializeNaturalCat(cat, event.getLevel());
     }
 
     /**
@@ -203,6 +244,19 @@ public final class CommonEvents {
             CatAttributeData.ensure(cat);
             CatAttributeEffects.refresh(cat);
         }
+    }
+
+    /** Keeps Big Chonky Cat's collision and eye position aligned with its model. */
+    @SubscribeEvent
+    public static void resizeAppearanceTraitCat(EntityEvent.Size event) {
+        if (!(event.getEntity() instanceof Cat cat)) return;
+        int level = CatTraitData.read(cat)
+                .map(profile -> profile.level(CatTrait.BIG_CHONKY_CAT))
+                .orElse(0);
+        if (level <= 0) return;
+        float scale = CatTrait.BIG_CHONKY_CAT.bigCatScalePercent(level) / 100.0F;
+        event.setNewSize(event.getNewSize().scale(scale));
+        event.setNewEyeHeight(event.getNewEyeHeight() * scale);
     }
 
     @SubscribeEvent
@@ -237,7 +291,7 @@ public final class CommonEvents {
     public static void notifyAutoAttachCats(LivingAttackEvent event) {
         if (event.getAmount() > 0.0F
                 && event.getSource().getDirectEntity() instanceof Player player) {
-            CatBehaviorTraitEffects.notifyPlayerAttack(player);
+            CatBehaviorTraitEffects.notifyPlayerAttack(player, event.getEntity());
         }
     }
 
@@ -266,17 +320,16 @@ public final class CommonEvents {
                 20 * 60 * 3, 0, false, true, true));
     }
 
-    /** Luck gives cats vanilla-style 150% critical melee hits. */
+    /** Luck rolls a cat attack critical; Intelligence supplies its scaling multiplier. */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void applyCatAttributeCriticalHit(LivingHurtEvent event) {
         if (!(event.getSource().getEntity() instanceof Cat cat)
-                || event.getSource().getDirectEntity() != cat
                 || cat.level().isClientSide
                 || event.getSource().is(DamageTypes.THORNS)
                 || event.getAmount() <= 0.0F
                 || !CatAttributeEffects.rollCriticalHit(cat)) return;
 
-        event.setAmount(CatAttributeEffects.criticalDamage(event.getAmount()));
+        event.setAmount(CatAttributeEffects.criticalDamage(event.getAmount(), cat));
         if (cat.level() instanceof ServerLevel level) {
             LivingEntity target = event.getEntity();
             level.sendParticles(ParticleTypes.CRIT,
@@ -520,6 +573,7 @@ public final class CommonEvents {
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         if (event.getEntity() instanceof Cat cat && !cat.level().isClientSide) {
+            if (DynamiteCatLastStand.tick(cat)) return;
             disableTamedCatPanic(cat);
             CatAttributeEffects.tick(cat);
             CatTraitEffects.tick(cat);
@@ -579,9 +633,10 @@ public final class CommonEvents {
         // PanicGoal has already been removed, so this does not restore random
         // fleeing. Smart melee defenders are alerted once per accepted hit.
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
-        boolean careerCanFight = outfit != CatOutfitType.NONE
+        boolean activeCareer = outfit != CatOutfitType.NONE
                 && !CareerCatBehavior.isCombatResting(cat);
-        if (careerCanFight) {
+        boolean careerCanFight = CareerCatBehavior.canParticipateInCombat(cat);
+        if (activeCareer) {
             CareerCatBehavior.alertMeleeProtectors(cat, event.getSource().getEntity());
         }
         if (!careerCanFight
@@ -596,10 +651,13 @@ public final class CommonEvents {
     public static void applyCatTraitThorns(LivingDamageEvent event) {
         if (event.getEntity() instanceof Cat cat && !cat.level().isClientSide
                 && event.getAmount() > 0.0F) {
+            if (DynamiteCatLastStand.isFinishing(cat)) return;
             if (CatTraitEffects.tryNineLives(cat, event.getAmount())) {
                 event.setAmount(0.0F);
                 return;
             }
+            CatBehaviorTraitEffects.onSelectedElderHurt(
+                    cat, event.getSource().getEntity());
             CatTraitEffects.onAcceptedDamage(cat);
             CatTraitEffects.tryReflectDamage(cat, event.getSource());
         }
@@ -620,6 +678,7 @@ public final class CommonEvents {
             CatTraitData.ensure(cat);
             ModNetwork.syncCatTraitsToPlayer(player, cat);
             ModNetwork.syncCatTraitStateToPlayer(player, cat);
+            ModNetwork.syncDynamiteLastStandToPlayer(player, cat);
         }
     }
 
@@ -648,10 +707,28 @@ public final class CommonEvents {
         CatTraitData.set(child, CatTraitProfile.breed(
                 CatTraitData.ensure(first), CatTraitData.ensure(second),
                 0.05F, child.getRandom()));
+        CatGenome genome = CatGenome.fuse(CatGenomeData.ensure(first),
+                CatGenomeData.ensure(second), CatMaterialRegistry.mutationMaterials(),
+                child.getRandom());
+        CatGenomeData.set(child, genome);
+        var compatibilityVariant = BuiltInRegistries.CAT_VARIANT.get(
+                genome.material(CatRegion.BODY_FRONT));
+        if (compatibilityVariant != null) child.setVariant(compatibilityVariant);
     }
 
     @SubscribeEvent
     public static void onCatInteract(PlayerInteractEvent.EntityInteract event) {
+        if (event.getTarget() instanceof ItemEntity itemEntity
+                && event.getItemStack().getItem() instanceof CatTraitFishItem fish
+                && itemEntity.getItem().is(LaoWuMod.CAT_PANCAKE.get())) {
+            InteractionResult result = fish.interactItemEntity(
+                    event.getItemStack(), event.getEntity(), itemEntity);
+            if (result.consumesAction()) {
+                event.setCancellationResult(result);
+                event.setCanceled(true);
+            }
+            return;
+        }
         if (event.getTarget() instanceof ItemEntity itemEntity
                 && event.getItemStack().getItem() instanceof AttributeDebugWandItem wand
                 && itemEntity.getItem().is(LaoWuMod.CAT_PANCAKE.get())) {
@@ -677,7 +754,8 @@ public final class CommonEvents {
         if (!(event.getTarget() instanceof Cat cat)) return;
 
         if (CatBehaviorTraitEffects.refusesFood(cat, event.getItemStack())
-                || (!cat.isBaby() && cat.isFood(event.getItemStack())
+                || (!cat.isBaby() && (cat.isFood(event.getItemStack())
+                || event.getItemStack().getItem() instanceof BreedingOnlyCatCanItem)
                 && CatBehaviorTraitEffects.cannotBreed(cat))) {
             event.setCancellationResult(InteractionResult.FAIL);
             event.setCanceled(true);
@@ -729,11 +807,51 @@ public final class CommonEvents {
             return;
         }
 
+        if (event.getItemStack().getItem() instanceof MaterialDebugWandItem wand) {
+            InteractionResult result = wand.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            if (result.consumesAction()) {
+                event.setCancellationResult(result);
+                event.setCanceled(true);
+            }
+            return;
+        }
+
+        // Tamed cats normally consume a right-click before the held item's
+        // interaction runs. Route pheromone food explicitly so players and
+        // Create deployers can retame both adult cats and kittens.
+        if (event.getItemStack().getItem() instanceof PheromoneCatFoodItem food) {
+            InteractionResult result = food.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            event.setCancellationResult(result);
+            event.setCanceled(true);
+            return;
+        }
+
+        // Generic cans are recipe materials, but on a tame adult cat their
+        // sole direct-use effect is breeding. Route them before the cat can
+        // consume the click by toggling its sitting state.
+        if (event.getItemStack().getItem() instanceof BreedingOnlyCatCanItem can) {
+            InteractionResult result = can.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            event.setCancellationResult(result);
+            event.setCanceled(true);
+            return;
+        }
+
         // Tamed cats consume ordinary right-clicks before an item's interaction
         // hook. Route attribute cans here so pets and living pancakes can both
         // be trained, while still respecting the Anorexia trait above.
         if (event.getItemStack().getItem() instanceof CatAttributeCanItem can) {
             InteractionResult result = can.interactLivingEntity(event.getItemStack(),
+                    event.getEntity(), cat, event.getHand());
+            event.setCancellationResult(result);
+            event.setCanceled(true);
+            return;
+        }
+
+        if (event.getItemStack().getItem() instanceof CatTraitFishItem fish) {
+            InteractionResult result = fish.interactLivingEntity(event.getItemStack(),
                     event.getEntity(), cat, event.getHand());
             event.setCancellationResult(result);
             event.setCanceled(true);
@@ -793,6 +911,7 @@ public final class CommonEvents {
         if (cat.isBaby() && event.getItemStack().is(LaoWuMod.CAT_FOOD.get())) {
             event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
             event.setCanceled(true);
+            if (CatTraitData.ensure(cat).has(CatTrait.LOLI)) return;
             if (event.getLevel().isClientSide) return;
 
             cat.setAge(0);
@@ -904,6 +1023,48 @@ public final class CommonEvents {
             return;
         }
         if (!pancake.is(LaoWuMod.CAT_PANCAKE.get())) return;
+        var blockMaterial = CatMaterialRegistry.blockMaterial(held);
+        if (blockMaterial.isPresent()) {
+            var level = event.getBlockEntity().getLevel();
+            if (level == null) return;
+            // One fixed stone example exists in the recipe manager for JEI.
+            // At runtime this higher-priority search result accepts any
+            // visible BlockItem without constructing a registry-sized
+            // Ingredient or thousands of generated recipes.
+            event.addRecipe(() -> asDeployerRecipe(level.getRecipeManager().byKey(
+                    LaoWuMod.id("cat_pancake_block_material_deploying"))), 200);
+            if (event.getRecipe() instanceof ProcessingRecipe<?> recipe
+                    && recipe.getId().equals(LaoWuMod.id(
+                    "cat_pancake_block_material_deploying"))) {
+                ItemStack result = pancake.copyWithCount(1);
+                CatGenomeData.set(result, CatGenome.uniform(blockMaterial.get()));
+                recipe.enforceNextResult(() -> result.copy());
+            }
+            return;
+        }
+        if (held.getItem() instanceof PheromoneCatFoodItem) {
+            if (CatPancakeItem.hasOwner(pancake)) {
+                event.setCanceled(true);
+                return;
+            }
+            if (!(event.getRecipe() instanceof ProcessingRecipe<?> recipe)
+                    || !recipe.getId().equals(LaoWuMod.id(
+                    "pheromone_cat_food_item_application"))) return;
+
+            var level = event.getBlockEntity().getLevel();
+            if (level == null) return;
+            var ownerId = PheromoneCatFoodItem.resolveOwner(level.getServer(), held);
+            if (ownerId.isEmpty()) {
+                event.setCanceled(true);
+                return;
+            }
+
+            ItemStack result = pancake.copyWithCount(1);
+            CatPancakeItem.setOwner(result, ownerId.get());
+            CatPancakeItem.makeAdult(result);
+            recipe.enforceNextResult(() -> result.copy());
+            return;
+        }
         if (held.getItem() instanceof CatAttributeCanItem can) {
             if (!(event.getRecipe() instanceof ProcessingRecipe<?> recipe)) return;
             var itemId = ForgeRegistries.ITEMS.getKey(held.getItem());
@@ -925,8 +1086,34 @@ public final class CommonEvents {
             recipe.enforceNextResult(() -> result.copy());
             return;
         }
+        if (held.getItem() instanceof CatTraitFishItem fish) {
+            if (!(event.getRecipe() instanceof ProcessingRecipe<?> recipe)) return;
+            var itemId = ForgeRegistries.ITEMS.getKey(held.getItem());
+            if (itemId == null || !itemId.getNamespace().equals(LaoWuMod.MOD_ID)
+                    || !recipe.getId().equals(LaoWuMod.id(
+                    itemId.getPath() + "_item_application"))) return;
+
+            var level = event.getBlockEntity().getLevel();
+            if (level == null) return;
+            ItemStack result = pancake.copyWithCount(1);
+            CatTraitProfile profile = CatTraitData.ensure(result, level.getRandom());
+            var upgraded = fish.upgrade(profile, level.getRandom());
+            if (upgraded.isEmpty()) {
+                // Keep both inputs when every upgradable trait is already level VII.
+                event.setCanceled(true);
+                return;
+            }
+            CatTraitData.set(result, upgraded.get());
+            recipe.enforceNextResult(() -> result.copy());
+            return;
+        }
         if (held.is(LaoWuMod.CAT_FOOD.get())) {
             if (!CatPancakeItem.isBaby(pancake)) {
+                event.setCanceled(true);
+                return;
+            }
+            if (CatTraitData.read(pancake)
+                    .map(profile -> profile.has(CatTrait.LOLI)).orElse(false)) {
                 event.setCanceled(true);
                 return;
             }
@@ -970,6 +1157,15 @@ public final class CommonEvents {
         recipe.enforceNextResult(() -> result.copy());
     }
 
+    /** Nine Lives/totems resolve first; only a genuine remaining death starts the charge. */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void beginDynamiteCatLastStand(LivingDeathEvent event) {
+        if (event.getEntity() instanceof Cat cat && !cat.level().isClientSide
+                && DynamiteCatLastStand.tryBegin(cat, event.getSource())) {
+            event.setCanceled(true);
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onCatDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Cat cat && !cat.level().isClientSide) {
@@ -980,7 +1176,6 @@ public final class CommonEvents {
             CatProfileData.dropOnDeath(cat);
             CatChestData.dropOnDeath(cat);
             if (cat.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-                CatXiaotingRewards.tryDropTemplate(cat);
                 if (outfit != CatOutfitType.NONE) {
                     cat.spawnAtLocation(CatPancakeItem.captureDeathDrop(cat));
                 }
@@ -991,15 +1186,25 @@ public final class CommonEvents {
     /** Preserve vanilla quantity/looting behaviour, but turn every cat string drop into fur. */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void replaceCatStringDropsWithFur(LivingDropsEvent event) {
-        if (!(event.getEntity() instanceof Cat cat) || cat.level().isClientSide) return;
-        for (var drop : event.getDrops()) {
-            ItemStack stack = drop.getItem();
-            if (!stack.is(Items.STRING)) continue;
-            drop.setItem(new ItemStack(LaoWuMod.CAT_FUR.get(), stack.getCount()));
+        if (event.getEntity().level().isClientSide) return;
+        if (event.getEntity() instanceof Cat cat) {
+            for (var drop : event.getDrops()) {
+                ItemStack stack = drop.getItem();
+                if (!stack.is(Items.STRING)) continue;
+                drop.setItem(new ItemStack(LaoWuMod.CAT_FUR.get(), stack.getCount()));
+            }
+            CatXiaotingRewards.addDeathTemplate(cat, event.getDrops());
         }
         if (event.getSource().getEntity() instanceof Cat hunter) {
             CatBehaviorTraitEffects.collectHuntedDrops(hunter, event.getDrops());
         }
     }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static java.util.Optional<? extends net.minecraft.world.item.crafting.Recipe<? extends net.minecraft.world.Container>>
+    asDeployerRecipe(java.util.Optional<? extends net.minecraft.world.item.crafting.Recipe<?>> recipe) {
+        return (java.util.Optional) recipe;
+    }
+
     private CommonEvents() {}
 }

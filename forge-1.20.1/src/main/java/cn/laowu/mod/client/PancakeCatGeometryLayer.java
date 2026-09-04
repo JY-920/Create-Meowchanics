@@ -2,10 +2,14 @@ package cn.laowu.mod.client;
 
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.CatModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -37,10 +41,39 @@ public final class PancakeCatGeometryLayer extends RenderLayer<Cat, CatModel<Cat
         }
         var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(
                 CatGenomeTextureManager.resolve(cat)));
-        RuntimeBlockbenchModel.get(MODEL).render(
+        RuntimeBlockbenchModel runtimeModel = RuntimeBlockbenchModel.get(MODEL);
+        CatTraitProfile traits = CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY);
+        RuntimeBlockbenchModel.GroupSelection selection = traits.has(CatTrait.NEKOMATA)
+                ? RuntimeBlockbenchModel.GroupSelection.CAT_WITHOUT_TAIL
+                : RuntimeBlockbenchModel.GroupSelection.ALL;
+        runtimeModel.render(
                 poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
-                RuntimeBlockbenchModel.GroupSelection.ALL,
+                selection,
                 RuntimeBlockbenchModel.HeadMotion.NONE);
+        if (traits.has(CatTrait.HIM)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.eyes(
+                            CatAppearanceTextures.whiteEyes())),
+                    LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    selection,
+                    RuntimeBlockbenchModel.HeadMotion.NONE);
+        }
+        if (traits.has(CatTrait.ISAAC)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.entityTranslucent(
+                            CatAppearanceTextures.tears())),
+                    packedLight, OverlayTexture.NO_OVERLAY,
+                    selection,
+                    RuntimeBlockbenchModel.HeadMotion.NONE);
+        }
+        if (traits.has(CatTrait.PUSS_IN_BOOTS)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.entityCutoutNoCull(
+                            CatAppearanceTextures.boots())),
+                    packedLight, OverlayTexture.NO_OVERLAY,
+                    selection,
+                    RuntimeBlockbenchModel.HeadMotion.NONE);
+        }
         if (cat.isTame()) {
             PancakeCatCollarModel.render(
                     poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY);

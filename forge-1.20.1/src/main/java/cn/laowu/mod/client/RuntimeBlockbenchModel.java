@@ -51,6 +51,8 @@ public final class RuntimeBlockbenchModel {
     // mesh uses XYZ order, so preserve that order instead of the legacy
     // RuntimeBlockbenchModel order used by older assets.
     private static final String FISHING_RIGHT_FISH = "7a93e707-a768-2d9a-989e-1fccc7045619";
+    private static final String CAT_LEFT_EAR = "51000000-0000-4000-8000-000000000003";
+    private static final String CAT_RIGHT_EAR = "51000000-0000-4000-8000-000000000004";
     private static final int OUTFIT_TEXTURE_INDEX = 1;
     private static final float OUTFIT_TEXTURE_SIZE = 64.0F;
 
@@ -757,7 +759,9 @@ public final class RuntimeBlockbenchModel {
             boolean chestGroup = "chest".equals(root.name)
                     || ("group".equals(root.name) && root == roots.get(roots.size() - 1));
             if (selection == GroupSelection.CHEST_ONLY && !chestGroup) continue;
-            if (selection == GroupSelection.ALL && chestGroup) continue;
+            if ((selection == GroupSelection.ALL
+                    || selection == GroupSelection.CAT_WITHOUT_EARS
+                    || selection == GroupSelection.CAT_WITHOUT_TAIL) && chestGroup) continue;
             if (selection == GroupSelection.FRONT_BODY_ONLY && !"body".equals(root.name)) continue;
             if (selection == GroupSelection.CAT_HEAD_ONLY
                     && !"head".equals(root.name) && !"group".equals(root.name)) continue;
@@ -767,6 +771,10 @@ public final class RuntimeBlockbenchModel {
                     && !"head".equals(root.name)) continue;
             if (selection == GroupSelection.CAT_BODY_WITH_GENERIC
                     && "head".equals(root.name)) continue;
+            if (selection == GroupSelection.CAT_TAIL_ONLY
+                    && !"tail1".equals(root.name) && !"tail2".equals(root.name)) continue;
+            if (selection == GroupSelection.CAT_WITHOUT_TAIL
+                    && ("tail1".equals(root.name) || "tail2".equals(root.name))) continue;
             renderGroup(root, Vec.ROOT_PIVOT, poseStack, consumer, light, overlay, headMotion,
                     groupMotion, groupTransforms, selection, red, green, blue, alpha,
                     textureFilter, normalDirection, reverseWinding);
@@ -812,6 +820,9 @@ public final class RuntimeBlockbenchModel {
                 : null;
         for (ElementDef element : group.elements) {
             if (selection == GroupSelection.FRONT_BODY_ONLY && element != frontBody) continue;
+            if (selection == GroupSelection.CAT_WITHOUT_EARS
+                    && (CAT_LEFT_EAR.equals(element.uuid)
+                    || CAT_RIGHT_EAR.equals(element.uuid))) continue;
             renderElement(element, group.origin, poseStack, consumer, light, overlay,
                     red, green, blue, alpha, textureFilter, normalDirection,
                     reverseWinding);
@@ -948,7 +959,13 @@ public final class RuntimeBlockbenchModel {
         /** Only the named vanilla head root; generic roots are body accessories. */
         CAT_HEAD_ONLY_PLAIN,
         /** All roots except the head, including a generic body/back accessory root. */
-        CAT_BODY_WITH_GENERIC
+        CAT_BODY_WITH_GENERIC,
+        /** The complete cat silhouette with both authored ear elements omitted. */
+        CAT_WITHOUT_EARS,
+        /** The complete cat silhouette without either tail root. */
+        CAT_WITHOUT_TAIL,
+        /** Only the two vanilla-style tail roots, used for Nekomata's copy. */
+        CAT_TAIL_ONLY
     }
 
     public record HeadMotion(float xRot, float yRot, float zRot) {

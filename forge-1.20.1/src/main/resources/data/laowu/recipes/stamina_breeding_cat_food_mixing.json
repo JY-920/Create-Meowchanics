@@ -1,0 +1,9 @@
+{
+  "type": "create:mixing",
+  "heatRequirement": "heated",
+  "ingredients": [
+    { "item": "laowu:breeding_cat_food" },
+    { "fluidTag": "forge:milk", "amount": 250 }
+  ],
+  "results": [{ "item": "laowu:stamina_breeding_cat_food" }]
+}
