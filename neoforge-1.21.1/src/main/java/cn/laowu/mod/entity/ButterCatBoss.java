@@ -102,6 +102,12 @@ public final class ButterCatBoss extends Monster {
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.55D);
     }
 
+    /** Keep the vanilla cat's innate immunity to fall damage. */
+    @Override
+    public boolean causeFallDamage(float distance, float multiplier, DamageSource source) {
+        return false;
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
