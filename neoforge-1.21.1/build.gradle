@@ -25,6 +25,13 @@ sourceSets.main.resources {
 }
 
 repositories {
+    // Mainland mirror first for Maven Central artifacts. Specialist mod Maven
+    // repositories below remain authoritative fallbacks because public mirrors
+    // do not consistently carry specialist mod releases.
+    maven {
+        name = 'AliyunPublicMirror'
+        url = uri('https://maven.aliyun.com/repository/public')
+    }
     mavenCentral()
     maven { url = "https://maven.minecraftforge.net" }
     maven { url = "https://maven.parchmentmc.org" }

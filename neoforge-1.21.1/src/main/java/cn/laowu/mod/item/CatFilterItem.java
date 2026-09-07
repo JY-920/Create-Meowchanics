@@ -38,7 +38,7 @@ public final class CatFilterItem extends FilterItem {
                 int minimum = rules.min(page, stat);
                 int maximum = rules.max(page, stat);
                 if (minimum == CatFilterRules.MIN_VALUE
-                        && maximum == CatFilterRules.MAX_VALUE) continue;
+                        && maximum == CatFilterRules.maxValue(page)) continue;
                 summary.add(Component.translatable("item.laowu.cat_filter.summary.range",
                                 Component.translatable("attribute.laowu.cat."
                                         + stat.serializedName()),

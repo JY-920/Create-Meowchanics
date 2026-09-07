@@ -22,8 +22,6 @@ public enum CatTrait {
     LU_BU_REBORN("lu_bu_reborn", CatTraitRarity.EXCELLENT, false,
             CatTraitSlot.HOSTILE_PRESSURE),
     BEEBEE_GENE("beebee_gene", CatTraitRarity.GOOD, true),
-    BLAZING_FORM("blazing_form", CatTraitRarity.GOOD, true,
-            CatTraitSlot.FIRE_CAREER),
     PROSPEROUS_LITTER("prosperous_litter", CatTraitRarity.EXCELLENT, true),
     ANGLERS_FORTUNE("anglers_fortune", CatTraitRarity.GOOD, true),
     SUPERHEAT_GENE("superheat_gene", CatTraitRarity.EXCELLENT, false,
@@ -278,14 +276,6 @@ public enum CatTrait {
         return this == BEEBEE_GENE ? Math.max(3, 10 - clampLevel(level)) : 10;
     }
 
-    public int blazingAttackBonus(int level) {
-        return this == BLAZING_FORM ? 3 * clampLevel(level) : 0;
-    }
-
-    public int blazingSuperheatChance(int level) {
-        return this == BLAZING_FORM ? 5 + 3 * clampLevel(level) : 0;
-    }
-
     public int prosperousBreedingReductionSeconds(int level) {
         return this == PROSPEROUS_LITTER ? 5 * clampLevel(level) : 0;
     }
@@ -453,8 +443,6 @@ public enum CatTrait {
                     luBuAttackBonus());
             case BEEBEE_GENE -> Component.translatable("trait.laowu.beebee_gene.summary",
                     beebeeWorkIntervalSeconds(clamped));
-            case BLAZING_FORM -> Component.translatable("trait.laowu.blazing_form.summary",
-                    blazingAttackBonus(clamped), blazingSuperheatChance(clamped));
             case PROSPEROUS_LITTER -> Component.translatable(
                     "trait.laowu.prosperous_litter.summary",
                     prosperousBreedingReductionSeconds(clamped));
@@ -545,8 +533,6 @@ public enum CatTrait {
                     luBuAttackBonus());
             case BEEBEE_GENE -> Component.translatable("trait.laowu.beebee_gene.description",
                     beebeeWorkIntervalSeconds(clamped));
-            case BLAZING_FORM -> Component.translatable("trait.laowu.blazing_form.description",
-                    blazingAttackBonus(clamped), blazingSuperheatChance(clamped));
             case PROSPEROUS_LITTER -> Component.translatable(
                     "trait.laowu.prosperous_litter.description",
                     prosperousBreedingReductionSeconds(clamped));
@@ -632,8 +618,6 @@ public enum CatTrait {
                     healingPurrHealthBonus(next), healingPurrAmount(next));
             case BEEBEE_GENE -> Component.translatable("trait.laowu.beebee_gene.next",
                     beebeeWorkIntervalSeconds(next));
-            case BLAZING_FORM -> Component.translatable("trait.laowu.blazing_form.next",
-                    blazingAttackBonus(next), blazingSuperheatChance(next));
             case PROSPEROUS_LITTER -> Component.translatable(
                     "trait.laowu.prosperous_litter.next",
                     prosperousBreedingReductionSeconds(next));

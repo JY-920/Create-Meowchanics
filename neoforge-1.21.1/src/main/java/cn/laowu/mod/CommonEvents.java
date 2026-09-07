@@ -312,17 +312,16 @@ public final class CommonEvents {
                 20 * 60 * 3, 0, false, true, true));
     }
 
-    /** Luck gives cats vanilla-style 150% critical melee hits. */
+    /** Luck rolls a cat attack critical; Intelligence supplies its scaling multiplier. */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void applyCatAttributeCriticalHit(LivingIncomingDamageEvent event) {
         if (!(event.getSource().getEntity() instanceof Cat cat)
-                || event.getSource().getDirectEntity() != cat
                 || cat.level().isClientSide
                 || event.getSource().is(DamageTypes.THORNS)
                 || event.getAmount() <= 0.0F
                 || !CatAttributeEffects.rollCriticalHit(cat)) return;
 
-        event.setAmount(CatAttributeEffects.criticalDamage(event.getAmount()));
+        event.setAmount(CatAttributeEffects.criticalDamage(event.getAmount(), cat));
         if (cat.level() instanceof ServerLevel level) {
             LivingEntity target = event.getEntity();
             level.sendParticles(ParticleTypes.CRIT,
@@ -1010,6 +1009,30 @@ public final class CommonEvents {
                 CatGenomeData.set(result, CatGenome.uniform(blockMaterial.get()));
                 recipe.enforceNextResult(() -> result.copy());
             }
+            return;
+        }
+
+        if (held.getItem() instanceof PheromoneCatFoodItem) {
+            if (CatPancakeItem.hasOwner(pancake)) {
+                event.setCanceled(true);
+                return;
+            }
+            if (holder == null || !(holder.value() instanceof ProcessingRecipe<?, ?> recipe)
+                    || !holder.id().equals(LaoWuMod.id(
+                    "pheromone_cat_food_item_application"))) return;
+
+            var level = event.getBlockEntity().getLevel();
+            if (level == null) return;
+            var ownerId = PheromoneCatFoodItem.resolveOwner(level.getServer(), held);
+            if (ownerId.isEmpty()) {
+                event.setCanceled(true);
+                return;
+            }
+
+            ItemStack result = pancake.copyWithCount(1);
+            CatPancakeItem.setOwner(result, ownerId.get());
+            CatPancakeItem.makeAdult(result);
+            recipe.enforceNextResult(() -> result.copy());
             return;
         }
 

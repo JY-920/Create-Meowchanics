@@ -88,6 +88,13 @@ public final class CareerCatBehavior {
     private static final int TACTICAL_INTELLIGENCE = 80;
     private static final int ALLY_GUARD_INTELLIGENCE = 60;
 
+    /** Shared presentation tier for the same thresholds used by ranged AI. */
+    public static int intelligenceAiTier(int effectiveIntelligence) {
+        if (effectiveIntelligence < COMPETENT_INTELLIGENCE) return 0;
+        if (effectiveIntelligence < TACTICAL_INTELLIGENCE) return 1;
+        return 2;
+    }
+
     private static final net.minecraft.resources.ResourceLocation HEALTH_MODIFIER_ID =
             LaoWuMod.id("career_cat_health");
     private static final net.minecraft.resources.ResourceLocation ARMOR_MODIFIER_ID =
@@ -112,7 +119,7 @@ public final class CareerCatBehavior {
     private static final int WATER_SEARCH_RANGE = 32;
     private static final int HONEY_INTERVAL = 20 * 10;
     private static final int SUPERHEAT_DURATION = 20 * 5;
-    private static final int LOGISTICS_SUPPORT_DURATION = 20 * 10;
+    private static final int LOGISTICS_SUPPORT_DURATION = 20 * 20;
     private static final double LOGISTICS_MIN_SEARCH_RANGE = 8.0D;
     private static final double LOGISTICS_MAX_SEARCH_RANGE = 16.0D;
     private static final double LOGISTICS_MIN_CAST_RANGE = 6.0D;
@@ -705,14 +712,10 @@ public final class CareerCatBehavior {
         if (seat == null) return;
         var traits = CatTraitData.ensure(cat);
         boolean sustainedSuperheat = traits.has(CatTrait.SUPERHEAT_GENE);
-        int level = traits.level(CatTrait.BLAZING_FORM);
-        boolean superheat = level > 0 && cat.tickCount % (20 * 10) == 0
-                && cat.getRandom().nextInt(100)
-                < CatTrait.BLAZING_FORM.blazingSuperheatChance(level);
         for (Direction direction : Direction.Plane.HORIZONTAL) {
             if (!(cat.level().getBlockEntity(seat.relative(direction))
                     instanceof BlazeBurnerBlockEntity burner) || burner.isCreative()) continue;
-            if (sustainedSuperheat || superheat) superheatBurner(burner);
+            if (sustainedSuperheat) superheatBurner(burner);
             else keepBurnerKindled(burner);
         }
     }

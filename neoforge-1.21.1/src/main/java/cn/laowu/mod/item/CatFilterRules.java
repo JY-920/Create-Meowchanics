@@ -1,6 +1,7 @@
 package cn.laowu.mod.item;
 
 import cn.laowu.mod.CatOutfitType;
+import cn.laowu.mod.genetics.CatAttributeEffects;
 import cn.laowu.mod.genetics.CatAttributeProfile;
 import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.genetics.CatTrait;
@@ -28,9 +29,14 @@ public final class CatFilterRules {
     public static final int POTENTIAL_PAGE = 1;
     public static final int STAT_COUNT = CatStat.values().length;
     public static final int MIN_VALUE = CatAttributeProfile.MIN_VALUE;
-    public static final int MAX_VALUE = CatAttributeProfile.MAX_VALUE;
+    /** Effective attributes may contain trait, outfit and future accessory bonuses. */
+    public static final int MAX_CURRENT_VALUE = 999;
+    /** Heritable current values and Attribute Limits remain on the 0..100 scale. */
+    public static final int MAX_POTENTIAL_VALUE = CatAttributeProfile.MAX_VALUE;
 
     private static final String ROOT_TAG = "LaoWuCatFilter";
+    private static final String VERSION_TAG = "Version";
+    private static final int DATA_VERSION = 1;
     private static final String CURRENT_MIN_TAG = "CurrentMin";
     private static final String CURRENT_MAX_TAG = "CurrentMax";
     private static final String POTENTIAL_MIN_TAG = "PotentialMin";
@@ -76,11 +82,14 @@ public final class CatFilterRules {
         CompoundTag filter = root.contains(ROOT_TAG, Tag.TAG_COMPOUND)
                 ? root.getCompound(ROOT_TAG) : new CompoundTag();
         int[] currentMin = readArray(filter, CURRENT_MIN_TAG, MIN_VALUE);
-        int[] currentMax = readArray(filter, CURRENT_MAX_TAG, MAX_VALUE);
+        int[] currentMax = readArray(filter, CURRENT_MAX_TAG, MAX_CURRENT_VALUE);
         int[] potentialMin = readArray(filter, POTENTIAL_MIN_TAG, MIN_VALUE);
-        int[] potentialMax = readArray(filter, POTENTIAL_MAX_TAG, MAX_VALUE);
-        normalize(currentMin, currentMax);
-        normalize(potentialMin, potentialMax);
+        int[] potentialMax = readArray(filter, POTENTIAL_MAX_TAG, MAX_POTENTIAL_VALUE);
+        if (!filter.contains(VERSION_TAG, Tag.TAG_INT)) {
+            migrateLegacyCurrentDefaults(currentMin, currentMax);
+        }
+        normalize(currentMin, currentMax, MAX_CURRENT_VALUE);
+        normalize(potentialMin, potentialMax, MAX_POTENTIAL_VALUE);
         return new CatFilterRules(currentMin, currentMax, potentialMin, potentialMax,
                 readTraits(filter),
                 GrowthFilter.byId(filter.getString(GROWTH_TAG)),
@@ -105,11 +114,11 @@ public final class CatFilterRules {
                                             CareerFilter career,
                                             String catName) {
         int[] safeCurrentMin = copyOrDefault(currentMin, MIN_VALUE);
-        int[] safeCurrentMax = copyOrDefault(currentMax, MAX_VALUE);
+        int[] safeCurrentMax = copyOrDefault(currentMax, MAX_CURRENT_VALUE);
         int[] safePotentialMin = copyOrDefault(potentialMin, MIN_VALUE);
-        int[] safePotentialMax = copyOrDefault(potentialMax, MAX_VALUE);
-        normalize(safeCurrentMin, safeCurrentMax);
-        normalize(safePotentialMin, safePotentialMax);
+        int[] safePotentialMax = copyOrDefault(potentialMax, MAX_POTENTIAL_VALUE);
+        normalize(safeCurrentMin, safeCurrentMax, MAX_CURRENT_VALUE);
+        normalize(safePotentialMin, safePotentialMax, MAX_POTENTIAL_VALUE);
         return new CatFilterRules(safeCurrentMin, safeCurrentMax,
                 safePotentialMin, safePotentialMax, requiredTraits,
                 growth, ownership, career, catName);
@@ -117,6 +126,7 @@ public final class CatFilterRules {
 
     public void write(ItemStack stack) {
         CompoundTag filter = new CompoundTag();
+        filter.putInt(VERSION_TAG, DATA_VERSION);
         filter.putIntArray(CURRENT_MIN_TAG, currentMin);
         filter.putIntArray(CURRENT_MAX_TAG, currentMax);
         filter.putIntArray(POTENTIAL_MIN_TAG, potentialMin);
@@ -148,27 +158,40 @@ public final class CatFilterRules {
     public CareerFilter career() { return career; }
     public String catName() { return catName; }
 
-    public boolean matches(CatAttributeProfile profile) {
+    public boolean matches(CatAttributeProfile profile, CatTraitProfile traits,
+                           boolean night, boolean day) {
+        CatTraitProfile resolvedTraits = traits == null
+                ? CatTraitProfile.EMPTY : traits;
         for (CatStat stat : CatStat.values()) {
             int index = stat.ordinal();
-            int current = profile.current(stat);
+            int current = CatAttributeEffects.effectiveValue(
+                    profile, resolvedTraits, stat, night, day);
             int potential = profile.potential(stat);
             if (current < currentMin[index] || current > currentMax[index]
                     || potential < potentialMin[index] || potential > potentialMax[index]) {
                 return false;
             }
         }
-        return true;
+        return requiredTraits.stream().allMatch(resolvedTraits::has);
+    }
+
+    public boolean matches(CatAttributeProfile profile) {
+        return matches(profile, CatTraitProfile.EMPTY, false, false);
     }
 
     public boolean matches(CatAttributeProfile profile, CatTraitProfile traits) {
-        return matches(profile) && requiredTraits.stream()
-                .allMatch(trait -> traits != null && traits.has(trait));
+        return matches(profile, traits, false, false);
     }
 
     public boolean matches(ItemStack stack, CatAttributeProfile profile,
                            CatTraitProfile traits) {
         return matches(profile, traits) && matchesIdentity(stack);
+    }
+
+    public boolean matches(ItemStack stack, CatAttributeProfile profile,
+                           CatTraitProfile traits, boolean night, boolean day) {
+        return matches(profile, traits, night, day)
+                && matchesIdentity(stack);
     }
 
     public boolean matchesIdentity(ItemStack stack) {
@@ -181,8 +204,10 @@ public final class CatFilterRules {
     public boolean isDefault() {
         for (CatStat stat : CatStat.values()) {
             int index = stat.ordinal();
-            if (currentMin[index] != MIN_VALUE || currentMax[index] != MAX_VALUE
-                    || potentialMin[index] != MIN_VALUE || potentialMax[index] != MAX_VALUE) {
+            if (currentMin[index] != MIN_VALUE
+                    || currentMax[index] != MAX_CURRENT_VALUE
+                    || potentialMin[index] != MIN_VALUE
+                    || potentialMax[index] != MAX_POTENTIAL_VALUE) {
                 return false;
             }
         }
@@ -202,12 +227,12 @@ public final class CatFilterRules {
             int minimum = min(POTENTIAL_PAGE, stat);
             int maximum = max(POTENTIAL_PAGE, stat);
             int value = profile.potential(stat);
-            if (minimum == MIN_VALUE && maximum == MAX_VALUE) {
+            if (minimum == MIN_VALUE && maximum == MAX_POTENTIAL_VALUE) {
                 score += value;
                 continue;
             }
             if (value >= minimum && value <= maximum) score += 10_000L;
-            score += MAX_VALUE - Math.abs(value - maximum);
+            score += MAX_POTENTIAL_VALUE - Math.abs(value - maximum);
         }
         CatTraitProfile safeTraits = traits == null ? CatTraitProfile.EMPTY : traits;
         for (CatTrait trait : requiredTraits) {
@@ -352,10 +377,23 @@ public final class CatFilterRules {
         return result;
     }
 
-    private static void normalize(int[] minimum, int[] maximum) {
+    public static int maxValue(int page) {
+        return page == POTENTIAL_PAGE ? MAX_POTENTIAL_VALUE : MAX_CURRENT_VALUE;
+    }
+
+    private static void migrateLegacyCurrentDefaults(int[] minimum, int[] maximum) {
         for (int index = 0; index < STAT_COUNT; index++) {
-            minimum[index] = Mth.clamp(minimum[index], MIN_VALUE, MAX_VALUE);
-            maximum[index] = Mth.clamp(maximum[index], minimum[index], MAX_VALUE);
+            if (minimum[index] == MIN_VALUE
+                    && maximum[index] == MAX_POTENTIAL_VALUE) {
+                maximum[index] = MAX_CURRENT_VALUE;
+            }
+        }
+    }
+
+    private static void normalize(int[] minimum, int[] maximum, int allowedMaximum) {
+        for (int index = 0; index < STAT_COUNT; index++) {
+            minimum[index] = Mth.clamp(minimum[index], MIN_VALUE, allowedMaximum);
+            maximum[index] = Mth.clamp(maximum[index], minimum[index], allowedMaximum);
         }
     }
 }

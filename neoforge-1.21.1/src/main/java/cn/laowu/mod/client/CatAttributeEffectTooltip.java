@@ -73,9 +73,13 @@ final class CatAttributeEffectTooltip {
                             .withStyle(ChatFormatting.GRAY));
                 }
             }
-            case INTELLIGENCE -> lines.add(line(
-                    "gui.laowu.cat_stats.effect.training",
-                    number(CatAttributeEffects.trainingMultiplier(resolved))));
+            case INTELLIGENCE -> {
+                lines.add(line("gui.laowu.cat_stats.effect.critical_damage",
+                        number(CatAttributeEffects.criticalDamageMultiplier(resolved))));
+                lines.add(Component.translatable("gui.laowu.cat_stats.effect.ai",
+                                Component.translatable(aiTierKey(resolved)))
+                        .withStyle(ChatFormatting.GRAY));
+            }
             case LUCK -> {
                 lines.add(line("gui.laowu.cat_stats.effect.critical",
                         number(CatAttributeEffects.criticalChance(resolved) * 100.0D)));
@@ -90,6 +94,14 @@ final class CatAttributeEffectTooltip {
         return Component.translatable(key, value).withStyle(ChatFormatting.GRAY);
     }
 
+    private static String aiTierKey(int intelligence) {
+        return switch (CareerCatBehavior.intelligenceAiTier(intelligence)) {
+            case 0 -> "gui.laowu.cat_stats.effect.ai.instinctive";
+            case 1 -> "gui.laowu.cat_stats.effect.ai.competent";
+            default -> "gui.laowu.cat_stats.effect.ai.tactical";
+        };
+    }
+
     private static String number(double value) {
         if (Math.abs(value - Math.rint(value)) < 0.0001D) {
             return Long.toString(Math.round(value));
@@ -101,4 +113,3 @@ final class CatAttributeEffectTooltip {
 
     private CatAttributeEffectTooltip() {}
 }
-

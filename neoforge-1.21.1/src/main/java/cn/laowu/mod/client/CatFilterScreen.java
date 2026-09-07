@@ -452,12 +452,14 @@ public final class CatFilterScreen extends AbstractFilterScreen<CatFilterMenu> {
     }
 
     private int valueAt(int barX, double mouseX) {
-        return Mth.clamp((int) Math.round((mouseX - barX) * 100.0D / BAR_WIDTH),
-                CatFilterRules.MIN_VALUE, CatFilterRules.MAX_VALUE);
+        int maximum = CatFilterRules.maxValue(page);
+        return Mth.clamp((int) Math.round((mouseX - barX) * maximum / BAR_WIDTH),
+                CatFilterRules.MIN_VALUE, maximum);
     }
 
     private int sliderX(int barX, int value) {
-        return barX + Math.round(BAR_WIDTH * value / 100.0F);
+        return barX + Math.round(BAR_WIDTH * value
+                / (float) CatFilterRules.maxValue(page));
     }
 
     private void sendRange(CatStat stat, boolean maximum, int value) {

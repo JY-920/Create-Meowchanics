@@ -4,8 +4,10 @@ import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.item.PheromoneCatFoodItem;
 import com.simibubi.create.content.kinetics.mixer.MixingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
+import net.minecraft.core.NonNullList;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.List;
@@ -24,6 +26,15 @@ public final class PheromoneCatFoodMixingRecipe extends MixingRecipe {
                 // Recipe viewers do not run against a real basin. Preserve the
                 // declared unbound output for their static recipe display.
                 .orElseGet(() -> super.rollResults(random));
+    }
+
+    /** Treat the renamed Name Tag as a reusable basin catalyst. */
+    @Override
+    public NonNullList<ItemStack> getRemainingItems(RecipeInput input) {
+        NonNullList<ItemStack> remaining = NonNullList.withSize(1, ItemStack.EMPTY);
+        NamedPlayerNameTagIngredient.consumeMatchedNameTag()
+                .ifPresent(nameTag -> remaining.set(0, nameTag));
+        return remaining;
     }
 
     /** Keep this subclass when recipes are synchronized to clients. */

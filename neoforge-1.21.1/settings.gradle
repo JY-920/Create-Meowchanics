@@ -1,5 +1,16 @@
 pluginManagement {
     repositories {
+        // Prefer mainland mirrors for the common Gradle plugin artifacts. Keep
+        // the official portal as the authoritative fallback for uncommon or
+        // newly published plugins such as ModDevGradle.
+        maven {
+            name = 'AliyunGradlePluginMirror'
+            url = uri('https://maven.aliyun.com/repository/gradle-plugin')
+        }
+        maven {
+            name = 'AliyunPublicMirror'
+            url = uri('https://maven.aliyun.com/repository/public')
+        }
         gradlePluginPortal()
     }
 }

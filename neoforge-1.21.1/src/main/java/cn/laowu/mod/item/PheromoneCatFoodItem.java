@@ -53,12 +53,28 @@ public final class PheromoneCatFoodItem extends Item {
         return owner.isEmpty() ? Optional.empty() : Optional.of(owner);
     }
 
+    /** Resolves the player encoded by this food for entity and deployer use. */
+    public static Optional<UUID> resolveOwner(MinecraftServer server, ItemStack stack) {
+        if (server == null) return Optional.empty();
+        return ownerName(stack).flatMap(ownerName -> {
+            ServerPlayer online = server.getPlayerList().getPlayerByName(ownerName);
+            if (online != null) return Optional.of(online.getUUID());
+            return server.getProfileCache().get(ownerName).map(GameProfile::getId);
+        });
+    }
+
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player,
                                                    LivingEntity target,
                                                    InteractionHand hand) {
         if (!(target instanceof Cat cat)) return InteractionResult.PASS;
         if (cat.level().isClientSide) return InteractionResult.SUCCESS;
+
+        if (cat.isTame() || cat.getOwnerUUID() != null) {
+            player.displayClientMessage(Component.translatable(
+                    "item.laowu.pheromone_cat_food.message.already_owned"), true);
+            return InteractionResult.FAIL;
+        }
 
         Optional<String> encodedName = ownerName(stack);
         if (encodedName.isEmpty()) {
@@ -67,9 +83,8 @@ public final class PheromoneCatFoodItem extends Item {
             return InteractionResult.FAIL;
         }
 
-        MinecraftServer server = cat.getServer();
-        UUID ownerId = server == null ? null : resolveOwner(server, encodedName.get());
-        if (ownerId == null) {
+        Optional<UUID> ownerId = resolveOwner(cat.getServer(), stack);
+        if (ownerId.isEmpty()) {
             player.displayClientMessage(Component.translatable(
                     "item.laowu.pheromone_cat_food.message.unknown_owner",
                     encodedName.get()), true);
@@ -77,7 +92,7 @@ public final class PheromoneCatFoodItem extends Item {
         }
 
         cat.setTame(true, true);
-        cat.setOwnerUUID(ownerId);
+        cat.setOwnerUUID(ownerId.get());
         cat.setPersistenceRequired();
         cat.setTarget(null);
         cat.setOrderedToSit(false);
@@ -94,13 +109,6 @@ public final class PheromoneCatFoodItem extends Item {
                     12, 0.35D, 0.35D, 0.35D, 0.05D);
         }
         return InteractionResult.CONSUME;
-    }
-
-    private static UUID resolveOwner(MinecraftServer server, String ownerName) {
-        ServerPlayer online = server.getPlayerList().getPlayerByName(ownerName);
-        if (online != null) return online.getUUID();
-        return server.getProfileCache().get(ownerName)
-                .map(GameProfile::getId).orElse(null);
     }
 
     @Override

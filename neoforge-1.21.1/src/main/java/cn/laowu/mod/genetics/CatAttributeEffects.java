@@ -22,7 +22,6 @@ import net.minecraft.world.entity.animal.Cat;
 public final class CatAttributeEffects {
     private static final double VANILLA_CAT_MAX_HEALTH = 10.0D;
     private static final double VANILLA_CAT_ATTACK_DAMAGE = 3.0D;
-    private static final double CRITICAL_DAMAGE_MULTIPLIER = 1.5D;
 
     private static final ResourceLocation HEALTH_MODIFIER =
             LaoWuMod.id("cat_effects_health");
@@ -122,10 +121,6 @@ public final class CatAttributeEffects {
             int rageLevel = resolved.level(CatTrait.BRISTLING_RAGE);
             if (context.bristlingRage && rageLevel > 0) {
                 value += CatTrait.BRISTLING_RAGE.bristlingAttackBonus(rageLevel);
-            }
-            int blazingLevel = resolved.level(CatTrait.BLAZING_FORM);
-            if (context.blazingForm && blazingLevel > 0) {
-                value += CatTrait.BLAZING_FORM.blazingAttackBonus(blazingLevel);
             }
             int protectiveLevel = resolved.level(CatTrait.PROTECTIVE_INSTINCT);
             if (context.protectiveInstinct && protectiveLevel > 0) {
@@ -309,13 +304,16 @@ public final class CatAttributeEffects {
         return attackIntervalTicks(effectiveValue(cat, CatStat.SPEED));
     }
 
-    public static double trainingMultiplier(int effectiveIntelligence) {
-        return 0.6D + 0.009D * nonNegative(effectiveIntelligence);
+    /**
+     * Intelligence controls critical-hit damage. At 100 points a critical
+     * deals 2x total damage; temporary bonuses above 100 keep scaling.
+     */
+    public static double criticalDamageMultiplier(int effectiveIntelligence) {
+        return 1.0D + 0.01D * nonNegative(effectiveIntelligence);
     }
 
-    /** Future training systems must use this entry point rather than raw NBT. */
-    public static double trainingMultiplier(Cat cat) {
-        return trainingMultiplier(effectiveValue(cat, CatStat.INTELLIGENCE));
+    public static double criticalDamageMultiplier(Cat cat) {
+        return criticalDamageMultiplier(effectiveValue(cat, CatStat.INTELLIGENCE));
     }
 
     public static double criticalChance(int effectiveLuck) {
@@ -339,8 +337,8 @@ public final class CatAttributeEffects {
                 < criticalChance(effectiveValue(cat, CatStat.LUCK));
     }
 
-    public static float criticalDamage(float ordinaryDamage) {
-        return (float) (ordinaryDamage * CRITICAL_DAMAGE_MULTIPLIER);
+    public static float criticalDamage(float ordinaryDamage, Cat cat) {
+        return (float) (ordinaryDamage * criticalDamageMultiplier(cat));
     }
 
     private static int nonNegative(int value) {

@@ -22,6 +22,7 @@ import java.util.stream.Stream;
  */
 public final class NamedPlayerNameTagIngredient implements ICustomIngredient {
     private static final ThreadLocal<String> MATCHED_OWNER = new ThreadLocal<>();
+    private static final ThreadLocal<ItemStack> MATCHED_NAME_TAG = new ThreadLocal<>();
     private static final MapCodec<NamedPlayerNameTagIngredient> CODEC =
             MapCodec.unit(NamedPlayerNameTagIngredient::new);
 
@@ -32,12 +33,16 @@ public final class NamedPlayerNameTagIngredient implements ICustomIngredient {
     @Override
     public boolean test(ItemStack stack) {
         MATCHED_OWNER.remove();
+        MATCHED_NAME_TAG.remove();
         if (!stack.is(Items.NAME_TAG) || !stack.has(DataComponents.CUSTOM_NAME)) {
             return false;
         }
         String owner = stack.getHoverName().getString().trim();
         if (owner.isEmpty()) return false;
         MATCHED_OWNER.set(owner);
+        ItemStack preservedNameTag = stack.copy();
+        preservedNameTag.setCount(1);
+        MATCHED_NAME_TAG.set(preservedNameTag);
         return true;
     }
 
@@ -45,6 +50,17 @@ public final class NamedPlayerNameTagIngredient implements ICustomIngredient {
         String owner = MATCHED_OWNER.get();
         MATCHED_OWNER.remove();
         return Optional.ofNullable(owner);
+    }
+
+    /**
+     * Returns the exact renamed Name Tag that supplied the owner name.
+     * Create removes basin inputs before asking a recipe for container
+     * remainders, so the matched stack has to be retained alongside its text.
+     */
+    public static Optional<ItemStack> consumeMatchedNameTag() {
+        ItemStack nameTag = MATCHED_NAME_TAG.get();
+        MATCHED_NAME_TAG.remove();
+        return Optional.ofNullable(nameTag);
     }
 
     @Override

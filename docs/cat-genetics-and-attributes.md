@@ -117,8 +117,11 @@ time-of-day bonuses and negative traits from contaminating later inheritance.
 
 Every consumer first calculates an effective value `E` from the raw current
 value plus active trait/equipment bonuses and penalties. `E` may exceed the
-heritable 0..100 range, but is never written back into genetics. The goggles
-panel and gameplay conversion layer call the same function.
+heritable 0..100 range, but is never written back into genetics. Effective
+values are normalised to `0..999` so every panel remains within its fixed
+three-digit layout; the genetic Current value and Attribute Limit themselves
+remain `0..100`. The goggles panel and gameplay conversion layer call the same
+function.
 
 | Attribute | Runtime formula | E=0 | E=50 | E=100 |
 | --- | --- | ---: | ---: | ---: |
@@ -128,14 +131,22 @@ panel and gameplay conversion layer call the same function.
 | Stamina | `0.05E` armour toughness | 0 | 2.5 | 5 |
 | Speed | `0.75 + 0.005E` movement multiplier | 0.75x | 1x | 1.25x |
 | Speed | `24 - 0.12E` attack interval, nearest whole tick | 24 | 18 | 12 |
-| Intelligence | `0.6 + 0.009E` training multiplier | 0.6x | 1.05x | 1.5x |
-| Luck | `2% + 0.18%E` melee critical chance | 2% | 11% | 20% |
+| Intelligence | `1 + 0.01E` critical-damage multiplier | 1x | 1.5x | 2x |
+| Luck | `2% + 0.18%E` cat-attack critical chance | 2% | 11% | 20% |
 
 Attack interval is clamped to at least one tick when temporary effects push E
-above 100. Critical chance is clamped to 100%; a successful critical hit uses
-vanilla's 1.5x damage convention and emits the ordinary critical particles and
-sound. Intelligence already exposes one shared training-multiplier entry point;
-the future training mechanic must call it instead of reading raw NBT.
+above 100. Critical chance is clamped to 100%; a successful critical hit
+multiplies its total damage by `1 + 0.01E` using Intelligence and emits the
+ordinary critical particles and sound. The damage multiplier does not stop
+growing at Intelligence 100: for example, 150 Intelligence yields 2.5x.
+Intelligence also selects the existing ranged-behaviour tiers: instinctive
+below 40, competent from 40 to 79, and tactical at 80 or above.
+
+Cat Filter ranges deliberately use two different domains. `Current Attributes`
+compare the same effective values as the panels, including trait and current
+day/night modifiers, and can select `0..999`; `Attribute Limits` continue to
+select only genetic `0..100` values. Legacy untouched `0..100` Current ranges
+are migrated to the new unrestricted `0..999` default.
 
 ### Career-outfit combat
 
@@ -201,7 +212,7 @@ shared trait-inheritance contract documented in the Breeding Box section.
 
 | Trait | Rarity | Upgrade | Implemented effect |
 | --- | --- | --- | --- |
-| Thorn-Wreathed (`荆棘环绕`) | Excellent | I-VII | `25, 28, 30, 33, 35, 38, 40%` retaliation chance; retaliation equals the cat's current melee damage |
+| Thorn-Wreathed (`反伤荆棘`) | Excellent | I-VII | `25, 28, 30, 33, 35, 38, 40%` retaliation chance; retaliation equals the cat's current melee damage |
 | Night Owl (`夜猫子`) | Common | I-VII | At night, Combat Power uses `3, 5, 7, 9, 11, 13, 15`; Speed uses `1, 2, 3, 4, 5, 6, 7`, reduced because one conditional trait grants two advantages |
 | Heat Resistance (`耐热性`) | Good | No | Cancels fire- and lava-tagged damage and clears the burning state |
 | Doughy (`面团团`) | Defect | No | All six effective current attributes -20; this trait is never inherited |
@@ -236,12 +247,11 @@ The first conditional batch follows that same total-budget rule:
 | Trait | Rarity | Levels | Implemented effect |
 | --- | --- | --- | --- |
 | Night Owl (`夜猫子`) | Common | I-VII | At night, Combat Power `3..15` and Speed `1..7` |
-| Fur in Force (`毛多势众`) | Good | I-VII | Stamina `12..30`; shearing yields `ceil(level/2)` extra fur; targeting range is reduced by `level` blocks |
-| Bristling Rage (`挨打就炸毛`) | Good | I-VII | Accepted damage grants Combat Power `15..30` for 8 seconds; 16-second cooldown |
-| Healing Purr (`呼噜疗愈`) | Excellent | I-VII | Health `17..35`; restores `ceil(level/2)` health every 4 seconds |
+| Fur in Force (`长毛护体`) | Good | I-VII | Stamina `12..30`; shearing yields `ceil(level/2)` extra fur; targeting range is reduced by `level` blocks |
+| Bristling Rage (`炸毛反击`) | Good | I-VII | Accepted damage grants Combat Power `15..30` for 8 seconds; 16-second cooldown |
+| Healing Purr (`治愈呼噜`) | Excellent | I-VII | Health `17..35`; restores `ceil(level/2)` health every 4 seconds |
 | Lu Bu Reborn (`吕布在世`) | Excellent | Fixed | Combat Power +20; maximum health doubles while at least three hostile mobs are within 8 blocks |
 | BeeBee Gene (`BeeBee基`) | Good | I-VII | Honey-outfit work interval becomes `9..3` seconds |
-| Blazing Form (`刚燃形态`) | Good | I-VII | In the fire outfit, Combat Power `3..21`; every 10 seconds has an `8..26%` chance to superheat adjacent burners for 5 seconds |
 | Prosperous Litter (`猫丁兴旺`) | Good | I-VII | Each parent reduces Breeding Box time by 5 seconds per level; both parents stack, with a 20-second floor |
 
 The second conditional and trade-off batch adds nine more traits:
@@ -250,13 +260,13 @@ The second conditional and trade-off batch adds nine more traits:
 | --- | --- | --- | --- |
 | Angler's Fortune (`渔运亨通`) | Good | I-VII | While wearing the Fishing Suit, Luck `15..30`; the same effective Luck is supplied to the vanilla fishing loot table |
 | Superheat Gene (`超燃基因`) | Excellent | Fixed | A seated Fire-Suit cat continuously keeps adjacent Blaze Burners superheated; mutually exclusive with Blazing Form |
-| Protective Instinct (`护主心切`) | Good | I-VII | Combat Power `15..30` while the living owner is at or below half health |
-| Wet-Fur Fury (`湿毛暴怒`) | Good | I-VII | While wet, Combat Power `18..36` and Speed `-6..-18` |
+| Protective Instinct (`护主本能`) | Good | I-VII | Combat Power `15..30` while the living owner is at or below half health |
+| Wet-Fur Fury (`嘉豪`) | Good | I-VII | While wet, Combat Power `18..36` and Speed `-6..-18` |
 | Chonky Presence (`橘势膨胀`) | Good | I-VII | Health `18..42`, Stamina `12..30`, Speed `-8..-20` |
-| Glass Claws (`玻璃爪`) | Good | I-VII | Combat Power `20..44`, Health `-10..-28` |
-| Tail Held High (`尾巴翘上天`) | Common | I-VII | At full health, Speed `3..15` and Luck `1..7` |
-| Loaf Thoughts (`香箱思考`) | Common | I-VII | While sitting or riding a seat, Intelligence `4..16` and Stamina `2..8` |
-| Nine Lives (`九条命`) | Excellent | I-VII | A lethal final hit has a `7..25%` chance to be negated; 180-second saved cooldown |
+| Glass Claws (`玻璃利爪`) | Good | I-VII | Combat Power `20..44`, Health `-10..-28` |
+| Tail Held High (`无伤速通`) | Common | I-VII | At full health, Speed `3..15` and Luck `1..7` |
+| Loaf Thoughts (`深度思考`) | Common | I-VII | While sitting or riding a seat, Intelligence `4..16` and Stamina `2..8` |
+| Nine Lives (`九命庇护`) | Excellent | I-VII | A lethal final hit has a `7..25%` chance to be negated; 180-second saved cooldown |
 
 The third conditional batch fills out the Defect pool and adds three active
 utility traits:
@@ -264,19 +274,17 @@ utility traits:
 | Trait | Rarity | Levels | Implemented effect |
 | --- | --- | --- | --- |
 | Water-Shy (`怕水`) | Defect | Fixed | While wet, Combat Power Attribute -15 and Speed Attribute -20; conflicts with Wet-Fur Fury |
-| Daytime Drowsiness (`见光犯困`) | Defect | Fixed | In daytime skylit dimensions, Speed Attribute -15 and Intelligence Attribute -15 |
+| Daytime Drowsiness (`睡不醒`) | Defect | Fixed | In daytime skylit dimensions, Speed Attribute -15 and Intelligence Attribute -15 |
 | Timid as a Mouse (`胆小如鼠`) | Defect | Fixed | With at least two hostile mobs within 8 blocks, Combat Power Attribute -15 and Speed Attribute +8; conflicts with Lu Bu Reborn |
 | Punching Bag (`受气包`) | Good | I-VII | Stamina Attribute `15..30`; hostile mobs that acquire a target prefer an eligible carrier within 16 blocks |
-| Mark of Cain (`该隐印记`) | Excellent | I-VII | Luck Attribute `15..30`; ordinary-damage avoidance starts at `3..9%`, gains 1% per 25 effective Luck, and is capped at 15%; conflicts with Nine Lives |
-| Energy Recovery (`能量回收`) | Excellent | Fixed | At or below half health, consumes one Cat Pancake from the nine cat-inventory slots to heal 30% maximum health; 60-second saved cooldown |
+| Mark of Cain (`幸运庇护`) | Excellent | I-VII | Luck Attribute `15..30`; ordinary-damage avoidance starts at `3..9%`, gains 1% per 25 effective Luck, and is capped at 15%; conflicts with Nine Lives |
+| Energy Recovery (`猫饼充能`) | Excellent | Fixed | At or below half health, consumes one Cat Pancake from the nine cat-inventory slots to heal 30% maximum health; 60-second saved cooldown |
 
 Wet-Fur Fury, Chonky Presence and Glass Claws deliberately exceed the ordinary
 single-stat positive budget because their disadvantages are always evaluated by
 the same effective-attribute layer. A player can therefore build a specialised
-cat without receiving the upside for free. Superheat Gene and Blazing Form
-occupy one fire-career conflict slot, preventing contradictory burner rules on
-the same cat. Water-Shy/Wet-Fur Fury, Timid/Lu Bu Reborn and Mark of Cain/Nine
-Lives likewise share dedicated conflict slots.
+cat without receiving the upside for free. Water-Shy/Wet-Fur Fury, Timid/Lu Bu
+Reborn and Mark of Cain/Nine Lives share dedicated conflict slots.
 
 The five-second Basic Box development timer is never increased to the normal
 20-second floor. Searchable descriptions use one canonical numeric style such
@@ -313,7 +321,7 @@ per second. Heat Resistance, Thorn-Wreathed, Bristling Rage and Luck criticals
 use Forge damage events; Nine Lives checks only accepted lethal damage and saves
 its cooldown in the cat's persistent data. Fur uses Forge's shearable pipeline,
 and career/breeding traits reuse their existing machine events. Angler's Fortune
-feeds the existing fishing loot context, and both fire traits reuse the existing
+feeds the existing fishing loot context, and Superheat Gene reuses the existing
 burner work pass. Lu Bu Reborn and Timid share one bounded 8-block hostile query
 per second when either is present. Punching Bag redirects only an existing
 hostile target-change event and performs no manual tick polling. Transient
@@ -575,5 +583,3 @@ client-only part.
   rules for materials such as obsidian, rainbow and andesite-alloy cats.
 - Define training/growth sources that raise current values without exceeding
   the Attribute Limit.
-- Route the future training/growth implementation through Intelligence's shared
-  training multiplier.

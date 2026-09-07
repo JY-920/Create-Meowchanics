@@ -145,7 +145,9 @@ public final class ClientModEvents {
         event.registerEntityRenderer(LaoWuMod.DYNAMITE_PROJECTILE.get(),
                 DynamiteProjectileRenderer::new);
         event.registerEntityRenderer(LaoWuMod.LOGISTICS_SUPPORT_PROJECTILE.get(),
-                context -> new ThrownItemRenderer<>(context, 0.75F, false));
+                // The package model inherits Minecraft's 0.25x ground transform;
+                // 2.4x here produces a final 0.6x package-sized projectile.
+                context -> new ThrownItemRenderer<>(context, 2.4F, false));
         event.registerEntityRenderer(LaoWuMod.CAT_BALL_ENTITY.get(),
                 CatBallEntityRenderer::new);
         event.registerEntityRenderer(LaoWuMod.BUTTER_CAT.get(), ButterCatRenderer::new);

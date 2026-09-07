@@ -60,6 +60,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class CatPancakeItem extends Item implements ProjectileItem {
@@ -69,6 +70,7 @@ public final class CatPancakeItem extends Item implements ProjectileItem {
     public static final String CAT_VARIANT_TAG = "LaoWuCatVariant";
     public static final String BABY_TAG = "LaoWuBabyPancake";
     private static final String TAMED_TAG = "LaoWuTamedPancake";
+    private static final String OWNER_UUID_TAG = "LaoWuPancakeOwner";
     private static final String PRE_TERMINATOR_NAME_TAG = "LaoWuPreTerminatorName";
     private static final String FAN_TICKS_TAG = "LaoWuCatPancakeFanTicks";
     private static final String PROJECTILE_DAMAGE_TAG = "LaoWuPancakeDamage";
@@ -280,12 +282,29 @@ public final class CatPancakeItem extends Item implements ProjectileItem {
 
     public static boolean hasOwner(ItemStack stack) {
         CompoundTag root = ItemCustomData.copy(stack);
+        if (root.hasUUID(OWNER_UUID_TAG)) return true;
         if (root.getBoolean(TAMED_TAG)) return true;
         if (!root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) return false;
         CompoundTag catData = root.getCompound(CAT_DATA_TAG);
         return catData.hasUUID("Owner")
                 || catData.contains("OwnerUUID", Tag.TAG_STRING)
                 && !catData.getString("OwnerUUID").isBlank();
+    }
+
+    /** Assigns an owner without discarding any captured pancake state. */
+    public static void setOwner(ItemStack stack, UUID ownerId) {
+        ItemCustomData.update(stack, root -> {
+            root.putBoolean(TAMED_TAG, true);
+            root.putUUID(OWNER_UUID_TAG, ownerId);
+            if (root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
+                CompoundTag catData = root.getCompound(CAT_DATA_TAG);
+                catData.putUUID("Owner", ownerId);
+                catData.remove("OwnerUUID");
+                catData.putBoolean("PersistenceRequired", true);
+                catData.putBoolean("Sitting", false);
+                root.put(CAT_DATA_TAG, catData);
+            }
+        });
     }
 
     /** Returns the cat entity's true custom name rather than its pancake/outfit label. */
@@ -546,6 +565,13 @@ public final class CatPancakeItem extends Item implements ProjectileItem {
             if (key != null && BuiltInRegistries.CAT_VARIANT.containsKey(key)) {
                 BuiltInRegistries.CAT_VARIANT.getHolder(key).ifPresent(cat::setVariant);
             }
+        }
+
+        if (root.hasUUID(OWNER_UUID_TAG)) {
+            cat.setTame(true, true);
+            cat.setOwnerUUID(root.getUUID(OWNER_UUID_TAG));
+            cat.setPersistenceRequired();
+            cat.setOrderedToSit(false);
         }
 
         if (isBaby(stack) && !root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {

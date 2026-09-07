@@ -31,12 +31,12 @@ public final class CatFilterMenu extends AbstractFilterMenu {
     private static final int DATA_COUNT = CAREER_FILTER_INDEX + 1;
 
     private static final int RANGE_BUTTON_BASE = 1000;
-    private static final int PAGE_STRIDE = 2000;
-    private static final int STAT_STRIDE = 250;
-    private static final int BOUND_STRIDE = 125;
-    private static final int ADD_TRAIT_BUTTON_BASE = 10_000;
-    private static final int REMOVE_TRAIT_BUTTON_BASE = 11_000;
-    private static final int IDENTITY_BUTTON_BASE = 12_000;
+    private static final int BOUND_STRIDE = CatFilterRules.MAX_CURRENT_VALUE + 1;
+    private static final int STAT_STRIDE = BOUND_STRIDE * 2;
+    private static final int PAGE_STRIDE = STAT_STRIDE * CatFilterRules.STAT_COUNT;
+    private static final int ADD_TRAIT_BUTTON_BASE = 30_000;
+    private static final int REMOVE_TRAIT_BUTTON_BASE = 31_000;
+    private static final int IDENTITY_BUTTON_BASE = 32_000;
     private static final int IDENTITY_FIELD_STRIDE = 100;
     public static final int GROWTH_FIELD = 0;
     public static final int OWNERSHIP_FIELD = 1;
@@ -89,11 +89,11 @@ public final class CatFilterMenu extends AbstractFilterMenu {
             ranges.set(index(CatFilterRules.CURRENT_PAGE, false, stat),
                     CatFilterRules.MIN_VALUE);
             ranges.set(index(CatFilterRules.CURRENT_PAGE, true, stat),
-                    CatFilterRules.MAX_VALUE);
+                    CatFilterRules.MAX_CURRENT_VALUE);
             ranges.set(index(CatFilterRules.POTENTIAL_PAGE, false, stat),
                     CatFilterRules.MIN_VALUE);
             ranges.set(index(CatFilterRules.POTENTIAL_PAGE, true, stat),
-                    CatFilterRules.MAX_VALUE);
+                    CatFilterRules.MAX_POTENTIAL_VALUE);
         }
         for (int slot = 0; slot < MAX_REQUIRED_TRAITS; slot++) {
             ranges.set(TRAIT_SELECTION_START + slot, 0);
@@ -161,7 +161,7 @@ public final class CatFilterMenu extends AbstractFilterMenu {
         int value = encoded % BOUND_STRIDE;
         if (page < CatFilterRules.CURRENT_PAGE || page > CatFilterRules.POTENTIAL_PAGE
                 || statIndex < 0 || statIndex >= CatFilterRules.STAT_COUNT
-                || bound < 0 || bound > 1 || value > CatFilterRules.MAX_VALUE) {
+                || bound < 0 || bound > 1 || value > CatFilterRules.maxValue(page)) {
             return false;
         }
 
@@ -170,7 +170,7 @@ public final class CatFilterMenu extends AbstractFilterMenu {
         int minimum = min(page, stat);
         int upper = max(page, stat);
         int clamped = maximum
-                ? Mth.clamp(value, minimum, CatFilterRules.MAX_VALUE)
+                ? Mth.clamp(value, minimum, CatFilterRules.maxValue(page))
                 : Mth.clamp(value, CatFilterRules.MIN_VALUE, upper);
         ranges.set(index(page, maximum, stat), clamped);
         // Do not change the held stack while this screen is open. Create's
@@ -231,7 +231,8 @@ public final class CatFilterMenu extends AbstractFilterMenu {
     public static int rangeButton(int page, CatStat stat, boolean maximum, int value) {
         return RANGE_BUTTON_BASE + page * PAGE_STRIDE + stat.ordinal() * STAT_STRIDE
                 + (maximum ? BOUND_STRIDE : 0)
-                + Mth.clamp(value, CatFilterRules.MIN_VALUE, CatFilterRules.MAX_VALUE);
+                + Mth.clamp(value, CatFilterRules.MIN_VALUE,
+                CatFilterRules.maxValue(page));
     }
 
     public static int addTraitButton(int selection) {

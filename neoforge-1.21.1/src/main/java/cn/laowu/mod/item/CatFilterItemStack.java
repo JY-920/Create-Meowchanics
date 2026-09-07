@@ -3,6 +3,7 @@ package cn.laowu.mod.item;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitEffects;
 import cn.laowu.mod.genetics.CatTraitProfile;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +23,8 @@ public final class CatFilterItemStack extends FilterItemStack {
         if (!candidate.is(LaoWuMod.CAT_PANCAKE.get())) return false;
         return CatAttributeData.read(candidate)
                 .map(attributes -> rules.matches(candidate, attributes,
-                        CatTraitData.read(candidate).orElse(CatTraitProfile.EMPTY)))
+                        CatTraitData.read(candidate).orElse(CatTraitProfile.EMPTY),
+                        CatTraitEffects.isNight(level), CatTraitEffects.isDay(level)))
                 .orElse(false);
     }
 }
