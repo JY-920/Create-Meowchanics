@@ -12,6 +12,21 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = LaoWuMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class ClientInputEvents {
+    private static net.minecraft.client.player.LocalPlayer preferencePlayer;
+    private static boolean lastSpawnPreference;
+
+    private static void syncSpawnPreference(Minecraft minecraft) {
+        if (minecraft.player == null) {
+            preferencePlayer = null;
+            return;
+        }
+        boolean enabled = cn.laowu.mod.ClientConfig.NEARBY_CAT_SPAWNING.get();
+        if (preferencePlayer != minecraft.player || lastSpawnPreference != enabled) {
+            ModNetwork.setNearbyCatSpawning(enabled);
+            preferencePlayer = minecraft.player;
+            lastSpawnPreference = enabled;
+        }
+    }
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) {
@@ -19,6 +34,7 @@ public final class ClientInputEvents {
         }
 
         Minecraft minecraft = Minecraft.getInstance();
+        syncSpawnPreference(minecraft);
         while (ClientModEvents.OPEN_HELD_ITEM_TRANSFORM.consumeClick()) {
             if (minecraft.player != null && minecraft.screen == null) {
                 ItemStack held = minecraft.player.getMainHandItem();

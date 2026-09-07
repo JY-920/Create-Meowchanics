@@ -13,7 +13,11 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String VERSION = "4";
+    private static final String VERSION = "5";
+
+    public static void setNearbyCatSpawning(boolean enabled) {
+        PacketDistributor.sendToServer(new SetNearbyCatSpawningPacket(enabled));
+    }
 
     public static void register(IEventBus modBus) {
         modBus.addListener(ModNetwork::registerPayloads);
@@ -21,6 +25,8 @@ public final class ModNetwork {
 
     private static void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(VERSION);
+        registrar.playToServer(SetNearbyCatSpawningPacket.TYPE,
+                SetNearbyCatSpawningPacket.STREAM_CODEC, SetNearbyCatSpawningPacket::handle);
         registrar.playToClient(SyncCatPosePacket.TYPE, SyncCatPosePacket.STREAM_CODEC,
                 SyncCatPosePacket::handle);
         registrar.playToClient(AudioSessionPacket.TYPE, AudioSessionPacket.STREAM_CODEC,

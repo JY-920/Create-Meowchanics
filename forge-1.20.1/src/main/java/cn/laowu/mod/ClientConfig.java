@@ -11,6 +11,7 @@ public final class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> THIRD_PERSON_ITEM_TRANSFORMS;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GUI_ITEM_TRANSFORMS;
     public static final ForgeConfigSpec.DoubleValue HISSING_PAIR_VOLUME;
+    public static final ForgeConfigSpec.BooleanValue NEARBY_CAT_SPAWNING;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -34,6 +35,10 @@ public final class ClientConfig {
                 .comment("两只及以上猫咪进入哈气状态时，专属哈气音频的客户端音量倍率。",
                         "0.0 为静音，1.0 为默认音量，2.0 为双倍音量；游戏内按 V 调整。")
                 .defineInRange("hissing_pair_volume", 1.0D, 0.0D, 2.0D);
+        NEARBY_CAT_SPAWNING = b
+                .comment("是否以自己为中心，每10～15分钟额外刷新方块材质猫咪。",
+                        "个人偏好会同步给服务端；其他玩家及原版自然刷猫不受影响。")
+                .define("nearby_cat_spawning", true);
         SPEC = b.build();
     }
 

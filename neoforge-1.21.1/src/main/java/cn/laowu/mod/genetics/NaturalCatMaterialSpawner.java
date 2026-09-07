@@ -23,6 +23,7 @@ import java.util.WeakHashMap;
 
 /** Rare, bounded block-material cat spawning that works in every dimension. */
 public final class NaturalCatMaterialSpawner {
+    public static final String DISABLED_FOR_PLAYER_TAG = "LaoWuDisableNearbyCatSpawning";
     private static final String GENERATED_TAG = "LaoWuNaturalBlockMaterialCat";
     private static final int CHECK_INTERVAL_TICKS = 20;
     private static final int MIN_SPAWN_DELAY_TICKS = 10 * 60 * 20;
@@ -61,6 +62,7 @@ public final class NaturalCatMaterialSpawner {
 
         List<ServerPlayer> players = level.players().stream()
                 .filter(player -> player.isAlive() && !player.isSpectator())
+                .filter(player -> !player.getPersistentData().getBoolean(DISABLED_FOR_PLAYER_TAG))
                 .toList();
         if (players.isEmpty()) {
             NEXT_SPAWN_TICKS.remove(level);

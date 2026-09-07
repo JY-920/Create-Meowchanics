@@ -18,12 +18,19 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String VERSION = "11";
+    private static final String VERSION = "12";
+
+    public static void setNearbyCatSpawning(boolean enabled) {
+        CHANNEL.sendToServer(new SetNearbyCatSpawningPacket(enabled));
+    }
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "main"),
             () -> VERSION, VERSION::equals, VERSION::equals);
 
     public static void register() {
+        CHANNEL.registerMessage(17, SetNearbyCatSpawningPacket.class,
+                SetNearbyCatSpawningPacket::encode, SetNearbyCatSpawningPacket::decode,
+                SetNearbyCatSpawningPacket::handle);
         CHANNEL.registerMessage(0, SyncCatPosePacket.class, SyncCatPosePacket::encode,
                 SyncCatPosePacket::decode, SyncCatPosePacket::handle);
         CHANNEL.registerMessage(1, AudioSessionPacket.class, AudioSessionPacket::encode,

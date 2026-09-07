@@ -1,4 +1,6 @@
 {
+  "screen.laowu.nearby_cat_spawning": "周围额外刷新猫咪：%s",
+  "screen.laowu.nearby_cat_spawning.description": "个人开关：每10～15分钟在你附近额外刷新方块材质猫咪。同步至服务端；不影响原版刷猫或其他玩家。",
   "item.laowu.cat_pancake": "猫饼",
   "item.laowu.fusion_debug_wand": "繁育棒",
   "item.laowu.attribute_debug_wand": "属性调整棒",

@@ -753,6 +753,24 @@ in-memory render cache.
 
 ## Block-material acquisition and wild spawning
 
+Both loaders expose a personal `nearby_cat_spawning` switch (default true) in
+`laowu-client.toml` and the V-key settings screen. The client sends the preference
+when its player changes (join/respawn) or the setting changes. The server applies
+it only to the sending player, excluding opted-out players from the periodic
+spawner's candidate list. If every player in a dimension opts out, its pending
+timer is cleared; enabling again starts a new 10-15 minute interval.
+This does not disable vanilla natural cat spawns, their material chance, existing
+cats, or spawning around another opted-in player. Nearby players can therefore
+still see cats generated for each other. The server must run the matching mod
+version to receive this preference; a purely client-side setting cannot itself
+create or suppress server entities.
+
+Forge cat tools use the actual vanilla Diamond tier and override their repair
+ingredient to Cat Ingots. Do not register a custom tier with
+`minecraft:needs_diamond_tool`: putting that tier after Diamond in Forge's sorted
+tier list raises the requirement for all blocks sharing that tag, including
+obsidian, crying obsidian and netherite blocks.
+
 A Create Deployer can apply one visible, item-backed block to any Cat Pancake.
 The block is consumed and all eleven appearance regions are changed to the
 block's stable `laowu:block/<namespace>/<path>` material id; every other piece

@@ -22,6 +22,13 @@ public final class HissingVolumeScreen extends Screen {
         int x = (width - panelWidth) / 2;
         int y = height / 2 - 10;
         addRenderableWidget(new VolumeSlider(x, y, panelWidth, 20));
+        addRenderableWidget(Button.builder(spawnLabel(), button -> {
+            ClientConfig.NEARBY_CAT_SPAWNING.set(!ClientConfig.NEARBY_CAT_SPAWNING.get());
+            ClientConfig.SPEC.save();
+            button.setMessage(spawnLabel());
+        }).bounds(x, y + 56, panelWidth, 20)
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(
+                        Component.translatable("screen.laowu.nearby_cat_spawning.description"))).build());
         addRenderableWidget(Button.builder(Component.translatable(
                                 "screen.laowu.hissing_volume.reset"), button -> resetVolume())
                 .bounds(x, y + 28, (panelWidth - 6) / 2, 20).build());
@@ -29,6 +36,12 @@ public final class HissingVolumeScreen extends Screen {
                         button -> onClose())
                 .bounds(x + (panelWidth - 6) / 2 + 6, y + 28,
                         (panelWidth - 6) / 2, 20).build());
+    }
+
+    private Component spawnLabel() {
+        return Component.translatable("screen.laowu.nearby_cat_spawning",
+                Component.translatable(ClientConfig.NEARBY_CAT_SPAWNING.get()
+                        ? "options.on" : "options.off"));
     }
 
     private void resetVolume() {

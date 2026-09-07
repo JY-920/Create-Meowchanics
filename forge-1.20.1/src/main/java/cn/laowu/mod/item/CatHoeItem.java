@@ -1,5 +1,6 @@
 package cn.laowu.mod.item;
 
+import cn.laowu.mod.LaoWuMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -21,6 +22,11 @@ import net.minecraftforge.common.ToolActions;
 public final class CatHoeItem extends HoeItem {
     public CatHoeItem(Tier tier, int attackDamage, float attackSpeed, Properties properties) {
         super(tier, attackDamage, attackSpeed, properties);
+    }
+
+    @Override
+    public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
+        return ingredient.is(LaoWuMod.CAT_INGOT.get());
     }
 
     @Override

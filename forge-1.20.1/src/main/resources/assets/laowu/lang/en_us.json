@@ -1,4 +1,6 @@
 {
+  "screen.laowu.nearby_cat_spawning": "Extra nearby cat spawns: %s",
+  "screen.laowu.nearby_cat_spawning.description": "Personal preference: extra block-material cats near you every 10-15 minutes. Synced to the server; vanilla spawns and other players are unaffected.",
   "item.laowu.cat_pancake": "Cat Pancake",
   "item.laowu.fusion_debug_wand": "Breeding Wand",
   "item.laowu.attribute_debug_wand": "Attribute Adjustment Wand",
