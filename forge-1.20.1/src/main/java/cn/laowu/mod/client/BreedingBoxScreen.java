@@ -1,6 +1,8 @@
 package cn.laowu.mod.client;
 
 import cn.laowu.mod.BreedingBoxMenu;
+import cn.laowu.mod.CatClothesData;
+import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatPoseData;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.create.BreedingBoxTier;
@@ -8,8 +10,8 @@ import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatAttributeEffects;
 import cn.laowu.mod.genetics.CatAttributeProfile;
 import cn.laowu.mod.genetics.CatGenomeData;
-import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.genetics.CatTraitEffects;
 import cn.laowu.mod.genetics.CatTraitProfile;
 import cn.laowu.mod.item.CatPancakeItem;
@@ -20,13 +22,17 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.CatVariant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /** Pixel-authored breeding UI with live parent previews and compact stat grids. */
@@ -87,7 +93,9 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
         renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
         renderTooltip(graphics, mouseX, mouseY);
+        if (renderAttributeTooltip(graphics, mouseX, mouseY)) return;
         renderTraitTooltip(graphics, mouseX, mouseY);
+        renderControlTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -108,10 +116,10 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
         ItemStack father = menu.father();
         ItemStack mother = menu.mother();
         if (!father.isEmpty()) {
-            renderTraitCards(graphics, father, LEFT_TRAIT_X);
-            renderParentStats(graphics, father, 0);
             fatherPreview = updatePreview(father, cachedFather, fatherPreview);
             cachedFather = father.copy();
+            renderTraitCards(graphics, father, LEFT_TRAIT_X);
+            renderParentStats(graphics, father, fatherPreview, 0);
             renderParentCat(graphics, fatherPreview, leftPos + 46, topPos + 51,
                     mouseX, mouseY);
         } else {
@@ -119,10 +127,10 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
             fatherPreview = null;
         }
         if (!mother.isEmpty()) {
-            renderTraitCards(graphics, mother, RIGHT_TRAIT_X);
-            renderParentStats(graphics, mother, 87);
             motherPreview = updatePreview(mother, cachedMother, motherPreview);
             cachedMother = mother.copy();
+            renderTraitCards(graphics, mother, RIGHT_TRAIT_X);
+            renderParentStats(graphics, mother, motherPreview, 87);
             renderParentCat(graphics, motherPreview, leftPos + 126, topPos + 51,
                     mouseX, mouseY);
         } else {
@@ -171,7 +179,8 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
                 (digit + 1) * 7, 0, 7, 7, 77, 7);
     }
 
-    private void renderParentStats(GuiGraphics graphics, ItemStack stack, int parentX) {
+    private void renderParentStats(GuiGraphics graphics, ItemStack stack,
+                                   Cat preview, int parentX) {
         CatAttributeProfile profile = CatAttributeData.read(stack).orElse(null);
         CatTraitProfile traits = CatTraitData.read(stack).orElse(CatTraitProfile.EMPTY);
         boolean limits = hasShiftDown();
@@ -185,6 +194,8 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
             int y = topPos + 170 + row * 9;
             int value = profile == null ? -1
                     : limits ? profile.potential(stat)
+                    : preview != null ? CatAttributeEffects.effectiveValue(
+                            preview, profile, traits, stat)
                     : CatAttributeEffects.effectiveValue(
                             profile, traits, stat, night, day);
             boolean abnormal = value < 0 || value > 999;
@@ -231,6 +242,42 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
                 leftPos + localX, topPos + TRAIT_CARD_Y, TRAIT_CARD_SPACING);
     }
 
+    private boolean renderAttributeTooltip(GuiGraphics graphics,
+                                           int mouseX, int mouseY) {
+        ItemStack[] parents = {menu.father(), menu.mother()};
+        Cat[] previews = {fatherPreview, motherPreview};
+        int[] parentOffsets = {0, 87};
+        boolean limits = hasShiftDown();
+        boolean night = minecraft != null && CatTraitEffects.isNight(minecraft.level);
+        boolean day = minecraft != null && CatTraitEffects.isDay(minecraft.level);
+        for (int parent = 0; parent < parents.length; parent++) {
+            ItemStack stack = parents[parent];
+            if (stack.isEmpty()) continue;
+            CatAttributeProfile profile = CatAttributeData.read(stack).orElse(null);
+            if (profile == null) continue;
+            CatTraitProfile traits = CatTraitData.read(stack)
+                    .orElse(CatTraitProfile.EMPTY);
+            for (int index = 0; index < GRID_STATS.length; index++) {
+                int column = index / 3;
+                int row = index % 3;
+                int localX = parentOffsets[parent] + (column == 0 ? 12 : 43);
+                int localY = 170 + row * 9;
+                if (!inside(mouseX, mouseY, localX, localY, 29, 8)) continue;
+                CatStat stat = GRID_STATS[index];
+                int value = limits ? profile.potential(stat)
+                        : previews[parent] != null
+                        ? CatAttributeEffects.effectiveValue(
+                                previews[parent], profile, traits, stat)
+                        : CatAttributeEffects.effectiveValue(
+                                profile, traits, stat, night, day);
+                CatAttributeEffectTooltip.render(graphics, font, stat, value,
+                        limits, CatPancakeItem.getOutfit(stack), mouseX, mouseY);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void renderTraitTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
         if (CatTraitCardRenderer.renderTooltip(graphics, font,
                 CatTraitData.read(menu.father()).orElse(CatTraitProfile.EMPTY),
@@ -240,6 +287,111 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
                 CatTraitData.read(menu.mother()).orElse(CatTraitProfile.EMPTY),
                 leftPos + RIGHT_TRAIT_X, topPos + TRAIT_CARD_Y,
                 TRAIT_CARD_SPACING, mouseX, mouseY);
+    }
+
+    private void renderControlTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+        if (inside(mouseX, mouseY, 172, 90, 34, 13)) {
+            String chance = String.format(Locale.ROOT, "%.1f",
+                    menu.effectiveMutationPercent());
+            renderWrappedTooltip(graphics, List.of(
+                    Component.translatable(
+                            "gui.laowu.breeding_box.mutation.title")
+                            .withStyle(ChatFormatting.GOLD),
+                    Component.translatable(
+                            "gui.laowu.breeding_box.mutation.current", chance)
+                            .withStyle(ChatFormatting.AQUA),
+                    Component.translatable(
+                            "gui.laowu.breeding_box.mutation.source")
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable(
+                            "gui.laowu.breeding_box.mutation.attributes")
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable(
+                            "gui.laowu.breeding_box.mutation.other")
+                            .withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
+            return;
+        }
+        if (inside(mouseX, mouseY, 180, 110, 20, 21)) {
+            renderWrappedTooltip(graphics, List.of(
+                    Component.translatable("gui.laowu.breeding_box.info.title")
+                            .withStyle(ChatFormatting.GOLD),
+                    Component.translatable("gui.laowu.breeding_box.info.insert")
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable("gui.laowu.breeding_box.info.extract")
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable("gui.laowu.breeding_box.info.start")
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable("gui.laowu.breeding_box.info.shift")
+                            .withStyle(ChatFormatting.BLUE),
+                    Component.translatable("gui.laowu.breeding_box.info.attributes")
+                            .withStyle(ChatFormatting.AQUA),
+                    Component.translatable("gui.laowu.breeding_box.info.traits")
+                            .withStyle(ChatFormatting.LIGHT_PURPLE),
+                    Component.translatable("gui.laowu.breeding_box.info.appearance")
+                            .withStyle(ChatFormatting.YELLOW)), mouseX, mouseY);
+            return;
+        }
+        if (inside(mouseX, mouseY, 180, 131, 20, 23)) {
+            BreedingBoxTier tier = menu.tier();
+            String chance = String.format(Locale.ROOT, "%.0f",
+                    tier.mutationChance() * 100.0F);
+            int seconds = Math.max(1, tier.durationTicks() / 20);
+            Component duration = seconds >= 60 && seconds % 60 != 0
+                    ? Component.translatable(
+                    "gui.laowu.breeding_box.level.minutes_seconds",
+                    seconds / 60, seconds % 60)
+                    : seconds % 60 == 0
+                    ? Component.translatable(
+                    "gui.laowu.breeding_box.level.minutes", seconds / 60)
+                    : Component.translatable(
+                    "gui.laowu.breeding_box.level.seconds", seconds);
+            List<Component> levelTooltip = new ArrayList<>(List.of(
+                    Component.translatable("gui.laowu.breeding_box.level.title")
+                            .withStyle(ChatFormatting.GOLD),
+                    Component.translatable("gui.laowu.breeding_box.level.current",
+                                    romanTier(tier.level()))
+                            .withStyle(ChatFormatting.AQUA),
+                    Component.translatable("gui.laowu.breeding_box.level.mutation",
+                                    chance)
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable("gui.laowu.breeding_box.level.duration",
+                                    duration)
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable("gui.laowu.breeding_box.level.effect")
+                            .withStyle(ChatFormatting.GRAY)));
+            if (tier == BreedingBoxTier.ADVANCED) {
+                levelTooltip.add(Component.translatable(
+                                "gui.laowu.breeding_box.level.advanced_replacement")
+                        .withStyle(ChatFormatting.YELLOW));
+            }
+            renderWrappedTooltip(graphics, levelTooltip, mouseX, mouseY);
+        }
+    }
+
+    private void renderWrappedTooltip(GuiGraphics graphics,
+                                      List<Component> components,
+                                      int mouseX, int mouseY) {
+        List<FormattedCharSequence> wrapped = new ArrayList<>();
+        for (Component component : components) {
+            wrapped.addAll(font.split(component, 250));
+        }
+        graphics.renderTooltip(font, wrapped, mouseX, mouseY);
+    }
+
+    private boolean inside(int mouseX, int mouseY, int x, int y,
+                           int width, int height) {
+        int screenX = leftPos + x;
+        int screenY = topPos + y;
+        return mouseX >= screenX && mouseX < screenX + width
+                && mouseY >= screenY && mouseY < screenY + height;
+    }
+
+    private static String romanTier(int level) {
+        return switch (level) {
+            case 2 -> "II";
+            case 3 -> "III";
+            default -> "I";
+        };
     }
 
     private Cat updatePreview(ItemStack stack, ItemStack cached, Cat existing) {
@@ -257,7 +409,13 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
             cat.setVariant(variant);
         }
         CatGenomeData.read(stack).ifPresent(genome -> CatGenomeData.set(cat, genome));
-        cat.setAge(0);
+        CatTraitData.read(stack).ifPresent(profile -> CatTraitData.set(cat, profile));
+        CatOutfitType outfit = CatPancakeItem.getOutfit(stack);
+        if (outfit != CatOutfitType.NONE) {
+            cat.getPersistentData().putBoolean(CatClothesData.EQUIPPED_TAG, true);
+            cat.getPersistentData().putString(CatClothesData.OUTFIT_TAG, outfit.id());
+        }
+        cat.setAge(CatPancakeItem.isBaby(stack) ? -24_000 : 0);
         cat.setOrderedToSit(false);
         CatPoseData.setPose(cat, 0);
         return cat;

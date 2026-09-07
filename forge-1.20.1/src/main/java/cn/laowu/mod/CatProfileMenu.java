@@ -64,7 +64,14 @@ public final class CatProfileMenu extends AbstractContainerMenu {
 
         for (int row = 0; row < CatProfileData.ACCESSORY_SLOTS; row++) {
             addSlot(new Slot(catInventory, row,
-                    ACCESSORY_X, ACCESSORY_Y + row * 20));
+                    ACCESSORY_X, ACCESSORY_Y + row * 20) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    // Reserved for the future cat-accessory system. Existing
+                    // development-test contents can still be removed.
+                    return false;
+                }
+            });
         }
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {
@@ -120,9 +127,7 @@ public final class CatProfileMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         } else if (!moveItemStackTo(stack,
-                CatProfileData.ACCESSORY_SLOTS, catSlots, false)
-                && !moveItemStackTo(stack, 0,
-                CatProfileData.ACCESSORY_SLOTS, false)) {
+                CatProfileData.ACCESSORY_SLOTS, catSlots, false)) {
             return ItemStack.EMPTY;
         }
 

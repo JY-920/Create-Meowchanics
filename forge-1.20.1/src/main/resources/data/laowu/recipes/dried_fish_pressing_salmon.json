@@ -1,0 +1,9 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    { "item": "minecraft:cooked_salmon" }
+  ],
+  "results": [
+    { "item": "laowu:dried_fish" }
+  ]
+}

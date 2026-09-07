@@ -10,7 +10,7 @@ public final class CatMorningGiftRewards {
         if (cat.level().isClientSide || !cat.isAlive()) return;
         CatTraitProfile traits = CatTraitData.ensure(cat);
 
-        CatXiaotingRewards.tryDropTemplate(cat);
+        CatXiaotingRewards.tryGiveMorningTemplate(cat);
 
         if (traits.has(CatTrait.DORAEMON) && cat.getRandom().nextFloat() < 0.35F) {
             cat.spawnAtLocation(rollRareGift(cat));

@@ -66,6 +66,7 @@ public final class HissingAudioManager {
         private final int entityId;
         private Stage stage = Stage.INTRO_DELAY;
         private SoundInstance current;
+        private SoundInstance currentBoost;
         private int graceTicks;
         private int waitTicks;
 
@@ -121,12 +122,23 @@ public final class HissingAudioManager {
             Entity owner = mc.level.getEntity(entityId);
             if (owner == null) return;
             current = new ConfigurableHissingSound(event, owner);
+            boolean boosted = owner instanceof net.minecraft.world.entity.animal.Cat cat
+                    && cn.laowu.mod.genetics.CatTraitData.read(cat)
+                    .filter(profile -> profile.has(
+                            cn.laowu.mod.genetics.CatTrait.AIR_RAID_SIREN))
+                    .isPresent();
+            currentBoost = boosted ? new ConfigurableHissingSound(event, owner) : null;
             graceTicks = 20;
             mc.getSoundManager().play(current);
+            if (currentBoost != null) mc.getSoundManager().play(currentBoost);
         }
 
         private void stopCurrent() {
             if (current != null) Minecraft.getInstance().getSoundManager().stop(current);
+            if (currentBoost != null) {
+                Minecraft.getInstance().getSoundManager().stop(currentBoost);
+                currentBoost = null;
+            }
         }
     }
 
@@ -164,12 +176,7 @@ public final class HissingAudioManager {
 
         @Override
         public float getVolume() {
-            float multiplier = owner instanceof net.minecraft.world.entity.animal.Cat cat
-                    && cn.laowu.mod.genetics.CatTraitData.read(cat)
-                    .filter(profile -> profile.has(
-                            cn.laowu.mod.genetics.CatTrait.AIR_RAID_SIREN))
-                    .isPresent() ? 2.0F : 1.0F;
-            return ClientConfig.HISSING_PAIR_VOLUME.get().floatValue() * multiplier;
+            return ClientConfig.HISSING_PAIR_VOLUME.get().floatValue();
         }
 
         @Override

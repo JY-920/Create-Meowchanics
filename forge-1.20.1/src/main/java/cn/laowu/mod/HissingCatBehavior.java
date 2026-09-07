@@ -27,8 +27,15 @@ public final class HissingCatBehavior {
     private static final String LOCK_Z_TAG = "LaoWuHissingLockZ";
     public static final String FIGHT_TARGET_TAG = "LaoWuHissingFightTarget";
     private static final String ATTACK_COOLDOWN_TAG = "LaoWuHissingAttackCooldown";
+    private static final String PAIR_INTERRUPTED_UNTIL_TAG =
+            "LaoWuHissingPairInterruptedUntil";
 
     public static void tick(Cat cat) {
+        if (isPairInterrupted(cat)) {
+            stopInterruptedHissing(cat);
+            return;
+        }
+        cat.getPersistentData().remove(PAIR_INTERRUPTED_UNTIL_TAG);
         if (isHissingForbidden(cat)) {
             if (isFighting(cat)) endFight(cat);
             stopPreviousAttraction(cat);
@@ -98,6 +105,7 @@ public final class HissingCatBehavior {
                         other != cat
                                 && other.isAlive()
                                 && !other.isTame()
+                                && !isPairInterrupted(other)
                                 && !isHissingForbidden(other)
                                 && !CatPoseData.isPancake(other)
                                 && cat.distanceToSqr(other) <= SEARCH_DISTANCE * SEARCH_DISTANCE)
@@ -157,6 +165,32 @@ public final class HissingCatBehavior {
         ModNetwork.setAudioSession(cat, false);
     }
 
+    /** Stops both participants when fluid interrupts one side of a hissing pair. */
+    public static void interruptPair(Cat cat, int pauseTicks) {
+        if (cat.level().isClientSide) return;
+        Cat partner = findNearestPartner(cat);
+        long until = cat.level().getGameTime() + Math.max(1, pauseTicks);
+        cat.getPersistentData().putLong(PAIR_INTERRUPTED_UNTIL_TAG, until);
+        if (partner != null && CatPoseData.isHissing(partner)) {
+            partner.getPersistentData().putLong(PAIR_INTERRUPTED_UNTIL_TAG, until);
+            stopInterruptedHissing(partner);
+        }
+        stopInterruptedHissing(cat);
+    }
+
+    public static boolean isPairInterrupted(Cat cat) {
+        return cat.getPersistentData().getLong(PAIR_INTERRUPTED_UNTIL_TAG)
+                > cat.level().getGameTime();
+    }
+
+    private static void stopInterruptedHissing(Cat cat) {
+        if (isFighting(cat)) endFight(cat);
+        stopPreviousAttraction(cat);
+        unlockPosition(cat);
+        clearPose(cat);
+        ModNetwork.setAudioSession(cat, false);
+    }
+
     private static void tickFight(Cat cat) {
         if (!(cat.level() instanceof ServerLevel level)) return;
         Entity entity = level.getEntity(cat.getPersistentData().getUUID(FIGHT_TARGET_TAG));
@@ -166,7 +200,7 @@ public final class HissingCatBehavior {
             return;
         }
 
-        ModNetwork.setAudioSession(cat, cat.getId() > opponent.getId());
+        ModNetwork.setAudioSession(cat, isAudioHost(cat, opponent));
 
         facePartner(cat, opponent);
         double dx = opponent.getX() - cat.getX();
@@ -203,8 +237,22 @@ public final class HissingCatBehavior {
                         && !isHissingForbidden(other)
                         && cat.distanceToSqr(other) <= SEARCH_DISTANCE * SEARCH_DISTANCE);
         if (!group.contains(cat)) group.add(cat);
-        int minimumId = group.stream().mapToInt(Cat::getId).min().orElse(cat.getId());
-        ModNetwork.setAudioSession(cat, group.size() >= 2 && cat.getId() != minimumId);
+        Cat host = group.stream()
+                .filter(HissingCatBehavior::hasAirRaidSiren)
+                .min(Comparator.comparingInt(Cat::getId))
+                .orElseGet(() -> group.stream()
+                        .max(Comparator.comparingInt(Cat::getId)).orElse(cat));
+        ModNetwork.setAudioSession(cat, group.size() >= 2 && cat == host);
+    }
+
+    private static boolean isAudioHost(Cat cat, Cat opponent) {
+        boolean catSiren = hasAirRaidSiren(cat);
+        boolean opponentSiren = hasAirRaidSiren(opponent);
+        return catSiren != opponentSiren ? catSiren : cat.getId() > opponent.getId();
+    }
+
+    private static boolean hasAirRaidSiren(Cat cat) {
+        return CatTraitData.ensure(cat).has(CatTrait.AIR_RAID_SIREN);
     }
 
     private static void clearPose(Cat cat) {

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "C C",
+    "CCC"
+  ],
+  "key": {
+    "C": { "item": "create:cardboard" }
+  },
+  "result": { "item": "laowu:adoption_box" }
+}

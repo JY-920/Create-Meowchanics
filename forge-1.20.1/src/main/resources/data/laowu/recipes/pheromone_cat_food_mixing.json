@@ -1,0 +1,16 @@
+{
+  "type": "laowu:pheromone_cat_food_mixing",
+  "ingredients": [
+    {
+      "item": "laowu:cat_food"
+    },
+    {
+      "type": "laowu:named_player_name_tag"
+    }
+  ],
+  "results": [
+    {
+      "item": "laowu:pheromone_cat_food"
+    }
+  ]
+}

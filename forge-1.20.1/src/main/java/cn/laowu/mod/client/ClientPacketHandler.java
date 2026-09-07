@@ -3,6 +3,7 @@ package cn.laowu.mod.client;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatPoseData;
+import cn.laowu.mod.DynamiteCatLastStand;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatGenomeData;
@@ -17,6 +18,7 @@ import cn.laowu.mod.network.SyncCatGenomePacket;
 import cn.laowu.mod.network.SyncCatAttributesPacket;
 import cn.laowu.mod.network.SyncCatTraitsPacket;
 import cn.laowu.mod.network.SyncCatTraitStatePacket;
+import cn.laowu.mod.network.SyncDynamiteCatLastStandPacket;
 import cn.laowu.mod.genetics.CatTraitEffects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -88,7 +90,17 @@ public final class ClientPacketHandler {
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
         if (entity instanceof Cat cat) {
             CatTraitEffects.setClientState(cat, packet.rageActive(),
-                    packet.luBuOutnumbered(), packet.timidOutnumbered());
+                    packet.luBuOutnumbered(), packet.timidOutnumbered(),
+                    packet.combatActive());
+        }
+    }
+
+    public static void handleDynamiteLastStand(
+            SyncDynamiteCatLastStandPacket packet) {
+        if (Minecraft.getInstance().level == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if (entity instanceof Cat cat) {
+            DynamiteCatLastStand.setClientState(cat, packet.active(), packet.fuseTicks());
         }
     }
 

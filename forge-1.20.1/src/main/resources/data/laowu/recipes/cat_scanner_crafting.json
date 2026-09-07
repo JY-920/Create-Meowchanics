@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "tools",
+  "pattern": [
+    "IGI",
+    "IGI",
+    "IGI"
+  ],
+  "key": {
+    "I": { "item": "laowu:cat_ingot" },
+    "G": { "item": "minecraft:red_stained_glass" }
+  },
+  "result": { "item": "laowu:cat_scanner" }
+}

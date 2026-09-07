@@ -140,8 +140,12 @@ public final class CatAttributeProfile {
         int value = donor.current(stat);
         int firstCeiling = first.potential(stat);
         int secondCeiling = second.potential(stat);
-        if (firstCeiling >= 90 && secondCeiling >= 90
-                && Math.abs(firstCeiling - secondCeiling) <= 5) {
+        // Targeted food has one deliberately simple breakthrough rule: both
+        // parents must already belong to the 90+ line.  The former extra
+        // "within five points" condition made the same food unexpectedly stop
+        // working when a player paired a newly improved parent with an older
+        // 90+ breeder, while adding little meaningful choice.
+        if (firstCeiling >= 90 && secondCeiling >= 90) {
             ceiling = Math.min(MAX_VALUE, Math.max(firstCeiling, secondCeiling) + 1);
             // A targeted breakthrough must be visible in the ordinary NOW
             // panel as well as the crouched MAX panel. Advance the inherited

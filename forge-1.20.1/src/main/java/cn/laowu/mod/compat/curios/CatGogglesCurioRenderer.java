@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +20,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.client.ICurioRenderer;
 
-/** Renders the complete goggles model identically with or without head armour. */
+/** Renders the custom goggles and mirrors Create's flip-up helmet behaviour. */
 @OnlyIn(Dist.CLIENT)
 public final class CatGogglesCurioRenderer implements ICurioRenderer {
     private static final ResourceLocation WORN_MODEL =
@@ -52,6 +53,10 @@ public final class CatGogglesCurioRenderer implements ICurioRenderer {
         poseStack.translate(0.0D, -0.25D, 0.0D);
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         poseStack.scale(0.625F, 0.625F, 0.625F);
+        if (!wearer.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.translate(0.0D, -0.25D, 0.0D);
+        }
 
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.getItemRenderer().render(stack, ItemDisplayContext.HEAD, false,

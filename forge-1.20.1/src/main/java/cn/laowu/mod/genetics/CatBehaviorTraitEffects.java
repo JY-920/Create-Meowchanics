@@ -9,6 +9,8 @@ import cn.laowu.mod.CatProfileData;
 import cn.laowu.mod.HissingCatBehavior;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.item.CatAttributeCanItem;
+import cn.laowu.mod.item.CatTraitFishItem;
+import cn.laowu.mod.item.BreedingOnlyCatCanItem;
 import cn.laowu.mod.network.ModNetwork;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.belt.BeltBlock;
@@ -42,14 +44,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Comparator;
 import java.util.List;
@@ -71,7 +70,7 @@ public final class CatBehaviorTraitEffects {
     private static final String ATTACK_COOLDOWN_TAG = "LaoWuTraitBehaviourAttackCooldown";
     private static final String FUR_TIMER_TAG = "LaoWuTraitFurTimer";
     private static final String BELT_TARGET_TAG = "LaoWuTraitBeltTarget";
-    private static final String HEAT_TARGET_TAG = "LaoWuTraitHeatTarget";
+    private static final String LEGACY_HEAT_TARGET_TAG = "LaoWuTraitHeatTarget";
     private static final String CHEST_TARGET_TAG = "LaoWuTraitChestTarget";
     private static final String MINECART_TARGET_TAG = "LaoWuTraitMinecartTarget";
     private static final String SPLASH_FLEE_UNTIL_TAG = "LaoWuTraitSplashFleeUntil";
@@ -79,12 +78,19 @@ public final class CatBehaviorTraitEffects {
     private static final String SPLASH_FLEE_Z_TAG = "LaoWuTraitSplashFleeZ";
     private static final String STRICT_HISSING_TAG = "LaoWuTraitStrictHissing";
     private static final String STRICT_TARGET_TAG = "LaoWuTraitStrictTarget";
+    private static final String STRICT_ATTACKING_TAG = "LaoWuTraitStrictAttacking";
+    private static final String STRICT_ATTACK_COOLDOWN_TAG =
+            "LaoWuTraitStrictAttackCooldown";
     private static final String SKY_ACTIVE_TAG = "LaoWuTraitSkyActive";
     private static final String SKY_TARGET_X_TAG = "LaoWuTraitSkyTargetX";
     private static final String SKY_TARGET_Y_TAG = "LaoWuTraitSkyTargetY";
     private static final String SKY_TARGET_Z_TAG = "LaoWuTraitSkyTargetZ";
     private static final String SKY_RETARGET_AT_TAG = "LaoWuTraitSkyRetargetAt";
-    private static final String ATTACH_PLAYER_TAG = "LaoWuTraitAttachPlayer";
+    private static final String SKY_ANCHOR_X_TAG = "LaoWuTraitSkyAnchorX";
+    private static final String SKY_ANCHOR_Y_TAG = "LaoWuTraitSkyAnchorY";
+    private static final String SKY_ANCHOR_Z_TAG = "LaoWuTraitSkyAnchorZ";
+    private static final String ATTACH_TARGET_TAG = "LaoWuTraitAttachTarget";
+    private static final String LEGACY_ATTACH_PLAYER_TAG = "LaoWuTraitAttachPlayer";
     private static final String ATTACH_UNTIL_TAG = "LaoWuTraitAttachUntil";
     private static final String HIGH_STEP_ACTIVE_TAG = "LaoWuTraitHighStepActive";
     private static final String HIGH_STEP_PREVIOUS_TAG = "LaoWuTraitPreviousStepHeight";
@@ -104,7 +110,6 @@ public final class CatBehaviorTraitEffects {
         if (tickAutoAttach(cat, traits)) return true;
         if (tickMinecartChaser(cat, traits)) return true;
         if (tickBeltSeeker(cat, traits)) return true;
-        if (tickCozyCat(cat, traits)) return true;
         if (tickBootThief(cat, traits)) return true;
         return tickCombatBehaviour(cat, traits);
     }
@@ -116,9 +121,8 @@ public final class CatBehaviorTraitEffects {
                 && cat.isInLove()) {
             cat.resetLove();
         }
-        if (!traits.has(CatTrait.COZY)
-                && cat.getPersistentData().contains(HEAT_TARGET_TAG, Tag.TAG_LONG)) {
-            cat.getPersistentData().remove(HEAT_TARGET_TAG);
+        if (cat.getPersistentData().contains(LEGACY_HEAT_TARGET_TAG, Tag.TAG_LONG)) {
+            cat.getPersistentData().remove(LEGACY_HEAT_TARGET_TAG);
             cat.setLying(false);
             cat.setRelaxStateOne(false);
         }
@@ -260,6 +264,7 @@ public final class CatBehaviorTraitEffects {
     }
 
     private static void startFluidPanic(Cat cat, Vec3 source) {
+        HissingCatBehavior.interruptPair(cat, 50);
         Vec3 away = cat.position().subtract(source);
         if (away.horizontalDistanceSqr() < 1.0E-4D) {
             float angle = cat.getRandom().nextFloat() * Mth.TWO_PI;
@@ -276,11 +281,48 @@ public final class CatBehaviorTraitEffects {
     private static boolean tickSelectedElder(Cat cat, CatTraitProfile traits) {
         CompoundTag data = cat.getPersistentData();
         if (!traits.has(CatTrait.SELECTED_ELDER)) {
-            if (data.getBoolean(STRICT_HISSING_TAG)) clearStrictHissing(cat);
+            if (data.getBoolean(STRICT_HISSING_TAG)
+                    || data.getBoolean(STRICT_ATTACKING_TAG)
+                    || data.hasUUID(STRICT_TARGET_TAG)) clearStrictHissing(cat);
             return false;
         }
+        if (HissingCatBehavior.isPairInterrupted(cat)) {
+            if (data.getBoolean(STRICT_HISSING_TAG)
+                    || data.getBoolean(STRICT_ATTACKING_TAG)) clearStrictHissing(cat);
+            return false;
+        }
+
         LivingEntity target = data.hasUUID(STRICT_TARGET_TAG)
                 ? resolveEntity(cat, data.getUUID(STRICT_TARGET_TAG)) : null;
+        if (data.getBoolean(STRICT_ATTACKING_TAG)) {
+            if (target == cat || target == null || !target.isAlive()
+                    || cat.distanceToSqr(target) > 16.0D * 16.0D) {
+                clearStrictAttack(cat, target);
+                target = null;
+            } else {
+                stopStrictHissingPose(cat);
+                cat.setTarget(target);
+                cat.getLookControl().setLookAt(target, 90.0F, 90.0F);
+                face(cat, target.position());
+                double reach = Math.max(1.2D,
+                        cat.getBbWidth() + target.getBbWidth() * 0.55D);
+                if (cat.distanceToSqr(target) > reach * reach) {
+                    cat.getNavigation().moveTo(target, 1.3D);
+                } else {
+                    cat.getNavigation().stop();
+                    int cooldown = data.getInt(STRICT_ATTACK_COOLDOWN_TAG);
+                    if (cooldown <= 0) {
+                        cat.doHurtTarget(target);
+                        data.putInt(STRICT_ATTACK_COOLDOWN_TAG,
+                                CatAttributeEffects.attackIntervalTicks(cat));
+                    } else {
+                        data.putInt(STRICT_ATTACK_COOLDOWN_TAG, cooldown - 1);
+                    }
+                }
+                return true;
+            }
+        }
+
         if (target == cat || target != null && (!target.isAlive()
                 || cat.distanceToSqr(target) > 25.0D)) target = null;
         if (target == null || staggered(cat, 10)) {
@@ -304,28 +346,83 @@ public final class CatBehaviorTraitEffects {
         return true;
     }
 
-    private static void clearStrictHissing(Cat cat) {
+    /** A selected elder retaliates against the creature it was already hissing at. */
+    public static void onSelectedElderHurt(Cat cat, Entity damageSource) {
+        if (cat.level().isClientSide || CatPoseData.isPancake(cat)
+                || !CatTraitData.ensure(cat).has(CatTrait.SELECTED_ELDER)) return;
+        CompoundTag data = cat.getPersistentData();
+        LivingEntity target = data.hasUUID(STRICT_TARGET_TAG)
+                ? resolveEntity(cat, data.getUUID(STRICT_TARGET_TAG)) : null;
+        if (target == cat || target != null && !target.isAlive()) target = null;
+        if (target == null && damageSource instanceof LivingEntity living
+                && living != cat && living.isAlive()) target = living;
+        if (target == null) return;
+
+        data.putUUID(STRICT_TARGET_TAG, target.getUUID());
+        data.putBoolean(STRICT_ATTACKING_TAG, true);
+        data.remove(STRICT_ATTACK_COOLDOWN_TAG);
+        stopStrictHissingPose(cat);
+        cat.setOrderedToSit(false);
+        cat.setTarget(target);
+    }
+
+    private static void stopStrictHissingPose(Cat cat) {
         cat.getPersistentData().remove(STRICT_HISSING_TAG);
-        cat.getPersistentData().remove(STRICT_TARGET_TAG);
+        clearHissing(cat);
+    }
+
+    private static void clearStrictAttack(Cat cat, LivingEntity target) {
+        CompoundTag data = cat.getPersistentData();
+        data.remove(STRICT_ATTACKING_TAG);
+        data.remove(STRICT_ATTACK_COOLDOWN_TAG);
+        data.remove(STRICT_TARGET_TAG);
+        if (target == null || cat.getTarget() == target) cat.setTarget(null);
+    }
+
+    private static void clearStrictHissing(Cat cat) {
+        CompoundTag data = cat.getPersistentData();
+        LivingEntity target = data.hasUUID(STRICT_TARGET_TAG)
+                ? resolveEntity(cat, data.getUUID(STRICT_TARGET_TAG)) : null;
+        data.remove(STRICT_HISSING_TAG);
+        data.remove(STRICT_TARGET_TAG);
+        data.remove(STRICT_ATTACKING_TAG);
+        data.remove(STRICT_ATTACK_COOLDOWN_TAG);
+        if (target == null || cat.getTarget() == target) cat.setTarget(null);
         clearHissing(cat);
     }
 
     private static boolean tickSkyCat(Cat cat, CatTraitProfile traits) {
         CompoundTag data = cat.getPersistentData();
         if (!traits.has(CatTrait.SKY_CAT)) {
-            if (data.getBoolean(SKY_ACTIVE_TAG)) {
-                data.remove(SKY_ACTIVE_TAG);
-                data.remove(SKY_RETARGET_AT_TAG);
-                cat.setNoGravity(false);
+            if (data.getBoolean(SKY_ACTIVE_TAG) || cat.isNoGravity()) {
+                clearSkyState(cat);
             }
+            return false;
+        }
+        // Sitting is an explicit player command and must win over autonomous
+        // flight. Resetting the anchor here makes the next take-off start from
+        // the cat's new resting position instead of an obsolete altitude.
+        if (cat.isOrderedToSit()) {
+            if (data.getBoolean(SKY_ACTIVE_TAG) || cat.isNoGravity()) clearSkyState(cat);
             return false;
         }
 
         long now = cat.level().getGameTime();
+        if (!data.getBoolean(SKY_ACTIVE_TAG)) {
+            setSkyAnchor(data, cat.position());
+        }
+        Vec3 centre = skyCentre(cat, data);
+        Vec3 existingTarget = skyTarget(data);
+        boolean escapedFlightBand = horizontalDistanceSqr(cat.position(), centre) > 14.0D * 14.0D
+                || cat.getY() > centre.y + 7.0D
+                || cat.getY() < centre.y - 3.0D;
         if (!data.getBoolean(SKY_ACTIVE_TAG)
                 || data.getLong(SKY_RETARGET_AT_TAG) <= now
-                || cat.position().distanceToSqr(skyTarget(data)) < 2.0D) {
-            chooseSkyTarget(cat, now);
+                || cat.position().distanceToSqr(existingTarget) < 2.0D
+                || horizontalDistanceSqr(existingTarget, centre) > 12.0D * 12.0D
+                || existingTarget.y > centre.y + 6.0D
+                || escapedFlightBand) {
+            chooseSkyTarget(cat, now, centre, escapedFlightBand);
         }
         data.putBoolean(SKY_ACTIVE_TAG, true);
         cat.setNoGravity(true);
@@ -337,16 +434,24 @@ public final class CatBehaviorTraitEffects {
         Vec3 desired = delta.lengthSqr() < 0.05D
                 ? Vec3.ZERO : delta.normalize().scale(0.24D);
         Vec3 movement = cat.getDeltaMovement().scale(0.78D).add(desired.scale(0.22D));
+        if (cat.getY() > centre.y + 6.0D) {
+            movement = new Vec3(movement.x, Math.min(-0.08D, movement.y), movement.z);
+        }
+        movement = new Vec3(Mth.clamp(movement.x, -0.28D, 0.28D),
+                Mth.clamp(movement.y, -0.20D, 0.20D),
+                Mth.clamp(movement.z, -0.28D, 0.28D));
         cat.setDeltaMovement(movement);
         face(cat, cat.position().add(movement));
         return true;
     }
 
-    private static void chooseSkyTarget(Cat cat, long now) {
-        Vec3 centre = cat.getOwner() != null ? cat.getOwner().position() : cat.position();
+    private static void chooseSkyTarget(Cat cat, long now, Vec3 centre,
+                                        boolean returning) {
         double angle = cat.getRandom().nextDouble() * Math.PI * 2.0D;
-        double radius = 4.0D + cat.getRandom().nextDouble() * 7.0D;
-        double y = Mth.clamp(centre.y + 2.0D + cat.getRandom().nextDouble() * 5.0D,
+        double radius = returning
+                ? cat.getRandom().nextDouble() * 2.5D
+                : 3.0D + cat.getRandom().nextDouble() * 5.0D;
+        double y = Mth.clamp(centre.y + 1.5D + cat.getRandom().nextDouble() * 3.5D,
                 cat.level().getMinBuildHeight() + 2.0D,
                 cat.level().getMaxBuildHeight() - 3.0D);
         CompoundTag data = cat.getPersistentData();
@@ -356,42 +461,84 @@ public final class CatBehaviorTraitEffects {
         data.putLong(SKY_RETARGET_AT_TAG, now + 60L + cat.getRandom().nextInt(61));
     }
 
+    private static Vec3 skyCentre(Cat cat, CompoundTag data) {
+        LivingEntity owner = cat.getOwner();
+        if (owner != null && owner.isAlive() && owner.level() == cat.level()) {
+            return owner.position();
+        }
+        if (!data.contains(SKY_ANCHOR_X_TAG, Tag.TAG_DOUBLE)
+                || !data.contains(SKY_ANCHOR_Y_TAG, Tag.TAG_DOUBLE)
+                || !data.contains(SKY_ANCHOR_Z_TAG, Tag.TAG_DOUBLE)) {
+            setSkyAnchor(data, cat.position());
+        }
+        return new Vec3(data.getDouble(SKY_ANCHOR_X_TAG),
+                data.getDouble(SKY_ANCHOR_Y_TAG),
+                data.getDouble(SKY_ANCHOR_Z_TAG));
+    }
+
+    private static void setSkyAnchor(CompoundTag data, Vec3 position) {
+        data.putDouble(SKY_ANCHOR_X_TAG, position.x);
+        data.putDouble(SKY_ANCHOR_Y_TAG, position.y);
+        data.putDouble(SKY_ANCHOR_Z_TAG, position.z);
+    }
+
+    private static double horizontalDistanceSqr(Vec3 first, Vec3 second) {
+        double x = first.x - second.x;
+        double z = first.z - second.z;
+        return x * x + z * z;
+    }
+
+    private static void clearSkyState(Cat cat) {
+        CompoundTag data = cat.getPersistentData();
+        data.remove(SKY_ACTIVE_TAG);
+        data.remove(SKY_TARGET_X_TAG);
+        data.remove(SKY_TARGET_Y_TAG);
+        data.remove(SKY_TARGET_Z_TAG);
+        data.remove(SKY_RETARGET_AT_TAG);
+        data.remove(SKY_ANCHOR_X_TAG);
+        data.remove(SKY_ANCHOR_Y_TAG);
+        data.remove(SKY_ANCHOR_Z_TAG);
+        cat.setNoGravity(false);
+    }
+
     private static Vec3 skyTarget(CompoundTag data) {
         return new Vec3(data.getDouble(SKY_TARGET_X_TAG),
                 data.getDouble(SKY_TARGET_Y_TAG), data.getDouble(SKY_TARGET_Z_TAG));
     }
 
-    /** Event-driven: only nearby cats are considered when a player actually attacks. */
-    public static void notifyPlayerAttack(Player player) {
-        if (player.level().isClientSide) return;
+    /** Event-driven: nearby carriers rush the living target a player just attacked. */
+    public static void notifyPlayerAttack(Player player, LivingEntity target) {
+        if (player.level().isClientSide || target == null || !target.isAlive()) return;
         long until = player.level().getGameTime() + 60L;
         for (Cat cat : player.level().getEntitiesOfClass(Cat.class,
                 player.getBoundingBox().inflate(ACTIVE_SEARCH_RANGE),
                 cat -> cat.isAlive() && !CatPoseData.isPancake(cat)
                         && !CatLogisticsBehavior.isActive(cat)
                         && CatTraitData.ensure(cat).has(CatTrait.AUTO_ATTACH))) {
-            cat.getPersistentData().putUUID(ATTACH_PLAYER_TAG, player.getUUID());
+            cat.getPersistentData().putUUID(ATTACH_TARGET_TAG, target.getUUID());
+            cat.getPersistentData().remove(LEGACY_ATTACH_PLAYER_TAG);
             cat.getPersistentData().putLong(ATTACH_UNTIL_TAG, until);
         }
     }
 
     private static boolean tickAutoAttach(Cat cat, CatTraitProfile traits) {
         CompoundTag data = cat.getPersistentData();
-        if (!traits.has(CatTrait.AUTO_ATTACH) || !data.hasUUID(ATTACH_PLAYER_TAG)
+        if (!traits.has(CatTrait.AUTO_ATTACH) || !data.hasUUID(ATTACH_TARGET_TAG)
                 || data.getLong(ATTACH_UNTIL_TAG) <= cat.level().getGameTime()
                 || !(cat.level() instanceof ServerLevel level)) {
-            data.remove(ATTACH_PLAYER_TAG);
+            data.remove(ATTACH_TARGET_TAG);
+            data.remove(LEGACY_ATTACH_PLAYER_TAG);
             data.remove(ATTACH_UNTIL_TAG);
             return false;
         }
-        Entity entity = level.getEntity(data.getUUID(ATTACH_PLAYER_TAG));
-        if (!(entity instanceof Player player) || !player.isAlive()
-                || cat.distanceToSqr(player) > 32.0D * 32.0D) {
-            data.remove(ATTACH_PLAYER_TAG);
+        Entity entity = level.getEntity(data.getUUID(ATTACH_TARGET_TAG));
+        if (!(entity instanceof LivingEntity target) || !target.isAlive()
+                || cat.distanceToSqr(target) > 32.0D * 32.0D) {
+            data.remove(ATTACH_TARGET_TAG);
             data.remove(ATTACH_UNTIL_TAG);
             return false;
         }
-        Vec3 delta = player.position().subtract(cat.position());
+        Vec3 delta = target.position().subtract(cat.position());
         if (delta.horizontalDistanceSqr() <= 1.2D) {
             cat.getNavigation().stop();
             cat.setDeltaMovement(0.0D, cat.getDeltaMovement().y, 0.0D);
@@ -400,7 +547,7 @@ public final class CatBehaviorTraitEffects {
             cat.getNavigation().stop();
             cat.setDeltaMovement(pull.x, cat.getDeltaMovement().y, pull.z);
         }
-        face(cat, player.position());
+        face(cat, target.position());
         return true;
     }
 
@@ -475,68 +622,6 @@ public final class CatBehaviorTraitEffects {
                 && level.getBlockState(pos).getBlock() instanceof BeltBlock
                 && level.getBlockEntity(pos) instanceof KineticBlockEntity kinetic
                 && kinetic.getSpeed() != 0.0F;
-    }
-
-    private static boolean tickCozyCat(Cat cat, CatTraitProfile traits) {
-        CompoundTag data = cat.getPersistentData();
-        if (!traits.has(CatTrait.COZY)) {
-            data.remove(HEAT_TARGET_TAG);
-            cat.setLying(false);
-            cat.setRelaxStateOne(false);
-            return false;
-        }
-        BlockPos target = data.contains(HEAT_TARGET_TAG, Tag.TAG_LONG)
-                ? BlockPos.of(data.getLong(HEAT_TARGET_TAG)) : null;
-        if (!isSafeWarmRest(cat.level(), target) || staggered(cat, 80)) {
-            target = findWarmRest(cat);
-            if (target == null) {
-                data.remove(HEAT_TARGET_TAG);
-                cat.setLying(false);
-                return false;
-            }
-            data.putLong(HEAT_TARGET_TAG, target.asLong());
-        }
-        if (cat.distanceToSqr(Vec3.atCenterOf(target)) <= 1.8D) {
-            cat.getNavigation().stop();
-            cat.setDeltaMovement(0.0D, cat.getDeltaMovement().y, 0.0D);
-            cat.setLying(true);
-            cat.setRelaxStateOne(true);
-        } else {
-            cat.setLying(false);
-            cat.setRelaxStateOne(false);
-            cat.getNavigation().moveTo(target.getX() + 0.5D,
-                    target.getY(), target.getZ() + 0.5D, 1.1D);
-        }
-        return true;
-    }
-
-    private static BlockPos findWarmRest(Cat cat) {
-        BlockPos heat = findNearestBlock(cat, 8, 4,
-                pos -> isHeatSource(cat.level(), pos));
-        if (heat == null) return null;
-        for (Direction direction : Direction.Plane.HORIZONTAL) {
-            BlockPos rest = heat.relative(direction);
-            if (isSafeWarmRest(cat.level(), rest)) return rest;
-        }
-        return null;
-    }
-
-    private static boolean isHeatSource(Level level, BlockPos pos) {
-        if (pos == null || !level.isLoaded(pos)) return false;
-        BlockState state = level.getBlockState(pos);
-        if (state.is(Blocks.LAVA) || state.is(Blocks.FIRE)
-                || state.is(Blocks.SOUL_FIRE) || CampfireBlock.isLitCampfire(state)) return true;
-        ResourceLocation id = ForgeRegistries.BLOCKS.getKey(state.getBlock());
-        return id != null && id.getNamespace().equals("create")
-                && id.getPath().equals("blaze_burner");
-    }
-
-    private static boolean isSafeWarmRest(Level level, BlockPos pos) {
-        return pos != null && level.isLoaded(pos) && level.getBlockState(pos).isAir()
-                && level.getBlockState(pos.above()).isAir()
-                && level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)
-                && Direction.Plane.HORIZONTAL.stream()
-                .anyMatch(direction -> isHeatSource(level, pos.relative(direction)));
     }
 
     private static boolean tickBootThief(Cat cat, CatTraitProfile traits) {
@@ -673,7 +758,7 @@ public final class CatBehaviorTraitEffects {
             case HUNTER_KIMI -> nearestLiving(cat, ACTIVE_SEARCH_RANGE,
                     living -> isHuntable(living) && living.isAlive());
             case MISCHIEVOUS -> nearestLiving(cat, 3.0D,
-                    living -> living != cat && living.isAlive());
+                    living -> living != cat && living.isAlive() && isNearLedge(living));
             case STITCH -> nearestLiving(cat, ACTIVE_SEARCH_RANGE,
                     living -> living != cat && living.isAlive());
             default -> null;
@@ -690,6 +775,7 @@ public final class CatBehaviorTraitEffects {
             case EDWARD -> target instanceof Player player && player.isSleeping();
             case FOOD_GUARD -> isNearGuardedFood(cat, target);
             case HUNTER_KIMI -> isHuntable(target);
+            case MISCHIEVOUS -> isNearLedge(target);
             default -> true;
         };
     }
@@ -743,6 +829,21 @@ public final class CatBehaviorTraitEffects {
                 .add(push.scale(0.9D))).below();
         double strength = target.level().getBlockState(landing).isAir() ? 0.7D : 0.28D;
         target.push(push.x * strength, 0.12D, push.z * strength);
+    }
+
+    private static boolean isNearLedge(LivingEntity target) {
+        if (!target.onGround()) return false;
+        double probeDistance = target.getBbWidth() * 0.5D + 0.35D;
+        double supportY = target.getBoundingBox().minY - 0.05D;
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos support = BlockPos.containing(
+                    target.getX() + direction.getStepX() * probeDistance,
+                    supportY,
+                    target.getZ() + direction.getStepZ() * probeDistance);
+            if (!target.level().getBlockState(support)
+                    .isFaceSturdy(target.level(), support, Direction.UP)) return true;
+        }
+        return false;
     }
 
     private static LivingEntity resolveTarget(Cat cat, CompoundTag data) {
@@ -801,8 +902,11 @@ public final class CatBehaviorTraitEffects {
     private static boolean isFood(Cat cat, ItemStack stack) {
         return !stack.isEmpty() && (cat.isFood(stack) || stack.isEdible()
                 || stack.is(LaoWuMod.CAT_FOOD.get())
+                || stack.is(LaoWuMod.PHEROMONE_CAT_FOOD.get())
                 || stack.is(LaoWuMod.CAT_STRIP.get())
-                || stack.getItem() instanceof CatAttributeCanItem);
+                || stack.getItem() instanceof CatAttributeCanItem
+                || stack.getItem() instanceof BreedingOnlyCatCanItem
+                || stack.getItem() instanceof CatTraitFishItem);
     }
 
     public static float childAttackMultiplier(Cat attacker, LivingEntity target) {

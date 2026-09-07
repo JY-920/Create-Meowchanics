@@ -5,6 +5,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 import java.util.List;
 
@@ -30,13 +31,15 @@ final class AdoptionRewardTable {
                     entry(Items.REDSTONE, 6, 12), entry(Items.LAPIS_LAZULI, 6, 12),
                     entry(Items.GLOWSTONE_DUST, 4, 10), entry(Items.ENDER_PEARL, 1, 3),
                     entry(Items.GOLDEN_CARROT, 2, 5), entry(Items.BOOKSHELF, 1, 3),
-                    entry(Items.COMPASS, 1, 1), entry(Items.BELL, 1, 1)),
+                    entry(Items.COMPASS, 1, 1), entry(Items.BELL, 1, 1),
+                    entry(Items.ENCHANTED_BOOK, 1, 1)),
             List.of(
                     entry(Items.EMERALD, 5, 10), entry(Items.DIAMOND, 1, 2),
                     entry(Items.NAME_TAG, 1, 1), entry(Items.SADDLE, 1, 1),
                     entry(Items.EXPERIENCE_BOTTLE, 4, 10), entry(Items.CLOCK, 1, 1),
                     entry(Items.DIAMOND_PICKAXE, 1, 1), entry(Items.DIAMOND_AXE, 1, 1),
-                    entry(Items.DIAMOND_SHOVEL, 1, 1), entry(Items.DIAMOND_SWORD, 1, 1)),
+                    entry(Items.DIAMOND_SHOVEL, 1, 1), entry(Items.DIAMOND_SWORD, 1, 1),
+                    entry(Items.ENCHANTED_BOOK, 1, 1)),
             List.of(
                     entry(Items.EMERALD, 8, 16), entry(Items.DIAMOND, 2, 4),
                     entry(Items.NAME_TAG, 1, 2), entry(Items.BELL, 1, 1),
@@ -44,7 +47,8 @@ final class AdoptionRewardTable {
                     entry(Items.GOLDEN_CARROT, 8, 16),
                     entry(Items.DIAMOND_PICKAXE, 1, 1), entry(Items.DIAMOND_AXE, 1, 1),
                     entry(Items.DIAMOND_SWORD, 1, 1), entry(Items.DIAMOND_CHESTPLATE, 1, 1),
-                    entry(Items.DIAMOND_LEGGINGS, 1, 1))
+                    entry(Items.DIAMOND_LEGGINGS, 1, 1),
+                    entry(Items.ENCHANTED_BOOK, 1, 1))
     );
 
     static List<ItemStack> roll(int quality, RandomSource random) {
@@ -59,10 +63,20 @@ final class AdoptionRewardTable {
             if (selected.item.getMaxStackSize() > 1) {
                 count += random.nextInt(1 + score / 25);
             }
-            rewards.add(new ItemStack(selected.item,
-                    Math.min(count, selected.item.getMaxStackSize())));
+            rewards.add(createReward(selected, count, score, random));
         }
         return List.copyOf(rewards);
+    }
+
+    private static ItemStack createReward(Entry selected, int count, int score,
+                                          RandomSource random) {
+        if (selected.item == Items.ENCHANTED_BOOK) {
+            int power = Mth.clamp(8 + score / 3, 10, 30);
+            return EnchantmentHelper.enchantItem(random,
+                    new ItemStack(Items.BOOK), power, true);
+        }
+        return new ItemStack(selected.item,
+                Math.min(count, selected.item.getMaxStackSize()));
     }
 
     private static Entry entry(Item item, int min, int max) {

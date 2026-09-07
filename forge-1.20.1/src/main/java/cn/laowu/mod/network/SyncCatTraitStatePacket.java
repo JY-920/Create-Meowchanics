@@ -11,17 +11,20 @@ import java.util.function.Supplier;
 /** Transition-only sync for transient trait conditions used by the cat panel. */
 public record SyncCatTraitStatePacket(int entityId, boolean rageActive,
                                       boolean luBuOutnumbered,
-                                      boolean timidOutnumbered) {
+                                      boolean timidOutnumbered,
+                                      boolean combatActive) {
     public static void encode(SyncCatTraitStatePacket packet, FriendlyByteBuf buffer) {
         buffer.writeVarInt(packet.entityId);
         buffer.writeBoolean(packet.rageActive);
         buffer.writeBoolean(packet.luBuOutnumbered);
         buffer.writeBoolean(packet.timidOutnumbered);
+        buffer.writeBoolean(packet.combatActive);
     }
 
     public static SyncCatTraitStatePacket decode(FriendlyByteBuf buffer) {
         return new SyncCatTraitStatePacket(buffer.readVarInt(),
-                buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean());
+                buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(),
+                buffer.readBoolean());
     }
 
     public static void handle(SyncCatTraitStatePacket packet,

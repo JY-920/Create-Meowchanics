@@ -106,8 +106,15 @@ public final class CatProfileScreen extends AbstractContainerScreen<CatProfileMe
 
         Cat cat = currentCat();
         if (cat != null) {
-            CatTraitCardRenderer.renderTooltip(graphics, font,
-                    CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY),
+            CatTraitProfile traits = CatTraitData.read(cat)
+                    .orElse(CatTraitProfile.EMPTY);
+            boolean night = CatTraitEffects.isNight(minecraft.level);
+            boolean day = CatTraitEffects.isDay(minecraft.level);
+            if (CatStatsGoggleOverlay.renderProfileValueTooltip(
+                    graphics, font, CatAttributeData.read(cat).orElse(null), traits,
+                    leftPos + STATS_X, topPos + STATS_Y, mouseX, mouseY,
+                    night, day, cat)) return;
+            CatTraitCardRenderer.renderTooltip(graphics, font, traits,
                     leftPos + TRAITS_X, topPos + TRAITS_Y,
                     TRAIT_SPACING, mouseX, mouseY);
         }

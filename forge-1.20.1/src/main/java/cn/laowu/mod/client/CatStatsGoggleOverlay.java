@@ -1,6 +1,8 @@
 package cn.laowu.mod.client;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.CatClothesData;
+import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatAttributeEffects;
 import cn.laowu.mod.genetics.CatAttributeProfile;
@@ -129,6 +131,34 @@ public final class CatStatsGoggleOverlay {
                                    @Nullable Cat liveCat) {
         renderPanel(graphics, profile, traits, true, x, y, night, day,
                 liveCat, true);
+    }
+
+    /** Hover help for the full two-column panel used by the cat profile GUI. */
+    static boolean renderProfileValueTooltip(GuiGraphics graphics,
+                                             net.minecraft.client.gui.Font font,
+                                             @Nullable CatAttributeProfile profile,
+                                             CatTraitProfile traits,
+                                             int x, int y, int mouseX, int mouseY,
+                                             boolean night, boolean day,
+                                             @Nullable Cat liveCat) {
+        if (profile == null || mouseX < x + ICON_X
+                || mouseX >= x + LIMITS_PANEL_WIDTH - 4) return false;
+        int relativeY = mouseY - (y + ROW_Y);
+        if (relativeY < 0) return false;
+        int row = relativeY / ROW_SPACING;
+        if (row < 0 || row >= ROW_COUNT || relativeY % ROW_SPACING >= 8) return false;
+
+        CatStat stat = CatStat.values()[row];
+        boolean limit = mouseX >= x + 40;
+        int value = limit ? profile.potential(stat)
+                : liveCat == null
+                ? CatAttributeEffects.effectiveValue(profile, traits, stat, night, day)
+                : CatAttributeEffects.effectiveValue(liveCat, profile, traits, stat);
+        CatOutfitType outfit = liveCat == null
+                ? CatOutfitType.NONE : CatClothesData.getOutfit(liveCat);
+        CatAttributeEffectTooltip.render(graphics, font, stat, value, limit,
+                outfit, mouseX, mouseY);
+        return true;
     }
 
     private static void renderPanel(GuiGraphics graphics,

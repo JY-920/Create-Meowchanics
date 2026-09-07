@@ -1,32 +1,61 @@
 package cn.laowu.mod.genetics;
 
 import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Collection;
 import java.util.List;
 
-/** Shared Xiaoting reward roll for death loot and vanilla morning gifts. */
+/** Xiaoting's death-loot and vanilla morning-gift rewards. */
 public final class CatXiaotingRewards {
-    private static final float TEMPLATE_CHANCE = 0.20F;
+    private static final float MORNING_TEMPLATE_CHANCE = 0.20F;
 
-    public static boolean tryDropTemplate(Cat cat) {
+    /**
+     * Append the guaranteed death reward to Forge's authoritative drop list.
+     * This keeps the reward in the same lifecycle as normal mob loot instead of
+     * spawning a second, easy-to-lose item entity from LivingDeathEvent.
+     */
+    public static boolean addDeathTemplate(Cat cat, Collection<ItemEntity> drops) {
         if (cat.level().isClientSide
-                || !CatTraitData.ensure(cat).has(CatTrait.XIAOTING)
-                || cat.getRandom().nextFloat() >= TEMPLATE_CHANCE) {
+                || !CatTraitData.ensure(cat).has(CatTrait.XIAOTING)) {
             return false;
         }
 
+        ItemStack reward = randomTemplate(cat);
+        if (reward.isEmpty()) return false;
+
+        ItemEntity drop = new ItemEntity(cat.level(), cat.getX(), cat.getY(), cat.getZ(), reward);
+        drop.setDefaultPickUpDelay();
+        drops.add(drop);
+        return true;
+    }
+
+    /** The extra template attached to a vanilla morning gift remains a chance. */
+    public static boolean tryGiveMorningTemplate(Cat cat) {
+        if (cat.level().isClientSide
+                || !CatTraitData.ensure(cat).has(CatTrait.XIAOTING)
+                || cat.getRandom().nextFloat() >= MORNING_TEMPLATE_CHANCE) {
+            return false;
+        }
+
+        ItemStack reward = randomTemplate(cat);
+        if (reward.isEmpty()) return false;
+        cat.spawnAtLocation(reward);
+        return true;
+    }
+
+    private static ItemStack randomTemplate(Cat cat) {
         List<Item> templates = ForgeRegistries.ITEMS.getValues().stream()
                 .filter(CatXiaotingRewards::isSmithingTemplate)
                 .toList();
-        if (templates.isEmpty()) return false;
+        if (templates.isEmpty()) return ItemStack.EMPTY;
 
         Item selected = templates.get(cat.getRandom().nextInt(templates.size()));
-        cat.spawnAtLocation(new ItemStack(selected));
-        return true;
+        return new ItemStack(selected);
     }
 
     private static boolean isSmithingTemplate(Item item) {
