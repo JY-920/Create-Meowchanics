@@ -4,9 +4,17 @@ import cn.laowu.mod.CatPoseData;
 import cn.laowu.mod.CatPancakeBehavior;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatOutfitType;
+import cn.laowu.mod.DynamiteCatLastStand;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.network.ModNetwork;
+import cn.laowu.mod.genetics.CatGenomeData;
+import cn.laowu.mod.genetics.CatAttributeData;
+import cn.laowu.mod.genetics.CatAttributeProfile;
+import cn.laowu.mod.genetics.CatStat;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitProfile;
 import com.simibubi.create.content.kinetics.fan.EncasedFanBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -26,6 +34,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
@@ -44,6 +53,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class CatPancakeItem extends Item {
@@ -53,12 +63,14 @@ public final class CatPancakeItem extends Item {
     public static final String CAT_VARIANT_TAG = "LaoWuCatVariant";
     public static final String BABY_TAG = "LaoWuBabyPancake";
     private static final String TAMED_TAG = "LaoWuTamedPancake";
+    private static final String OWNER_UUID_TAG = "LaoWuPancakeOwner";
     private static final String PRE_TERMINATOR_NAME_TAG = "LaoWuPreTerminatorName";
     private static final String FAN_TICKS_TAG = "LaoWuCatPancakeFanTicks";
     private static final int FAN_CHECK_INTERVAL = 5;
     private static final int REQUIRED_FAN_TICKS = 30;
     private static final int FAN_SEARCH_RADIUS = 16;
     private static final int MAX_CHARGE_TICKS = 80;
+    private static final int CAREER_DEATH_POTENTIAL_LOSS = 20;
 
     public CatPancakeItem(Properties properties) {
         super(properties);
@@ -66,6 +78,10 @@ public final class CatPancakeItem extends Item {
 
     public static ItemStack capture(Cat cat) {
         ItemStack pancake = new ItemStack(LaoWuMod.CAT_PANCAKE.get());
+        // Ensure the six-dimensional genes enter both the full entity snapshot
+        // and the compact top-level pancake bridge before the cat is removed.
+        CatAttributeData.ensure(cat);
+        CatTraitData.ensure(cat);
         CompoundTag root = pancake.getOrCreateTag();
         CompoundTag catData = cat.saveWithoutId(new CompoundTag());
         removePositionAndIdentity(catData);
@@ -83,6 +99,9 @@ public final class CatPancakeItem extends Item {
         ResourceLocation variant = BuiltInRegistries.CAT_VARIANT.getKey(cat.getVariant());
         if (variant != null) root.putString(CAT_VARIANT_TAG, variant.toString());
         root.putString(CAT_TEXTURE_TAG, cat.getVariant().texture().toString());
+        CatGenomeData.copyToStack(cat, pancake);
+        CatAttributeData.copyToStack(cat, pancake);
+        CatTraitData.copyToStack(cat, pancake);
         if (cat.hasCustomName()) {
             pancake.setHoverName(Component.translatable("item.laowu.cat_pancake.named", cat.getDisplayName()));
         }
@@ -93,6 +112,14 @@ public final class CatPancakeItem extends Item {
     /** Captures a killed profession cat in a state that can later be restored alive. */
     public static ItemStack captureDeathDrop(Cat cat) {
         ItemStack pancake = capture(cat);
+        CatAttributeProfile attributes = CatAttributeData.ensure(cat);
+        CatStat[] stats = CatStat.values();
+        CatStat reducedStat = stats[cat.getRandom().nextInt(stats.length)];
+        int reducedPotential = Math.max(CatAttributeProfile.MIN_VALUE,
+                attributes.potential(reducedStat) - CAREER_DEATH_POTENTIAL_LOSS);
+        CatAttributeData.set(pancake, attributes.withValues(reducedStat,
+                attributes.current(reducedStat), reducedPotential));
+
         CompoundTag root = pancake.getTag();
         if (root != null && root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
             CompoundTag catData = root.getCompound(CAT_DATA_TAG);
@@ -114,12 +141,21 @@ public final class CatPancakeItem extends Item {
 
     /** Stable orange-cat representative used by the creative tab and recipe viewers. */
     public static ItemStack defaultDisplayStack() {
-        return variantStack(DEFAULT_VARIANT);
+        return withDisplayGenes(variantStack(DEFAULT_VARIANT), 0x4C414F57554CL, false);
     }
 
     /** Stable orange kitten representative used by JEI for the spout recipe. */
     public static ItemStack defaultBabyDisplayStack() {
-        return babyVariantStack(DEFAULT_VARIANT);
+        return withDisplayGenes(babyVariantStack(DEFAULT_VARIANT), 0x42414259434154L, true);
+    }
+
+    private static ItemStack withDisplayGenes(ItemStack stack, long seed, boolean injected) {
+        CatGenomeData.set(stack, cn.laowu.mod.genetics.CatGenome.uniform(DEFAULT_VARIANT));
+        RandomSource random = RandomSource.create(seed);
+        CatAttributeData.set(stack, cn.laowu.mod.genetics.CatAttributeProfile.founder(random));
+        CatTraitData.set(stack, injected
+                ? CatTraitProfile.injected(random) : CatTraitProfile.founder(random));
+        return stack;
     }
 
     /** JEI intentionally shows one stable skin while recipes still match every cat variant. */
@@ -159,11 +195,30 @@ public final class CatPancakeItem extends Item {
 
     /** Supports both new explicit markers and captured pancakes from older builds. */
     public static boolean isBaby(ItemStack stack) {
+        if (CatTraitData.read(stack)
+                .map(profile -> profile.has(CatTrait.LOLI)).orElse(false)) return true;
         CompoundTag root = stack.getTag();
         if (root == null) return false;
         if (root.getBoolean(BABY_TAG)) return true;
         return root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)
                 && root.getCompound(CAT_DATA_TAG).getInt("Age") < 0;
+    }
+
+    /**
+     * Converts an item-form kitten pancake into its adult form without losing
+     * its texture, genome, attributes, owner, name or outfit data.
+     */
+    public static void makeAdult(ItemStack stack) {
+        if (CatTraitData.read(stack)
+                .map(profile -> profile.has(CatTrait.LOLI)).orElse(false)) return;
+        CompoundTag root = stack.getTag();
+        if (root == null) return;
+        root.remove(BABY_TAG);
+        if (root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
+            CompoundTag catData = root.getCompound(CAT_DATA_TAG);
+            catData.putInt("Age", 0);
+            root.put(CAT_DATA_TAG, catData);
+        }
     }
 
     public static ResourceLocation variantId(ItemStack stack) {
@@ -220,14 +275,49 @@ public final class CatPancakeItem extends Item {
 
     /** Reads the owner saved by vanilla so old captured pancakes remain compatible. */
     public static boolean isTamed(ItemStack stack) {
+        return hasOwner(stack);
+    }
+
+    /** True when the captured cat has (or an old stack records) an owner. */
+    public static boolean hasOwner(ItemStack stack) {
         CompoundTag root = stack.getTag();
         if (root == null) return false;
+        if (root.hasUUID(OWNER_UUID_TAG)) return true;
         if (root.getBoolean(TAMED_TAG)) return true;
         if (!root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) return false;
         CompoundTag catData = root.getCompound(CAT_DATA_TAG);
         return catData.hasUUID("Owner")
                 || catData.contains("OwnerUUID", Tag.TAG_STRING)
                 && !catData.getString("OwnerUUID").isBlank();
+    }
+
+    /** Assigns an owner without discarding any captured pancake state. */
+    public static void setOwner(ItemStack stack, UUID ownerId) {
+        CompoundTag root = stack.getOrCreateTag();
+        root.putBoolean(TAMED_TAG, true);
+        root.putUUID(OWNER_UUID_TAG, ownerId);
+        if (root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
+            CompoundTag catData = root.getCompound(CAT_DATA_TAG);
+            catData.putUUID("Owner", ownerId);
+            catData.remove("OwnerUUID");
+            catData.putBoolean("PersistenceRequired", true);
+            catData.putBoolean("Sitting", false);
+            root.put(CAT_DATA_TAG, catData);
+        }
+    }
+
+    /** Returns the cat entity's real custom name, without pancake/outfit prefixes. */
+    public static String customCatName(ItemStack stack) {
+        CompoundTag root = stack.getTag();
+        if (root == null || !root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) return "";
+        CompoundTag catData = root.getCompound(CAT_DATA_TAG);
+        if (!catData.contains("CustomName", Tag.TAG_STRING)) return "";
+        try {
+            Component parsed = Component.Serializer.fromJson(catData.getString("CustomName"));
+            return parsed == null ? "" : parsed.getString().trim();
+        } catch (RuntimeException ignored) {
+            return "";
+        }
     }
 
     /** Adds the Terminator marker without replacing texture, name, owner or captured-cat data. */
@@ -454,6 +544,13 @@ public final class CatPancakeItem extends Item {
             }
         }
 
+        if (root != null && root.hasUUID(OWNER_UUID_TAG)) {
+            cat.setTame(true);
+            cat.setOwnerUUID(root.getUUID(OWNER_UUID_TAG));
+            cat.setPersistenceRequired();
+            cat.setOrderedToSit(false);
+        }
+
         // Generated kitten pancakes carry no full entity snapshot. Captured
         // pancakes already restored their exact remaining growth age above.
         if (isBaby(stack)
@@ -462,6 +559,9 @@ public final class CatPancakeItem extends Item {
         }
 
         clearTransientState(cat.getPersistentData());
+        CatGenomeData.applyFromStack(stack, cat);
+        CatAttributeData.applyFromStack(stack, cat);
+        CatTraitData.applyFromStack(stack, cat);
         CatOutfitType outfit = getOutfit(stack);
         if (outfit != CatOutfitType.NONE) {
             cat.getPersistentData().putBoolean(CatClothesData.EQUIPPED_TAG, true);
@@ -477,6 +577,9 @@ public final class CatPancakeItem extends Item {
         ModNetwork.syncToTracking(cat, 0);
         ModNetwork.syncCatChestToTracking(cat);
         ModNetwork.syncCatClothesToTracking(cat);
+        if (CatGenomeData.has(cat)) ModNetwork.syncCatGenomeToTracking(cat);
+        ModNetwork.syncCatAttributesToTracking(cat);
+        ModNetwork.syncCatTraitsToTracking(cat);
         level.sendParticles(ParticleTypes.POOF, cat.getX(), cat.getY() + 0.4D, cat.getZ(),
                 16, 0.25D, 0.2D, 0.25D, 0.04D);
         level.playSound(null, cat.blockPosition(), SoundEvents.WOOL_BREAK, SoundSource.NEUTRAL, 1.0F, 0.65F);
@@ -495,6 +598,7 @@ public final class CatPancakeItem extends Item {
     }
 
     private static void clearTransientState(CompoundTag data) {
+        DynamiteCatLastStand.clearTransientState(data);
         data.remove(CatPoseData.TAG);
         data.remove("LaoWuAudioSession");
         data.remove("LaoWuHissingFightTarget");

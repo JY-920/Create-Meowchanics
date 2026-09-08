@@ -1,0 +1,10 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    { "item": "laowu:cat_strip" },
+    { "tag": "minecraft:fishes" }
+  ],
+  "results": [
+    { "item": "laowu:breeding_cat_food", "count": 2 }
+  ]
+}

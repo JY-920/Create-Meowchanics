@@ -1,10 +1,14 @@
 package cn.laowu.mod.client;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
+import cn.laowu.mod.genetics.CatTraitEffects;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.CatModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -35,10 +39,41 @@ public final class HissingCatGeometryLayer extends RenderLayer<Cat, CatModel<Cat
         // Keep the authored head pitch, turn the face 30 degrees by default, and
         // visibly sway only the head around that angle. Vanilla yaw tracking remains.
         RuntimeBlockbenchModel.HeadMotion headMotion = headMotion(cat, model, ageInTicks);
-        var vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(cat.getVariant().value().texture()));
-        RuntimeBlockbenchModel.get(MODEL).render(
+        var vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(
+                CatGenomeTextureManager.resolve(cat)));
+        var traits = CatTraitData.read(cat).orElse(null);
+        boolean hideEars = CatTraitEffects.isCombatActive(cat)
+                && traits != null && traits.has(CatTrait.ROUND_HEAD);
+        RuntimeBlockbenchModel.GroupSelection selection = hideEars
+                ? RuntimeBlockbenchModel.GroupSelection.CAT_WITHOUT_EARS
+                : traits != null && traits.has(CatTrait.NEKOMATA)
+                ? RuntimeBlockbenchModel.GroupSelection.CAT_WITHOUT_TAIL
+                : RuntimeBlockbenchModel.GroupSelection.ALL;
+        RuntimeBlockbenchModel runtimeModel = RuntimeBlockbenchModel.get(MODEL);
+        runtimeModel.render(
                 poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY,
-                RuntimeBlockbenchModel.GroupSelection.ALL, headMotion);
+                selection, headMotion);
+        if (traits != null && traits.has(CatTrait.HIM)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.eyes(
+                            CatAppearanceTextures.whiteEyes())),
+                    LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    selection, headMotion);
+        }
+        if (traits != null && traits.has(CatTrait.ISAAC)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.entityTranslucent(
+                            CatAppearanceTextures.tears())),
+                    packedLight, OverlayTexture.NO_OVERLAY,
+                    selection, headMotion);
+        }
+        if (traits != null && traits.has(CatTrait.PUSS_IN_BOOTS)) {
+            runtimeModel.render(poseStack,
+                    buffer.getBuffer(RenderType.entityCutoutNoCull(
+                            CatAppearanceTextures.boots())),
+                    packedLight, OverlayTexture.NO_OVERLAY,
+                    selection, headMotion);
+        }
         poseStack.popPose();
     }
 

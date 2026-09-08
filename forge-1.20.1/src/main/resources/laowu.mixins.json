@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "CatShearableMixin",
+    "CatMorningGiftMixin",
     "CatToolBreakProtectionMixin",
     "CatToolItemMixin",
     "LivingEntityCatTotemMixin",

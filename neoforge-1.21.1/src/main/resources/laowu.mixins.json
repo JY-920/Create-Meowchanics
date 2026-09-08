@@ -8,12 +8,14 @@
     "CatToolBreakProtectionMixin",
     "CatToolItemMixin",
     "LivingEntityCatTotemMixin",
+    "PlayerAttackMixin",
     "ContraptionCatPancakeCollisionMixin",
     "PloughMovementBehaviourMixin",
     "PotatoCannonAmmoMixin",
     "BlazeBurnerBlockEntityAccessor",
     "NozzleBlockEntityAccessor",
-    "RollerMovementBehaviourMixin"
+    "RollerMovementBehaviourMixin",
+    "CatMorningGiftMixin"
   ],
   "client": [
     "AirCurrentFluidParticleMixin",

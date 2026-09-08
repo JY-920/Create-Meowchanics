@@ -1,0 +1,10 @@
+{
+  "type": "create:filling",
+  "ingredients": [
+    { "item": "laowu:dried_fish" },
+    { "fluid": "laowu:liquid_cat", "amount": 100 }
+  ],
+  "results": [
+    { "item": "laowu:golden_dried_fish" }
+  ]
+}

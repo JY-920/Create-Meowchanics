@@ -1,0 +1,19 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "laowu:cat_can"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "fluid": "laowu:hissing_gas"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:attack_cat_can"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "create:deploying",
+  "ingredients": [
+    {
+      "type": "laowu:cat_pancake",
+      "baby": true
+    },
+    {
+      "item": "laowu:cat_food"
+    }
+  ],
+  "results": [
+    {
+      "item": "laowu:cat_pancake",
+      "nbt": {
+        "LaoWuCatVariant": "minecraft:red",
+        "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png"
+      }
+    }
+  ]
+}

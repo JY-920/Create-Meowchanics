@@ -1,0 +1,5 @@
+# 猫咪扫描器横版 v1：用户调好的 K 键展示参数
+# 恢复横版后，把对应条目合并回 laowu-client.toml 的数组中。
+
+held_item_transform = "laowu:cat_scanner|81.00|135.00|-97.00|-0.70|0.06|-0.53|1.00"
+gui_item_transform = "laowu:cat_scanner|77.00|94.00|-23.00|0.46|-0.25|0.00|1.00"

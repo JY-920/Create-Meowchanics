@@ -1,0 +1,17 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "minecraft:egg"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:intelligence_breeding_cat_food"
+    }
+  ]
+}

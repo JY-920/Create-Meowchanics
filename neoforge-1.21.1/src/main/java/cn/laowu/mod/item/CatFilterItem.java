@@ -1,0 +1,110 @@
+package cn.laowu.mod.item;
+
+import cn.laowu.mod.CatFilterMenu;
+import cn.laowu.mod.genetics.CatStat;
+import com.simibubi.create.content.logistics.filter.FilterItem;
+import com.simibubi.create.content.logistics.filter.FilterItemStack;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Configurable Create filter for cat attributes, traits and captured identity. */
+public final class CatFilterItem extends FilterItem {
+    public CatFilterItem(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    public List<Component> makeSummary(ItemStack stack) {
+        CatFilterRules rules = CatFilterRules.read(stack);
+        if (rules.isDefault()) {
+            return List.of(Component.translatable("item.laowu.cat_filter.summary.default")
+                    .withStyle(ChatFormatting.GRAY));
+        }
+
+        List<Component> summary = new ArrayList<>();
+        for (int page = 0; page <= 1; page++) {
+            for (CatStat stat : CatStat.values()) {
+                int minimum = rules.min(page, stat);
+                int maximum = rules.max(page, stat);
+                if (minimum == CatFilterRules.MIN_VALUE
+                        && maximum == CatFilterRules.maxValue(page)) continue;
+                summary.add(Component.translatable("item.laowu.cat_filter.summary.range",
+                                Component.translatable("attribute.laowu.cat."
+                                        + stat.serializedName()),
+                                Component.translatable(page == CatFilterRules.CURRENT_PAGE
+                                        ? "gui.laowu.cat_stats.current"
+                                        : "gui.laowu.cat_stats.limit"),
+                                minimum, maximum)
+                        .withStyle(ChatFormatting.GRAY));
+            }
+        }
+        rules.requiredTraits().forEach(trait -> summary.add(
+                Component.translatable("item.laowu.cat_filter.summary.trait",
+                                trait.title())
+                        .withStyle(ChatFormatting.GRAY)));
+        if (rules.growth() != CatFilterRules.GrowthFilter.ANY) {
+            summary.add(Component.translatable("item.laowu.cat_filter.summary.growth",
+                    Component.translatable("gui.laowu.cat_filter.growth."
+                            + rules.growth().id())).withStyle(ChatFormatting.GRAY));
+        }
+        if (rules.ownership() != CatFilterRules.OwnershipFilter.ANY) {
+            summary.add(Component.translatable("item.laowu.cat_filter.summary.ownership",
+                    Component.translatable("gui.laowu.cat_filter.ownership."
+                            + rules.ownership().id())).withStyle(ChatFormatting.GRAY));
+        }
+        if (rules.career() != CatFilterRules.CareerFilter.ANY) {
+            summary.add(Component.translatable("item.laowu.cat_filter.summary.career",
+                    Component.translatable("gui.laowu.cat_filter.career."
+                            + rules.career().id())).withStyle(ChatFormatting.GRAY));
+        }
+        if (!rules.catName().isEmpty()) {
+            summary.add(Component.translatable("item.laowu.cat_filter.summary.name",
+                    rules.catName()).withStyle(ChatFormatting.GRAY));
+        }
+        return summary;
+    }
+
+    /** Create normally hides a configured filter's summary while Shift is held. */
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context,
+                                List<Component> tooltip, TooltipFlag flag) {
+        List<Component> summary = makeSummary(stack);
+        if (summary.isEmpty()) return;
+        tooltip.add(CommonComponents.SPACE);
+        tooltip.addAll(summary);
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory inventory,
+                                            Player player) {
+        return new CatFilterMenu(containerId, inventory, player.getMainHandItem());
+    }
+
+    @Override
+    public FilterItemStack makeStackWrapper(ItemStack stack) {
+        return new CatFilterItemStack(stack);
+    }
+
+    @Override
+    public DataComponentType<?> getComponentType() {
+        // The filter's ranges and required traits live in the legacy custom
+        // data component, so item-copying recipes preserve them through it.
+        return DataComponents.CUSTOM_DATA;
+    }
+
+    @Override
+    public ItemStack[] getFilterItems(ItemStack stack) {
+        return new ItemStack[]{CatPancakeItem.defaultDisplayStack()};
+    }
+}

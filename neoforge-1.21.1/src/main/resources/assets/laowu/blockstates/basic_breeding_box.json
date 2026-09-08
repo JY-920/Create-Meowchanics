@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "laowu:block/basic_breeding_box" },
+    "facing=east":  { "model": "laowu:block/basic_breeding_box", "y": 90 },
+    "facing=south": { "model": "laowu:block/basic_breeding_box", "y": 180 },
+    "facing=west":  { "model": "laowu:block/basic_breeding_box", "y": 270 }
+  }
+}

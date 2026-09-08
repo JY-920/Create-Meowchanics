@@ -10,7 +10,8 @@ public enum CatOutfitType {
     FLIGHT("flight"),
     FIRE("fire"),
     HONEY("honey"),
-    TRANSPORT("transport");
+    TRANSPORT("transport"),
+    DYNAMITE("dynamite");
 
     private final String id;
 

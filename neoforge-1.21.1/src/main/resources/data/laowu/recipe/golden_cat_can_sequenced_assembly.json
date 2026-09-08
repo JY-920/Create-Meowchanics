@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_can"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:golden_cat_can"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:cat_can"
+        },
+        {
+          "item": "create:golden_sheet"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:cat_can"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:cat_can"
+        },
+        {
+          "item": "create:brass_nugget"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:cat_can"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:cat_can"
+  }
+}

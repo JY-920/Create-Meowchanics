@@ -1,5 +1,7 @@
 package cn.laowu.mod.item;
 
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -21,6 +23,9 @@ public final class CatFoodItem extends Item {
     public InteractionResult interactLivingEntity(ItemStack stack, Player player,
                                                    LivingEntity target, InteractionHand hand) {
         if (!(target instanceof Cat cat) || !cat.isBaby()) return InteractionResult.PASS;
+        if (CatTraitData.ensure(cat).has(CatTrait.LOLI)) {
+            return InteractionResult.sidedSuccess(cat.level().isClientSide);
+        }
 
         if (!cat.level().isClientSide) {
             cat.setAge(0);

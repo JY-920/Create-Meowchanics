@@ -1,0 +1,25 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {"item": "laowu:cat_component"},
+  "loops": 1,
+  "results": [{"item": "laowu:dynamite_suit"}],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {"item": "laowu:incomplete_dynamite_suit"},
+        {"item": "create:sturdy_sheet"}
+      ],
+      "results": [{"item": "laowu:incomplete_dynamite_suit"}]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {"item": "laowu:incomplete_dynamite_suit"},
+        {"item": "minecraft:tnt"}
+      ],
+      "results": [{"item": "laowu:incomplete_dynamite_suit"}]
+    }
+  ],
+  "transitionalItem": {"item": "laowu:incomplete_dynamite_suit"}
+}

@@ -1,0 +1,11 @@
+{
+  "type": "create:mixing",
+  "heatRequirement": "heated",
+  "ingredients": [
+    { "item": "laowu:breeding_cat_food" },
+    { "item": "minecraft:poisonous_potato" }
+  ],
+  "results": [
+    { "item": "laowu:mutation_cat_food" }
+  ]
+}

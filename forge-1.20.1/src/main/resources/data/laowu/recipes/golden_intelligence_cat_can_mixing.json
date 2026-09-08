@@ -1,0 +1,9 @@
+{
+  "type": "create:mixing",
+  "heatRequirement": "heated",
+  "ingredients": [
+    { "item": "laowu:golden_cat_can" },
+    { "item": "minecraft:egg" }
+  ],
+  "results": [{ "item": "laowu:golden_intelligence_cat_can" }]
+}

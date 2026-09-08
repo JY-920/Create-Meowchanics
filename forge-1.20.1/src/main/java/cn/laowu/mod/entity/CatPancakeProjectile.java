@@ -2,6 +2,8 @@ package cn.laowu.mod.entity;
 
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.network.ModNetwork;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -41,6 +43,15 @@ public final class CatPancakeProjectile extends ThrowableItemProjectile {
         this.impactRadius = impactRadius;
     }
 
+    public CatPancakeProjectile(Level level, double x, double y, double z,
+                                ItemStack stack, float impactDamage,
+                                float impactRadius) {
+        super(LaoWuMod.CAT_PANCAKE_PROJECTILE.get(), x, y, z, level);
+        setItem(stack.copyWithCount(1));
+        this.impactDamage = impactDamage;
+        this.impactRadius = impactRadius;
+    }
+
     @Override
     protected Item getDefaultItem() {
         return LaoWuMod.CAT_PANCAKE.get();
@@ -58,7 +69,14 @@ public final class CatPancakeProjectile extends ThrowableItemProjectile {
 
         Vec3 impact = result.getLocation();
         Entity owner = getOwner();
-        AABB searchArea = new AABB(impact, impact).inflate(impactRadius);
+        boolean highExplosive = CatTraitData.read(getItem())
+                .map(profile -> profile.has(CatTrait.HIGH_EXPLOSIVE_FUEL))
+                .orElse(false);
+        float resolvedDamage = highExplosive
+                ? Math.max(20.0F, impactDamage * 1.75F) : impactDamage;
+        float resolvedRadius = highExplosive
+                ? Math.max(3.5F, impactRadius) : impactRadius;
+        AABB searchArea = new AABB(impact, impact).inflate(resolvedRadius);
         for (LivingEntity target : serverLevel.getEntitiesOfClass(LivingEntity.class,
                 searchArea, target -> target.isAlive() && target != owner)) {
             // Measure to the nearest point on the hitbox instead of the entity's
@@ -68,21 +86,31 @@ public final class CatPancakeProjectile extends ThrowableItemProjectile {
             double nearestY = Math.max(box.minY, Math.min(impact.y, box.maxY));
             double nearestZ = Math.max(box.minZ, Math.min(impact.z, box.maxZ));
             if (impact.distanceToSqr(nearestX, nearestY, nearestZ)
-                    > impactRadius * impactRadius) continue;
-            target.hurt(serverLevel.damageSources().thrown(this, owner), impactDamage);
+                    > resolvedRadius * resolvedRadius) continue;
+            target.hurt(serverLevel.damageSources().thrown(this, owner), resolvedDamage);
+            if (highExplosive) target.setSecondsOnFire(6);
         }
 
-        float charge = Math.max(0.0F, Math.min(1.0F, (impactRadius - 1.0F) / 2.0F));
+        float charge = Math.max(0.0F, Math.min(1.0F, (resolvedRadius - 1.0F) / 2.0F));
         int explosionParticles = 2 + Math.round(charge * 6.0F);
         int poofParticles = 10 + Math.round(charge * 30.0F);
         serverLevel.sendParticles(ParticleTypes.EXPLOSION,
                 impact.x, impact.y + 0.18D, impact.z, explosionParticles,
-                impactRadius * 0.35D, impactRadius * 0.18D, impactRadius * 0.35D,
+                resolvedRadius * 0.35D, resolvedRadius * 0.18D, resolvedRadius * 0.35D,
                 0.015D + charge * 0.025D);
         serverLevel.sendParticles(ParticleTypes.POOF,
                 impact.x, impact.y + 0.18D, impact.z, poofParticles,
-                impactRadius * 0.52D, impactRadius * 0.25D, impactRadius * 0.52D,
+                resolvedRadius * 0.52D, resolvedRadius * 0.25D, resolvedRadius * 0.52D,
                 0.035D + charge * 0.045D);
+        if (highExplosive) {
+            serverLevel.sendParticles(ParticleTypes.FLAME,
+                    impact.x, impact.y + 0.18D, impact.z, 45,
+                    resolvedRadius * 0.5D, resolvedRadius * 0.3D,
+                    resolvedRadius * 0.5D, 0.06D);
+            serverLevel.playSound(null, impact.x, impact.y, impact.z,
+                    net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE,
+                    net.minecraft.sounds.SoundSource.PLAYERS, 1.6F, 0.7F);
+        }
         ModNetwork.playLogisticsSound(serverLevel, BlockPos.containing(impact), true);
 
         ItemEntity dropped = new ItemEntity(serverLevel,

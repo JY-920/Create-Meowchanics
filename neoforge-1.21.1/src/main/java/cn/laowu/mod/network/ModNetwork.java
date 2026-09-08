@@ -13,7 +13,11 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String VERSION = "3";
+    private static final String VERSION = "5";
+
+    public static void setNearbyCatSpawning(boolean enabled) {
+        PacketDistributor.sendToServer(new SetNearbyCatSpawningPacket(enabled));
+    }
 
     public static void register(IEventBus modBus) {
         modBus.addListener(ModNetwork::registerPayloads);
@@ -21,6 +25,8 @@ public final class ModNetwork {
 
     private static void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(VERSION);
+        registrar.playToServer(SetNearbyCatSpawningPacket.TYPE,
+                SetNearbyCatSpawningPacket.STREAM_CODEC, SetNearbyCatSpawningPacket::handle);
         registrar.playToClient(SyncCatPosePacket.TYPE, SyncCatPosePacket.STREAM_CODEC,
                 SyncCatPosePacket::handle);
         registrar.playToClient(AudioSessionPacket.TYPE, AudioSessionPacket.STREAM_CODEC,
@@ -41,6 +47,21 @@ public final class ModNetwork {
                 ToggleCatToolEmpowerPacket.STREAM_CODEC, ToggleCatToolEmpowerPacket::handle);
         registrar.playToClient(CatTotemActivationPacket.TYPE,
                 CatTotemActivationPacket.STREAM_CODEC, CatTotemActivationPacket::handle);
+        registrar.playToClient(SyncCatTraitStatePacket.TYPE,
+                SyncCatTraitStatePacket.STREAM_CODEC, SyncCatTraitStatePacket::handle);
+        registrar.playToClient(SyncCatTraitsPacket.TYPE,
+                SyncCatTraitsPacket.STREAM_CODEC, SyncCatTraitsPacket::handle);
+        registrar.playToClient(SyncCatGenomePacket.TYPE,
+                SyncCatGenomePacket.STREAM_CODEC, SyncCatGenomePacket::handle);
+        registrar.playToClient(SyncCatAttributesPacket.TYPE,
+                SyncCatAttributesPacket.STREAM_CODEC, SyncCatAttributesPacket::handle);
+        registrar.playToServer(SetCatProfileNamePacket.TYPE,
+                SetCatProfileNamePacket.STREAM_CODEC, SetCatProfileNamePacket::handle);
+        registrar.playToClient(SyncDynamiteCatLastStandPacket.TYPE,
+                SyncDynamiteCatLastStandPacket.STREAM_CODEC,
+                SyncDynamiteCatLastStandPacket::handle);
+        registrar.playToServer(SetCatFilterNamePacket.TYPE,
+                SetCatFilterNamePacket.STREAM_CODEC, SetCatFilterNamePacket::handle);
     }
 
     public static void syncToTracking(Cat cat, int pose) {
@@ -83,8 +104,93 @@ public final class ModNetwork {
                 new SyncCatClothesPacket(cat.getId(), CatClothesData.getOutfit(cat).ordinal()));
     }
 
+    public static void syncCatTraitStateToTracking(Cat cat) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                traitState(cat));
+    }
+
+    public static void syncCatTraitStateToPlayer(
+            net.minecraft.server.level.ServerPlayer player, Cat cat) {
+        PacketDistributor.sendToPlayer(player, traitState(cat));
+    }
+
+    private static SyncCatTraitStatePacket traitState(Cat cat) {
+        return new SyncCatTraitStatePacket(cat.getId(),
+                cn.laowu.mod.genetics.CatTraitEffects.isBristlingRageActive(cat),
+                cn.laowu.mod.genetics.CatTraitEffects.isLuBuOutnumbered(cat),
+                cn.laowu.mod.genetics.CatTraitEffects.isTimidOutnumbered(cat),
+                cn.laowu.mod.genetics.CatTraitEffects.isCombatActive(cat));
+    }
+
+    public static void syncCatGenomeToTracking(Cat cat) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                new SyncCatGenomePacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatGenomeData.serialized(cat)));
+    }
+
+    public static void syncCatGenomeToPlayer(
+            net.minecraft.server.level.ServerPlayer player, Cat cat) {
+        PacketDistributor.sendToPlayer(player,
+                new SyncCatGenomePacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatGenomeData.serialized(cat)));
+    }
+
+    public static void syncCatAttributesToTracking(Cat cat) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                new SyncCatAttributesPacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatAttributeData.serialized(cat)));
+    }
+
+    public static void syncCatAttributesToPlayer(
+            net.minecraft.server.level.ServerPlayer player, Cat cat) {
+        PacketDistributor.sendToPlayer(player,
+                new SyncCatAttributesPacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatAttributeData.serialized(cat)));
+    }
+
+    public static void syncCatTraitsToTracking(Cat cat) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                new SyncCatTraitsPacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatTraitData.serialized(cat)));
+    }
+
+    public static void syncCatTraitsToPlayer(
+            net.minecraft.server.level.ServerPlayer player, Cat cat) {
+        PacketDistributor.sendToPlayer(player,
+                new SyncCatTraitsPacket(cat.getId(),
+                        cn.laowu.mod.genetics.CatTraitData.serialized(cat)));
+    }
+
+    public static void syncDynamiteLastStandToTracking(Cat cat) {
+        syncDynamiteLastStandToTracking(cat,
+                cn.laowu.mod.DynamiteCatLastStand.isActive(cat),
+                cn.laowu.mod.DynamiteCatLastStand.fuseTicks(cat));
+    }
+
+    public static void syncDynamiteLastStandToTracking(
+            Cat cat, boolean active, int fuseTicks) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(cat,
+                new SyncDynamiteCatLastStandPacket(cat.getId(), active, fuseTicks));
+    }
+
+    public static void syncDynamiteLastStandToPlayer(
+            net.minecraft.server.level.ServerPlayer player, Cat cat) {
+        PacketDistributor.sendToPlayer(player,
+                new SyncDynamiteCatLastStandPacket(cat.getId(),
+                        cn.laowu.mod.DynamiteCatLastStand.isActive(cat),
+                        cn.laowu.mod.DynamiteCatLastStand.fuseTicks(cat)));
+    }
+
     public static void setCatAddress(int catId, String address) {
         PacketDistributor.sendToServer(new SetCatAddressPacket(catId, address));
+    }
+
+    public static void setCatProfileName(int catId, String name) {
+        PacketDistributor.sendToServer(new SetCatProfileNamePacket(catId, name));
+    }
+
+    public static void setCatFilterName(int containerId, String name) {
+        PacketDistributor.sendToServer(new SetCatFilterNamePacket(containerId, name));
     }
 
     public static void playLogisticsSound(ServerLevel level, BlockPos position, boolean arrival) {

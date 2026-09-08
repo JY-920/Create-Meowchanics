@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:intermediate_breeding_box"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:advanced_breeding_box"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:intermediate_breeding_box"
+        },
+        {
+          "tag": "create:seats"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:intermediate_breeding_box"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:intermediate_breeding_box"
+        },
+        {
+          "item": "create:precision_mechanism"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:intermediate_breeding_box"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:intermediate_breeding_box"
+  }
+}

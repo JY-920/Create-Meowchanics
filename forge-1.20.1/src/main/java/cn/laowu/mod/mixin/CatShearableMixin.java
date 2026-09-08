@@ -3,6 +3,8 @@ package cn.laowu.mod.mixin;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatPoseData;
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -47,6 +49,9 @@ public abstract class CatShearableMixin implements IForgeShearable {
                             ? 0.12D : cat.getBbHeight() * 0.55D), cat.getZ(),
                     5, 0.18D, 0.05D, 0.18D, 0.015D);
         }
-        return List.of(new ItemStack(LaoWuMod.CAT_FUR.get()));
+        int traitLevel = CatTraitData.ensure(cat).level(CatTrait.LONG_FUR);
+        int amount = 1 + (traitLevel <= 0 ? 0
+                : CatTrait.LONG_FUR.longFurExtraDrops(traitLevel));
+        return List.of(new ItemStack(LaoWuMod.CAT_FUR.get(), amount));
     }
 }

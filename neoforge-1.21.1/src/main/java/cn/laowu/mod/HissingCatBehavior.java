@@ -9,6 +9,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import cn.laowu.mod.genetics.CatAttributeEffects;
+import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitData;
 
 import java.util.Comparator;
 
@@ -24,8 +27,22 @@ public final class HissingCatBehavior {
     private static final String LOCK_Z_TAG = "LaoWuHissingLockZ";
     public static final String FIGHT_TARGET_TAG = "LaoWuHissingFightTarget";
     private static final String ATTACK_COOLDOWN_TAG = "LaoWuHissingAttackCooldown";
+    private static final String PAIR_INTERRUPTED_UNTIL_TAG =
+            "LaoWuHissingPairInterruptedUntil";
 
     public static void tick(Cat cat) {
+        if (isPairInterrupted(cat)) {
+            stopInterruptedHissing(cat);
+            return;
+        }
+        cat.getPersistentData().remove(PAIR_INTERRUPTED_UNTIL_TAG);
+        if (isHissingForbidden(cat)) {
+            if (isFighting(cat)) endFight(cat);
+            stopPreviousAttraction(cat);
+            clearPose(cat);
+            ModNetwork.setAudioSession(cat, false);
+            return;
+        }
         // Pet cats never participate in the ambient attraction/hissing system.
         // Logistics hissing is handled earlier by CatLogisticsBehavior and is
         // deliberately kept separate from this automatic encounter behavior.
@@ -88,6 +105,8 @@ public final class HissingCatBehavior {
                         other != cat
                                 && other.isAlive()
                                 && !other.isTame()
+                                && !isPairInterrupted(other)
+                                && !isHissingForbidden(other)
                                 && !CatPoseData.isPancake(other)
                                 && cat.distanceToSqr(other) <= SEARCH_DISTANCE * SEARCH_DISTANCE)
                 .stream()
@@ -146,6 +165,32 @@ public final class HissingCatBehavior {
         ModNetwork.setAudioSession(cat, false);
     }
 
+    /** Stops both participants when fluid interrupts one side of a hissing pair. */
+    public static void interruptPair(Cat cat, int pauseTicks) {
+        if (cat.level().isClientSide) return;
+        Cat partner = findNearestPartner(cat);
+        long until = cat.level().getGameTime() + Math.max(1, pauseTicks);
+        cat.getPersistentData().putLong(PAIR_INTERRUPTED_UNTIL_TAG, until);
+        if (partner != null && CatPoseData.isHissing(partner)) {
+            partner.getPersistentData().putLong(PAIR_INTERRUPTED_UNTIL_TAG, until);
+            stopInterruptedHissing(partner);
+        }
+        stopInterruptedHissing(cat);
+    }
+
+    public static boolean isPairInterrupted(Cat cat) {
+        return cat.getPersistentData().getLong(PAIR_INTERRUPTED_UNTIL_TAG)
+                > cat.level().getGameTime();
+    }
+
+    private static void stopInterruptedHissing(Cat cat) {
+        if (isFighting(cat)) endFight(cat);
+        stopPreviousAttraction(cat);
+        unlockPosition(cat);
+        clearPose(cat);
+        ModNetwork.setAudioSession(cat, false);
+    }
+
     private static void tickFight(Cat cat) {
         if (!(cat.level() instanceof ServerLevel level)) return;
         Entity entity = level.getEntity(cat.getPersistentData().getUUID(FIGHT_TARGET_TAG));
@@ -155,7 +200,7 @@ public final class HissingCatBehavior {
             return;
         }
 
-        ModNetwork.setAudioSession(cat, cat.getId() > opponent.getId());
+        ModNetwork.setAudioSession(cat, isAudioHost(cat, opponent));
 
         facePartner(cat, opponent);
         double dx = opponent.getX() - cat.getX();
@@ -168,8 +213,9 @@ public final class HissingCatBehavior {
             cat.setDeltaMovement(0.0D, cat.getDeltaMovement().y, 0.0D);
             int cooldown = cat.getPersistentData().getInt(ATTACK_COOLDOWN_TAG);
             if (cooldown <= 0) {
-                opponent.hurt(cat.damageSources().mobAttack(cat), 3.0F);
-                cat.getPersistentData().putInt(ATTACK_COOLDOWN_TAG, 20);
+                cat.doHurtTarget(opponent);
+                cat.getPersistentData().putInt(ATTACK_COOLDOWN_TAG,
+                        CatAttributeEffects.attackIntervalTicks(cat));
             } else {
                 cat.getPersistentData().putInt(ATTACK_COOLDOWN_TAG, cooldown - 1);
             }
@@ -188,10 +234,25 @@ public final class HissingCatBehavior {
         AABB area = cat.getBoundingBox().inflate(SEARCH_DISTANCE);
         var group = cat.level().getEntitiesOfClass(Cat.class, area, other ->
                 other.isAlive() && !other.isTame() && CatPoseData.isHissing(other)
+                        && !isHissingForbidden(other)
                         && cat.distanceToSqr(other) <= SEARCH_DISTANCE * SEARCH_DISTANCE);
         if (!group.contains(cat)) group.add(cat);
-        int minimumId = group.stream().mapToInt(Cat::getId).min().orElse(cat.getId());
-        ModNetwork.setAudioSession(cat, group.size() >= 2 && cat.getId() != minimumId);
+        Cat host = group.stream()
+                .filter(HissingCatBehavior::hasAirRaidSiren)
+                .min(Comparator.comparingInt(Cat::getId))
+                .orElseGet(() -> group.stream()
+                        .max(Comparator.comparingInt(Cat::getId)).orElse(cat));
+        ModNetwork.setAudioSession(cat, group.size() >= 2 && cat == host);
+    }
+
+    private static boolean isAudioHost(Cat cat, Cat opponent) {
+        boolean catSiren = hasAirRaidSiren(cat);
+        boolean opponentSiren = hasAirRaidSiren(opponent);
+        return catSiren != opponentSiren ? catSiren : cat.getId() > opponent.getId();
+    }
+
+    private static boolean hasAirRaidSiren(Cat cat) {
+        return CatTraitData.ensure(cat).has(CatTrait.AIR_RAID_SIREN);
     }
 
     private static void clearPose(Cat cat) {
@@ -199,6 +260,10 @@ public final class HissingCatBehavior {
             CatPoseData.setPose(cat, 0);
             ModNetwork.syncToTracking(cat, 0);
         }
+    }
+
+    public static boolean isHissingForbidden(Cat cat) {
+        return CatTraitData.ensure(cat).has(CatTrait.GOOD_CAT);
     }
 
     private static void lockBodyInPlace(Cat cat) {

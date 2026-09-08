@@ -1,0 +1,18 @@
+{
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "item": "laowu:dried_fish"
+    },
+    {
+      "type": "neoforge:single",
+      "amount": 100,
+      "fluid": "laowu:liquid_cat"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:golden_dried_fish"
+    }
+  ]
+}

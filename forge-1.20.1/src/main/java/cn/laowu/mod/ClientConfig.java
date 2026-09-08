@@ -8,21 +8,37 @@ public final class ClientConfig {
     public static final ForgeConfigSpec SPEC;
     public static final Pose POSE;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> HELD_ITEM_TRANSFORMS;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> THIRD_PERSON_ITEM_TRANSFORMS;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GUI_ITEM_TRANSFORMS;
+    public static final ForgeConfigSpec.DoubleValue HISSING_PAIR_VOLUME;
+    public static final ForgeConfigSpec.BooleanValue NEARBY_CAT_SPAWNING;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
         POSE = definePose(b, "hissing_pose", "哈气姿势");
         HELD_ITEM_TRANSFORMS = b
-                .comment("游戏内按 K 调整过的手持物品显示参数。",
+                .comment("游戏内按 K 调整过的第一人称手持物品显示参数。",
                         "每项格式：物品注册名|X旋转|Y旋转|Z旋转|X位移|Y位移|Z位移|缩放。",
-                        "不同物品会分别保存，只影响第一人称和第三人称手持显示。")
+                        "不同物品会分别保存，只影响第一人称手持显示。")
                 .defineListAllowEmpty("held_item_transforms", List.of(), value -> value instanceof String);
+        THIRD_PERSON_ITEM_TRANSFORMS = b
+                .comment("游戏内按 K 调整过的第三人称手持物品显示参数。",
+                        "每项格式：物品注册名|X旋转|Y旋转|Z旋转|X位移|Y位移|Z位移|缩放。",
+                        "不同物品会分别保存，只影响第三人称手持显示。")
+                .defineListAllowEmpty("third_person_item_transforms", List.of(), value -> value instanceof String);
         GUI_ITEM_TRANSFORMS = b
                 .comment("游戏内按 K 调整过的物品栏与容器 GUI 物品显示参数。",
                         "每项格式：物品注册名|X旋转|Y旋转|Z旋转|X位移|Y位移|Z位移|缩放。",
                         "该配置与手持显示参数独立保存，不影响掉落物和方块展示框。")
                 .defineListAllowEmpty("gui_item_transforms", List.of(), value -> value instanceof String);
+        HISSING_PAIR_VOLUME = b
+                .comment("两只及以上猫咪进入哈气状态时，专属哈气音频的客户端音量倍率。",
+                        "0.0 为静音，1.0 为默认音量，2.0 为双倍音量；游戏内按 V 调整。")
+                .defineInRange("hissing_pair_volume", 1.0D, 0.0D, 2.0D);
+        NEARBY_CAT_SPAWNING = b
+                .comment("是否以自己为中心，每10～15分钟额外刷新方块材质猫咪。",
+                        "个人偏好会同步给服务端；其他玩家及原版自然刷猫不受影响。")
+                .define("nearby_cat_spawning", true);
         SPEC = b.build();
     }
 
