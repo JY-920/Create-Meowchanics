@@ -3,7 +3,7 @@ package cn.laowu.mod.genetics;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatPoseData;
-import cn.laowu.mod.CareerCatBehavior;
+import cn.laowu.mod.ServerConfig;
 import cn.laowu.mod.LaoWuMod;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -24,19 +24,19 @@ public final class CatAttributeEffects {
     private static final double VANILLA_CAT_ATTACK_DAMAGE = 3.0D;
 
     private static final ResourceLocation HEALTH_MODIFIER =
-            LaoWuMod.id("cat_effects_health");
+            ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "cat_effects_health");
     private static final ResourceLocation ATTACK_MODIFIER =
-            LaoWuMod.id("cat_effects_attack");
+            ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "cat_effects_attack");
     private static final ResourceLocation ARMOR_MODIFIER =
-            LaoWuMod.id("cat_effects_armor");
+            ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "cat_effects_armor");
     private static final ResourceLocation TOUGHNESS_MODIFIER =
-            LaoWuMod.id("cat_effects_toughness");
+            ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "cat_effects_toughness");
     private static final ResourceLocation SPEED_MODIFIER =
-            LaoWuMod.id("cat_effects_speed");
+            ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "cat_effects_speed");
     private static final ResourceLocation FOLLOW_RANGE_MODIFIER =
-            LaoWuMod.id("cat_effects_follow_range");
+            ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "cat_effects_follow_range");
     private static final ResourceLocation LU_BU_HEALTH_MODIFIER =
-            LaoWuMod.id("cat_effects_lu_bu_health");
+            ResourceLocation.fromNamespaceAndPath(LaoWuMod.MOD_ID, "cat_effects_lu_bu_health");
 
     public static int effectiveValue(CatAttributeProfile attributes,
                                      CatTraitProfile traits, CatStat stat,
@@ -58,29 +58,15 @@ public final class CatAttributeEffects {
         if (attributes == null) return -1;
         CatTraitProfile resolved = traits == null ? CatTraitProfile.EMPTY : traits;
         int value = attributes.current(stat);
+        value += ServerConfig.careerStatBonus(context.outfit(), stat);
         for (CatTraitInstance instance : resolved.traits()) {
+            value += instance.trait().appearanceAttributeBonus(stat, instance.level());
             if (instance.trait().attributeStat() == stat) {
                 value += instance.trait().attributeBonus(instance.level());
             }
         }
         if (resolved.has(CatTrait.DOUGHY)) value -= 20;
-        if (resolved.has(CatTrait.RAINBOW_CAT)) {
-            if (stat == CatStat.SPEED) {
-                value += CatTrait.RAINBOW_CAT.rainbowSpeedBonus();
-            } else if (stat == CatStat.LUCK) {
-                value += CatTrait.RAINBOW_CAT.rainbowLuckBonus();
-            }
-        }
-        if (resolved.has(CatTrait.NEKOMATA)) {
-            if (stat == CatStat.ATTACK) {
-                value += CatTrait.NEKOMATA.nekomataAttackBonus();
-            } else if (stat == CatStat.INTELLIGENCE) {
-                value += CatTrait.NEKOMATA.nekomataIntelligenceBonus();
-            }
-        }
-
         if (stat == CatStat.STAMINA) {
-            if (context.blazingForm) value += CareerCatBehavior.FIRE_STAMINA_BONUS;
             int level = resolved.level(CatTrait.LONG_FUR);
             if (level > 0) value += CatTrait.LONG_FUR.longFurStaminaBonus(level);
             int chonkyLevel = resolved.level(CatTrait.CHONKY_PRESENCE);
@@ -108,9 +94,6 @@ public final class CatAttributeEffects {
                 value -= CatTrait.GLASS_CLAWS.glassClawsHealthPenalty(glassLevel);
             }
         } else if (stat == CatStat.ATTACK) {
-            if (context.mechanical) value += CareerCatBehavior.MECHANICAL_ATTACK_BONUS;
-            if (context.flight) value += CareerCatBehavior.FLIGHT_ATTACK_BONUS;
-            if (context.dynamite) value += CareerCatBehavior.DYNAMITE_ATTACK_BONUS;
             int elderLevel = resolved.level(CatTrait.SELECTED_ELDER);
             if (elderLevel > 0) {
                 value += CatTrait.SELECTED_ELDER.selectedElderAttackBonus(elderLevel);
@@ -142,8 +125,6 @@ public final class CatAttributeEffects {
                 value += CatTrait.GLASS_CLAWS.glassClawsAttackBonus(glassLevel);
             }
         } else if (stat == CatStat.SPEED) {
-            if (context.honey) value += CareerCatBehavior.HONEY_SPEED_BONUS;
-            if (context.transport) value += CareerCatBehavior.TRANSPORT_SPEED_BONUS;
             int chonkyLevel = resolved.level(CatTrait.CHONKY_PRESENCE);
             if (chonkyLevel > 0) {
                 value -= CatTrait.CHONKY_PRESENCE.chonkySpeedPenalty(chonkyLevel);
@@ -166,7 +147,6 @@ public final class CatAttributeEffects {
                 value += CatTrait.TAIL_HELD_HIGH.highTailSpeedBonus(tailLevel);
             }
         } else if (stat == CatStat.LUCK) {
-            if (context.fishing) value += CareerCatBehavior.FISHING_LUCK_BONUS;
             int fishingLevel = resolved.level(CatTrait.ANGLERS_FORTUNE);
             if (context.fishing && fishingLevel > 0) {
                 value += CatTrait.ANGLERS_FORTUNE.anglersLuckBonus(fishingLevel);
@@ -276,28 +256,28 @@ public final class CatAttributeEffects {
     }
 
     public static double maximumHealth(int effectiveHealth) {
-        return 10.0D + 0.4D * nonNegative(effectiveHealth);
+        return 10.0D + 0.4D * cn.laowu.mod.ServerConfig.scale(CatStat.HEALTH, effectiveHealth);
     }
 
     public static double attackDamage(int effectiveAttack) {
-        return 2.0D + 0.08D * nonNegative(effectiveAttack);
+        return 2.0D + 0.08D * cn.laowu.mod.ServerConfig.scale(CatStat.ATTACK, effectiveAttack);
     }
 
     public static double armor(int effectiveStamina) {
-        return 2.0D + 0.16D * nonNegative(effectiveStamina);
+        return 2.0D + 0.16D * cn.laowu.mod.ServerConfig.scale(CatStat.STAMINA, effectiveStamina);
     }
 
     public static double armorToughness(int effectiveStamina) {
-        return 0.05D * nonNegative(effectiveStamina);
+        return 0.05D * cn.laowu.mod.ServerConfig.scale(CatStat.STAMINA, effectiveStamina);
     }
 
     public static double movementMultiplier(int effectiveSpeed) {
-        return 0.75D + 0.005D * nonNegative(effectiveSpeed);
+        return 0.75D + 0.005D * cn.laowu.mod.ServerConfig.scale(CatStat.SPEED, effectiveSpeed);
     }
 
     public static int attackIntervalTicks(int effectiveSpeed) {
-        return Mth.clamp((int) Math.round(24.0D
-                - 0.12D * nonNegative(effectiveSpeed)), 1, 24);
+        return (int) Math.max(1L, Math.min(24L, Math.round(24.0D
+                - 0.12D * cn.laowu.mod.ServerConfig.scale(CatStat.SPEED, effectiveSpeed))));
     }
 
     public static int attackIntervalTicks(Cat cat) {
@@ -309,7 +289,7 @@ public final class CatAttributeEffects {
      * deals 2x total damage; temporary bonuses above 100 keep scaling.
      */
     public static double criticalDamageMultiplier(int effectiveIntelligence) {
-        return 1.0D + 0.01D * nonNegative(effectiveIntelligence);
+        return 1.0D + 0.01D * cn.laowu.mod.ServerConfig.scale(CatStat.INTELLIGENCE, effectiveIntelligence);
     }
 
     public static double criticalDamageMultiplier(Cat cat) {
@@ -317,7 +297,7 @@ public final class CatAttributeEffects {
     }
 
     public static double criticalChance(int effectiveLuck) {
-        return Mth.clamp(0.02D + 0.0018D * nonNegative(effectiveLuck), 0.0D, 1.0D);
+        return Mth.clamp(0.02D + 0.0018D * cn.laowu.mod.ServerConfig.scale(CatStat.LUCK, effectiveLuck), 0.0D, 1.0D);
     }
 
     /** Converts the displayed Luck scale into Create/vanilla loot-table luck. */
@@ -329,7 +309,7 @@ public final class CatAttributeEffects {
     public static float fishingLootLuck(int effectiveLuck) {
         // Luck 100 is equivalent to Luck of the Sea III. Values above the
         // training ceiling can still reach the loot-context safety cap of V.
-        return Mth.clamp(effectiveLuck * 3.0F / 100.0F, 0.0F, 5.0F);
+        return Mth.clamp((float) cn.laowu.mod.ServerConfig.scale(CatStat.LUCK, effectiveLuck) * 3.0F / 100.0F, 0.0F, 5.0F);
     }
 
     public static boolean rollCriticalHit(Cat cat) {
@@ -338,7 +318,7 @@ public final class CatAttributeEffects {
     }
 
     public static float criticalDamage(float ordinaryDamage, Cat cat) {
-        return (float) (ordinaryDamage * criticalDamageMultiplier(cat));
+        return cn.laowu.mod.ServerConfig.scaleDamage(ordinaryDamage, criticalDamageMultiplier(cat));
     }
 
     private static int nonNegative(int value) {
@@ -377,6 +357,16 @@ public final class CatAttributeEffects {
                                  boolean protectiveInstinct, boolean wet,
                                 boolean fullHealth, boolean sitting,
                                 boolean timid) {
+        private CatOutfitType outfit() {
+            if (mechanical) return CatOutfitType.TERMINATOR;
+            if (fishing) return CatOutfitType.FISHING;
+            if (flight) return CatOutfitType.FLIGHT;
+            if (blazingForm) return CatOutfitType.FIRE;
+            if (honey) return CatOutfitType.HONEY;
+            if (transport) return CatOutfitType.TRANSPORT;
+            if (dynamite) return CatOutfitType.DYNAMITE;
+            return CatOutfitType.NONE;
+        }
         private static TraitContext onlyNight(boolean night) {
             return new TraitContext(night, false, false, false, false,
                     false, false, false, false, false, false, false, false,

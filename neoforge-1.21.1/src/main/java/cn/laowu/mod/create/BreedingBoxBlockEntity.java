@@ -288,14 +288,14 @@ public final class BreedingBoxBlockEntity extends SmartBlockEntity implements Me
         if (handler == null) return false;
 
         ParentCandidate best = null;
-        long bestScore = rules.matchesIdentity(current)
+        long bestScore = rules.matchesIdentity(current) && rules.acceptsReplacement(current)
                 ? currentScore.getAsLong() : Long.MIN_VALUE;
         for (int slot = 0; slot < handler.getSlots(); slot++) {
             ItemStack stored = handler.getStackInSlot(slot);
             if (!isBreedableParent(stored)) continue;
             ItemStack prepared = stored.copyWithCount(1);
             ensureParentData(prepared);
-            if (!rules.matchesIdentity(prepared)) continue;
+            if (!rules.matchesIdentity(prepared) || !rules.acceptsReplacement(prepared)) continue;
             OptionalLong score = replacementScore(rules, prepared);
             if (score.isEmpty() || score.getAsLong() <= bestScore) continue;
             bestScore = score.getAsLong();

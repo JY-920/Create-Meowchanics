@@ -1,6 +1,7 @@
 package cn.laowu.mod.entity;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.CatProjectileDamage;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -73,7 +74,8 @@ public final class HoneyMissileProjectile extends ThrowableItemProjectile {
     @Override
     protected boolean canHitEntity(Entity entity) {
         return super.canHitEntity(entity)
-                && !(entity instanceof Cat)
+                && (!(getOwner() instanceof Cat cat) || !(entity instanceof LivingEntity living)
+                || cn.laowu.mod.CatTeamRules.canHarm(cat, living))
                 && !(entity instanceof Player);
     }
 
@@ -93,7 +95,7 @@ public final class HoneyMissileProjectile extends ThrowableItemProjectile {
             return;
         }
 
-        target.hurt(level.damageSources().mobProjectile(this, cat), attackDamage);
+        CatProjectileDamage.hurt(target, level.damageSources().mobProjectile(this, cat), attackDamage);
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,
                 SLOWNESS_DURATION_TICKS, 1), cat);
         spawnImpact(level, result.getLocation(), 16);

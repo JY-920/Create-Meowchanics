@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "T",
+    "C",
+    "I"
+  ],
+  "key": {
+    "C": {
+      "item": "laowu:cat_ingot"
+    },
+    "T": {
+      "item": "create:electron_tube"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "laowu:cat_laser_pointer",
+    "count": 1
+  }
+}

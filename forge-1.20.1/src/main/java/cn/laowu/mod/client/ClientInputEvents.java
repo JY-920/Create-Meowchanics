@@ -18,10 +18,14 @@ public final class ClientInputEvents {
     private static void syncSpawnPreference(Minecraft minecraft) {
         if (minecraft.player == null) {
             preferencePlayer = null;
+            ClientWorldSettings.reset();
             return;
         }
+        cn.laowu.mod.ServerConfig.setRemoteWorld(minecraft.getSingleplayerServer() == null);
         boolean enabled = cn.laowu.mod.ClientConfig.NEARBY_CAT_SPAWNING.get();
         if (preferencePlayer != minecraft.player || lastSpawnPreference != enabled) {
+            if (preferencePlayer != minecraft.player)
+                ModNetwork.requestWorldSettings(false, new net.minecraft.nbt.CompoundTag());
             ModNetwork.setNearbyCatSpawning(enabled);
             preferencePlayer = minecraft.player;
             lastSpawnPreference = enabled;

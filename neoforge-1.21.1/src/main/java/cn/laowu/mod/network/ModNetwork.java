@@ -13,7 +13,22 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String VERSION = "5";
+    private static final String VERSION = "12";
+
+    public static void sendLaserMark(net.minecraft.server.level.ServerPlayer player, net.minecraft.world.entity.LivingEntity target) {
+        LaserMarkPacket packet = new LaserMarkPacket(target == null ? -1 : target.getId(),
+                target == null ? new java.util.UUID(0, 0) : target.getUUID());
+        PacketDistributor.sendToPlayer(player, packet);
+    }
+
+    public static void requestWorldSettings(boolean apply, net.minecraft.nbt.CompoundTag values) {
+        PacketDistributor.sendToServer(new WorldSettingsRequestPacket(apply, values));
+    }
+
+    public static void sendWorldSettings(net.minecraft.server.level.ServerPlayer player,
+                                         net.minecraft.nbt.CompoundTag values) {
+        PacketDistributor.sendToPlayer(player, new WorldSettingsSyncPacket(values));
+    }
 
     public static void setNearbyCatSpawning(boolean enabled) {
         PacketDistributor.sendToServer(new SetNearbyCatSpawningPacket(enabled));
@@ -25,6 +40,11 @@ public final class ModNetwork {
 
     private static void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(VERSION);
+        registrar.playToClient(LaserMarkPacket.TYPE, LaserMarkPacket.STREAM_CODEC, LaserMarkPacket::handle);
+        registrar.playToServer(WorldSettingsRequestPacket.TYPE, WorldSettingsRequestPacket.STREAM_CODEC,
+                WorldSettingsRequestPacket::handle);
+        registrar.playToClient(WorldSettingsSyncPacket.TYPE, WorldSettingsSyncPacket.STREAM_CODEC,
+                WorldSettingsSyncPacket::handle);
         registrar.playToServer(SetNearbyCatSpawningPacket.TYPE,
                 SetNearbyCatSpawningPacket.STREAM_CODEC, SetNearbyCatSpawningPacket::handle);
         registrar.playToClient(SyncCatPosePacket.TYPE, SyncCatPosePacket.STREAM_CODEC,

@@ -1,5 +1,6 @@
 package cn.laowu.mod.genetics;
 
+import cn.laowu.mod.ServerConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -35,7 +36,7 @@ public final class CatTraitProfile {
         return roll(random, false);
     }
 
-    /** Spout-created cats always carry Doughy, even when the count roll is zero. */
+    /** Spout-created cats carry Doughy unless the generation policy disables it. */
     public static CatTraitProfile injected(RandomSource random) {
         return roll(random, true);
     }
@@ -46,8 +47,10 @@ public final class CatTraitProfile {
                 : countRoll < 93 ? 2 : countRoll < 99 ? 3 : 4;
 
         List<CatTraitInstance> selected = new ArrayList<>(MAX_TRAITS);
+        var disabled = ServerConfig.disabledTraitIds();
         List<CatTrait> available = new ArrayList<>(List.of(CatTrait.values()));
-        if (forceDoughy) {
+        available.removeIf(trait -> disabled.contains(trait.id().toString()));
+        if (forceDoughy && available.contains(CatTrait.DOUGHY)) {
             selected.add(new CatTraitInstance(CatTrait.DOUGHY, 1));
             available.remove(CatTrait.DOUGHY);
             desired = Math.max(1, desired);
@@ -78,6 +81,7 @@ public final class CatTraitProfile {
                                         RandomSource random) {
         CatTraitProfile father = first == null ? EMPTY : first;
         CatTraitProfile mother = second == null ? EMPTY : second;
+        var disabled = ServerConfig.disabledTraitIds();
         EnumSet<CatTrait> fatherTraits = EnumSet.noneOf(CatTrait.class);
         EnumSet<CatTrait> motherTraits = EnumSet.noneOf(CatTrait.class);
         father.traits.forEach(instance -> fatherTraits.add(instance.trait()));
@@ -85,7 +89,7 @@ public final class CatTraitProfile {
 
         List<CatTraitInstance> selected = new ArrayList<>(MAX_TRAITS);
         for (CatTrait trait : CatTrait.values()) {
-            if (trait != CatTrait.DOUGHY && fatherTraits.contains(trait)
+            if (trait != CatTrait.DOUGHY && !disabled.contains(trait.id().toString()) && fatherTraits.contains(trait)
                     && motherTraits.contains(trait)
                     && compatibleWith(selected, trait)) {
                 selected.add(new CatTraitInstance(trait, 1));
@@ -98,7 +102,7 @@ public final class CatTraitProfile {
                 ? MAX_TRAITS - 1 : MAX_TRAITS;
         List<CatTrait> oneParentTraits = new ArrayList<>();
         for (CatTrait trait : CatTrait.values()) {
-            if (trait == CatTrait.DOUGHY) continue;
+            if (trait == CatTrait.DOUGHY || disabled.contains(trait.id().toString())) continue;
             if (fatherTraits.contains(trait) ^ motherTraits.contains(trait)) {
                 oneParentTraits.add(trait);
             }
@@ -117,6 +121,7 @@ public final class CatTraitProfile {
 
         if (mutates && selected.size() < MAX_TRAITS) {
             List<CatTrait> mutationPool = Arrays.stream(CatTrait.values())
+                    .filter(trait -> !disabled.contains(trait.id().toString()))
                     .filter(trait -> !fatherTraits.contains(trait)
                             && !motherTraits.contains(trait))
                     .filter(trait -> compatibleWith(selected, trait))
@@ -210,7 +215,9 @@ public final class CatTraitProfile {
             edited.set(existingIndex, replacement);
             return new CatTraitProfile(edited);
         }
-        if (edited.size() >= MAX_TRAITS || !compatibleWith(edited, trait)) return this;
+        // Existing levels can still be managed; only newly acquired traits are blocked.
+        if (ServerConfig.isTraitDisabled(trait)
+                || edited.size() >= MAX_TRAITS || !compatibleWith(edited, trait)) return this;
         edited.add(replacement);
         return new CatTraitProfile(edited);
     }

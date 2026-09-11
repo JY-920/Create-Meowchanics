@@ -75,7 +75,8 @@ public final class FishingRodProjectile extends ThrowableItemProjectile {
     @Override
     protected boolean canHitEntity(Entity entity) {
         return super.canHitEntity(entity)
-                && !(entity instanceof Cat)
+                && (!(getOwner() instanceof Cat cat) || !(entity instanceof LivingEntity living)
+                || cn.laowu.mod.CatTeamRules.canHarm(cat, living))
                 && !(entity instanceof Player);
     }
 

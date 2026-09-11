@@ -1,0 +1,338 @@
+# 全局覆盖配置（Forge / NeoForge）
+# -1 = 使用各存档原有设置，不锁定游戏内选项。
+# 开关：0 = 强制关闭，1 = 强制开启；请使用数字，不要写 true/false。
+# 全局覆盖不会修改存档原值，改回 -1 即恢复。
+# 联机时只有服务器/世界主人的此文件生效。
+# 此文件位于实例或服务器根目录下的 config/laowu-global.toml。
+
+# 词条禁用：[-1] = 使用各存档；[] = 强制不禁用；编号数组 = 全局强制禁用并锁定游戏内配置。
+# 示例：disabled_traits = ["laowu:night_owl", "laowu:sky_cat"]
+# 仅阻止新生成、注液、繁育继承/突变和调整棒新增；已有猫咪/猫饼的词条、等级、效果与数据保留。
+# 禁用 laowu:doughy 后，注液猫不再强制获得面团团；未知但格式正确的 ID 保留并忽略。
+# 以下为完整的固定编号对照（不要用列表顺序作为编号）：
+# laowu:thorns = 反伤荆棘
+# laowu:night_owl = 夜猫子
+# laowu:heat_resistance = 耐热性
+# laowu:doughy = 面团团
+# laowu:long_fur = 长毛护体
+# laowu:bristling_rage = 炸毛反击
+# laowu:healing_purr = 治愈呼噜
+# laowu:lu_bu_reborn = 吕布在世
+# laowu:beebee_gene = BeeBee基
+# laowu:prosperous_litter = 猫丁兴旺
+# laowu:anglers_fortune = 渔运亨通
+# laowu:superheat_gene = 超燃基因
+# laowu:protective_instinct = 护主本能
+# laowu:wet_fury = 嘉豪
+# laowu:chonky_presence = 橘势膨胀
+# laowu:glass_claws = 玻璃利爪
+# laowu:tail_held_high = 无伤速通
+# laowu:loaf_thoughts = 深度思考
+# laowu:nine_lives = 九命庇护
+# laowu:water_shy = 怕水
+# laowu:day_drowsy = 睡不醒
+# laowu:timid = 胆小如鼠
+# laowu:attention_magnet = 受气包
+# laowu:cain_mark = 幸运庇护
+# laowu:energy_recovery = 猫饼充能
+# laowu:loli = LOLI猫
+# laowu:him = Him猫
+# laowu:isaac = 以撒猫
+# laowu:round_head = 圆头猫
+# laowu:oiiai = oiiai猫
+# laowu:street_dance = 街舞猫
+# laowu:rainbow_cat = 彩虹猫
+# laowu:nekomata = 猫又
+# laowu:puss_in_boots = 穿靴子的猫
+# laowu:big_chonky_cat = 猪咪
+# laowu:anorexia = 厌食
+# laowu:good_cat = 好猫
+# laowu:low_level_code = 底层代码
+# laowu:shedding = 掉毛
+# laowu:stitch = 坏猫
+# laowu:xiaoting = 销汀
+# laowu:doraemon = 多啦A梦
+# laowu:edward = 这里不让睡觉
+# laowu:cat_king = 猫王
+# laowu:ding_dong_cat = 叮冻基
+# laowu:code_conflict = 代码冲突
+# laowu:food_guard = 护食
+# laowu:mischievous = 手贱
+# laowu:filicide = 幼猫猎手
+# laowu:drowning = 想学游泳
+# laowu:cable_biter = 咬充电线
+# laowu:air_raid_siren = 防空警报
+# laowu:minor_illness = 生个小病
+# laowu:cuddle_only = 只贴不生
+# laowu:selected_elder = 严选耄耋
+# laowu:tom_tree_feller = TOM猫
+# laowu:hunter_kimi = 打猎基米
+# laowu:high_step = 飞基
+# laowu:sky_cat = 上天猫
+# laowu:auto_attach = 自动吸附
+# laowu:tripod_cat = 三脚猫
+# laowu:high_explosive_fuel = 高爆燃油
+# laowu:rolling_log = 滚木
+# laowu:tough = 肉盾
+# laowu:brute_force = 力大砖飞
+# laowu:fleet_footed = 飞毛腿
+# laowu:steel_frame = 钢筋铁骨
+# laowu:quick_witted = 灵光一闪
+# laowu:lucky_cat = 招财猫
+# laowu:vigorous = 生生不息
+# laowu:overwhelming_force = 势大力沉
+# laowu:gale_stride = 风驰电掣
+# laowu:iron_body = 铜皮铁骨
+# laowu:brilliant_mind = 才思敏捷
+# laowu:great_fortune = 鸿运当头
+# laowu:oceanic_vitality = 气血如海
+# laowu:might_over_all = 一力破万法
+# laowu:lightning_step = 追风逐电
+# laowu:adamant_body = 金刚不坏
+# laowu:supreme_intellect = 慧极通天
+# laowu:chosen_by_fate = 天命所归
+disabled_traits = [-1]
+
+# JEI 地狱配方展示（只影响展示）
+show_hell_recipes = -1
+# 野生猫避人/受伤逃跑
+wild_cats_flee = -1
+# 猫咪哈气（不影响航空箱产气）
+cats_hiss = -1
+
+# 每项倍率：-1 = 存档设置（默认 1）；0~999999 = 强制倍率。
+# 支持小数，如 1.5；-1 与 0 之间的数值无效。
+# 仅缩放能力公式中的属性输入，不改写猫咪基础属性/上限。
+[attribute_multipliers]
+# 战斗力
+attack = -1
+# 生命
+health = -1
+# 速度
+speed = -1
+# 耐力
+stamina = -1
+# 智力
+intelligence = -1
+# 幸运
+luck = -1
+
+# 套装伤害公式系数 K：-1 = 使用存档；0~999999 = 强制替换公式内的 K 并锁定。
+# 伤害=(2+0.08×战斗力属性×战斗力倍率)×K，不是再乘一个整体伤害倍率。
+# 默认系数因职业不同；不会改写猫咪属性，不改变攻速、附加状态或物流增益。
+[career_damage_coefficients]
+# 机械套装；套装默认系数 K = 0.75
+# -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
+terminator = -1
+# 钓鱼套装；套装默认系数 K = 0.55
+# -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
+fishing = -1
+# 飞行套装；套装默认系数 K = 2.0
+# -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
+flight = -1
+# 喷火套装；套装默认系数 K = 0.6
+# -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
+fire = -1
+# 采蜜套装；套装默认系数 K = 0.85
+# -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
+honey = -1
+# 物流套装；套装默认系数 K = 0.0（辅助职业，不主动攻击）
+# -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
+transport = -1
+# 雷管套装；套装默认系数 K = 1.35
+# -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
+dynamite = -1
+
+# 套装攻速、防护、六维属性加成。每项 -1 沿用存档；其他有效值全局锁定。
+# 间隔=max(最短间隔, round(基础间隔-速度缩短系数×速度属性×速度倍率))。20tick=1秒。
+# 基础/最短间隔：整数1~999999；属性加成：整数0~999999；其他系数/加成：0~999999。
+# 生物属性上限、有效属性999上限和受伤无敌帧仍有效。物流猫不使用攻击参数。
+
+# 机械套装
+[career_settings.terminator]
+# 基础攻击间隔；存档默认 24；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.12；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 10；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 20；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 6；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 3；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 10；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 0；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 0；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 钓鱼套装
+[career_settings.fishing]
+# 基础攻击间隔；存档默认 36；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.1；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 20；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 20；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 5；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 2；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 0；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 0；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 10；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 飞行套装
+[career_settings.flight]
+# 基础攻击间隔；存档默认 36；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.1；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 20；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 12；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 3；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 1；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 10；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 0；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 0；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 喷火套装
+[career_settings.fire]
+# 基础攻击间隔；存档默认 14；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.08；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 5；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 40；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 10；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 4；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 0；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 0；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 10；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 0；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 采蜜套装
+[career_settings.honey]
+# 基础攻击间隔；存档默认 42；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.1；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 24；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 24；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 5；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 2；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 0；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 10；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 0；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 物流套装
+[career_settings.transport]
+# 基础攻击间隔；存档默认 34；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.08；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 20；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 30；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 6；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 3；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 0；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 10；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 0；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 雷管套装
+[career_settings.dynamite]
+# 基础攻击间隔；存档默认 56；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.12；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 38；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 24；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 5；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 2；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 10；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 0；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 0；-1 沿用存档。
+luck_stat_bonus = -1

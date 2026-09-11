@@ -80,7 +80,9 @@ public final class LogisticsSupportProjectile extends ThrowableItemProjectile {
         }
 
         Entity targetEntity = targetUuid == null ? null : level.getEntity(targetUuid);
-        if (!(targetEntity instanceof Cat target) || !target.isAlive()) {
+        if (!(targetEntity instanceof Cat target) || !target.isAlive()
+                || !(getOwner() instanceof Cat sender)
+                || !cn.laowu.mod.CatTeamRules.friendly(sender, target)) {
             discard();
             return;
         }
@@ -119,7 +121,7 @@ public final class LogisticsSupportProjectile extends ThrowableItemProjectile {
                 .orElse(null);
         Entity owner = getOwner();
         if (effect != null && owner instanceof Cat cat && cat.isAlive()
-                && target.isAlive()) {
+                && target.isAlive() && cn.laowu.mod.CatTeamRules.friendly(cat, target)) {
             target.addEffect(new MobEffectInstance(effect, durationTicks, 0,
                     false, true, true), cat);
             level.sendParticles(ParticleTypes.HAPPY_VILLAGER,

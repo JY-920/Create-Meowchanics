@@ -4,6 +4,12 @@
   "package": "cn.laowu.mod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "CraftingGridOriginMixin",
+    "CatOwnerTeleportDistanceMixin",
+    "CatNavigationMixin",
+    "PetCollarTeamMixin",
+    "WildCatPanicMixin",
+    "WildCatAvoidMixin",
     "CatShearableMixin",
     "CatToolBreakProtectionMixin",
     "CatToolItemMixin",
@@ -18,6 +24,12 @@
     "CatMorningGiftMixin"
   ],
   "client": [
+    "CatCreativeSearchMixin",
+    "LaserHandFrameMixin",
+    "LaserEntityFrameMixin",
+    "LaserPointerOwnerMixin",
+    "CatTeamGlowMixin",
+    "CatTeamGlowColourMixin",
     "AirCurrentFluidParticleMixin",
     "HeldItemTransformMixin",
     "NozzleFluidParticleMixin",

@@ -52,6 +52,7 @@ public enum CatTrait {
     ISAAC("isaac", CatTraitRarity.COMMON, false, CatTraitSlot.APPEARANCE),
     ROUND_HEAD("round_head", CatTraitRarity.COMMON, false, CatTraitSlot.APPEARANCE),
     OIIAI("oiiai", CatTraitRarity.COMMON, false, CatTraitSlot.APPEARANCE),
+    STREET_DANCE("street_dance", CatTraitRarity.GOOD, false, CatTraitSlot.APPEARANCE),
     RAINBOW_CAT("rainbow_cat", CatTraitRarity.EXCELLENT, false,
             CatTraitSlot.APPEARANCE),
     NEKOMATA("nekomata", CatTraitRarity.EXCELLENT, false,
@@ -385,6 +386,27 @@ public enum CatTrait {
     }
 
     /** Visual and physical size used by Big Chonky Cat, from 115% to 175%. */
+    /** Trait-only modifiers; never written into current genes or Attribute Limits. */
+    public int appearanceAttributeBonus(CatStat stat, int level) {
+        return switch (this) {
+            case LOLI -> stat == CatStat.HEALTH ? 10 : stat == CatStat.LUCK ? 5 : 0;
+            case HIM -> stat == CatStat.ATTACK ? 15 : stat == CatStat.INTELLIGENCE ? 5 : 0;
+            case ISAAC -> stat == CatStat.LUCK ? 10 : 0;
+            case ROUND_HEAD -> stat == CatStat.STAMINA ? 10 : 0;
+            case OIIAI -> stat == CatStat.SPEED ? 10 : 0;
+            case STREET_DANCE -> stat == CatStat.SPEED || stat == CatStat.STAMINA ? 10 : 0;
+            case PUSS_IN_BOOTS -> stat == CatStat.ATTACK || stat == CatStat.SPEED ? 10 : 0;
+            case BIG_CHONKY_CAT -> stat == CatStat.HEALTH ? 10 + 2 * (clampLevel(level) - 1)
+                    : stat == CatStat.STAMINA ? 5 : 0;
+            case ROLLING_LOG -> stat == CatStat.SPEED ? 15 : 0;
+            case RAINBOW_CAT -> stat == CatStat.SPEED ? rainbowSpeedBonus()
+                    : stat == CatStat.LUCK ? rainbowLuckBonus() : 0;
+            case NEKOMATA -> stat == CatStat.ATTACK ? nekomataAttackBonus()
+                    : stat == CatStat.INTELLIGENCE ? nekomataIntelligenceBonus() : 0;
+            default -> 0;
+        };
+    }
+
     public int bigCatScalePercent(int level) {
         return this == BIG_CHONKY_CAT ? 115 + (clampLevel(level) - 1) * 10 : 100;
     }
@@ -487,7 +509,8 @@ public enum CatTrait {
                     selectedElderAttackBonus(clamped));
             case BIG_CHONKY_CAT -> Component.translatable(
                     "trait.laowu.big_chonky_cat.summary",
-                    bigCatScalePercent(clamped));
+                    bigCatScalePercent(clamped), appearanceAttributeBonus(CatStat.HEALTH, clamped),
+                    appearanceAttributeBonus(CatStat.STAMINA, clamped));
             case RAINBOW_CAT -> Component.translatable(
                     "trait.laowu.rainbow_cat.summary",
                     rainbowSpeedBonus(), rainbowLuckBonus());
@@ -502,7 +525,7 @@ public enum CatTrait {
                     HIGH_STEP, SKY_CAT, AUTO_ATTACH, TRIPOD_CAT,
                     HIGH_EXPLOSIVE_FUEL, ROLLING_LOG, LOLI, HIM, ISAAC,
                     ROUND_HEAD, OIIAI,
-                    PUSS_IN_BOOTS -> Component.translatable(
+                    PUSS_IN_BOOTS, STREET_DANCE -> Component.translatable(
                     "trait.laowu." + serializedName + ".summary");
             default -> Component.empty();
         };
@@ -577,7 +600,8 @@ public enum CatTrait {
                     selectedElderAttackBonus(clamped));
             case BIG_CHONKY_CAT -> Component.translatable(
                     "trait.laowu.big_chonky_cat.description",
-                    bigCatScalePercent(clamped));
+                    bigCatScalePercent(clamped), appearanceAttributeBonus(CatStat.HEALTH, clamped),
+                    appearanceAttributeBonus(CatStat.STAMINA, clamped));
             case RAINBOW_CAT -> Component.translatable(
                     "trait.laowu.rainbow_cat.description",
                     rainbowSpeedBonus(), rainbowLuckBonus());
@@ -592,7 +616,7 @@ public enum CatTrait {
                     HIGH_STEP, SKY_CAT, AUTO_ATTACH, TRIPOD_CAT,
                     HIGH_EXPLOSIVE_FUEL, ROLLING_LOG, LOLI, HIM, ISAAC,
                     ROUND_HEAD, OIIAI,
-                    PUSS_IN_BOOTS -> Component.translatable(
+                    PUSS_IN_BOOTS, STREET_DANCE -> Component.translatable(
                     "trait.laowu." + serializedName + ".description");
             default -> Component.empty();
         };
@@ -651,7 +675,8 @@ public enum CatTrait {
                     selectedElderAttackBonus(next));
             case BIG_CHONKY_CAT -> Component.translatable(
                     "trait.laowu.big_chonky_cat.next",
-                    bigCatScalePercent(next));
+                    bigCatScalePercent(next), appearanceAttributeBonus(CatStat.HEALTH, next),
+                    appearanceAttributeBonus(CatStat.STAMINA, next));
             default -> Component.empty();
         };
     }

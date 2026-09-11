@@ -129,7 +129,7 @@ public final class HissingCatBehavior {
 
     private static void stopPreviousAttraction(Cat cat) {
         if (cat.getPersistentData().getBoolean(ACTIVE_TAG)) {
-            cat.getNavigation().stop();
+            if (!isFleeing(cat)) cat.getNavigation().stop();
             cat.getPersistentData().remove(ACTIVE_TAG);
             unlockPosition(cat);
         }
@@ -181,6 +181,11 @@ public final class HissingCatBehavior {
     public static boolean isPairInterrupted(Cat cat) {
         return cat.getPersistentData().getLong(PAIR_INTERRUPTED_UNTIL_TAG)
                 > cat.level().getGameTime();
+    }
+
+    public static void stopDisabledHissing(Cat cat) {
+        // Every loaded cat is visited by CommonEvents; no partner/world scan is needed.
+        if (!ServerConfig.catsHiss()) stopInterruptedHissing(cat);
     }
 
     private static void stopInterruptedHissing(Cat cat) {
@@ -263,7 +268,16 @@ public final class HissingCatBehavior {
     }
 
     public static boolean isHissingForbidden(Cat cat) {
-        return CatTraitData.ensure(cat).has(CatTrait.GOOD_CAT);
+        return !ServerConfig.catsHiss() || isFleeing(cat)
+                || CatTraitData.ensure(cat).has(CatTrait.GOOD_CAT);
+    }
+
+    /** Vanilla avoidance/panic owns navigation while active; ambient hissing must yield. */
+    public static boolean isFleeing(Cat cat) {
+        if (cat.isTame() || !ServerConfig.wildCatsFlee()) return false;
+        return cat.goalSelector.getAvailableGoals().stream().anyMatch(wrapped ->
+                wrapped.isRunning() && (wrapped.getGoal() instanceof net.minecraft.world.entity.ai.goal.PanicGoal
+                        || wrapped.getGoal() instanceof net.minecraft.world.entity.ai.goal.AvoidEntityGoal<?>));
     }
 
     private static void lockBodyInPlace(Cat cat) {

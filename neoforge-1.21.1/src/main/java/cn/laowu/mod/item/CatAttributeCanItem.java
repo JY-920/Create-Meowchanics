@@ -18,8 +18,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-/** Consumable training food that raises one cat attribute without changing its ceiling. */
+/** Trains one base attribute; super cans raise its base and ceiling to at least 90. */
 public final class CatAttributeCanItem extends Item {
+    private static final int SUPER_TARGET_VALUE = 90;
     private final CatStat stat;
     private final Tier tier;
 
@@ -63,6 +64,13 @@ public final class CatAttributeCanItem extends Item {
     public Optional<CatAttributeProfile> train(CatAttributeProfile profile) {
         int current = profile.current(stat);
         int ceiling = profile.potential(stat);
+        if (tier == Tier.SUPER) {
+            int trainedCurrent = Math.max(current, SUPER_TARGET_VALUE);
+            int trainedCeiling = Math.max(ceiling, SUPER_TARGET_VALUE);
+            return current == trainedCurrent && ceiling == trainedCeiling
+                    ? Optional.empty()
+                    : Optional.of(profile.withValues(stat, trainedCurrent, trainedCeiling));
+        }
         int trained = tier.targetValue(current, ceiling);
         return trained <= current ? Optional.empty()
                 : Optional.of(profile.withValues(stat, trained, ceiling));
@@ -76,7 +84,7 @@ public final class CatAttributeCanItem extends Item {
         Tier(int increase) { this.increase = increase; }
 
         private int targetValue(int current, int ceiling) {
-            if (this == SUPER) return ceiling;
+            if (this == SUPER) return Math.max(current, SUPER_TARGET_VALUE);
             return Math.min(ceiling, current + increase);
         }
     }

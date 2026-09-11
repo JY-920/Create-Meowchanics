@@ -231,6 +231,9 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
             CatTrait trait = catalogTrait(slot);
             Button add = catalogAdd.get(slot);
             add.visible = trait != null;
+            add.setTooltip(trait != null && cn.laowu.mod.ServerConfig.isTraitDisabled(trait)
+                    ? net.minecraft.client.gui.components.Tooltip.create(
+                            Component.translatable("screen.laowu.world.trait_disabled")) : null);
             add.active = trait != null && menu.level(trait) <= 0 && canAdd(trait);
         }
         int maximum = Math.max(0, filteredCatalog.size() - CATALOG_ROWS);
@@ -239,6 +242,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
     }
 
     private boolean canAdd(CatTrait candidate) {
+        if (cn.laowu.mod.ServerConfig.isTraitDisabled(candidate)) return false;
         List<CatTrait> installed = installedTraits();
         if (installed.size() >= 4) return false;
         EnumSet<CatTraitSlot> occupied = EnumSet.noneOf(CatTraitSlot.class);

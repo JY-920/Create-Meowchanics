@@ -1,6 +1,7 @@
 package cn.laowu.mod.entity;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.CatProjectileDamage;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -72,7 +73,8 @@ public final class DynamiteProjectile extends ThrowableItemProjectile {
     @Override
     protected boolean canHitEntity(Entity entity) {
         return super.canHitEntity(entity)
-                && !(entity instanceof Cat)
+                && (!(getOwner() instanceof Cat cat) || !(entity instanceof LivingEntity living)
+                || cn.laowu.mod.CatTeamRules.canHarm(cat, living))
                 && !(entity instanceof Player);
     }
 
@@ -109,21 +111,13 @@ public final class DynamiteProjectile extends ThrowableItemProjectile {
                     candidate -> candidate.isAlive()
                             && candidate != cat
                             && candidate != cat.getOwner()
-                            && !(candidate instanceof Cat)
                             && !(candidate instanceof Player)
-                            && cat.canAttack(candidate))) {
+                            && cn.laowu.mod.CatTeamRules.canHarm(cat, candidate))) {
                 double distance = target.position().distanceTo(center);
                 if (distance > BLAST_RADIUS) continue;
                 double strength = 1.0D - distance / BLAST_RADIUS;
                 float damage = (float) (attackDamage * (0.55D + 0.45D * strength));
-                if (!target.hurt(level.damageSources().mobProjectile(this, cat), damage)) continue;
-
-                Vec3 away = target.position().subtract(center);
-                if (away.lengthSqr() > 1.0E-5D) {
-                    double knockback = 0.18D + 0.30D * strength;
-                    Vec3 impulse = away.normalize().scale(knockback);
-                    target.push(impulse.x, Math.max(0.08D, impulse.y + 0.08D), impulse.z);
-                }
+                CatProjectileDamage.hurt(target, level.damageSources().mobProjectile(this, cat), damage);
             }
         }
         discard();

@@ -22,6 +22,9 @@ public final class HissingVolumeScreen extends Screen {
         int x = (width - panelWidth) / 2;
         int y = height / 2 - 10;
         addRenderableWidget(new VolumeSlider(x, y, panelWidth, 20));
+        addRenderableWidget(Button.builder(Component.translatable("screen.laowu.world.title"),
+                button -> minecraft.setScreen(new WorldSettingsScreen(this)))
+                .bounds(x, y + 80, panelWidth, 20).build());
         addRenderableWidget(Button.builder(spawnLabel(), button -> {
             ClientConfig.NEARBY_CAT_SPAWNING.set(!ClientConfig.NEARBY_CAT_SPAWNING.get());
             ClientConfig.SPEC.save();
@@ -53,12 +56,21 @@ public final class HissingVolumeScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        // Flush previous UI batches before Modern UI processes the framebuffer.
+        graphics.flush();
         renderBackground(graphics);
-        graphics.drawCenteredString(font, title, width / 2, height / 2 - 48, 0xFFFFFF);
-        graphics.drawCenteredString(font,
-                Component.translatable("screen.laowu.hissing_volume.description"),
-                width / 2, height / 2 - 31, 0xA0A0A0);
-        super.render(graphics, mouseX, mouseY, partialTick);
+        ConfigScreenRendering.beginForeground(graphics);
+        try {
+            graphics.drawCenteredString(font, title, width / 2, height / 2 - 48, 0xFFFFFFFF);
+            graphics.drawCenteredString(font,
+                    Component.translatable("screen.laowu.hissing_volume.description"),
+                    width / 2, height / 2 - 31, 0xFFA0A0A0);
+            // Screen.render in 1.21 draws the background again. Render only widgets
+            // here so post-processing cannot blur the labels that were just drawn.
+            for (var widget : renderables) widget.render(graphics, mouseX, mouseY, partialTick);
+        } finally {
+            ConfigScreenRendering.endForeground(graphics);
+        }
     }
 
     @Override

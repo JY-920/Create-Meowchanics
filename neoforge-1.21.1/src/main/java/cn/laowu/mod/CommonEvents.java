@@ -69,6 +69,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -108,8 +109,17 @@ public final class CommonEvents {
     private static final float CAT_GRENADE_DAMAGE = 30.0F;
     private static final double CAT_GRENADE_RADIUS = 3.0D;
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void suppressCareerProjectileKnockback(LivingKnockBackEvent event) {
+        if (CatProjectileDamage.suppressesKnockback(event.getEntity())) event.setCanceled(true);
+    }
+
     @SubscribeEvent
     public static void preventForbiddenTargets(LivingChangeTargetEvent event) {
+        if (CatTeamRules.friendly(event.getEntity(), event.getNewAboutToBeSetTarget())) {
+            event.setNewAboutToBeSetTarget(null);
+            return;
+        }
         LivingEntity proposed = event.getNewAboutToBeSetTarget();
         ItemStack helmet = proposed instanceof Player player
                 ? player.getItemBySlot(EquipmentSlot.HEAD) : ItemStack.EMPTY;
@@ -120,7 +130,7 @@ public final class CommonEvents {
         }
         if (event.getEntity() instanceof Cat cat
                 && CatClothesData.getOutfit(cat) == CatOutfitType.TERMINATOR
-                && CareerCatBehavior.isForbiddenTerminatorTarget(proposed)) {
+                && CareerCatBehavior.isForbiddenTerminatorTarget(cat, proposed)) {
             event.setNewAboutToBeSetTarget(null);
         }
         LivingEntity currentTarget = event.getNewAboutToBeSetTarget();
@@ -139,6 +149,13 @@ public final class CommonEvents {
                     .min(Comparator.comparingDouble(event.getEntity()::distanceToSqr))
                     .orElse(null);
             if (bait != null) event.setNewAboutToBeSetTarget(bait);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void preventPetTeamFriendlyFire(LivingIncomingDamageEvent event) {
+        if (CatTeamRules.friendly(event.getSource().getEntity(), event.getEntity())) {
+            event.setCanceled(true);
         }
     }
 
@@ -197,6 +214,7 @@ public final class CommonEvents {
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
         CatArmorPounceBehavior.tick(event.getServer());
+        ServerConfig.tick(event.getServer());
         for (ServerLevel level : event.getServer().getAllLevels()) {
             NaturalCatMaterialSpawner.tick(level);
         }
@@ -296,9 +314,9 @@ public final class CommonEvents {
     public static void amplifyFilicideDamage(LivingIncomingDamageEvent event) {
         if (event.getSource().getDirectEntity() instanceof Cat attacker
                 && event.getAmount() > 0.0F) {
-            event.setAmount(event.getAmount()
-                    * CatBehaviorTraitEffects.childAttackMultiplier(
-                    attacker, event.getEntity()));
+            event.setAmount(ServerConfig.scaleDamage(event.getAmount(),
+                    CatBehaviorTraitEffects.childAttackMultiplier(
+                    attacker, event.getEntity())));
         }
     }
 
@@ -395,6 +413,27 @@ public final class CommonEvents {
 
     @SubscribeEvent
     public static void onHissingGasBucketInteract(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatStorageBoxItem box) {
+            var result = box.useOn(new net.minecraft.world.item.context.UseOnContext(
+                    event.getEntity(), event.getHand(), event.getHitVec()));
+            if (result.consumesAction()) {
+                event.setCancellationResult(result);
+                event.setCanceled(true);
+            }
+            return;
+        }
+        if (event.getEntity().isShiftKeyDown()
+                && !(event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatLaserPointerItem)
+                && event.getLevel().getBlockEntity(event.getPos()) instanceof cn.laowu.mod.create.CatCarrierBlockEntity box) {
+            event.setCancellationResult(box.interact(event.getEntity(), event.getHand()));
+            event.setCanceled(true);
+            return;
+        }
+        if (event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatLaserPointerItem pointer) {
+            event.setCancellationResult(pointer.use(event.getLevel(), event.getEntity(), event.getHand()).getResult());
+            event.setCanceled(true);
+            return;
+        }
         var held = event.getItemStack();
         boolean gasBucket = held.is(LaoWuMod.HISSING_GAS_BUCKET.get());
         boolean emptyBucket = held.is(Items.BUCKET);
@@ -583,8 +622,10 @@ public final class CommonEvents {
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
         if (event.getEntity() instanceof Cat cat && !cat.level().isClientSide) {
+            if (CatTeamRules.friendly(cat, cat.getTarget())) cat.setTarget(null);
             if (DynamiteCatLastStand.tick(cat)) return;
             disableTamedCatPanic(cat);
+            if (!ServerConfig.catsHiss()) HissingCatBehavior.stopDisabledHissing(cat);
             CatAttributeEffects.tick(cat);
             CatTraitEffects.tick(cat);
             if (CatProfileData.isBeingViewed(cat)) {
@@ -593,6 +634,8 @@ public final class CommonEvents {
                 return;
             }
             CareerCatBehavior.tick(cat);
+            CatLaserCommands.tick(cat);
+            if (CatLaserCommands.hasOrder(cat)) return;
             if (CatPancakeBehavior.tickPancake(cat)) return;
             if (CatLogisticsBehavior.tick(cat)) {
                 HissingGasProduction.tick(cat);
@@ -654,7 +697,7 @@ public final class CommonEvents {
             CareerCatBehavior.alertMeleeProtectors(cat, event.getSource().getEntity());
         }
         if (!careerCanFight
-                || CareerCatBehavior.isForbiddenTerminatorTarget(cat.getLastHurtByMob())) {
+                || CareerCatBehavior.isForbiddenTerminatorTarget(cat, cat.getLastHurtByMob())) {
             cat.setLastHurtByMob(null);
         }
         cat.getNavigation().stop();
@@ -724,6 +767,17 @@ public final class CommonEvents {
 
     @SubscribeEvent
     public static void onCatInteract(PlayerInteractEvent.EntityInteract event) {
+        if (event.getTarget() instanceof Cat cat
+                && event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatStorageBoxItem box) {
+            event.setCancellationResult(box.interactLivingEntity(event.getItemStack(), event.getEntity(), cat, event.getHand()));
+            event.setCanceled(true);
+            return;
+        }
+        if (event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatLaserPointerItem pointer) {
+            event.setCancellationResult(pointer.use(event.getLevel(), event.getEntity(), event.getHand()).getResult());
+            event.setCanceled(true);
+            return;
+        }
         if (event.getTarget() instanceof ItemEntity itemEntity
                 && event.getItemStack().getItem() instanceof CatTraitFishItem fish
                 && itemEntity.getItem().is(LaoWuMod.CAT_PANCAKE.get())) {
@@ -1045,7 +1099,7 @@ public final class CommonEvents {
             }
 
             ItemStack result = pancake.copyWithCount(1);
-            CatPancakeItem.setOwner(result, ownerId.get());
+            CatPancakeItem.setOwner(result, ownerId.get(), PheromoneCatFoodItem.ownerName(held).orElse(""));
             CatPancakeItem.makeAdult(result);
             recipe.enforceNextResult(() -> result.copy());
             return;

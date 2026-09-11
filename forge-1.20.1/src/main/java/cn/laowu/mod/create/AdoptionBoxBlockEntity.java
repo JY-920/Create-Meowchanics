@@ -156,8 +156,45 @@ public final class AdoptionBoxBlockEntity extends BlockEntity implements MenuPro
                 - (BASE_DURATION_TICKS - PERFECT_DURATION_TICKS) * clamped / 100;
     }
 
+    /** Only checked at adoption completion; no per-tick scans or remote chunk loads. */
+    private List<net.minecraft.world.entity.npc.VillagerProfession> seatedProfessions() {
+        List<net.minecraft.world.entity.npc.VillagerProfession> result = new ArrayList<>(4);
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos seatPos = worldPosition.relative(direction);
+            if (!level.hasChunkAt(seatPos)
+                    || !(level.getBlockState(seatPos).getBlock()
+                    instanceof com.simibubi.create.content.contraptions.actors.seat.SeatBlock)) continue;
+            boolean found = false;
+            for (var seat : level.getEntitiesOfClass(
+                    com.simibubi.create.content.contraptions.actors.seat.SeatEntity.class,
+                    new AABB(seatPos).inflate(0.25))) {
+                if (!seat.blockPosition().equals(seatPos)) continue;
+                for (var passenger : seat.getPassengers()) {
+                    if (!(passenger instanceof net.minecraft.world.entity.npc.Villager villager)
+                            || !villager.isAlive() || villager.isBaby()) continue;
+                    var profession = villager.getVillagerData().getProfession();
+                    if (profession == net.minecraft.world.entity.npc.VillagerProfession.NONE
+                            || profession == net.minecraft.world.entity.npc.VillagerProfession.NITWIT) continue;
+                    result.add(profession);
+                    found = true;
+                    break;
+                }
+                if (found) break;
+            }
+        }
+        return result;
+    }
+
     private boolean completeAdoption(int inputIndex, int quality) {
-        List<ItemStack> rewards = AdoptionRewardTable.roll(quality, level.random);
+        var professions = seatedProfessions();
+        List<ItemStack> rewards = new ArrayList<>();
+        if (professions.isEmpty()) {
+            rewards.addAll(AdoptionRewardTable.roll(quality, level.random));
+        } else {
+            // One stack per occupied side allows all four sides to fit in nine empty slots.
+            for (var profession : professions)
+                rewards.add(AdoptionRewardTable.rollProfession(profession, quality, level.random));
+        }
         List<ItemStack> resultingOutputs = mergedOutputs(rewards);
         if (resultingOutputs == null) return false;
 

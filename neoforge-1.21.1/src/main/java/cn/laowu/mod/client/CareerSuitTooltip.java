@@ -2,7 +2,8 @@ package cn.laowu.mod.client;
 
 import cn.laowu.mod.CareerCatBehavior;
 import cn.laowu.mod.CatOutfitType;
-import com.simibubi.create.foundation.item.ItemDescription;
+import cn.laowu.mod.CatSuitSetting;
+import cn.laowu.mod.CatSuitSettings;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import net.createmod.catnip.lang.FontHelper;
 import net.minecraft.ChatFormatting;
@@ -31,14 +32,34 @@ public final class CareerSuitTooltip {
         }
 
         if (Screen.hasControlDown()) {
-            ItemDescription description = ItemDescription.create(item, PALETTE);
-            if (description == null) return;
-            // Create prefixes the Shift page with its own Shift hint and one
-            // blank line. They no longer describe this custom Ctrl page.
-            List<Component> details = description.linesOnShift();
-            int firstContentLine = Math.min(2, details.size());
-            event.getToolTip().addAll(insertionIndex,
-                    details.subList(firstContentLine, details.size()));
+            CatSuitSettings settings = CatSuitSettings.current(outfit);
+            String coefficient = format(cn.laowu.mod.ServerConfig.careerDamageCoefficient(outfit));
+            event.getToolTip().add(insertionIndex++, Component.translatable(
+                    "item.laowu.career_suit.configured_damage",
+                    coefficient).withStyle(ChatFormatting.GOLD));
+            event.getToolTip().add(insertionIndex++, Component.translatable(
+                    "screen.laowu.world.formula_note").withStyle(ChatFormatting.GRAY));
+            // Rebuild from the same localized sections so the formula shows
+            // the live K, instead of Create caching the original percentage.
+            for (int section = 1; section <= 3; section++) {
+                if (section > 1) event.getToolTip().add(insertionIndex++, Component.empty());
+                event.getToolTip().add(insertionIndex++, Component.translatable(
+                        item.getDescriptionId() + ".tooltip.condition" + section).withStyle(ChatFormatting.GRAY));
+                String detail = Component.translatable(
+                        item.getDescriptionId() + ".tooltip.behaviour" + section).getString();
+                if (section == 1 && outfit != CatOutfitType.TRANSPORT)
+                    detail = detail.replace("_K", "_" + coefficient);
+                if (section == 2 && outfit != CatOutfitType.TRANSPORT)
+                    detail = Component.translatable("item.laowu.career_suit.configured_interval",
+                            format(settings.value(CatSuitSetting.MIN_INTERVAL)),
+                            format(settings.value(CatSuitSetting.INTERVAL_BASE)),
+                            format(settings.value(CatSuitSetting.INTERVAL_PER_SPEED))).getString();
+                if (section == 3) detail = bonusDescription(settings);
+                List<Component> lines = TooltipHelper.cutStringTextComponent(
+                        detail, PALETTE.primary(), PALETTE.highlight(), 1);
+                event.getToolTip().addAll(insertionIndex, lines);
+                insertionIndex += lines.size();
+            }
             return;
         }
 
@@ -56,6 +77,18 @@ public final class CareerSuitTooltip {
         event.getToolTip().addAll(insertionIndex,
                 TooltipHelper.cutStringTextComponent(Component.translatable(
                         "item.laowu.career_suit.hold_shift").getString(), PALETTE));
+    }
+
+    private static String bonusDescription(CatSuitSettings settings) {
+        var entries = new java.util.ArrayList<String>();
+        for (CatSuitSetting setting : CatSuitSetting.values()) {
+            if (setting.isAttackSetting() || settings.value(setting) == 0) continue;
+            entries.add(Component.translatable("item.laowu.career_suit.configured_bonus",
+                    Component.translatable("screen.laowu.world.suit_setting." + setting.id()),
+                    format(settings.value(setting))).getString());
+        }
+        return entries.isEmpty() ? Component.translatable("item.laowu.career_suit.no_bonus").getString()
+                : String.join("; ", entries);
     }
 
     private static int addSnapshot(List<Component> tooltip, int index,

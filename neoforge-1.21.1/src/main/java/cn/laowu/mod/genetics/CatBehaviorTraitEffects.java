@@ -280,7 +280,8 @@ public final class CatBehaviorTraitEffects {
 
     private static boolean tickSelectedElder(Cat cat, CatTraitProfile traits) {
         CompoundTag data = cat.getPersistentData();
-        if (!traits.has(CatTrait.SELECTED_ELDER)) {
+        if (!traits.has(CatTrait.SELECTED_ELDER)
+                || HissingCatBehavior.isHissingForbidden(cat)) {
             if (data.getBoolean(STRICT_HISSING_TAG)
                     || data.getBoolean(STRICT_ATTACKING_TAG)
                     || data.hasUUID(STRICT_TARGET_TAG)) clearStrictHissing(cat);
@@ -767,6 +768,7 @@ public final class CatBehaviorTraitEffects {
     }
 
     private static boolean validCombatTarget(Cat cat, CatTrait kind, LivingEntity target) {
+        if (cn.laowu.mod.CatTeamRules.friendly(cat, target)) return false;
         if (!target.isAlive() || target == cat) return false;
         double range = kind == CatTrait.EDWARD ? 16.0D
                 : kind == CatTrait.MISCHIEVOUS ? 3.0D : ACTIVE_SEARCH_RANGE;

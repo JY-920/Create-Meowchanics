@@ -1,0 +1,18 @@
+// Isolated NeoForge bootstrap/mod-loading smoke test:
+// gradlew runData --init-script ../tests/mixin-startup.init.gradle --no-configuration-cache
+// No existing game config, save, generated production resources, or EULA changes.
+allprojects {
+    afterEvaluate { project ->
+        def neoForge = project.extensions.findByName('neoForge')
+        if (neoForge != null) {
+            neoForge.runs.named('data') {
+                gameDirectory = project.layout.buildDirectory.dir('mixin-startup/run').get().asFile
+                programArguments.set([
+                        '--mod', 'laowu', '--all',
+                        '--output', project.layout.buildDirectory.dir('mixin-startup/generated').get().asFile.absolutePath,
+                        '--existing', project.file('src/main/resources').absolutePath
+                ])
+            }
+        }
+    }
+}

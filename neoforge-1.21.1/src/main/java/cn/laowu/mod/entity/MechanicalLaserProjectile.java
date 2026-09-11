@@ -1,6 +1,7 @@
 package cn.laowu.mod.entity;
 
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.CatProjectileDamage;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -66,7 +67,8 @@ public final class MechanicalLaserProjectile extends ThrowableItemProjectile {
     @Override
     protected boolean canHitEntity(Entity entity) {
         return super.canHitEntity(entity)
-                && !(entity instanceof Cat)
+                && (!(getOwner() instanceof Cat cat) || !(entity instanceof LivingEntity living)
+                || cn.laowu.mod.CatTeamRules.canHarm(cat, living))
                 && !(entity instanceof Player);
     }
 
@@ -86,7 +88,7 @@ public final class MechanicalLaserProjectile extends ThrowableItemProjectile {
             return;
         }
 
-        target.hurt(level.damageSources().mobProjectile(this, cat), attackDamage);
+        CatProjectileDamage.hurt(target, level.damageSources().mobProjectile(this, cat), attackDamage);
         Vec3 hit = result.getLocation();
         level.sendParticles(LASER_DUST, hit.x, hit.y, hit.z,
                 12, 0.12D, 0.12D, 0.12D, 0.035D);

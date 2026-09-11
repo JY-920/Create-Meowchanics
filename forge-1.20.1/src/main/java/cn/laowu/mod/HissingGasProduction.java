@@ -14,7 +14,7 @@ public final class HissingGasProduction {
     private static final int PRODUCTION_AMOUNT_MB = 100;
 
     public static void tick(Cat cat) {
-        if (!CatPoseData.isHissing(cat)
+        if (!ServerConfig.catsHiss() || !CatPoseData.isHissing(cat)
                 || cat.tickCount % PRODUCTION_INTERVAL_TICKS != 0) return;
 
         BlockPos seatPos = findSeat(cat);

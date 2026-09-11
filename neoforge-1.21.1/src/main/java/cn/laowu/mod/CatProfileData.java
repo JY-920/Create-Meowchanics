@@ -45,6 +45,11 @@ public final class CatProfileData {
         return created;
     }
 
+    /** A stored cat keeps its UUID but will be a new entity instance on release. */
+    public static void forgetStoredEntity(Cat cat) {
+        if (!isBeingViewed(cat)) OPEN_CONTAINERS.remove(cat.getUUID());
+    }
+
     public static boolean canOpen(ServerPlayer player, Cat cat) {
         return cat.isAlive() && player.distanceToSqr(cat) <= 64.0D;
     }

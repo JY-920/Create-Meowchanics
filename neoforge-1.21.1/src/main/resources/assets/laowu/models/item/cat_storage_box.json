@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "laowu:item/cat_storage_box"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "laowu:filled": 1
+      },
+      "model": "laowu:item/cat_storage_box_filled"
+    }
+  ]
+}

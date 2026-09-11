@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+let count = 0;
+function check(value, label) { count++; assert.ok(value, label); }
+let previousHelper, previousGoal;
+for (const loader of ['forge-1.20.1', 'neoforge-1.21.1']) {
+  const base = path.join(root, loader, 'src/main/java/cn/laowu/mod');
+  const read = f => readFileSync(path.join(base, f), 'utf8').replaceAll('\r\n', '\n');
+  const boss = read('entity/ButterCatBoss.java');
+  const helper = read('entity/ButterCatCharge.java');
+  const renderer = read('client/ButterCatRenderer.java');
+  const goal = boss.slice(boss.indexOf('private final class ChargeAttackGoal'));
+  const travel = boss.slice(boss.indexOf('public void travel('), boss.indexOf('protected void defineSynchedData'));
+  const impact = boss.slice(boss.indexOf('private void performChargeImpact'), boss.indexOf('private void playChargeImpactEffects'));
+  if (previousHelper) check(helper === previousHelper, 'Loader charge helpers are identical');
+  if (previousGoal) check(goal === previousGoal, 'Loader charge state machines are identical');
+  previousHelper = helper; previousGoal = goal;
+  check(!goal.includes('onGround()') && !goal.includes('horizontalDistance(this.dashStart'), 'No ground-only aim or range');
+  check(goal.includes('target.getBoundingBox().getCenter()'), 'Target center includes altitude');
+  const continued = goal.slice(goal.indexOf('public boolean canContinueToUse'), goal.indexOf('public void start'));
+  check(continued.indexOf('isDashing()) return charge.active()') < continued.indexOf('target.isAlive()'), 'Launched charge survives target death');
+  check(travel.includes('this.level().isClientSide') && travel.includes('super.travel(input)'), 'Server owns charge motion, normal/client travel preserved');
+  check(travel.includes('this.move(MoverType.SELF, requested)'), 'Uses collision-aware entity movement');
+  check(!boss.includes('setNoGravity(') && !boss.includes('boolean isNoGravity()'), 'No persistent no-gravity leak when saved mid-charge');
+  check(travel.indexOf('this.move(') < travel.indexOf('this.performChargeImpact'), 'Impact tests actual movement, not through-wall prediction');
+  check(travel.indexOf('this.performChargeImpact') < travel.indexOf('!this.charge.active()'), 'Final-step impact can extend');
+  check(impact.includes('!this.charge.hasHit(entity.getUUID())') && impact.includes('ButterCatCharge.touches('), 'Swept hits deduplicate each victim');
+  check(impact.includes('hasLineOfSight(victim)'), 'Do not damage through walls');
+  check(impact.indexOf('victim.hurt(') < impact.indexOf('this.charge.hit('), 'Only a successful impact extends the charge');
+  check(!impact.includes('finishDash()') && !impact.includes('setAttackPhase('), 'Hits never stop or restart charge animation');
+  check(boss.includes('ButterCatCharge.reduceDamage(super.getDamageAfterMagicAbsorb(source, amount),'), 'Reduction is after ordinary armor/resistance');
+  check(boss.includes('isDashing(), source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)'), 'Reduction is dash-only and bypass aware');
+  check(boss.includes('CHARGE_DAMAGE = 14.0F') && boss.includes('CHARGE_WINDUP_TICKS = 5 * 20 / 2'), 'Damage and authored windup unchanged');
+  check(renderer.includes('!entity.isDashing() || !entity.isAlive()') && renderer.includes('Axis.XP.rotationDegrees(-pitch)'), 'Whole body follows 3-D aim only during dash');
+  check(boss.includes('motion') && !goal.includes('impacted'), 'No old first-victim stop gate');
+  check(boss.includes('if (blocked || !this.charge.active() || !this.isAlive()) finishDash();'), 'Walls, expiry and death finish');
+  check(boss.includes('(this.isNoAi() || !this.isAlive())') && boss.includes('this.charge.stop();'), 'Abort clears transient charge state');
+}
+console.log('PASS: ' + count + ' butter-cat loader wiring checks');

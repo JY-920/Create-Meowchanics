@@ -316,7 +316,7 @@ public final class BreedingBoxBlockEntity extends SmartBlockEntity implements Me
         // Exact identity conditions (age, owner, career and name) are gates for
         // candidates. A current parent that fails one is deliberately ranked
         // below every matching candidate so the filter can correct the slot.
-        long bestScore = rules.matchesIdentity(current)
+        long bestScore = rules.matchesIdentity(current) && rules.acceptsReplacement(current)
                 ? currentScore.getAsLong() : Long.MIN_VALUE;
         for (int slot = 0; slot < handler.getSlots(); slot++) {
             ItemStack stored = handler.getStackInSlot(slot);
@@ -325,7 +325,7 @@ public final class BreedingBoxBlockEntity extends SmartBlockEntity implements Me
             ItemStack prepared = stored.copy();
             prepared.setCount(1);
             ensureParentData(prepared);
-            if (!rules.matchesIdentity(prepared)) continue;
+            if (!rules.matchesIdentity(prepared) || !rules.acceptsReplacement(prepared)) continue;
             OptionalLong candidateScore = replacementScore(rules, prepared);
             if (candidateScore.isEmpty() || candidateScore.getAsLong() <= bestScore) {
                 continue;

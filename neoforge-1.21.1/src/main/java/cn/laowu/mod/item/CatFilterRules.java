@@ -30,13 +30,13 @@ public final class CatFilterRules {
     public static final int STAT_COUNT = CatStat.values().length;
     public static final int MIN_VALUE = CatAttributeProfile.MIN_VALUE;
     /** Effective attributes may contain trait, outfit and future accessory bonuses. */
-    public static final int MAX_CURRENT_VALUE = 999;
+    public static final int MAX_CURRENT_VALUE = 300;
     /** Heritable current values and Attribute Limits remain on the 0..100 scale. */
     public static final int MAX_POTENTIAL_VALUE = CatAttributeProfile.MAX_VALUE;
 
     private static final String ROOT_TAG = "LaoWuCatFilter";
     private static final String VERSION_TAG = "Version";
-    private static final int DATA_VERSION = 1;
+    private static final int DATA_VERSION = 2;
     private static final String CURRENT_MIN_TAG = "CurrentMin";
     private static final String CURRENT_MAX_TAG = "CurrentMax";
     private static final String POTENTIAL_MIN_TAG = "PotentialMin";
@@ -60,12 +60,22 @@ public final class CatFilterRules {
     private final OwnershipFilter ownership;
     private final CareerFilter career;
     private final String catName;
+    private final CatFilterLogic logic;
 
     private CatFilterRules(int[] currentMin, int[] currentMax,
                            int[] potentialMin, int[] potentialMax,
                            List<CatTrait> requiredTraits,
                            GrowthFilter growth, OwnershipFilter ownership,
                            CareerFilter career, String catName) {
+        this(currentMin, currentMax, potentialMin, potentialMax, requiredTraits,
+                growth, ownership, career, catName, null);
+    }
+
+    private CatFilterRules(int[] currentMin, int[] currentMax,
+                           int[] potentialMin, int[] potentialMax,
+                           List<CatTrait> requiredTraits,
+                           GrowthFilter growth, OwnershipFilter ownership,
+                           CareerFilter career, String catName, CatFilterLogic logic) {
         this.currentMin = currentMin;
         this.currentMax = currentMax;
         this.potentialMin = potentialMin;
@@ -75,12 +85,20 @@ public final class CatFilterRules {
         this.ownership = ownership == null ? OwnershipFilter.ANY : ownership;
         this.career = career == null ? CareerFilter.ANY : career;
         this.catName = cleanName(catName);
+        this.logic = logic != null ? logic : new CatFilterLogic(
+                CatFilterLogic.inferMask(currentMin, currentMax, MAX_CURRENT_VALUE),
+                CatFilterLogic.inferMask(potentialMin, potentialMax, MAX_POTENTIAL_VALUE), 0);
     }
 
     public static CatFilterRules read(ItemStack stack) {
         CompoundTag root = ItemCustomData.copy(stack);
         CompoundTag filter = root.contains(ROOT_TAG, Tag.TAG_COMPOUND)
                 ? root.getCompound(ROOT_TAG) : new CompoundTag();
+        return readData(filter);
+    }
+
+    /** Read-only migration; looking at an older filter must not rewrite its NBT. */
+    public static CatFilterRules readData(CompoundTag filter) {
         int[] currentMin = readArray(filter, CURRENT_MIN_TAG, MIN_VALUE);
         int[] currentMax = readArray(filter, CURRENT_MAX_TAG, MAX_CURRENT_VALUE);
         int[] potentialMin = readArray(filter, POTENTIAL_MIN_TAG, MIN_VALUE);
@@ -95,7 +113,9 @@ public final class CatFilterRules {
                 GrowthFilter.byId(filter.getString(GROWTH_TAG)),
                 OwnershipFilter.byId(filter.getString(OWNERSHIP_TAG)),
                 CareerFilter.byId(filter.getString(CAREER_TAG)),
-                filter.getString(CAT_NAME_TAG));
+                filter.getString(CAT_NAME_TAG), filter.getInt(VERSION_TAG) >= DATA_VERSION
+                        ? new CatFilterLogic(filter.getInt("CurrentEnabled"), filter.getInt("LimitEnabled"),
+                                filter.getInt("LogicFlags")) : null);
     }
 
     public static CatFilterRules fromValues(int[] currentMin, int[] currentMax,
@@ -127,6 +147,9 @@ public final class CatFilterRules {
     public void write(ItemStack stack) {
         CompoundTag filter = new CompoundTag();
         filter.putInt(VERSION_TAG, DATA_VERSION);
+        filter.putInt("CurrentEnabled", logic.currentMask());
+        filter.putInt("LimitEnabled", logic.limitMask());
+        filter.putInt("LogicFlags", logic.flags());
         filter.putIntArray(CURRENT_MIN_TAG, currentMin);
         filter.putIntArray(CURRENT_MAX_TAG, currentMax);
         filter.putIntArray(POTENTIAL_MIN_TAG, potentialMin);
@@ -158,21 +181,47 @@ public final class CatFilterRules {
     public CareerFilter career() { return career; }
     public String catName() { return catName; }
 
+    public CatFilterLogic logic() { return logic; }
+    public boolean enabled(int page, CatStat stat) { return logic.enabled(page, stat.ordinal()); }
+
+    /** Preserve legacy soft ranking; new Boolean modes are also candidate gates. */
+    public boolean acceptsReplacement(ItemStack stack) {
+        if (logic.flags() == 0) return true;
+        CatAttributeProfile profile = cn.laowu.mod.genetics.CatAttributeData.read(stack).orElse(null);
+        if (profile == null) return false;
+        CatTraitProfile traits = cn.laowu.mod.genetics.CatTraitData.read(stack).orElse(CatTraitProfile.EMPTY);
+        int count = 0, passed = 0;
+        for (CatStat stat : CatStat.values()) {
+            if (!enabled(POTENTIAL_PAGE, stat)) continue;
+            count++;
+            int value = profile.potential(stat);
+            if (value >= min(POTENTIAL_PAGE, stat) && value <= max(POTENTIAL_PAGE, stat)) passed++;
+        }
+        return logic.matches(count, passed, requiredTraits.size(),
+                (int) requiredTraits.stream().filter(traits::has).count());
+    }
+
+    public CatFilterRules withLogic(CatFilterLogic selected) {
+        return new CatFilterRules(currentMin, currentMax, potentialMin, potentialMax,
+                requiredTraits, growth, ownership, career, catName, selected);
+    }
+
     public boolean matches(CatAttributeProfile profile, CatTraitProfile traits,
                            boolean night, boolean day) {
-        CatTraitProfile resolvedTraits = traits == null
-                ? CatTraitProfile.EMPTY : traits;
+        if (profile == null) return false;
+        CatTraitProfile resolved = traits == null ? CatTraitProfile.EMPTY : traits;
+        int count = 0, passed = 0;
         for (CatStat stat : CatStat.values()) {
-            int index = stat.ordinal();
-            int current = CatAttributeEffects.effectiveValue(
-                    profile, resolvedTraits, stat, night, day);
-            int potential = profile.potential(stat);
-            if (current < currentMin[index] || current > currentMax[index]
-                    || potential < potentialMin[index] || potential > potentialMax[index]) {
-                return false;
+            for (int page = CURRENT_PAGE; page <= POTENTIAL_PAGE; page++) {
+                if (!enabled(page, stat)) continue;
+                int value = page == POTENTIAL_PAGE ? profile.potential(stat)
+                        : CatAttributeEffects.effectiveValue(profile, resolved, stat, night, day);
+                count++;
+                if (value >= min(page, stat) && value <= max(page, stat)) passed++;
             }
         }
-        return requiredTraits.stream().allMatch(resolvedTraits::has);
+        int traitsPassed = (int) requiredTraits.stream().filter(resolved::has).count();
+        return logic.matches(count, passed, requiredTraits.size(), traitsPassed);
     }
 
     public boolean matches(CatAttributeProfile profile) {
@@ -202,20 +251,9 @@ public final class CatFilterRules {
     }
 
     public boolean isDefault() {
-        for (CatStat stat : CatStat.values()) {
-            int index = stat.ordinal();
-            if (currentMin[index] != MIN_VALUE
-                    || currentMax[index] != MAX_CURRENT_VALUE
-                    || potentialMin[index] != MIN_VALUE
-                    || potentialMax[index] != MAX_POTENTIAL_VALUE) {
-                return false;
-            }
-        }
-        return requiredTraits.isEmpty()
-                && growth == GrowthFilter.ANY
-                && ownership == OwnershipFilter.ANY
-                && career == CareerFilter.ANY
-                && catName.isEmpty();
+        return logic.currentMask() == 0 && logic.limitMask() == 0 && requiredTraits.isEmpty()
+                && growth == GrowthFilter.ANY && ownership == OwnershipFilter.ANY
+                && career == CareerFilter.ANY && catName.isEmpty();
     }
 
     /** Empty filters rank all six trainable limits toward the ideal value 100. */
@@ -227,16 +265,35 @@ public final class CatFilterRules {
             int minimum = min(POTENTIAL_PAGE, stat);
             int maximum = max(POTENTIAL_PAGE, stat);
             int value = profile.potential(stat);
-            if (minimum == MIN_VALUE && maximum == MAX_POTENTIAL_VALUE) {
+            if (!enabled(POTENTIAL_PAGE, stat)) {
                 score += value;
                 continue;
             }
-            if (value >= minimum && value <= maximum) score += 10_000L;
-            score += MAX_POTENTIAL_VALUE - Math.abs(value - maximum);
+            if (logic.option(CatFilterLogic.ATTRIBUTE_INVERT)) {
+                int outside = Math.max(minimum - value, value - maximum);
+                if (outside > 0) score += 10_000L;
+                score += Math.max(0, outside);
+            } else {
+                if (value >= minimum && value <= maximum) score += 10_000L;
+                score += MAX_POTENTIAL_VALUE - Math.abs(value - maximum);
+            }
         }
         CatTraitProfile safeTraits = traits == null ? CatTraitProfile.EMPTY : traits;
         for (CatTrait trait : requiredTraits) {
-            if (safeTraits.has(trait)) score += 1_000_000L;
+            if (safeTraits.has(trait) != logic.option(CatFilterLogic.TRAIT_INVERT)) score += 1_000_000L;
+        }
+        // New Boolean modes prioritize a matching group expression over partial scores.
+        // Current attributes still do not rank breeding genetics, as in older filters.
+        if (logic.flags() != 0) {
+            int count = 0, passed = 0;
+            for (CatStat stat : CatStat.values()) {
+                if (!enabled(POTENTIAL_PAGE, stat)) continue;
+                count++;
+                int value = profile.potential(stat);
+                if (value >= min(POTENTIAL_PAGE, stat) && value <= max(POTENTIAL_PAGE, stat)) passed++;
+            }
+            int traitCount = (int) requiredTraits.stream().filter(safeTraits::has).count();
+            if (logic.matches(count, passed, requiredTraits.size(), traitCount)) score += 100_000_000L;
         }
         return OptionalLong.of(score);
     }

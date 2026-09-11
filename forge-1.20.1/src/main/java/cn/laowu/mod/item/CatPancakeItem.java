@@ -70,7 +70,7 @@ public final class CatPancakeItem extends Item {
     private static final int REQUIRED_FAN_TICKS = 30;
     private static final int FAN_SEARCH_RADIUS = 16;
     private static final int MAX_CHARGE_TICKS = 80;
-    private static final int CAREER_DEATH_POTENTIAL_LOSS = 20;
+    private static final int CAREER_DEATH_ATTRIBUTE_LOSS = 20;
 
     public CatPancakeItem(Properties properties) {
         super(properties);
@@ -89,6 +89,8 @@ public final class CatPancakeItem extends Item {
         clearTransientState(catData.getCompound("ForgeData"));
         root.put(CAT_DATA_TAG, catData);
         root.putBoolean(TAMED_TAG, cat.isTame());
+        if (cat.getOwner() != null)
+            root.putString(CatPancakeDetails.OWNER_NAME, cat.getOwner().getName().getString());
         if (cat.isBaby()) root.putBoolean(BABY_TAG, true);
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
         if (outfit != CatOutfitType.NONE) {
@@ -115,10 +117,10 @@ public final class CatPancakeItem extends Item {
         CatAttributeProfile attributes = CatAttributeData.ensure(cat);
         CatStat[] stats = CatStat.values();
         CatStat reducedStat = stats[cat.getRandom().nextInt(stats.length)];
-        int reducedPotential = Math.max(CatAttributeProfile.MIN_VALUE,
-                attributes.potential(reducedStat) - CAREER_DEATH_POTENTIAL_LOSS);
+        int reducedCurrent = Math.max(CatAttributeProfile.MIN_VALUE,
+                attributes.current(reducedStat) - CAREER_DEATH_ATTRIBUTE_LOSS);
         CatAttributeData.set(pancake, attributes.withValues(reducedStat,
-                attributes.current(reducedStat), reducedPotential));
+                reducedCurrent, attributes.potential(reducedStat)));
 
         CompoundTag root = pancake.getTag();
         if (root != null && root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
@@ -293,9 +295,15 @@ public final class CatPancakeItem extends Item {
 
     /** Assigns an owner without discarding any captured pancake state. */
     public static void setOwner(ItemStack stack, UUID ownerId) {
+        setOwner(stack, ownerId, "");
+    }
+
+    public static void setOwner(ItemStack stack, UUID ownerId, String ownerName) {
         CompoundTag root = stack.getOrCreateTag();
         root.putBoolean(TAMED_TAG, true);
         root.putUUID(OWNER_UUID_TAG, ownerId);
+        root.remove(CatPancakeDetails.OWNER_NAME);
+        if (!ownerName.isBlank()) root.putString(CatPancakeDetails.OWNER_NAME, ownerName);
         if (root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
             CompoundTag catData = root.getCompound(CAT_DATA_TAG);
             catData.putUUID("Owner", ownerId);
@@ -613,6 +621,7 @@ public final class CatPancakeItem extends Item {
     public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.laowu.cat_pancake.fan")
                 .withStyle(ChatFormatting.GRAY));
+        CatPancakeDetails.append(stack, stack.getTag(), level, tooltip);
     }
 
     @Override

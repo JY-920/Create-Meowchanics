@@ -73,6 +73,7 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) resourceManager -> KimiArmorDyeTextures.clear());
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
                 NozzleFluidPuffParticle.clearColourCache());
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
@@ -84,6 +85,10 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
+            for (var armor : java.util.List.of(LaoWuMod.CAT_HELMET.get(), LaoWuMod.CAT_CHESTPLATE.get(),
+                    LaoWuMod.CAT_LEGGINGS.get(), LaoWuMod.CAT_BOOTS.get()))
+                ItemProperties.register(armor, LaoWuMod.id("kimi_dyed"),
+                        (stack, level, entity, seed) -> cn.laowu.mod.item.KimiArmorDye.read(stack) == 0 ? 0F : 1F);
             MenuScreens.register(LaoWuMod.CAT_PACKAGE_MENU.get(), CatPackageScreen::new);
             MenuScreens.register(LaoWuMod.BREEDING_BOX_MENU.get(), BreedingBoxScreen::new);
             MenuScreens.register(LaoWuMod.ADOPTION_BOX_MENU.get(), AdoptionBoxScreen::new);
@@ -105,6 +110,8 @@ public final class ClientModEvents {
                     .apply();
             ItemProperties.register(LaoWuMod.CAT_POUCH.get(), LaoWuMod.id("filled"),
                     (stack, level, entity, seed) -> cn.laowu.mod.item.CatPouchItem.count(stack) > 0 ? 1.0F : 0.0F);
+            ItemProperties.register(LaoWuMod.CAT_STORAGE_BOX.get(), LaoWuMod.id("filled"),
+                    (stack, level, entity, seed) -> cn.laowu.mod.item.CatStorageBoxItem.count(stack) > 0 ? 1.0F : 0.0F);
             registerEmpoweredProperty(LaoWuMod.CAT_SWORD.get());
             registerEmpoweredProperty(LaoWuMod.CAT_PICKAXE.get());
             registerEmpoweredProperty(LaoWuMod.CAT_AXE.get());
@@ -148,6 +155,7 @@ public final class ClientModEvents {
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), BreedingBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
+        event.registerBlockEntityRenderer(LaoWuMod.CAT_CARRIER_BE.get(), CatCarrierRenderer::new);
     }
 
     @SubscribeEvent

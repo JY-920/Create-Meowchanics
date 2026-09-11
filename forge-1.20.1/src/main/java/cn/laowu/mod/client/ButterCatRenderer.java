@@ -69,6 +69,18 @@ public final class ButterCatRenderer extends MobRenderer<ButterCatBoss, ButterCa
         poseStack.popPose();
     }
 
+    @Override
+    protected void setupRotations(ButterCatBoss entity, PoseStack poseStack,
+                                  float ageInTicks, float bodyYaw, float partialTick) {
+        super.setupRotations(entity, poseStack, ageInTicks, bodyYaw, partialTick);
+        if (!entity.isDashing() || !entity.isAlive()) return;
+        float pitch = Mth.lerp(partialTick, entity.xRotO, entity.getXRot());
+        float center = entity.getBbHeight() * 0.5F;
+        poseStack.translate(0.0F, center, 0.0F);
+        poseStack.mulPose(Axis.XP.rotationDegrees(-pitch));
+        poseStack.translate(0.0F, -center, 0.0F);
+    }
+
     private static final class ButterLayer extends RenderLayer<ButterCatBoss, ButterCatModel> {
         private ButterLayer(RenderLayerParent<ButterCatBoss, ButterCatModel> parent) {
             super(parent);

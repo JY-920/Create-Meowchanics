@@ -71,6 +71,18 @@ public final class HissingCatModel extends CatModel<Cat> {
     }
 
     @Override
+    public void prepareMobModel(Cat cat, float limbSwing, float limbSwingAmount, float partialTick) {
+        // The renderer shares a model between cats. Clear custom rotations/scales
+        // before vanilla prepares its standing, sitting and sleeping poses.
+        for (ModelPart part : new ModelPart[]{head, body, leftHindLeg, rightHindLeg,
+                leftFrontLeg, rightFrontLeg, tail1, tail2}) {
+            part.resetPose();
+            part.xScale = part.yScale = part.zScale = 1.0F;
+        }
+        super.prepareMobModel(cat, limbSwing, limbSwingAmount, partialTick);
+    }
+
+    @Override
     public void setupAnim(Cat cat, float limbSwing, float limbSwingAmount, float ageInTicks,
                           float netHeadYaw, float headPitch) {
         super.setupAnim(cat, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
@@ -89,6 +101,14 @@ public final class HissingCatModel extends CatModel<Cat> {
         boolean splitTail = traits != null && traits.has(CatTrait.NEKOMATA);
         tail1.visible = vanillaVisible && !splitTail;
         tail2.visible = vanillaVisible && !splitTail;
+        if (vanillaVisible && traits != null && traits.has(CatTrait.STREET_DANCE)
+                && cat.isAlive() && cat.onGround() && !cat.isInWater()
+                && !cat.isInSittingPose() && !cat.isPassenger()
+                && cat.getLieDownAmount(0.0F) <= 0.0F
+                && !CatTraitEffects.isCombatActive(cat)) {
+            CatStreetDanceAnimation.apply(ageInTicks, head, body, leftHindLeg,
+                    rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2);
+        }
     }
 
     private void setVanillaGeometryVisible(boolean visible) {
@@ -118,6 +138,28 @@ public final class HissingCatModel extends CatModel<Cat> {
 
     public float liveHeadYRot() {
         return liveHeadYRot;
+    }
+
+    /**
+     * Transfers the evaluated pose to the slightly inflated vanilla collar mesh.
+     * Re-running vanilla animation on that mesh would discard custom head motion.
+     */
+    void copyPoseTo(CatModel<Cat> target, ModelPart targetRoot) {
+        copyPropertiesTo(target);
+        copyPartPose(head, targetRoot.getChild("head"));
+        copyPartPose(body, targetRoot.getChild("body"));
+        copyPartPose(leftHindLeg, targetRoot.getChild("left_hind_leg"));
+        copyPartPose(rightHindLeg, targetRoot.getChild("right_hind_leg"));
+        copyPartPose(leftFrontLeg, targetRoot.getChild("left_front_leg"));
+        copyPartPose(rightFrontLeg, targetRoot.getChild("right_front_leg"));
+        copyPartPose(tail1, targetRoot.getChild("tail1"));
+        copyPartPose(tail2, targetRoot.getChild("tail2"));
+    }
+
+    private static void copyPartPose(ModelPart source, ModelPart target) {
+        target.copyFrom(source);
+        target.visible = source.visible;
+        target.skipDraw = source.skipDraw;
     }
 
     ModelPart headPart() {
@@ -238,10 +280,10 @@ public final class HissingCatModel extends CatModel<Cat> {
                 accessoryZ - baseZ);
         Quaternionf baseInverse = new Quaternionf()
                 .rotationZYX(0.0F, 0.0F, baseXRot).invert();
-        Quaternionf delta = new Quaternionf()
-                .rotationZYX(body.zRot, body.yRot, body.xRot)
-                .mul(baseInverse);
-        offset.rotate(delta);
+        // Convert the authored offset into the bone's local space before
+        // applying its animation scale, then follow the live bone rotation.
+        offset.rotate(baseInverse).mul(body.xScale, body.yScale, body.zScale)
+                .rotate(new Quaternionf().rotationZYX(body.zRot, body.yRot, body.xRot));
         float liveX = body.x + offset.x;
         float liveY = body.y + offset.y;
         float liveZ = body.z + offset.z;
@@ -251,7 +293,8 @@ public final class HissingCatModel extends CatModel<Cat> {
                 liveZ - accessoryZ,
                 body.xRot - baseXRot,
                 body.yRot,
-                body.zRot);
+                body.zRot,
+                body.xScale, body.zScale, body.yScale);
     }
 
     private static RuntimeBlockbenchModel.GroupTransform boneDelta(
@@ -263,7 +306,8 @@ public final class HissingCatModel extends CatModel<Cat> {
                 part.z - baseZ,
                 part.xRot - baseXRot,
                 part.yRot - baseYRot,
-                part.zRot - baseZRot);
+                part.zRot - baseZRot,
+                part.xScale, part.yScale, part.zScale);
     }
 
     /**
@@ -273,6 +317,7 @@ public final class HissingCatModel extends CatModel<Cat> {
     public void applyBodyPoseDelta(PoseStack poseStack) {
         poseStack.translate(body.x / 16.0F, body.y / 16.0F, body.z / 16.0F);
         poseStack.mulPose(new Quaternionf().rotationZYX(body.zRot, body.yRot, body.xRot));
+        poseStack.scale(body.xScale, body.yScale, body.zScale);
         poseStack.mulPose(new Quaternionf().rotationX(-((float) Math.PI / 2.0F)));
         poseStack.translate(0.0F, -12.0F / 16.0F, 10.0F / 16.0F);
     }

@@ -31,47 +31,7 @@ public final class CatFilterItem extends FilterItem {
                     .withStyle(ChatFormatting.GRAY));
         }
 
-        List<Component> summary = new ArrayList<>();
-        for (int page = 0; page <= 1; page++) {
-            for (CatStat stat : CatStat.values()) {
-                int minimum = rules.min(page, stat);
-                int maximum = rules.max(page, stat);
-                if (minimum == CatFilterRules.MIN_VALUE
-                        && maximum == CatFilterRules.maxValue(page)) continue;
-                summary.add(Component.translatable("item.laowu.cat_filter.summary.range",
-                                Component.translatable("attribute.laowu.cat."
-                                        + stat.serializedName()),
-                                Component.translatable(page == CatFilterRules.CURRENT_PAGE
-                                        ? "gui.laowu.cat_stats.current"
-                                        : "gui.laowu.cat_stats.limit"),
-                                minimum, maximum)
-                        .withStyle(ChatFormatting.GRAY));
-            }
-        }
-        rules.requiredTraits().forEach(trait -> summary.add(
-                Component.translatable("item.laowu.cat_filter.summary.trait",
-                                trait.title())
-                        .withStyle(ChatFormatting.GRAY)));
-        if (rules.growth() != CatFilterRules.GrowthFilter.ANY) {
-            summary.add(Component.translatable("item.laowu.cat_filter.summary.growth",
-                    Component.translatable("gui.laowu.cat_filter.growth."
-                            + rules.growth().id())).withStyle(ChatFormatting.GRAY));
-        }
-        if (rules.ownership() != CatFilterRules.OwnershipFilter.ANY) {
-            summary.add(Component.translatable("item.laowu.cat_filter.summary.ownership",
-                    Component.translatable("gui.laowu.cat_filter.ownership."
-                            + rules.ownership().id())).withStyle(ChatFormatting.GRAY));
-        }
-        if (rules.career() != CatFilterRules.CareerFilter.ANY) {
-            summary.add(Component.translatable("item.laowu.cat_filter.summary.career",
-                    Component.translatable("gui.laowu.cat_filter.career."
-                            + rules.career().id())).withStyle(ChatFormatting.GRAY));
-        }
-        if (!rules.catName().isEmpty()) {
-            summary.add(Component.translatable("item.laowu.cat_filter.summary.name",
-                    rules.catName()).withStyle(ChatFormatting.GRAY));
-        }
-        return summary;
+        return List.of(CatFilterDescription.describe(rules).copy().withStyle(ChatFormatting.GRAY));
     }
 
     /** Create normally hides a configured filter's summary while Shift is held. */

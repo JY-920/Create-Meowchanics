@@ -18,7 +18,22 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String VERSION = "12";
+    private static final String VERSION = "19";
+
+    public static void sendLaserMark(net.minecraft.server.level.ServerPlayer player, net.minecraft.world.entity.LivingEntity target) {
+        LaserMarkPacket packet = new LaserMarkPacket(target == null ? -1 : target.getId(),
+                target == null ? new java.util.UUID(0, 0) : target.getUUID());
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+    }
+
+    public static void requestWorldSettings(boolean apply, net.minecraft.nbt.CompoundTag values) {
+        CHANNEL.sendToServer(new WorldSettingsRequestPacket(apply, values));
+    }
+
+    public static void sendWorldSettings(net.minecraft.server.level.ServerPlayer player,
+                                         net.minecraft.nbt.CompoundTag values) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new WorldSettingsSyncPacket(values));
+    }
 
     public static void setNearbyCatSpawning(boolean enabled) {
         CHANNEL.sendToServer(new SetNearbyCatSpawningPacket(enabled));
@@ -28,6 +43,14 @@ public final class ModNetwork {
             () -> VERSION, VERSION::equals, VERSION::equals);
 
     public static void register() {
+        CHANNEL.registerMessage(20, LaserMarkPacket.class, LaserMarkPacket::encode, LaserMarkPacket::decode,
+                LaserMarkPacket::handle, java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(18, WorldSettingsRequestPacket.class, WorldSettingsRequestPacket::encode,
+                WorldSettingsRequestPacket::decode, WorldSettingsRequestPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(19, WorldSettingsSyncPacket.class, WorldSettingsSyncPacket::encode,
+                WorldSettingsSyncPacket::decode, WorldSettingsSyncPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(17, SetNearbyCatSpawningPacket.class,
                 SetNearbyCatSpawningPacket::encode, SetNearbyCatSpawningPacket::decode,
                 SetNearbyCatSpawningPacket::handle);

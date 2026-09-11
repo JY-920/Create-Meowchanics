@@ -227,6 +227,18 @@ public final class LaoWuMod {
             BLOCK_ENTITIES.register("breeding_box", () -> BlockEntityType.Builder
                     .of(BreedingBoxBlockEntity::new, BASIC_BREEDING_BOX.get(), INTERMEDIATE_BREEDING_BOX.get(), ADVANCED_BREEDING_BOX.get())
                     .build(null));
+    public static final DeferredBlock<cn.laowu.mod.create.CatCarrierBlock> CAT_CARRIER = BLOCKS.register("cat_carrier",
+            () -> new cn.laowu.mod.create.CatCarrierBlock(BlockBehaviour.Properties.of().strength(2.0F).noOcclusion()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<cn.laowu.mod.create.CatCarrierBlockEntity>> CAT_CARRIER_BE =
+            BLOCK_ENTITIES.register("cat_carrier", () -> BlockEntityType.Builder
+                    .of(cn.laowu.mod.create.CatCarrierBlockEntity::new, CAT_CARRIER.get()).build(null));
+    public static final DeferredItem<cn.laowu.mod.item.CatCarrierBlockItem> CAT_CARRIER_ITEM = ITEMS.register("cat_carrier",
+            () -> new cn.laowu.mod.item.CatCarrierBlockItem(CAT_CARRIER.get(), new Item.Properties()));
+    public static final DeferredItem<cn.laowu.mod.item.CatLaserPointerItem> CAT_LASER_POINTER = ITEMS.register("cat_laser_pointer",
+            () -> new cn.laowu.mod.item.CatLaserPointerItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<cn.laowu.mod.item.CatStorageBoxItem> CAT_STORAGE_BOX = ITEMS.register("cat_storage_box",
+            () -> new cn.laowu.mod.item.CatStorageBoxItem(new Item.Properties()));
+
     public static final DeferredBlock<AdoptionBoxBlock> ADOPTION_BOX = BLOCKS.register("adoption_box",
             () -> new AdoptionBoxBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL)
                     .noOcclusion().strength(0.8F)));
@@ -514,6 +526,7 @@ public final class LaoWuMod {
                         output.accept(HISSING_COLLECTOR_ITEM.get());
                         output.accept(DEVOURING_CAT_ITEM.get());
                         output.accept(ADOPTION_BOX_ITEM.get());
+                        output.accept(CAT_CARRIER_ITEM.get());
                         output.accept(CAT_BLOCK_ITEM.get());
                         output.accept(CAT_INGOT.get());
                         output.accept(CAT_SHEET.get());
@@ -544,13 +557,6 @@ public final class LaoWuMod {
                         output.accept(BUTTER_CAT_SPAWN_EGG.get());
                         output.accept(AllItems.CARDBOARD_SWORD.get());
                         output.accept(AllBlocks.SEATS.get(DyeColor.RED).get());
-                        output.accept(TERMINATOR_SUIT.get());
-                        output.accept(FISHING_SUIT.get());
-                        output.accept(FLIGHT_SUIT.get());
-                        output.accept(FIRE_SUIT.get());
-                        output.accept(HONEY_SUIT.get());
-                        output.accept(TRANSPORT_SUIT.get());
-                        output.accept(DYNAMITE_SUIT.get());
                         output.accept(CAT_HELMET.get());
                         output.accept(CAT_CHESTPLATE.get());
                         output.accept(CAT_LEGGINGS.get());
@@ -571,7 +577,16 @@ public final class LaoWuMod {
                     .displayItems((parameters, output) -> {
                         output.accept(BASIC_BREEDING_BOX_ITEM.get());
                         output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
-                        output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                       output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                        output.accept(CAT_LASER_POINTER.get());
+                        output.accept(CAT_STORAGE_BOX.get());
+                        output.accept(TERMINATOR_SUIT.get());
+                        output.accept(FISHING_SUIT.get());
+                        output.accept(FLIGHT_SUIT.get());
+                        output.accept(FIRE_SUIT.get());
+                        output.accept(HONEY_SUIT.get());
+                        output.accept(TRANSPORT_SUIT.get());
+                        output.accept(DYNAMITE_SUIT.get());
                         output.accept(BREEDING_CAT_FOOD.get());
                         output.accept(MUTATION_CAT_FOOD.get());
                         output.accept(ATTACK_BREEDING_CAT_FOOD.get());
@@ -703,6 +718,14 @@ public final class LaoWuMod {
             NAMED_PLAYER_NAME_TAG_INGREDIENT = INGREDIENT_TYPES.register(
                     "named_player_name_tag", NamedPlayerNameTagIngredient::createType);
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<cn.laowu.mod.recipe.KimiArmorDyeRecipe>>
+            KIMI_ARMOR_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("kimi_armor_dye",
+            () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(cn.laowu.mod.recipe.KimiArmorDyeRecipe::new));
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<cn.laowu.mod.recipe.LaserPointerDyeRecipe>>
+            LASER_POINTER_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("laser_pointer_dye",
+            () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(cn.laowu.mod.recipe.LaserPointerDyeRecipe::new));
+
     public LaoWuMod(IEventBus modBus, ModContainer modContainer) {
         ITEMS.register(modBus);
         BLOCKS.register(modBus);
@@ -722,7 +745,11 @@ public final class LaoWuMod {
         LOOT_MODIFIERS.register(modBus);
         modBus.addListener(LaoWuMod::registerCapabilities);
         modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, "laowu-client.toml");
+        modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC, "laowu-server.toml");
+        modContainer.registerConfig(ModConfig.Type.COMMON, GlobalConfig.SPEC, GlobalConfig.FILE_NAME);
         NeoForge.EVENT_BUS.register(CommonEvents.class);
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerAboutToStartEvent event) -> ServerConfig.resetWorldState());
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent event) -> ServerConfig.resetWorldState());
         ModNetwork.register(modBus);
         modBus.addListener((net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent event) ->
                 event.enqueueWork(() -> {
@@ -743,6 +770,9 @@ public final class LaoWuMod {
                     registerAlwaysVisibleDescription(INTERMEDIATE_BREEDING_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(ADVANCED_BREEDING_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(ADOPTION_BOX_ITEM.get());
+                    registerAlwaysVisibleDescription(CAT_CARRIER_ITEM.get());
+                    registerAlwaysVisibleDescription(CAT_LASER_POINTER.get());
+                    registerAlwaysVisibleDescription(CAT_STORAGE_BOX.get());
                     registerDescription(CAT_CANNON.get());
                     registerDescription(CAT_BALL.get());
                     registerDescription(CAT_STRIP.get());
@@ -801,6 +831,8 @@ public final class LaoWuMod {
     }
 
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, CAT_CARRIER_BE.get(),
+                cn.laowu.mod.create.CatCarrierBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, CAT_ENGINE_BE.get(),
                 CatEngineBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, INFILTRATION_TANK_BE.get(),

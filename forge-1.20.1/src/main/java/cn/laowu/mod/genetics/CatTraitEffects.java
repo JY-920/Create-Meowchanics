@@ -237,8 +237,9 @@ public final class CatTraitEffects {
 
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
         if (outfit == CatOutfitType.NONE || outfit == CatOutfitType.TRANSPORT) return;
-        float damage = (float) (cat.getAttributeValue(Attributes.ATTACK_DAMAGE)
-                * CatTrait.THORNS.thornsDamagePercent(level) / 100.0D);
+        float damage = cn.laowu.mod.ServerConfig.scaleDamage(
+                cat.getAttributeValue(Attributes.ATTACK_DAMAGE),
+                CatTrait.THORNS.thornsDamagePercent(level) / 100.0D);
         if (damage <= 0.0F) return;
         if (attacker.hurt(cat.damageSources().thorns(cat), damage)) {
             cat.playSound(SoundEvents.THORNS_HIT, 0.8F, 1.0F);

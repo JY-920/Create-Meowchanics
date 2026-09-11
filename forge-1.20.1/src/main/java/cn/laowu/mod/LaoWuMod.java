@@ -217,6 +217,18 @@ public final class LaoWuMod {
                     .of(BreedingBoxBlockEntity::new, BASIC_BREEDING_BOX.get(),
                             INTERMEDIATE_BREEDING_BOX.get(), ADVANCED_BREEDING_BOX.get())
                     .build(null));
+    public static final RegistryObject<Block> CAT_CARRIER = BLOCKS.register("cat_carrier",
+            () -> new cn.laowu.mod.create.CatCarrierBlock(BlockBehaviour.Properties.of().strength(2.0F).noOcclusion()));
+    public static final RegistryObject<BlockEntityType<cn.laowu.mod.create.CatCarrierBlockEntity>> CAT_CARRIER_BE =
+            BLOCK_ENTITIES.register("cat_carrier", () -> BlockEntityType.Builder
+                    .of(cn.laowu.mod.create.CatCarrierBlockEntity::new, CAT_CARRIER.get()).build(null));
+    public static final RegistryObject<Item> CAT_CARRIER_ITEM = ITEMS.register("cat_carrier",
+            () -> new cn.laowu.mod.item.CatCarrierBlockItem(CAT_CARRIER.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CAT_LASER_POINTER = ITEMS.register("cat_laser_pointer",
+            () -> new cn.laowu.mod.item.CatLaserPointerItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> CAT_STORAGE_BOX = ITEMS.register("cat_storage_box",
+            () -> new cn.laowu.mod.item.CatStorageBoxItem(new Item.Properties()));
+
     public static final RegistryObject<Block> ADOPTION_BOX = BLOCKS.register("adoption_box",
             () -> new AdoptionBoxBlock(BlockBehaviour.Properties.copy(Blocks.BARREL)
                     .noOcclusion().strength(0.8F)));
@@ -517,6 +529,7 @@ public final class LaoWuMod {
                         output.accept(HISSING_COLLECTOR_ITEM.get());
                         output.accept(DEVOURING_CAT_ITEM.get());
                         output.accept(ADOPTION_BOX_ITEM.get());
+                        output.accept(CAT_CARRIER_ITEM.get());
                         output.accept(CAT_BLOCK_ITEM.get());
                         output.accept(CAT_INGOT.get());
                         output.accept(CAT_SHEET.get());
@@ -570,7 +583,9 @@ public final class LaoWuMod {
                             .displayItems((parameters, output) -> {
                                 output.accept(BASIC_BREEDING_BOX_ITEM.get());
                                 output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
-                                output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                               output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                                output.accept(CAT_LASER_POINTER.get());
+                                output.accept(CAT_STORAGE_BOX.get());
 
                                 output.accept(BREEDING_CAT_FOOD.get());
                                 output.accept(MUTATION_CAT_FOOD.get());
@@ -717,6 +732,14 @@ public final class LaoWuMod {
                     () -> new ProcessingRecipeSerializer<>(
                             PheromoneCatFoodMixingRecipe::new));
 
+    public static final RegistryObject<RecipeSerializer<cn.laowu.mod.recipe.KimiArmorDyeRecipe>>
+            KIMI_ARMOR_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("kimi_armor_dye",
+            () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(cn.laowu.mod.recipe.KimiArmorDyeRecipe::new));
+
+    public static final RegistryObject<RecipeSerializer<cn.laowu.mod.recipe.LaserPointerDyeRecipe>>
+            LASER_POINTER_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("laser_pointer_dye",
+            () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(cn.laowu.mod.recipe.LaserPointerDyeRecipe::new));
+
     public LaoWuMod(FMLJavaModLoadingContext context) {
         CraftingHelper.register(id("cat_pancake"), CatPancakeIngredient.Serializer.INSTANCE);
         CraftingHelper.register(id("cat_pancake_variant"),
@@ -740,7 +763,11 @@ public final class LaoWuMod {
         RECIPE_SERIALIZERS.register(modBus);
         LOOT_MODIFIERS.register(modBus);
         context.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, "laowu-client.toml");
+        context.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC, "laowu-server.toml");
+        context.registerConfig(ModConfig.Type.COMMON, GlobalConfig.SPEC, GlobalConfig.FILE_NAME);
         MinecraftForge.EVENT_BUS.register(CommonEvents.class);
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerAboutToStartEvent event) -> ServerConfig.resetWorldState());
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppedEvent event) -> ServerConfig.resetWorldState());
         ModNetwork.register();
         modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) ->
                 event.enqueueWork(() -> {
@@ -784,6 +811,9 @@ public final class LaoWuMod {
                     registerAlwaysVisibleDescription(INTERMEDIATE_BREEDING_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(ADVANCED_BREEDING_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(ADOPTION_BOX_ITEM.get());
+                    registerAlwaysVisibleDescription(CAT_CARRIER_ITEM.get());
+                    registerAlwaysVisibleDescription(CAT_LASER_POINTER.get());
+                    registerAlwaysVisibleDescription(CAT_STORAGE_BOX.get());
                     registerDescription(CAT_CANNON.get());
                     registerDescription(CAT_BALL.get());
                     registerDescription(CAT_STRIP.get());

@@ -147,9 +147,11 @@ tactical at 80 or above.
 
 Cat Filter ranges deliberately use two different domains. `Current Attributes`
 compare the same effective values as the panels, including trait and current
-day/night modifiers, and can select `0..999`; `Attribute Limits` continue to
+day/night modifiers, and can select `0..300`; `Attribute Limits` continue to
 select only genetic `0..100` values. Legacy untouched `0..100` Current ranges
-are migrated to the new unrestricted `0..999` default.
+are migrated to the unchecked `0..300` default. Older saved ranges above 300 are
+clamped on read without mutating the source NBT; group logic and identity/trait
+conditions are preserved. Unchecked fields remain unrestricted.
 
 ### Career-outfit combat
 
@@ -676,7 +678,7 @@ a four-block radius. The blast neither damages players or cats nor destroys
 blocks. If no target can be reached before the timeout, it primes in place so
 the cat cannot remain permanently invulnerable. After the blast it re-enters
 the ordinary career-cat death pipeline, including the cat-pancake drop and one
-random attribute-limit penalty. Only void damage and `/kill` bypass the final
+random base-attribute penalty of 20 (limits unchanged). Only void damage and `/kill` bypass the final
 charge.
 
 The visual fuse deliberately follows vanilla Creeper rendering rather than a

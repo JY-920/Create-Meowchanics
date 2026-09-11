@@ -55,6 +55,7 @@ public final class LaoWuJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
+        registration.addRecipes(mezz.jei.api.constants.RecipeTypes.CRAFTING, KimiArmorDyeJeiRecipes.examples());
         var level = Minecraft.getInstance().level;
         if (level != null) {
             var recipes = level.getRecipeManager()
@@ -75,11 +76,8 @@ public final class LaoWuJeiPlugin implements IModPlugin {
     /** Keep legacy datapack recipes functional while omitting them from the public recipe guide. */
     @Override
     public void onRuntimeAvailable(IJeiRuntime runtime) {
-        hideRecipeById(runtime, "mixing", "liquid_cat_mixing");
-        hideRecipeById(runtime, "crushing", "cat_powder_crushing");
-        hideRecipeById(runtime, "milling", "cat_powder_milling");
-        hideRecipeById(runtime, "crushing", "cat_powder_milling");
-        hideRecipeById(runtime, "sawing", "cat_strip_cutting");
+        cn.laowu.mod.client.ClientWorldSettings.recipeRefresh = () -> updateVisibility(runtime);
+        updateVisibility(runtime);
         hideNonOrangeCatPancakeRecipes(runtime);
         ensureCatGrenadeAssemblyVisible(runtime);
     }
@@ -174,17 +172,30 @@ public final class LaoWuJeiPlugin implements IModPlugin {
                 && !CatPancakeItem.DEFAULT_VARIANT.equals(CatPancakeItem.variantId(stack));
     }
 
+    @Override
+    public void onRuntimeUnavailable() {
+        cn.laowu.mod.client.ClientWorldSettings.recipeRefresh = () -> {};
+    }
+
+    private static void updateVisibility(IJeiRuntime runtime) {
+        setRecipeVisible(runtime, "mixing", "liquid_cat_mixing");
+        setRecipeVisible(runtime, "crushing", "cat_powder_crushing");
+        setRecipeVisible(runtime, "milling", "cat_powder_milling");
+        setRecipeVisible(runtime, "crushing", "cat_powder_milling");
+        setRecipeVisible(runtime, "sawing", "cat_strip_cutting");
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void hideRecipeById(IJeiRuntime runtime, String category, String recipePath) {
-        var recipeManager = runtime.getRecipeManager();
-        recipeManager.getRecipeType(ResourceLocation.fromNamespaceAndPath("create", category))
-                .ifPresent(type -> {
-                    List hidden = recipeManager.createRecipeLookup((RecipeType) type)
-                            .includeHidden().get()
-                            .filter(candidate -> candidate instanceof RecipeHolder<?> holder
-                                    && holder.id().equals(LaoWuMod.id(recipePath)))
-                            .toList();
-                    if (!hidden.isEmpty()) recipeManager.hideRecipes((RecipeType) type, hidden);
-                });
+    private static void setRecipeVisible(IJeiRuntime runtime, String category, String recipePath) {
+        var manager = runtime.getRecipeManager();
+        manager.getRecipeType(ResourceLocation.fromNamespaceAndPath("create", category)).ifPresent(type -> {
+            List recipes = manager.createRecipeLookup((RecipeType) type).includeHidden().get()
+                    .filter(candidate -> candidate instanceof RecipeHolder<?> holder
+                            && holder.id().equals(LaoWuMod.id(recipePath)))
+                    .toList();
+            if (recipes.isEmpty()) return;
+            if (cn.laowu.mod.ServerConfig.showHellRecipes()) manager.unhideRecipes((RecipeType) type, recipes);
+            else manager.hideRecipes((RecipeType) type, recipes);
+        });
     }
 }

@@ -34,14 +34,22 @@ repositories {
     }
     mavenCentral()
     maven { url = "https://maven.minecraftforge.net" }
-    maven { url = "https://maven.parchmentmc.org" }
+    maven {
+        url = "https://maven.parchmentmc.org"
+        content { includeGroup('org.parchmentmc.data') }
+    }
     maven { url = "https://maven.createmod.net" }
     maven { url = "https://maven.ithundxr.dev/snapshots" }
     maven { url = "https://maven.blamejared.com" }
     // NeoForge config API port used by Ponder.
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven" }
     // Curios API (optional dependency for the cat engineer goggles head slot).
-    maven { name = 'Curios'; url = uri('https://maven.theillusivec4.top/') }
+    exclusiveContent {
+        forRepository {
+            maven { name = 'Curios'; url = uri('https://maven.theillusivec4.top/') }
+        }
+        filter { includeGroup('top.theillusivec4.curios') }
+    }
 }
 
 // Optional development-only fallback for networks that cannot reach the

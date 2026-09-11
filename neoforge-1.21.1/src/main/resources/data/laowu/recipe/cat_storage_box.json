@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CFC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "create:cardboard"
+    },
+    "F": {
+      "tag": "minecraft:fishes"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_storage_box",
+    "count": 1
+  }
+}

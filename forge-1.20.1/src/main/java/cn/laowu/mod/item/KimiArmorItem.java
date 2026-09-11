@@ -44,12 +44,19 @@ public final class KimiArmorItem extends ArmorItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return KimiArmorClient.armorTexture(entity, slot);
+        return KimiArmorClient.armorTexture(stack, entity, slot);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(KimiArmorClient.extensions());
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Level level,
+                                java.util.List<net.minecraft.network.chat.Component> tooltip,
+                                net.minecraft.world.item.TooltipFlag flag) {
+        KimiArmorDye.tooltip(stack, tooltip);
     }
 }

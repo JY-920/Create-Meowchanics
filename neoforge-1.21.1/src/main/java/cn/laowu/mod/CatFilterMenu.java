@@ -3,6 +3,7 @@ package cn.laowu.mod;
 import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.genetics.CatTrait;
 import cn.laowu.mod.item.CatFilterRules;
+import cn.laowu.mod.item.CatFilterLogic;
 import com.simibubi.create.content.logistics.filter.AbstractFilterMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
@@ -28,7 +29,12 @@ public final class CatFilterMenu extends AbstractFilterMenu {
             TRAIT_SELECTION_START + MAX_REQUIRED_TRAITS;
     private static final int OWNERSHIP_FILTER_INDEX = GROWTH_FILTER_INDEX + 1;
     private static final int CAREER_FILTER_INDEX = OWNERSHIP_FILTER_INDEX + 1;
-    private static final int DATA_COUNT = CAREER_FILTER_INDEX + 1;
+    private static final int CURRENT_ENABLED_INDEX = CAREER_FILTER_INDEX + 1;
+    private static final int LIMIT_ENABLED_INDEX = CURRENT_ENABLED_INDEX + 1;
+    private static final int LOGIC_FLAGS_INDEX = LIMIT_ENABLED_INDEX + 1;
+    private static final int DATA_COUNT = LOGIC_FLAGS_INDEX + 1;
+    private static final int LOGIC_BUTTON_BASE = 25_000;
+    private static final int ENABLE_BUTTON_BASE = 25_100;
 
     private static final int RANGE_BUTTON_BASE = 1000;
     private static final int BOUND_STRIDE = CatFilterRules.MAX_CURRENT_VALUE + 1;
@@ -65,7 +71,7 @@ public final class CatFilterMenu extends AbstractFilterMenu {
 
     @Override
     protected int getPlayerInventoryYOffset() {
-        return 147;
+        return 177;
     }
 
     @Override
@@ -102,10 +108,26 @@ public final class CatFilterMenu extends AbstractFilterMenu {
         ranges.set(OWNERSHIP_FILTER_INDEX, CatFilterRules.OwnershipFilter.ANY.ordinal());
         ranges.set(CAREER_FILTER_INDEX, CatFilterRules.CareerFilter.ANY.ordinal());
         nameQuery = "";
+        ranges.set(CURRENT_ENABLED_INDEX, 0);
+        ranges.set(LIMIT_ENABLED_INDEX, 0);
+        ranges.set(LOGIC_FLAGS_INDEX, 0);
     }
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (id >= LOGIC_BUTTON_BASE && id < LOGIC_BUTTON_BASE + 10) {
+            int option = (id - LOGIC_BUTTON_BASE) / 2;
+            int bit = 1 << option;
+            int flags = ranges.get(LOGIC_FLAGS_INDEX);
+            ranges.set(LOGIC_FLAGS_INDEX, (id & 1) == 1 ? flags | bit : flags & ~bit);
+            return true;
+        }
+        if (id >= ENABLE_BUTTON_BASE && id < ENABLE_BUTTON_BASE + 24) {
+            int encoded = id - ENABLE_BUTTON_BASE;
+            int page = encoded / 12, stat = (encoded % 12) / 2;
+            setEnabled(page, stat, (encoded & 1) == 1);
+            return true;
+        }
         if (id >= IDENTITY_BUTTON_BASE
                 && id < IDENTITY_BUTTON_BASE + 3 * IDENTITY_FIELD_STRIDE) {
             int encoded = id - IDENTITY_BUTTON_BASE;
@@ -173,10 +195,35 @@ public final class CatFilterMenu extends AbstractFilterMenu {
                 ? Mth.clamp(value, minimum, CatFilterRules.maxValue(page))
                 : Mth.clamp(value, CatFilterRules.MIN_VALUE, upper);
         ranges.set(index(page, maximum, stat), clamped);
+        setEnabled(page, stat.ordinal(), true);
         // Do not change the held stack while this screen is open. Create's
         // AbstractFilterScreen treats an NBT change as a replaced filter and
         // closes itself. MenuBase.removed() persists the accumulated values.
         return true;
+    }
+
+    public boolean enabled(int page, CatStat stat) {
+        return (ranges.get(page == 1 ? LIMIT_ENABLED_INDEX : CURRENT_ENABLED_INDEX)
+                & (1 << stat.ordinal())) != 0;
+    }
+
+    private void setEnabled(int page, int stat, boolean enabled) {
+        int index = page == 1 ? LIMIT_ENABLED_INDEX : CURRENT_ENABLED_INDEX;
+        int mask = ranges.get(index), bit = 1 << stat;
+        ranges.set(index, enabled ? mask | bit : mask & ~bit);
+    }
+
+    public boolean option(int option) {
+        return (ranges.get(LOGIC_FLAGS_INDEX) & (1 << option)) != 0;
+    }
+
+    public static int logicButton(int option, boolean value) {
+        return LOGIC_BUTTON_BASE + Mth.clamp(option, 0, 4) * 2 + (value ? 1 : 0);
+    }
+
+    public static int enabledButton(int page, CatStat stat, boolean value) {
+        return ENABLE_BUTTON_BASE + Mth.clamp(page, 0, 1) * 12
+                + stat.ordinal() * 2 + (value ? 1 : 0);
     }
 
     public int min(int page, CatStat stat) {
@@ -268,9 +315,12 @@ public final class CatFilterMenu extends AbstractFilterMenu {
         ranges.set(OWNERSHIP_FILTER_INDEX, rules.ownership().ordinal());
         ranges.set(CAREER_FILTER_INDEX, rules.career().ordinal());
         nameQuery = rules.catName();
+        ranges.set(CURRENT_ENABLED_INDEX, rules.logic().currentMask());
+        ranges.set(LIMIT_ENABLED_INDEX, rules.logic().limitMask());
+        ranges.set(LOGIC_FLAGS_INDEX, rules.logic().flags());
     }
 
-    private CatFilterRules rules() {
+    public CatFilterRules rules() {
         int[] currentMin = new int[CatFilterRules.STAT_COUNT];
         int[] currentMax = new int[CatFilterRules.STAT_COUNT];
         int[] potentialMin = new int[CatFilterRules.STAT_COUNT];
@@ -290,7 +340,8 @@ public final class CatFilterMenu extends AbstractFilterMenu {
                         CatFilterRules.OwnershipFilter.values().length - 1)],
                 CatFilterRules.CareerFilter.values()[Mth.clamp(careerSelection(), 0,
                         CatFilterRules.CareerFilter.values().length - 1)],
-                nameQuery);
+                nameQuery).withLogic(new CatFilterLogic(ranges.get(CURRENT_ENABLED_INDEX),
+                        ranges.get(LIMIT_ENABLED_INDEX), ranges.get(LOGIC_FLAGS_INDEX)));
     }
 
     private static int index(int page, boolean maximum, CatStat stat) {

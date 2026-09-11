@@ -11,6 +11,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -19,6 +20,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -56,13 +58,10 @@ public final class ButterCatBoss extends Monster {
 
     /** animation2 is authored as five seconds and is sampled at 2x speed. */
     public static final int CHARGE_WINDUP_TICKS = 5 * 20 / 2;
-    private static final int CHARGE_ACTIVE_TICKS = 14;
     private static final int CHARGE_COOLDOWN_TICKS = 70;
     private static final double CHARGE_MIN_DISTANCE_SQR = 3.0D * 3.0D;
     private static final double CHARGE_MAX_DISTANCE_SQR = 20.0D * 20.0D;
     private static final float CHARGE_DAMAGE = 14.0F;
-    private static final double CHARGE_DISTANCE = 12.0D;
-    private static final double CHARGE_SPEED = 1.05D;
 
     public static final byte ATTACK_IDLE = 0;
     public static final byte ATTACK_WINDUP = 1;
@@ -84,6 +83,7 @@ public final class ButterCatBoss extends Monster {
     private final Set<ServerPlayer> trackingPlayers =
             Collections.newSetFromMap(new IdentityHashMap<>());
     private int chargeCooldown;
+    private final ButterCatCharge charge = new ButterCatCharge();
 
     public ButterCatBoss(EntityType<? extends ButterCatBoss> type, Level level) {
         super(type, level);
@@ -106,6 +106,28 @@ public final class ButterCatBoss extends Monster {
     @Override
     public boolean causeFallDamage(float distance, float multiplier, DamageSource source) {
         return false;
+    }
+
+    /** Move along the locked 3-D ray without changing the persistent NoGravity flag. */
+    @Override
+    public void travel(Vec3 input) {
+        if (this.level().isClientSide || !isDashing() || !this.isAlive() || this.isNoAi()) {
+            super.travel(input);
+            return;
+        }
+        AABB previousBox = this.getBoundingBox();
+        Vec3 previousPosition = this.position();
+        Vec3 requested = this.charge.velocity();
+        this.setDeltaMovement(requested);
+        this.move(MoverType.SELF, requested);
+        Vec3 actualMovement = this.position().subtract(previousPosition);
+        this.charge.advance(actualMovement);
+        // Count actual contacts before expiry: a final-step hit also gets its full 0.3s tail.
+        this.performChargeImpact(previousBox, actualMovement);
+        boolean blocked = ButterCatCharge.blocked(this.horizontalCollision, this.verticalCollision, requested);
+        if (blocked) this.playChargeImpactEffects();
+        if (blocked || !this.charge.active() || !this.isAlive()) finishDash();
+        this.calculateEntityAnimation(false);
     }
 
     @Override
@@ -138,9 +160,10 @@ public final class ButterCatBoss extends Monster {
             Vec3 backwards = this.getLookAngle().scale(-0.65D);
             this.level().addParticle(ParticleTypes.CLOUD,
                     this.getX() + backwards.x,
-                    this.getY() + this.getBbHeight() * 0.45D,
+                    this.getY() + this.getBbHeight() * 0.45D + backwards.y,
                     this.getZ() + backwards.z,
-                    -this.getDeltaMovement().x * 0.15D, 0.025D,
+                    -this.getDeltaMovement().x * 0.15D,
+                    0.025D - this.getDeltaMovement().y * 0.15D,
                     -this.getDeltaMovement().z * 0.15D);
         }
     }
@@ -148,6 +171,8 @@ public final class ButterCatBoss extends Monster {
     @Override
     public void tick() {
         super.tick();
+        if (!this.level().isClientSide && (this.isNoAi() || !this.isAlive())
+                && (isDashing() || isWindingUp())) finishDash();
         if (this.level().isClientSide || !isSummoning()) return;
 
         this.setNoAi(true);
@@ -206,6 +231,13 @@ public final class ButterCatBoss extends Monster {
     @Override
     protected float getSoundVolume() {
         return 1.35F;
+    }
+
+    /** Apply the dash reduction after ordinary armor/resistance, before absorption. */
+    @Override
+    protected float getDamageAfterMagicAbsorb(DamageSource source, float amount) {
+        return ButterCatCharge.reduceDamage(super.getDamageAfterMagicAbsorb(source, amount),
+                isDashing(), source.is(DamageTypeTags.BYPASSES_INVULNERABILITY));
     }
 
     @Override
@@ -325,20 +357,24 @@ public final class ButterCatBoss extends Monster {
         this.entityData.set(DATA_PHASE_ANIMATION_START, this.level().getGameTime());
     }
 
-    private boolean performChargeImpact() {
-        AABB impactBox = this.getBoundingBox().inflate(0.45D, 0.25D, 0.45D);
+    private void performChargeImpact(AABB previousBox, Vec3 actualMovement) {
+        AABB impactBox = ButterCatCharge.sweptBox(previousBox, actualMovement);
         boolean hit = false;
         for (LivingEntity victim : this.level().getEntitiesOfClass(LivingEntity.class, impactBox,
                 entity -> entity.isAlive() && entity != this
-                        && !(entity instanceof ButterCatBoss))) {
+                        && !(entity instanceof ButterCatBoss)
+                        && !this.charge.hasHit(entity.getUUID()))) {
+            if (!ButterCatCharge.touches(previousBox, actualMovement, victim.getBoundingBox())
+                    || !this.getSensing().hasLineOfSight(victim)) continue;
             if (!victim.hurt(this.damageSources().mobAttack(this), CHARGE_DAMAGE)) continue;
+            this.charge.hit(victim.getUUID());
             double x = victim.getX() - this.getX();
             double z = victim.getZ() - this.getZ();
             victim.knockback(1.55D, -x, -z);
             hit = true;
+            if (!this.isAlive()) break;
         }
         if (hit) playChargeImpactEffects();
-        return hit;
     }
 
     private void playChargeImpactEffects() {
@@ -379,11 +415,15 @@ public final class ButterCatBoss extends Monster {
         if (summoning) this.setNoAi(true);
     }
 
+    private void finishDash() {
+        this.charge.stop();
+        this.setDeltaMovement(Vec3.ZERO);
+        this.setXRot(0.0F);
+        this.setAttackPhase(ATTACK_IDLE);
+    }
+
     private final class ChargeAttackGoal extends Goal {
-        private int chargeTicks;
-        private Vec3 chargeDirection = Vec3.ZERO;
-        private Vec3 dashStart = Vec3.ZERO;
-        private boolean impacted;
+        private int windupTicks;
 
         private ChargeAttackGoal() {
             this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
@@ -398,7 +438,7 @@ public final class ButterCatBoss extends Monster {
         public boolean canUse() {
             LivingEntity target = ButterCatBoss.this.getTarget();
             if (chargeCooldown > 0 || target == null || !target.isAlive()
-                    || !ButterCatBoss.this.onGround()) return false;
+                    || ButterCatBoss.this.isSummoning()) return false;
             double distance = ButterCatBoss.this.distanceToSqr(target);
             return distance >= CHARGE_MIN_DISTANCE_SQR
                     && distance <= CHARGE_MAX_DISTANCE_SQR
@@ -407,17 +447,18 @@ public final class ButterCatBoss extends Monster {
 
         @Override
         public boolean canContinueToUse() {
+            if (!ButterCatBoss.this.isAlive() || ButterCatBoss.this.isNoAi()
+                    || ButterCatBoss.this.isSummoning()) return false;
+            // The launched dash is committed even if it kills or loses its original target.
+            if (ButterCatBoss.this.isDashing()) return charge.active();
             LivingEntity target = ButterCatBoss.this.getTarget();
-            return !this.impacted && this.chargeTicks < CHARGE_WINDUP_TICKS + CHARGE_ACTIVE_TICKS
-                    && target != null && target.isAlive();
+            return ButterCatBoss.this.isWindingUp() && target != null && target.isAlive();
         }
 
         @Override
         public void start() {
-            this.chargeTicks = 0;
-            this.impacted = false;
-            this.chargeDirection = Vec3.ZERO;
-            this.dashStart = Vec3.ZERO;
+            this.windupTicks = 0;
+            charge.stop();
             ButterCatBoss.this.getNavigation().stop();
             ButterCatBoss.this.setAggressive(true);
             ButterCatBoss.this.setAttackPhase(ATTACK_WINDUP);
@@ -426,75 +467,45 @@ public final class ButterCatBoss extends Monster {
 
         @Override
         public void tick() {
-            this.chargeTicks++;
-            LivingEntity target = ButterCatBoss.this.getTarget();
-            if (target == null) return;
-
-            if (this.chargeTicks < CHARGE_WINDUP_TICKS) {
-                ButterCatBoss.this.getLookControl().setLookAt(target, 35.0F, 30.0F);
-                Vec3 motion = ButterCatBoss.this.getDeltaMovement();
-                ButterCatBoss.this.setDeltaMovement(motion.x * 0.25D, motion.y,
-                        motion.z * 0.25D);
-                return;
-            }
-
             if (ButterCatBoss.this.isWindingUp()) {
-                Vec3 towardTarget = target.getEyePosition()
-                        .subtract(ButterCatBoss.this.position()
-                                .add(0.0D, ButterCatBoss.this.getBbHeight() * 0.45D, 0.0D));
-                Vec3 horizontal = new Vec3(towardTarget.x, 0.0D, towardTarget.z);
-                if (horizontal.lengthSqr() < 1.0E-4D) horizontal = ButterCatBoss.this.getLookAngle();
-                this.chargeDirection = horizontal.normalize();
-                this.dashStart = ButterCatBoss.this.position();
+                LivingEntity target = ButterCatBoss.this.getTarget();
+                if (target == null || !target.isAlive()) {
+                    finishDash();
+                    return;
+                }
+                this.windupTicks++;
+                ButterCatBoss.this.getLookControl().setLookAt(target, 35.0F, 90.0F);
+                if (this.windupTicks < CHARGE_WINDUP_TICKS) {
+                    Vec3 motion = ButterCatBoss.this.getDeltaMovement();
+                    ButterCatBoss.this.setDeltaMovement(motion.x * 0.25D, motion.y, motion.z * 0.25D);
+                    return;
+                }
+                // Aim at the whole target's center, including straight-up and straight-down attacks.
+                charge.start(ButterCatBoss.this.getBoundingBox().getCenter(),
+                        target.getBoundingBox().getCenter(), ButterCatBoss.this.getLookAngle());
                 ButterCatBoss.this.setAttackPhase(ATTACK_DASH);
-                ButterCatBoss.this.setYRot((float) (Mth.atan2(-this.chargeDirection.x,
-                        this.chargeDirection.z) * Mth.RAD_TO_DEG));
-                ButterCatBoss.this.yBodyRot = ButterCatBoss.this.getYRot();
                 ButterCatBoss.this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.3F, 0.65F);
             }
 
-            double travelled = horizontalDistance(this.dashStart,
-                    ButterCatBoss.this.position());
-            if (travelled >= CHARGE_DISTANCE) {
-                finishDash();
-                return;
+            if (!ButterCatBoss.this.isDashing()) return;
+            Vec3 direction = charge.direction();
+            ButterCatBoss.this.getLookControl().setLookAt(
+                    ButterCatBoss.this.getX() + direction.x * 4.0D,
+                    ButterCatBoss.this.getEyeY() + direction.y * 4.0D,
+                    ButterCatBoss.this.getZ() + direction.z * 4.0D, 360.0F, 180.0F);
+            if (direction.horizontalDistanceSqr() > 1.0E-8D) {
+                ButterCatBoss.this.setYRot((float) (Mth.atan2(-direction.x, direction.z) * Mth.RAD_TO_DEG));
             }
-            double remaining = CHARGE_DISTANCE - travelled;
-            double speed = Math.min(CHARGE_SPEED, remaining);
-            Vec3 current = ButterCatBoss.this.getDeltaMovement();
-            ButterCatBoss.this.setDeltaMovement(this.chargeDirection.x * speed,
-                    Math.max(current.y, -0.2D), this.chargeDirection.z * speed);
-            this.impacted = ButterCatBoss.this.performChargeImpact();
-            if (this.impacted) {
-                finishDash();
-                return;
-            }
-            if (ButterCatBoss.this.horizontalCollision) {
-                ButterCatBoss.this.playChargeImpactEffects();
-                finishDash();
-            }
+            ButterCatBoss.this.setXRot((float) (-Mth.atan2(direction.y, direction.horizontalDistance()) * Mth.RAD_TO_DEG));
+            ButterCatBoss.this.yBodyRot = ButterCatBoss.this.getYRot();
+            ButterCatBoss.this.yHeadRot = ButterCatBoss.this.getYRot();
         }
 
         @Override
         public void stop() {
-            ButterCatBoss.this.setAttackPhase(ATTACK_IDLE);
+            finishDash();
             ButterCatBoss.this.setAggressive(false);
             ButterCatBoss.this.chargeCooldown = CHARGE_COOLDOWN_TICKS;
-            Vec3 motion = ButterCatBoss.this.getDeltaMovement();
-            ButterCatBoss.this.setDeltaMovement(0.0D, motion.y, 0.0D);
-        }
-
-        private static double horizontalDistance(Vec3 first, Vec3 second) {
-            double x = second.x - first.x;
-            double z = second.z - first.z;
-            return Math.sqrt(x * x + z * z);
-        }
-
-        private void finishDash() {
-            Vec3 motion = ButterCatBoss.this.getDeltaMovement();
-            ButterCatBoss.this.setDeltaMovement(0.0D, motion.y, 0.0D);
-            ButterCatBoss.this.setAttackPhase(ATTACK_IDLE);
-            this.impacted = true;
         }
     }
 }

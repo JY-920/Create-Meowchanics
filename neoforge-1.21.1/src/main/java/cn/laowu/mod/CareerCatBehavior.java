@@ -71,14 +71,7 @@ import java.util.WeakHashMap;
 
 /** Server-side attributes and jobs supplied by the cat career outfits. */
 public final class CareerCatBehavior {
-    public static final int FISHING_LUCK_BONUS = 10;
-    public static final int FIRE_STAMINA_BONUS = 10;
-    public static final int MECHANICAL_ATTACK_BONUS = 10;
-    public static final int HONEY_SPEED_BONUS = 10;
-    public static final int FLIGHT_ATTACK_BONUS = 10;
-    public static final int TRANSPORT_SPEED_BONUS = 10;
-    public static final int DYNAMITE_ATTACK_BONUS = 10;
-    private static final double MAX_OWNER_DISTANCE_SQR = 32.0D * 32.0D;
+    public static final double MAX_OWNER_DISTANCE_SQR = 96.0D * 96.0D;
     private static final double RANGED_MAX_DISTANCE = 12.0D;
     private static final double MECHANICAL_LASER_RANGE = 16.0D;
     private static final double HONEY_MISSILE_RANGE = 12.0D;
@@ -146,6 +139,11 @@ public final class CareerCatBehavior {
                     && healthAttribute.getModifier(HEALTH_MODIFIER_ID) == null;
             applyAttributes(cat, outfit, newlyGranted);
             APPLIED_OUTFITS.put(cat, outfit);
+        } else if (cat.tickCount % 20 == 0) {
+            // Update suit bonuses in place; do not re-equip, refill health or reset AI/cooldowns.
+            applyAttributes(cat, outfit, false);
+        } else {
+            applyAttackCoefficient(cat, outfit);
         }
         if (outfit == CatOutfitType.NONE || CatPoseData.isPancake(cat)) return;
 
@@ -186,21 +184,18 @@ public final class CareerCatBehavior {
                                         boolean preserveMissingHealth) {
         float oldMax = cat.getMaxHealth();
         float oldHealth = cat.getHealth();
-        CareerProfile profile = profile(outfit);
+        CatSuitSettings profile = CatSuitSettings.current(outfit);
 
         setModifier(cat, Attributes.MAX_HEALTH, HEALTH_MODIFIER_ID,
-                "Lao Wu career cat health", profile.healthBonus(),
+                "Lao Wu career cat health", profile.value(CatSuitSetting.HEALTH),
                 AttributeModifier.Operation.ADD_VALUE);
         setModifier(cat, Attributes.ARMOR, ARMOR_MODIFIER_ID,
-                "Lao Wu career cat armor", profile.armorBonus(),
+                "Lao Wu career cat armor", profile.value(CatSuitSetting.ARMOR),
                 AttributeModifier.Operation.ADD_VALUE);
         setModifier(cat, Attributes.ARMOR_TOUGHNESS, TOUGHNESS_MODIFIER_ID,
-                "Lao Wu career cat toughness", profile.toughnessBonus(),
+                "Lao Wu career cat toughness", profile.value(CatSuitSetting.TOUGHNESS),
                 AttributeModifier.Operation.ADD_VALUE);
-        setModifier(cat, Attributes.ATTACK_DAMAGE, ATTACK_MODIFIER_ID,
-                "Lao Wu career damage multiplier",
-                profile.damageMultiplier() - 1.0D,
-                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        applyAttackCoefficient(cat, outfit);
         setModifier(cat, Attributes.KNOCKBACK_RESISTANCE,
                 KNOCKBACK_RESISTANCE_MODIFIER_ID,
                 "Lao Wu melee career knockback resistance",
@@ -234,87 +229,67 @@ public final class CareerCatBehavior {
         }
     }
 
-    private static CareerProfile profile(CatOutfitType outfit) {
-        return switch (outfit) {
-            case TERMINATOR -> new CareerProfile(20.0D, 6.0D, 3.0D,
-                    0.75D, 24.0D, 0.12D, 10);
-            case FISHING -> new CareerProfile(20.0D, 5.0D, 2.0D,
-                    0.55D, 36.0D, 0.10D, 20);
-            case FLIGHT -> new CareerProfile(12.0D, 3.0D, 1.0D,
-                    1.25D, 36.0D, 0.10D, 20);
-            case FIRE -> new CareerProfile(40.0D, 10.0D, 4.0D,
-                    0.60D, 14.0D, 0.08D, 5);
-            case HONEY -> new CareerProfile(24.0D, 5.0D, 2.0D,
-                    1.05D, 42.0D, 0.10D, 24);
-            case TRANSPORT -> new CareerProfile(30.0D, 6.0D, 3.0D,
-                    0.00D, 34.0D, 0.08D, 20);
-            case DYNAMITE -> new CareerProfile(24.0D, 5.0D, 2.0D,
-                    1.35D, 56.0D, 0.12D, 38);
-            case NONE -> new CareerProfile(0.0D, 0.0D, 0.0D,
-                    1.00D, 24.0D, 0.12D, 8);
-        };
+    /** K is applied once inside the biological attack attribute, as the original suit coefficient was. */
+    private static void applyAttackCoefficient(Cat cat, CatOutfitType outfit) {
+        setModifier(cat, Attributes.ATTACK_DAMAGE, ATTACK_MODIFIER_ID,
+                "Lao Wu career damage coefficient",
+                ServerConfig.careerDamageCoefficient(outfit) - 1.0D,
+                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 
     private static int careerAttackIntervalTicks(Cat cat) {
-        int speed = Math.max(0, CatAttributeEffects.effectiveValue(cat, CatStat.SPEED));
-        return careerAttackIntervalTicks(CatClothesData.getOutfit(cat), speed);
+        return careerAttackIntervalTicks(CatClothesData.getOutfit(cat),
+                Math.max(0, CatAttributeEffects.effectiveValue(cat, CatStat.SPEED)));
     }
 
     private static int careerAttackIntervalTicks(CatOutfitType outfit, int speed) {
-        CareerProfile profile = profile(outfit);
-        return Mth.clamp((int) Math.round(profile.intervalBase()
-                        - profile.intervalPerSpeed() * speed),
-                profile.minimumInterval(), 60);
+        return CatSuitSettings.current(outfit).intervalTicks(ServerConfig.scale(CatStat.SPEED, speed));
     }
 
     /** Exact values used by the suit's Shift comparison tooltip. */
     public static CareerSnapshot snapshot(CatOutfitType outfit, int baseAttributeValue) {
-        int base = Math.max(0, baseAttributeValue);
-        int attack = base + switch (outfit) {
-            case TERMINATOR -> MECHANICAL_ATTACK_BONUS;
-            case FLIGHT -> FLIGHT_ATTACK_BONUS;
-            case DYNAMITE -> DYNAMITE_ATTACK_BONUS;
-            default -> 0;
-        };
-        int stamina = base + (outfit == CatOutfitType.FIRE
-                ? FIRE_STAMINA_BONUS : 0);
-        int speed = base + (outfit == CatOutfitType.HONEY
-                ? HONEY_SPEED_BONUS
-                : outfit == CatOutfitType.TRANSPORT ? TRANSPORT_SPEED_BONUS : 0);
-        return snapshotEffective(outfit, base, attack, speed, stamina);
+        return snapshot(outfit, baseAttributeValue, CatSuitSettings.current(outfit));
     }
 
-    /**
-     * Exact live conversion used by attribute-panel hover help. The supplied
-     * values have already absorbed traits and outfit-specific attribute
-     * bonuses, so this method only applies the career's equipment statistics
-     * and combat coefficients.
-     */
+    /** Compatibility overload for a draft K; all other settings remain current. */
+    public static CareerSnapshot snapshot(CatOutfitType outfit, int baseAttributeValue, double damageCoefficient) {
+        return snapshot(outfit, baseAttributeValue,
+                CatSuitSettings.current(outfit).with(CatSuitSetting.DAMAGE, damageCoefficient));
+    }
+
+    /** Preview every unsaved suit setting without writing configuration. */
+    public static CareerSnapshot snapshot(CatOutfitType outfit, int baseAttributeValue, CatSuitSettings settings) {
+        int base = Math.max(0, baseAttributeValue);
+        return snapshotEffective(outfit, settings.attribute(base, CatStat.HEALTH),
+                settings.attribute(base, CatStat.ATTACK), settings.attribute(base, CatStat.SPEED),
+                settings.attribute(base, CatStat.STAMINA), settings);
+    }
+
+    /** Inputs already include traits and suit stat bonuses; do not add them twice. */
     public static CareerSnapshot snapshotEffective(CatOutfitType outfit,
-                                                   int health, int attack,
-                                                   int speed, int stamina) {
-        CareerProfile profile = profile(outfit);
+                                                   int health, int attack, int speed, int stamina) {
+        return snapshotEffective(outfit, health, attack, speed, stamina, CatSuitSettings.current(outfit));
+    }
+
+    private static CareerSnapshot snapshotEffective(CatOutfitType outfit,
+                                                    int health, int attack, int speed, int stamina,
+                                                    CatSuitSettings settings) {
         boolean attacks = outfit != CatOutfitType.TRANSPORT && outfit != CatOutfitType.NONE;
         return new CareerSnapshot(
-                CatAttributeEffects.maximumHealth(health) + profile.healthBonus(),
-                CatAttributeEffects.armor(stamina) + profile.armorBonus(),
-                CatAttributeEffects.armorToughness(stamina) + profile.toughnessBonus(),
-                attacks ? CatAttributeEffects.attackDamage(attack)
-                        * profile.damageMultiplier() : 0.0D,
-                attacks ? careerAttackIntervalTicks(outfit, speed) : 0,
-                attacks);
+                Attributes.MAX_HEALTH.value().sanitizeValue(
+                        CatAttributeEffects.maximumHealth(health) + settings.value(CatSuitSetting.HEALTH)),
+                Attributes.ARMOR.value().sanitizeValue(
+                        CatAttributeEffects.armor(stamina) + settings.value(CatSuitSetting.ARMOR)),
+                Attributes.ARMOR_TOUGHNESS.value().sanitizeValue(
+                        CatAttributeEffects.armorToughness(stamina) + settings.value(CatSuitSetting.TOUGHNESS)),
+                attacks ? Attributes.ATTACK_DAMAGE.value().sanitizeValue(
+                        CatAttributeEffects.attackDamage(attack) * settings.value(CatSuitSetting.DAMAGE)) : 0.0D,
+                attacks ? settings.intervalTicks(ServerConfig.scale(CatStat.SPEED, speed)) : 0, attacks);
     }
 
     public record CareerSnapshot(double health, double armor, double toughness,
                                  double attackDamage, int attackIntervalTicks,
-                                 boolean attacks) {
-    }
-
-    private record CareerProfile(double healthBonus, double armorBonus,
-                                 double toughnessBonus, double damageMultiplier,
-                                 double intervalBase, double intervalPerSpeed,
-                                 int minimumInterval) {
-    }
+                                 boolean attacks) {}
 
     private static void ensureCareerCombat(Cat cat) {
         if (!COMBAT_GOALS_INSTALLED.add(cat)) return;
@@ -365,7 +340,7 @@ public final class CareerCatBehavior {
         if (owner == null || resting || !activelyFighting
                 || cat.distanceToSqr(owner) <= MAX_OWNER_DISTANCE_SQR) return;
 
-        // The 32-block limit is a combat leash, not an idle follow rule. Cats
+        // The 96-block limit is a combat leash, not an idle follow rule. Cats
         // stationed far away (including on Seats) stay there; only an active
         // chase can trigger disengagement and a return to the owner.
         cat.setTarget(null);
@@ -483,12 +458,12 @@ public final class CareerCatBehavior {
         }
     }
 
-    public static boolean isForbiddenTerminatorTarget(LivingEntity target) {
-        return isForbiddenCareerTarget(target);
+    public static boolean isForbiddenTerminatorTarget(Cat cat, LivingEntity target) {
+        return isForbiddenCareerTarget(target) || CatTeamRules.friendly(cat, target);
     }
 
     private static boolean isForbiddenCareerTarget(LivingEntity target) {
-        return target instanceof Player || target instanceof Cat;
+        return target instanceof Player;
     }
 
     private static boolean canFight(Cat cat) {
@@ -505,7 +480,7 @@ public final class CareerCatBehavior {
 
     private static boolean canTarget(Cat cat, LivingEntity target) {
         return target != null && target.isAlive() && target != cat.getOwner()
-                && !isForbiddenCareerTarget(target) && cat.canAttack(target);
+                && !isForbiddenCareerTarget(target) && CatTeamRules.canHarm(cat, target);
     }
 
     private static boolean isRangedOutfit(CatOutfitType outfit) {
@@ -541,7 +516,7 @@ public final class CareerCatBehavior {
 
         for (Cat defender : level.getEntitiesOfClass(Cat.class,
                 rangedCat.getBoundingBox().inflate(16.0D), candidate -> candidate != rangedCat
-                        && ownerId.equals(candidate.getOwnerUUID())
+                        && CatTeamRules.friendly(rangedCat, candidate)
                         && canFight(candidate)
                         && isMeleeOutfit(CatClothesData.getOutfit(candidate))
                         && CatAttributeEffects.effectiveValue(candidate, CatStat.INTELLIGENCE)
@@ -831,8 +806,7 @@ public final class CareerCatBehavior {
                 || CatPoseData.isPancake(candidate)
                 || supporter.distanceToSqr(candidate) > maximumDistanceSqr
                 || hasAllLogisticsSupportEffects(candidate)) return false;
-        UUID ownerId = supporter.getOwnerUUID();
-        if (ownerId == null || !ownerId.equals(candidate.getOwnerUUID())) return false;
+        if (!CatTeamRules.friendly(supporter, candidate)) return false;
         CatOutfitType outfit = CatClothesData.getOutfit(candidate);
         if (outfit == CatOutfitType.NONE || outfit == CatOutfitType.TRANSPORT) return false;
         LivingEntity enemy = candidate.getTarget();

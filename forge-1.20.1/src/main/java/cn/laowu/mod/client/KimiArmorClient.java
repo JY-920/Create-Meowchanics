@@ -14,20 +14,29 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 /** Client-only model and texture selection for the Kimi armour set. */
 public final class KimiArmorClient {
-    public static String armorTexture(Entity entity, EquipmentSlot slot) {
+    public static String armorTexture(ItemStack stack, Entity entity, EquipmentSlot slot) {
         if (slot == EquipmentSlot.HEAD) {
-            return LaoWuMod.id("textures/models/armor/kimi_helmet.png").toString();
+            return KimiArmorDyeTextures.texture(LaoWuMod.id("textures/models/armor/kimi_helmet.png"), stack).toString();
         }
         if (slot == EquipmentSlot.CHEST && isSlimPlayer(entity)) {
-            return LaoWuMod.id("textures/models/armor/kimi_armor_slim.png").toString();
+            return KimiArmorDyeTextures.texture(LaoWuMod.id("textures/models/armor/kimi_armor_slim.png"), stack).toString();
         }
-        return LaoWuMod.id("textures/models/armor/kimi_armor.png").toString();
+        return KimiArmorDyeTextures.texture(LaoWuMod.id("textures/models/armor/kimi_armor.png"), stack).toString();
     }
 
     public static IClientItemExtensions extensions() {
         return new IClientItemExtensions() {
             private KimiArmorModel model;
             private KimiArmorModel slimModel;
+            private KimiArmorDyeItemRenderer itemRenderer;
+
+            @Override public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (itemRenderer == null) {
+                    var mc = Minecraft.getInstance();
+                    itemRenderer = new KimiArmorDyeItemRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
+                }
+                return itemRenderer;
+            }
 
             @Override
             public Model getGenericArmorModel(LivingEntity entity, ItemStack stack,

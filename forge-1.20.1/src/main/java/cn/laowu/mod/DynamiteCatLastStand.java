@@ -46,7 +46,7 @@ public final class DynamiteCatLastStand {
     private static final double BLAST_RADIUS = 4.0D;
     private static final double CHASE_SPEED = 1.30D;
     private static final double FUSED_CHASE_SPEED = 1.08D;
-    private static final float FINAL_DAMAGE_MULTIPLIER = 10.0F;
+    private static final float FINAL_DAMAGE_MULTIPLIER = 5.0F;
 
     /**
      * Cancels the first real death and converts it into a one-health charge.
@@ -161,9 +161,8 @@ public final class DynamiteCatLastStand {
 
     private static void detonate(ServerLevel level, Cat cat) {
         Vec3 center = cat.position().add(0.0D, cat.getBbHeight() * 0.45D, 0.0D);
-        float damage = Math.max(1.0F,
-                (float) cat.getAttributeValue(Attributes.ATTACK_DAMAGE)
-                        * FINAL_DAMAGE_MULTIPLIER);
+        float damage = ServerConfig.scaleDamage(cat.getAttributeValue(Attributes.ATTACK_DAMAGE),
+                FINAL_DAMAGE_MULTIPLIER);
 
         level.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
                 center.x, center.y, center.z, 1,
@@ -250,9 +249,8 @@ public final class DynamiteCatLastStand {
     private static boolean isValidTarget(Cat cat, LivingEntity target) {
         return target != null && target.isAlive() && target != cat
                 && target != cat.getOwner()
-                && !(target instanceof Cat)
                 && !(target instanceof Player)
-                && cat.canAttack(target);
+                && CatTeamRules.canHarm(cat, target);
     }
 
     private static void rememberTarget(Cat cat, LivingEntity target) {
