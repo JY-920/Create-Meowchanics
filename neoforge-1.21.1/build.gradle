@@ -14,7 +14,8 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = "${mod_version}-neoforge-${minecraft_version}"
+apply from: '../gradle/versioning.gradle'
+version = "${resolvedModVersion}-neoforge-${minecraft_version}"
 group = mod_group_id
 
 sourceSets.main.resources {
@@ -226,7 +227,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_id                 : mod_id,
             mod_name               : mod_name,
             mod_license            : mod_license,
-            mod_version            : mod_version,
+            mod_version            : resolvedModVersion,
             mod_authors            : mod_authors,
             mod_description        : mod_description,
     ]
@@ -258,6 +259,39 @@ publishing {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
+
+// Custom sampled cat poses must never be parsed as GeckoLib animation JSON.
+def verifyCatAnimationResources = tasks.register('verifyCatAnimationResources') {
+    dependsOn tasks.named('processResources')
+    def resourcesDirectory = layout.buildDirectory.dir('resources/main')
+    inputs.dir(resourcesDirectory)
+    doLast {
+        def resourceRoot = resourcesDirectory.get().asFile
+        fileTree(resourceRoot) {
+            include 'assets/*/animations/**/*.json'
+        }.each { resource ->
+            def json = new groovy.json.JsonSlurper().parse(resource)
+            if (!(json instanceof Map) || !(json.animations instanceof Map)) {
+                throw new GradleException("GeckoLib-incompatible resource in animations/: ${resource}. Move custom cat poses to cat_animation_clips/.")
+            }
+        }
+        ['cat_thomas_flare', 'cat_pipa_performance'].each { name ->
+            def clipFile = new File(resourceRoot, "assets/laowu/cat_animation_clips/${name}.json")
+            if (!clipFile.isFile()) {
+                throw new GradleException("Missing private cat animation: ${clipFile}")
+            }
+            def clip = new groovy.json.JsonSlurper().parse(clipFile)
+            if (!(clip.frames instanceof List) || clip.frames.isEmpty()
+                    || !(clip.bone_order instanceof List) || clip.format_version != 1) {
+                throw new GradleException("Invalid sampled cat animation: ${clipFile}")
+            }
+        }
+        logger.lifecycle('Verified private cat animation resources and GeckoLib scan compatibility')
+    }
+}
+tasks.named('jar').configure { dependsOn verifyCatAnimationResources }
+tasks.named('check').configure { dependsOn verifyCatAnimationResources }
+
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {

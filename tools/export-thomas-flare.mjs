@@ -60,7 +60,7 @@ const result = {
 };
 if (process.argv.includes('--check')) {
   for (const loader of ['forge-1.20.1', 'neoforge-1.21.1']) {
-    const file = path.join(root, loader, 'src/main/resources/assets/laowu/animations/cat_thomas_flare.json');
+    const file = path.join(root, loader, 'src/main/resources/assets/laowu/cat_animation_clips/cat_thomas_flare.json');
     assert.deepEqual(JSON.parse(readFileSync(file, 'utf8')), result, loader + ' animation is stale');
   }
   process.stdout.write('PASS: both baked clips match the approved Blockbench project\n');

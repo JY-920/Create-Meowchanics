@@ -275,6 +275,7 @@ public final class GlobalWorldConfigRegression {
         CatInteractionFixesRegression.run();
         CareerDefaultsAndKnockbackRegression.run();
         SuitSettingsRegression.run();
+        MutationCatFoodRegression.run();
         System.out.println("PASS: " + checks + " checks; both worlds, all overrides, unlock/restore, "
                 + "formula coefficients, 999999 cap, forged-lock write guard, remote authority, reloads and TOML validation");
     }

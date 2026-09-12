@@ -18,7 +18,15 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String VERSION = "19";
+    private static final String VERSION = "21";
+
+    public static void requestLaserSettings(int action) {
+        CHANNEL.sendToServer(new LaserSettingsRequestPacket(action));
+    }
+
+    public static void sendLaserSettings(net.minecraft.server.level.ServerPlayer player, boolean aggressive) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new LaserSettingsSyncPacket(aggressive));
+    }
 
     public static void sendLaserMark(net.minecraft.server.level.ServerPlayer player, net.minecraft.world.entity.LivingEntity target) {
         LaserMarkPacket packet = new LaserMarkPacket(target == null ? -1 : target.getId(),
@@ -43,6 +51,12 @@ public final class ModNetwork {
             () -> VERSION, VERSION::equals, VERSION::equals);
 
     public static void register() {
+        CHANNEL.registerMessage(21, LaserSettingsRequestPacket.class, LaserSettingsRequestPacket::encode,
+                LaserSettingsRequestPacket::decode, LaserSettingsRequestPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(22, LaserSettingsSyncPacket.class, LaserSettingsSyncPacket::encode,
+                LaserSettingsSyncPacket::decode, LaserSettingsSyncPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(20, LaserMarkPacket.class, LaserMarkPacket::encode, LaserMarkPacket::decode,
                 LaserMarkPacket::handle, java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(18, WorldSettingsRequestPacket.class, WorldSettingsRequestPacket::encode,

@@ -23,6 +23,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +36,10 @@ public final class HissingCatModel extends CatModel<Cat> {
 
     private boolean hissing;
     private boolean pancake;
+    private boolean playingPipa;
+    private boolean playingStreetDance;
+    private final ModelPart pipa = new ModelPart(List.of(), Map.of());
+    private final ModelPart plectrum = new ModelPart(List.of(), Map.of());
     private float liveHeadXRot;
     private float liveHeadYRot;
     private final ModelPart leftEar;
@@ -90,6 +95,8 @@ public final class HissingCatModel extends CatModel<Cat> {
         liveHeadYRot = head.yRot;
         hissing = CatPoseData.isHissing(cat);
         pancake = CatPoseData.isPancake(cat);
+        playingPipa = false;
+        playingStreetDance = false;
         boolean vanillaVisible = !hissing && !pancake;
         setVanillaGeometryVisible(vanillaVisible);
         var traits = CatTraitData.read(cat).orElse(null);
@@ -103,11 +110,22 @@ public final class HissingCatModel extends CatModel<Cat> {
         tail2.visible = vanillaVisible && !splitTail;
         if (vanillaVisible && traits != null && traits.has(CatTrait.STREET_DANCE)
                 && cat.isAlive() && cat.onGround() && !cat.isInWater()
-                && !cat.isInSittingPose() && !cat.isPassenger()
+                && !cat.isPassenger() && limbSwingAmount < 0.08F
                 && cat.getLieDownAmount(0.0F) <= 0.0F
                 && !CatTraitEffects.isCombatActive(cat)) {
             CatStreetDanceAnimation.apply(ageInTicks, head, body, leftHindLeg,
                     rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2);
+            playingStreetDance = CatStreetDanceAnimation.isAvailable() && Float.isFinite(ageInTicks);
+        }
+        if (vanillaVisible && traits != null && traits.has(CatTrait.PIPA_PERFORMANCE)
+                && cat.isAlive() && cat.onGround() && !cat.isInWater()
+                && !cat.isPassenger() && limbSwingAmount < 0.08F
+                && cat.getLieDownAmount(0.0F) <= 0.0F
+                && !CatTraitEffects.isCombatActive(cat)
+                && CatPipaAnimation.isAvailable() && Float.isFinite(ageInTicks)) {
+            CatPipaAnimation.apply(ageInTicks, head, body, leftHindLeg,
+                    rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2, pipa, plectrum);
+            playingPipa = true;
         }
     }
 
@@ -130,6 +148,21 @@ public final class HissingCatModel extends CatModel<Cat> {
 
     public boolean isPancake() {
         return pancake;
+    }
+
+    /** True only after this cat has actually received a performance pose this frame. */
+    public boolean isPlayingPerformance() {
+        return playingStreetDance || playingPipa;
+    }
+
+    public boolean isPlayingPipa() {
+        return playingPipa;
+    }
+
+    public Map<String, RuntimeBlockbenchModel.GroupTransform> pipaTransforms() {
+        // Runtime props mirror BB X once, matching the cat's ModelPart space.
+        return Map.of("pipa", boneDelta(pipa, 0.0F, 21.5F, -5.4F, 0, 0, 0),
+                "plectrum", boneDelta(plectrum, 0.0F, 24.0F, 0.0F, 0, 0, 0));
     }
 
     public float liveHeadXRot() {

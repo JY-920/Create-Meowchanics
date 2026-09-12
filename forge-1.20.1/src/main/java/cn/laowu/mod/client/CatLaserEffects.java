@@ -35,6 +35,7 @@ public final class CatLaserEffects {
         pose.translate(-camera.x, -camera.y, -camera.z);
 
         CatTeamPreview.render(pose, buffers, event.getCamera(), event.getPartialTick());
+        CatHealthBarRenderer.render(pose, buffers, event.getCamera(), event.getPartialTick());
         if (markedLevel.get() == mc.level && mc.level.getGameTime() < until) {
             var entity = mc.level.getEntity(markedId);
             if (entity != null && entity.isAlive() && entity.getUUID().equals(markedUuid)) {

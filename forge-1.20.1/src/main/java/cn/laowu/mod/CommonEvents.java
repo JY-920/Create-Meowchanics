@@ -623,6 +623,7 @@ public final class CommonEvents {
                 cat.setDeltaMovement(0.0D, cat.getDeltaMovement().y, 0.0D);
                 return;
             }
+            CatCombatControl.tick(cat);
             CareerCatBehavior.tick(cat);
             CatLaserCommands.tick(cat);
             if (CatLaserCommands.hasOrder(cat)) return;

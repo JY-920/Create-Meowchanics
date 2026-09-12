@@ -1,0 +1,14 @@
+{
+  "mappings": {
+    "cn/laowu/mod/mixin/PerformanceBlendModeAccessor": {
+      "lastApplied": "f_85499_:Lcom/mojang/blaze3d/shaders/BlendMode;"
+    }
+  },
+  "data": {
+    "searge": {
+      "cn/laowu/mod/mixin/PerformanceBlendModeAccessor": {
+        "lastApplied": "f_85499_:Lcom/mojang/blaze3d/shaders/BlendMode;"
+      }
+    }
+  }
+}

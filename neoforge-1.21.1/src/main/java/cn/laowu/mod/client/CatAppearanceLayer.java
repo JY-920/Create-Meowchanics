@@ -26,6 +26,8 @@ public final class CatAppearanceLayer extends RenderLayer<Cat, CatModel<Cat>> {
             "models/entity/hissing_cat.bbmodel");
     private static final ResourceLocation PANCAKE_MODEL = LaoWuMod.id(
             "models/item/cat_pancake.bbmodel");
+    private static final ResourceLocation PIPA_MODEL = LaoWuMod.id("models/entity/cat_pipa.bbmodel");
+    private static final ResourceLocation PIPA_TEXTURE = LaoWuMod.id("textures/entity/cat_pipa.png");
     private static final float TAIL_SPREAD_DEGREES = 22.5F;
     private static final float RUNTIME_TAIL_PIVOT_Y = 15.0F / 16.0F;
     private static final float RUNTIME_TAIL_PIVOT_Z = 8.0F / 16.0F;
@@ -47,6 +49,16 @@ public final class CatAppearanceLayer extends RenderLayer<Cat, CatModel<Cat>> {
                 || !(getParentModel() instanceof HissingCatModel model)) return;
 
         boolean ordinaryGeometry = !model.isHissing() && !model.isPancake();
+        if (model.isPlayingPipa() && !cat.isInvisible()) {
+            pose.pushPose();
+            applyBabyBodyTransform(pose, cat);
+            RuntimeBlockbenchModel.getCatOutfit(PIPA_MODEL).render(pose,
+                    buffers.getBuffer(RenderType.entityCutoutNoCull(PIPA_TEXTURE)),
+                    packedLight, OverlayTexture.NO_OVERLAY, RuntimeBlockbenchModel.GroupSelection.ALL,
+                    RuntimeBlockbenchModel.HeadMotion.NONE,
+                    model.pipaTransforms());
+            pose.popPose();
+        }
         if (ordinaryGeometry && traits.has(CatTrait.HIM)) {
             getParentModel().renderToBuffer(pose,
                     buffers.getBuffer(RenderType.eyes(

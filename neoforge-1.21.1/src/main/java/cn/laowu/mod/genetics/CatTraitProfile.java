@@ -79,6 +79,15 @@ public final class CatTraitProfile {
                                         CatTraitProfile second,
                                         float mutationChance,
                                         RandomSource random) {
+        return breed(first, second, CatBreedingMode.NORMAL, mutationChance, random);
+    }
+
+    /** Food affects new mutation rarity, never the probability or level of inherited traits. */
+    public static CatTraitProfile breed(CatTraitProfile first,
+                                        CatTraitProfile second,
+                                        CatBreedingMode mode,
+                                        float mutationChance,
+                                        RandomSource random) {
         CatTraitProfile father = first == null ? EMPTY : first;
         CatTraitProfile mother = second == null ? EMPTY : second;
         var disabled = ServerConfig.disabledTraitIds();
@@ -128,7 +137,7 @@ public final class CatTraitProfile {
                     .toList();
             if (!mutationPool.isEmpty()) {
                 selected.add(new CatTraitInstance(
-                        chooseWeightedTrait(mutationPool, random), 1));
+                        chooseWeightedTrait(mutationPool, mode, random), 1));
             }
         }
         return selected.isEmpty() ? EMPTY : new CatTraitProfile(selected);
@@ -137,17 +146,24 @@ public final class CatTraitProfile {
     /** Select rarity first so adding traits does not silently reweight a tier. */
     private static CatTrait chooseWeightedTrait(List<CatTrait> compatible,
                                                 RandomSource random) {
+        return chooseWeightedTrait(compatible, CatBreedingMode.NORMAL, random);
+    }
+
+    private static CatTrait chooseWeightedTrait(List<CatTrait> compatible,
+                                                CatBreedingMode mode,
+                                                RandomSource random) {
+        CatBreedingMode resolvedMode = mode == null ? CatBreedingMode.NORMAL : mode;
         List<CatTraitRarity> compatibleRarities = Arrays.stream(CatTraitRarity.values())
                 .filter(rarity -> compatible.stream()
                         .anyMatch(candidate -> candidate.rarity() == rarity))
                 .toList();
         int totalWeight = compatibleRarities.stream()
-                .mapToInt(CatTraitRarity::generationWeight).sum();
+                .mapToInt(resolvedMode::mutationTraitWeight).sum();
         int roll = random.nextInt(Math.max(1, totalWeight));
         CatTraitRarity chosenRarity = compatibleRarities
                 .get(compatibleRarities.size() - 1);
         for (CatTraitRarity rarity : compatibleRarities) {
-            roll -= rarity.generationWeight();
+            roll -= resolvedMode.mutationTraitWeight(rarity);
             if (roll < 0) {
                 chosenRarity = rarity;
                 break;

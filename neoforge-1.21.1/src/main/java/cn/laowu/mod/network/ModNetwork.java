@@ -13,7 +13,15 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String VERSION = "12";
+    private static final String VERSION = "14";
+
+    public static void requestLaserSettings(int action) {
+        PacketDistributor.sendToServer(new LaserSettingsRequestPacket(action));
+    }
+
+    public static void sendLaserSettings(net.minecraft.server.level.ServerPlayer player, boolean aggressive) {
+        PacketDistributor.sendToPlayer(player, new LaserSettingsSyncPacket(aggressive));
+    }
 
     public static void sendLaserMark(net.minecraft.server.level.ServerPlayer player, net.minecraft.world.entity.LivingEntity target) {
         LaserMarkPacket packet = new LaserMarkPacket(target == null ? -1 : target.getId(),
@@ -40,6 +48,8 @@ public final class ModNetwork {
 
     private static void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(VERSION);
+        registrar.playToServer(LaserSettingsRequestPacket.TYPE, LaserSettingsRequestPacket.STREAM_CODEC, LaserSettingsRequestPacket::handle);
+        registrar.playToClient(LaserSettingsSyncPacket.TYPE, LaserSettingsSyncPacket.STREAM_CODEC, LaserSettingsSyncPacket::handle);
         registrar.playToClient(LaserMarkPacket.TYPE, LaserMarkPacket.STREAM_CODEC, LaserMarkPacket::handle);
         registrar.playToServer(WorldSettingsRequestPacket.TYPE, WorldSettingsRequestPacket.STREAM_CODEC,
                 WorldSettingsRequestPacket::handle);

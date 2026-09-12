@@ -6,14 +6,16 @@
 - Blockbench 源动画 2.4 秒一圈；游戏播放倍率 2.0，实际 1.2 秒 / 24 tick 一圈。
 - 采用单根腿骨骼，八骨骼共享 145 帧关键姿势；保留独立扫腿、交替撑地、平滑翻转和躯干下沉。
 - 纯客户端骨骼动画，不旋转实体朝向、不修改碰撞箱、不添加逐帧网络包。
-- 坐下、骑乘、睡觉、哈气、猫饼姿态、战斗、离地和水中暂停；地面移动允许播放。
+- 仅在地面静止时播放，坐下待命也会播放，与「琵琶行」使用相同的移动判定（`limbSwingAmount < 0.08F`）。移动、骑乘、睡觉、哈气、猫饼姿态、战斗、离地和水中暂停。
 - 每次准备原版姿态前复位骨骼，避免共享模型把街舞姿态泄漏到其他猫。
 - 职业套装的骨骼变换包含缩放，身体附件先回到身体局部坐标再缩放、旋转；普通和融合材质使用原渲染路径。
 - 项圈使用原版略微外扩的模型，但直接复制猫咪本帧的骨骼位移、旋转、缩放和幼年状态，不再独立计算原版动作；街舞时随头部移动，哈气和猫饼沿用各自的项圈路径。
 
 ## 资源与维护
 
-`tools/export-thomas-flare.mjs` 从已保存的 Blockbench 文件导出 ModelPart 坐标的精简关键帧 JSON，标准输出供应用补丁写入使用。两端文件均位于 `assets/laowu/animations/cat_thomas_flare.json`。
+`tools/export-thomas-flare.mjs` 从已保存的 Blockbench 文件导出 ModelPart 坐标的精简关键帧 JSON，标准输出供应用补丁写入使用。两端文件均位于 `assets/laowu/cat_animation_clips/cat_thomas_flare.json`。
+
+这是自定义采样格式，不是 GeckoLib 动画；必须放在独立目录，不能放进会被 GeckoLib 自动扫描的 `animations/` 目录。迁移只改变资源路径，不改变动画姿势、速度、词条编号或存档数据。
 
 导出器保留源文件哈希以及 Blockbench 实际保存的时间戳。`node tools/export-thomas-flare.mjs --check` 检查两端资源与源模型一致。源动画维持原速，二倍速只由 Java 播放器控制，避免重复加速。
 

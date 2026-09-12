@@ -1,0 +1,46 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "srcalpha",
+    "dstrgb": "1",
+    "srcalpha": "1",
+    "dstalpha": "1-srcalpha"
+  },
+  "vertex": "laowu:performance_boundary",
+  "fragment": "laowu:performance_boundary",
+  "attributes": [
+    "Position",
+    "UV0",
+    "Color"
+  ],
+  "samplers": [
+    {
+      "name": "Silhouette"
+    },
+    {
+      "name": "SceneDepth"
+    },
+    {
+      "name": "SilhouetteDepth"
+    }
+  ],
+  "uniforms": [
+    {
+      "name": "MaskSize",
+      "type": "float",
+      "count": 2,
+      "values": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "Time",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    }
+  ]
+}

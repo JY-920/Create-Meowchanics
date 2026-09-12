@@ -150,7 +150,10 @@ public enum CatTrait {
     SUPREME_INTELLECT("supreme_intellect", CatTraitRarity.EXCELLENT,
             CatStat.INTELLIGENCE, 25, 40, CatTraitSlot.INTELLIGENCE_BONUS),
     CHOSEN_BY_FATE("chosen_by_fate", CatTraitRarity.EXCELLENT, CatStat.LUCK,
-            25, 40, CatTraitSlot.LUCK_BONUS);
+            25, 40, CatTraitSlot.LUCK_BONUS),
+
+    // Append new IDs so existing menu ordinals remain stable.
+    PIPA_PERFORMANCE("pipa_performance", CatTraitRarity.GOOD, false, CatTraitSlot.APPEARANCE);
 
     public static final int MAX_UPGRADABLE_LEVEL = 7;
 
@@ -395,6 +398,7 @@ public enum CatTrait {
             case ROUND_HEAD -> stat == CatStat.STAMINA ? 10 : 0;
             case OIIAI -> stat == CatStat.SPEED ? 10 : 0;
             case STREET_DANCE -> stat == CatStat.SPEED || stat == CatStat.STAMINA ? 10 : 0;
+            case PIPA_PERFORMANCE -> stat == CatStat.INTELLIGENCE || stat == CatStat.LUCK ? 10 : 0;
             case PUSS_IN_BOOTS -> stat == CatStat.ATTACK || stat == CatStat.SPEED ? 10 : 0;
             case BIG_CHONKY_CAT -> stat == CatStat.HEALTH ? 10 + 2 * (clampLevel(level) - 1)
                     : stat == CatStat.STAMINA ? 5 : 0;
@@ -525,7 +529,7 @@ public enum CatTrait {
                     HIGH_STEP, SKY_CAT, AUTO_ATTACH, TRIPOD_CAT,
                     HIGH_EXPLOSIVE_FUEL, ROLLING_LOG, LOLI, HIM, ISAAC,
                     ROUND_HEAD, OIIAI,
-                    PUSS_IN_BOOTS, STREET_DANCE -> Component.translatable(
+                    PUSS_IN_BOOTS, STREET_DANCE, PIPA_PERFORMANCE -> Component.translatable(
                     "trait.laowu." + serializedName + ".summary");
             default -> Component.empty();
         };
@@ -616,7 +620,7 @@ public enum CatTrait {
                     HIGH_STEP, SKY_CAT, AUTO_ATTACH, TRIPOD_CAT,
                     HIGH_EXPLOSIVE_FUEL, ROLLING_LOG, LOLI, HIM, ISAAC,
                     ROUND_HEAD, OIIAI,
-                    PUSS_IN_BOOTS, STREET_DANCE -> Component.translatable(
+                    PUSS_IN_BOOTS, STREET_DANCE, PIPA_PERFORMANCE -> Component.translatable(
                     "trait.laowu." + serializedName + ".description");
             default -> Component.empty();
         };

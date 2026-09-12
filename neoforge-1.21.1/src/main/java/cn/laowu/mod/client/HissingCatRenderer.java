@@ -22,6 +22,7 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
                 new CatAppearanceModel(context.bakeLayer(CatAppearanceModel.LAYER))));
         addLayer(new AdaptiveCatCollarLayer(this, context.getModelSet()));
         addLayer(new CatChestLayer(this));
+        addLayer(new CatPerformanceLayer(this));
     }
 
     @Override

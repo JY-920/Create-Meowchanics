@@ -35,6 +35,7 @@ public final class ClientInputEvents {
     public static void clientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
         syncSpawnPreference(minecraft);
+        CatLaserWheelScreen.inputTick();
         while (ClientModEvents.OPEN_HELD_ITEM_TRANSFORM.consumeClick()) {
             if (minecraft.player != null && minecraft.screen == null) {
                 ItemStack held = minecraft.player.getMainHandItem();

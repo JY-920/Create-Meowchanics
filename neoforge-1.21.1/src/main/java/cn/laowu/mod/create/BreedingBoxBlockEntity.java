@@ -385,7 +385,7 @@ public final class BreedingBoxBlockEntity extends SmartBlockEntity implements Me
         CatGenomeData.set(child, CatGenome.fuse(firstGenome, secondGenome,
                 CatMaterialRegistry.mutationMaterials(), mutationChance, level.random));
         CatTraitData.set(child, CatTraitProfile.breed(
-                firstTraits, secondTraits, mutationChance, level.random));
+                firstTraits, secondTraits, mode, mutationChance, level.random));
         return child;
     }
 

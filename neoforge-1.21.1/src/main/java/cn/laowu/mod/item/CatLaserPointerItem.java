@@ -35,7 +35,7 @@ public final class CatLaserPointerItem extends Item {
     @Override public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            if (level.isClientSide) cn.laowu.mod.client.CatTeamPreview.toggle();
+            if (level.isClientSide) cn.laowu.mod.client.CatLaserWheelScreen.open();
             return InteractionResultHolder.consume(stack);
         }
         if (player instanceof ServerPlayer server && !player.getCooldowns().isOnCooldown(this)) {

@@ -304,6 +304,8 @@ two entries in this table can coexist on one cat:
 | Isaac (`以撒猫`) | Common | Fixed | Blue tear streaks plus client-local falling tear particles |
 | Round Head (`圆头猫`) | Common | Fixed | Both separated ear meshes disappear while the server-synchronised combat flag is active |
 | oiiai (`oiiai猫`) | Common | Fixed | Rotates the complete rendered cat around its vertical axis |
+| Breakdance Cat (`街舞猫`) | Good | Fixed | MCP-authored Thomas flare at 2x speed while stationary; Speed Attribute +10 and Stamina Attribute +10 |
+| Pipa Serenade (`琵琶行`) | Good | Fixed | Holds a pipa, frets with one front paw and strums with a plectrum in the other while idle; Intelligence Attribute +10 and Luck Attribute +10 |
 | Rainbow Cat (`彩虹猫`) | Excellent | Fixed | Recolours the current genome/material texture into six rainbow bands, emits a moving six-band trail, Speed +10 and Luck +20 |
 | Nekomata (`猫又`) | Excellent | Fixed | Renders two animated tails spread from one central root, Combat +20 and Intelligence +10 |
 | Puss in Boots (`穿靴子的猫`) | Good | Fixed | Four brown boot meshes follow the live leg bones |
@@ -462,7 +464,7 @@ breeding box. Boxes accept eight dedicated breeding foods:
 | Food | Numeric inheritance |
 | --- | --- |
 | Breeding Cat Food | Five inherited loci and one fresh locus |
-| Mutation Cat Food | Two inherited loci, four fresh loci, and mutation chance +20% |
+| Mutation Cat Food | Five inherited loci, one fresh locus, mutation chance +40%, and rarer newly mutated traits |
 | One of six stat foods | The better targeted parent locus plus four randomly inherited loci |
 
 Targeted food compares the selected Attribute Limit first, breaking ties with
@@ -479,7 +481,7 @@ line approachable. It does not trivialise a six-perfect-limit cat: every food
 still leaves at least one of the six loci uninherited, so the final missing
 perfect locus must be rolled fresh and then consolidated in later generations.
 
-The machine base chances are 10%, 15% and 20%. Mutation Cat Food adds 20% to
+The machine base chances are 10%, 15% and 20%. Mutation Cat Food adds 40% to
 the displayed base value. Parent Luck then adjusts the
 food-modified chance as follows:
 
@@ -490,7 +492,7 @@ effective mutation = (box chance + food bonus) * (1 + average luck / 300)
 
 The effective server value is synchronised into the pixel GUI and is used for
 both uninherited numeric loci and appearance regions. Appearance regions are
-otherwise selected independently from either parent's saved genome. The four
+otherwise selected independently from either parent's saved genome.
 
 Trait inheritance uses one shared rule for every breeding food. It is explained
 once by the Breeding Box rather than repeated on every food tooltip:
@@ -500,8 +502,11 @@ once by the Breeding Box rather than repeated on every food tooltip:
    chance.
 3. `Doughy` is skipped in both cases and every inherited trait resets to level I.
 4. If the displayed mutation check succeeds, one slot is reserved for one
-   compatible trait absent from both parents; its rarity uses the ordinary
-   Defect/Common/Good/Excellent weights.
+   compatible trait absent from both parents. Normal foods use
+   Defect/Common/Good/Excellent weights of 30/35/30/5; Mutation Cat Food uses
+   10/25/45/20. Rarity is selected before a trait, and unavailable rarities are
+   omitted and the remaining weights renormalised. This bonus changes only
+   newly mutated traits, not parental inheritance, levels or founder cats.
 5. Shared traits are resolved first, then one-parent traits in shuffled order,
    then mutation. The four-trait limit and every conflict slot are always
    enforced. Four traits shared by both parents leave no room for mutation.
@@ -512,6 +517,12 @@ is a 50% propagation attempt; after obtaining a second carrier, breeding those
 two carriers locks the trait into that lineage. Natural breeding uses the same
 rules with a 5% trait-mutation chance. Breeding Boxes and the Breeding Wand use
 their displayed effective mutation chance.
+
+Mutation Cat Food uses heated mixing: eight Breeding Cat Foods and one
+poisonous potato produce eight Mutation Cat Foods. No guaranteed 90+ locus or
+six-locus inheritance is applied. With no parental Luck bonus, the three boxes
+show 50%, 55% and 60% mutation chance with this food; average Luck 100 raises
+these chances to approximately 66.67%, 73.33% and 80%.
 
 The four
 trait rows render each saved trait with its rarity frame and a single vertically

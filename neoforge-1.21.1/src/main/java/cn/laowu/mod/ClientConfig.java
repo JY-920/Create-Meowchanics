@@ -12,6 +12,8 @@ public final class ClientConfig {
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GUI_ITEM_TRANSFORMS;
     public static final ModConfigSpec.DoubleValue HISSING_PAIR_VOLUME;
     public static final ModConfigSpec.BooleanValue NEARBY_CAT_SPAWNING;
+    public static final ModConfigSpec.BooleanValue CAT_HEALTH_BARS;
+    public static final ModConfigSpec.BooleanValue CAT_TEAM_PREVIEW;
 
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
@@ -39,6 +41,10 @@ public final class ClientConfig {
                 .comment("是否以自己为中心，每10～15分钟额外刷新方块材质猫咪。",
                         "个人偏好会同步给服务端；其他玩家及原版自然刷猫不受影响。")
                 .define("nearby_cat_spawning", true);
+        CAT_HEALTH_BARS = b.comment("是否显示附近宠物猫的血条（不显示野生猫）；激光笔轮盘中修改，只影响自己的画面。")
+                .define("cat_health_bars", false);
+        CAT_TEAM_PREVIEW = b.comment("是否显示宠物猫的团队色轮廓和主人头像；只影响自己的画面。")
+                .define("cat_team_preview", false);
         SPEC = b.build();
     }
 

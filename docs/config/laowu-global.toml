@@ -91,6 +91,7 @@
 # laowu:adamant_body = 金刚不坏
 # laowu:supreme_intellect = 慧极通天
 # laowu:chosen_by_fate = 天命所归
+# laowu:pipa_performance = 琵琶行
 disabled_traits = [-1]
 
 # JEI 地狱配方展示（只影响展示）

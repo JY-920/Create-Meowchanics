@@ -22,6 +22,7 @@ public final class CatAppearanceBonusRegression {
                         case ROUND_HEAD -> stat == CatStat.STAMINA ? 10 : 0;
                         case OIIAI -> stat == CatStat.SPEED ? 10 : 0;
                         case STREET_DANCE -> stat == CatStat.SPEED || stat == CatStat.STAMINA ? 10 : 0;
+                        case PIPA_PERFORMANCE -> stat == CatStat.INTELLIGENCE || stat == CatStat.LUCK ? 10 : 0;
                         case PUSS_IN_BOOTS -> stat == CatStat.ATTACK || stat == CatStat.SPEED ? 10 : 0;
                         case BIG_CHONKY_CAT -> stat == CatStat.HEALTH ? 10 + 2 * (level - 1)
                                 : stat == CatStat.STAMINA ? 5 : 0;
@@ -45,9 +46,11 @@ public final class CatAppearanceBonusRegression {
                 }
             }
         }
-        check(appearances == 11, "All eleven appearances covered");
+        check(appearances == 12, "All twelve appearances covered");
         check(CatTrait.BIG_CHONKY_CAT.appearanceAttributeBonus(CatStat.HEALTH, -100) == 10, "Low clamp");
         check(CatTrait.BIG_CHONKY_CAT.appearanceAttributeBonus(CatStat.HEALTH, 100) == 22, "High clamp");
-        System.out.println("PASS: " + checks + " stat/level assertions; eleven appearances, pig tooltips and level clamps");
+        check(!CatTrait.PIPA_PERFORMANCE.upgradable() && CatTrait.PIPA_PERFORMANCE.maxLevel() == 1,
+                "Pipa is not upgradeable");
+        System.out.println("PASS: " + checks + " stat/level assertions; twelve appearances, pig tooltips and level clamps");
     }
 }

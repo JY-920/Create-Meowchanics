@@ -3,6 +3,10 @@
 **机械动力：老吴学** is a playful Minecraft add-on that turns cats into an
 absurd Create-powered production, logistics, and combat system.
 
+## Changelog
+
+See the [2.1.4 Chinese changelog](docs/changelog-2.1.4.md) for the latest update notes; the [2.1.3 feature changelog](docs/changelog-2.1.3.md) is retained for reference.
+
 ## Source trees
 
 | Directory | Minecraft | Loader | Create | Java | Status |

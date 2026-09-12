@@ -48,7 +48,7 @@ foreach ($loader in @('forge-1.20.1', 'neoforge-1.21.1')) {
         "$gameLibraries/com/electronwill/night-config/core/$nightConfigVersion/core-$nightConfigVersion.jar",
         "$gameLibraries/com/electronwill/night-config/toml/$nightConfigVersion/toml-$nightConfigVersion.jar"
     ) + $loaderLibraries + $commonLibraries) -join ';'
-    & "$javaDir/javac.exe" -proc:none -encoding UTF-8 -cp $testClasspath -d $testOutput "$projectRoot/tests/config-stubs/$environmentNamespace/fml/loading/FMLEnvironment.java" "$projectRoot/tests/GlobalWorldConfigRegression.java" "$projectRoot/tests/TraitBlacklistRegression.java" "$projectRoot/tests/CatFilterLogicRegression.java" "$projectRoot/tests/CatInteractionFixesRegression.java" "$projectRoot/tests/CareerDefaultsAndKnockbackRegression.java" "$projectRoot/tests/SuitSettingsRegression.java" "$projectRoot/tests/ButterCatChargeRegression.java"
+    & "$javaDir/javac.exe" -proc:none -encoding UTF-8 -cp $testClasspath -d $testOutput "$projectRoot/tests/config-stubs/$environmentNamespace/fml/loading/FMLEnvironment.java" "$projectRoot/tests/GlobalWorldConfigRegression.java" "$projectRoot/tests/TraitBlacklistRegression.java" "$projectRoot/tests/CatFilterLogicRegression.java" "$projectRoot/tests/CatInteractionFixesRegression.java" "$projectRoot/tests/CareerDefaultsAndKnockbackRegression.java" "$projectRoot/tests/SuitSettingsRegression.java" "$projectRoot/tests/ButterCatChargeRegression.java" "$projectRoot/tests/CatLaserWheelRegression.java" "$projectRoot/tests/MutationCatFoodRegression.java"
     if ($LASTEXITCODE -ne 0) { throw "$loader global config regression compilation failed" }
     Write-Output $loader
     & "$javaDir/java.exe" "-Dlog4j.configurationFile=$projectRoot/tests/config-log4j2.xml" -cp $testClasspath cn.laowu.mod.GlobalWorldConfigRegression "$projectRoot/docs/config/laowu-global.toml"
@@ -57,4 +57,6 @@ foreach ($loader in @('forge-1.20.1', 'neoforge-1.21.1')) {
     if ($LASTEXITCODE -ne 0) { throw "$loader filter logic regression failed" }
     & "$javaDir/java.exe" -cp $testClasspath cn.laowu.mod.entity.ButterCatChargeRegression
     if ($LASTEXITCODE -ne 0) { throw "$loader butter-cat charge regression failed" }
+    & "$javaDir/java.exe" -cp $testClasspath cn.laowu.mod.CatLaserWheelRegression "$projectRoot/$loader/src/main/resources/assets/laowu/textures/gui/cat_health_bar.png" "$projectRoot/tests/build/laser-wheel/$loader"
+    if ($LASTEXITCODE -ne 0) { throw "$loader laser-wheel regression failed" }
 }

@@ -19,6 +19,9 @@ public final class CatCollarPoseRegression {
                 OcelotModel.createBodyMesh(new CubeDeformation(0.01F)), 64, 32).bakeRoot();
         CatModel<Cat> collar = new CatModel<>(collarRoot);
         check(CatStreetDanceAnimation.isAvailable(), "Animation resource missing");
+        check(CatPipaAnimation.isAvailable(), "Pipa animation resource missing");
+        ModelPart pipa = new ModelPart(java.util.List.of(), java.util.Map.of());
+        ModelPart plectrum = new ModelPart(java.util.List.of(), java.util.Map.of());
         var collarHeadCube = firstCube(collarRoot.getChild("head"));
         check(collarHeadCube != firstCube(sourceRoot.getChild("head")),
                 "Collar must keep its separate inflated geometry");
@@ -41,6 +44,14 @@ public final class CatCollarPoseRegression {
                 check(collar.young == source.young && collar.riding == source.riding
                                 && collar.attackTime == source.attackTime,
                         "Age/renderer flags did not follow the cat");
+                poses++;
+                CatPipaAnimation.apply(step / 15.0F, sourceRoot.getChild("head"),
+                        sourceRoot.getChild("body"), sourceRoot.getChild("left_hind_leg"),
+                        sourceRoot.getChild("right_hind_leg"), sourceRoot.getChild("left_front_leg"),
+                        sourceRoot.getChild("right_front_leg"), sourceRoot.getChild("tail1"),
+                        sourceRoot.getChild("tail2"), pipa, plectrum);
+                source.copyPoseTo(collar, collarRoot);
+                checkPose(sourceRoot, collarRoot);
                 poses++;
             }
         }

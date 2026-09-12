@@ -1,0 +1,12 @@
+// Public release numbers only change for an intentional public release.
+ext.publicModVersion = providers.gradleProperty('mod_version').get()
+def internalId = providers.gradleProperty('internal_build').orElse('').get().trim()
+def releaseBuild = providers.gradleProperty('release_build').orElse('false').get().toBoolean()
+if (internalId && !(internalId ==~ /[A-Za-z0-9]+([.-][A-Za-z0-9]+)*/)) {
+    throw new GradleException('internal_build must contain only letters, digits, dots and hyphens')
+}
+ext.resolvedModVersion = internalId && !releaseBuild
+        ? "${publicModVersion}-dev.${internalId}" : publicModVersion
+tasks.register('printModVersion') {
+    doLast { println("Mod version: ${resolvedModVersion}") }
+}

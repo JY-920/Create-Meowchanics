@@ -12,33 +12,21 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 
 /** Local preview only: no scoreboard edits, shared glowing flags or owner highlights. */
 public final class CatTeamPreview {
-    private static boolean enabled;
-    private static java.lang.ref.WeakReference<net.minecraft.client.multiplayer.ClientLevel> world = new java.lang.ref.WeakReference<>(null);
-    private static long lastToggle;
-    private static boolean toggleHeld;
+    public static boolean enabled() { return cn.laowu.mod.ClientConfig.CAT_TEAM_PREVIEW.get(); }
     public static void toggle() {
-        var mc = Minecraft.getInstance();
-        long now = net.minecraft.Util.getMillis();
-        if (toggleHeld || now - lastToggle < 250) return;
-        toggleHeld = true;
-        lastToggle = now;
-        enabled = world.get() != mc.level || !enabled;
-        world = new java.lang.ref.WeakReference<>(mc.level);
-        if (mc.player != null) mc.player.displayClientMessage(
-                net.minecraft.network.chat.Component.translatable(enabled
-                ? "message.laowu.laser.preview_on" : "message.laowu.laser.preview_off"), true);
+        cn.laowu.mod.ClientConfig.CAT_TEAM_PREVIEW.set(!enabled());
+        cn.laowu.mod.ClientConfig.SPEC.save();
     }
     public static boolean visible(Entity entity) {
         var mc = Minecraft.getInstance();
-        return enabled && world.get() == mc.level && mc.player != null
+        return enabled() && !mc.options.hideGui && mc.player != null
                 && entity instanceof Cat cat && cat.isTame() && cat.isAlive()
                 && cat.level() == mc.level && cat.distanceToSqr(mc.player) <= 4096;
     }
     public static void render(PoseStack pose, MultiBufferSource.BufferSource buffers,
                               net.minecraft.client.Camera camera, float partial) {
         var mc = Minecraft.getInstance();
-        if (!mc.options.keyUse.isDown()) toggleHeld = false;
-        if (!enabled || world.get() != mc.level || mc.player == null) return;
+        if (!enabled() || mc.options.hideGui || mc.level == null || mc.player == null) return;
         var previewTypes = new java.util.LinkedHashSet<RenderType>();
         for (Cat cat : mc.level.getEntitiesOfClass(Cat.class, mc.player.getBoundingBox().inflate(64),
                 CatTeamPreview::visible)) {

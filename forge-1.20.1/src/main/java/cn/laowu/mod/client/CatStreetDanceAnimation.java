@@ -16,7 +16,8 @@ public final class CatStreetDanceAnimation {
     public static final float SOURCE_SECONDS = 2.4F;
     public static final float PLAYBACK_SPEED = 2.0F;
     public static final float PERIOD_TICKS = SOURCE_SECONDS * 20.0F / PLAYBACK_SPEED;
-    private static final String RESOURCE = "/assets/laowu/animations/cat_thomas_flare.json";
+    // Our sampled poses are not GeckoLib JSON; keep them out of its automatic scan.
+    private static final String RESOURCE = "/assets/laowu/cat_animation_clips/cat_thomas_flare.json";
     private static final String[] BONES = {
             "head", "body", "left_hind_leg", "right_hind_leg",
             "left_front_leg", "right_front_leg", "tail1", "tail2"

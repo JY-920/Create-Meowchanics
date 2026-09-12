@@ -1,0 +1,72 @@
+{
+  "vertex": "laowu:performance_mask",
+  "fragment": "laowu:performance_mask",
+  "attributes": [
+    "Position",
+    "Color",
+    "UV0"
+  ],
+  "samplers": [
+    {
+      "name": "SkinTexture"
+    }
+  ],
+  "uniforms": [
+    {
+      "name": "CaptureView",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "CaptureProjection",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "OutlineData",
+      "type": "float",
+      "count": 3,
+      "values": [
+        1,
+        0.5,
+        0
+      ]
+    }
+  ]
+}

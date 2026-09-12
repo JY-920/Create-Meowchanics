@@ -57,6 +57,9 @@ public final class CatLaserCommands {
                 && living.distanceToSqr(owner) <= CareerCatBehavior.MAX_OWNER_DISTANCE_SQR ? living : null;
     }
     public static boolean hasOrder(Cat cat) { return valid(cat); }
+    public static boolean isAttackOrderTarget(Cat cat, LivingEntity proposed) {
+        return proposed != null && valid(cat) && target(cat) == proposed;
+    }
     private static void clear(Cat cat) {
         if (cat.getPersistentData().hasUUID(TARGET)) cat.setTarget(null);
         for (String key : List.of(UNTIL, TARGET, X, Y, Z)) cat.getPersistentData().remove(key);

@@ -4,7 +4,7 @@ package cn.laowu.mod.genetics;
 public enum CatBreedingMode {
     NORMAL(5, null, 0.0F),
     SUPER(5, null, 0.0F),
-    MUTATION(2, null, 0.20F),
+    MUTATION(5, null, 0.40F),
     ATTACK(5, CatStat.ATTACK, 0.0F),
     HEALTH(5, CatStat.HEALTH, 0.0F),
     SPEED(5, CatStat.SPEED, 0.0F),
@@ -32,5 +32,16 @@ public enum CatBreedingMode {
 
     public float mutationBonus() {
         return mutationBonus;
+    }
+
+    /** Only newly mutated traits use these weights; parental inheritance is unchanged. */
+    public int mutationTraitWeight(CatTraitRarity rarity) {
+        if (this != MUTATION) return rarity.generationWeight();
+        return switch (rarity) {
+            case DEFECT -> 10;
+            case COMMON -> 25;
+            case GOOD -> 45;
+            case EXCELLENT -> 20;
+        };
     }
 }

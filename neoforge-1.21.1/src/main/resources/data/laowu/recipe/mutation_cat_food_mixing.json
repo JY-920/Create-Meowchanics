@@ -6,12 +6,34 @@
       "item": "laowu:breeding_cat_food"
     },
     {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
       "item": "minecraft:poisonous_potato"
     }
   ],
   "results": [
     {
-      "id": "laowu:mutation_cat_food"
+      "id": "laowu:mutation_cat_food",
+      "count": 8
     }
   ]
 }

@@ -40,4 +40,8 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: |
           chmod +x gradlew
-          ./gradlew clean build --no-daemon --no-configuration-cache
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            ./gradlew clean build --no-daemon --no-configuration-cache -Prelease_build=true
+          else
+            ./gradlew clean build --no-daemon --no-configuration-cache -Pinternal_build=ci.${{ github.run_number }}.${{ github.run_attempt }}
+          fi
