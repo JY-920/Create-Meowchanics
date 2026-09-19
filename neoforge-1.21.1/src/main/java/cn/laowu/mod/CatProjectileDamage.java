@@ -10,10 +10,11 @@ public final class CatProjectileDamage {
     private static final KnockbackScope<LivingEntity> KNOCKBACK = new KnockbackScope<>();
 
     public static boolean hurt(LivingEntity target, DamageSource source, float amount) {
-        return hurt(target, source, amount, false);
+        return hurt(target, source, amount, source.getEntity() instanceof net.minecraft.world.entity.animal.Cat cat
+                && cn.laowu.mod.accessory.CatAccessories.projectileKnockback(cat));
     }
 
-    /** Future accessories can opt an impact into vanilla knockback without changing damage. */
+    /** Accessories opt this impact into vanilla knockback without changing damage. */
     public static boolean hurt(LivingEntity target, DamageSource source, float amount, boolean allowKnockback) {
         return KNOCKBACK.call(target, allowKnockback, () -> target.hurt(source, amount));
     }

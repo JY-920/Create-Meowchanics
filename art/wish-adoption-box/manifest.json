@@ -1,0 +1,29 @@
+{
+  "name": "心愿领养箱",
+  "id": "wish_adoption_box",
+  "date": "2026-09-17",
+  "note": "Supplied PNGs kept byte-for-byte; GUI crop x31,y46,143x164. Both box floors now span y0.0625..0.1875 pixels to separate coplanar faces from each other and the support block. White sign unchanged; live reward remains on both faces.",
+  "assets": [
+    {
+      "path": "models/block/wish_adoption_box.bbmodel",
+      "source": "C:/Users/16611/Downloads/INAH3/INAH/model.bbmodel",
+      "sha256": "bab67e0c4adac28516f25c2f6044092eb81bd176699776fc042de57d7741f6df",
+      "original_sha256": "bd38fc4454de4b259d4d79017b69b39bd6f3f9b637bab8578f88ad51f6b2f22e"
+    },
+    {
+      "path": "textures/block/wish_adoption_box.png",
+      "source": "C:/Users/16611/Downloads/INAH3/INAH/texture.png",
+      "sha256": "187d6b354abe0278fd70bf8db5121b1c188f928d8e6475c31aabc76275a9e944"
+    },
+    {
+      "path": "textures/gui/wish_adoption_box.png",
+      "source": "C:/Users/16611/Downloads/6e950510071b66a3d47f3c3b35efd7af.png",
+      "sha256": "26d189f17f28b9ea74df738b3c3a1fc682a21757f4a275373f24e0a5fa612e52"
+    },
+    {
+      "path": "models/block/adoption_box.bbmodel",
+      "source": "Existing ordinary adoption box; bottom plate only",
+      "sha256": "f55cee9363454b83daafa2a40b7b5d0a2ca1f68ac7a1e3fc5748b2e6f236237a"
+    }
+  ]
+}

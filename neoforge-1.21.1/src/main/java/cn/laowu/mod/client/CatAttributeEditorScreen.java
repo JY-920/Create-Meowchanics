@@ -2,6 +2,7 @@ package cn.laowu.mod.client;
 
 import cn.laowu.mod.CatAttributeEditorMenu;
 import cn.laowu.mod.genetics.CatStat;
+import cn.laowu.mod.network.ModNetwork;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -44,7 +45,7 @@ public final class CatAttributeEditorScreen extends AbstractContainerScreen<CatA
 
     private void sendButton(int id) {
         if (minecraft == null || minecraft.gameMode == null) return;
-        minecraft.gameMode.handleInventoryButtonClick(menu.containerId,
+        ModNetwork.sendCatEditorAction(menu.containerId,
                 hasShiftDown() ? id + 100 : id);
     }
 

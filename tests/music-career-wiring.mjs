@@ -1,0 +1,57 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const root=new URL('../',import.meta.url);
+const read=p=>fs.readFileSync(new URL(p,root),'utf8').replaceAll('\r\n','\n').trim();
+let count=0,shared;
+const check=(value,message)=>{count++;assert.ok(value,message);};
+for(const port of ['forge-1.20.1','neoforge-1.21.1']){
+ const java=name=>read(port+'/src/main/java/cn/laowu/mod/'+name+'.java');
+ const rules=java('CatMusicRules'),goal=java('CatMusicSupportGoal'),state=java('CatMusicSupport'),records=java('CatMusicRecords');
+ check(rules.includes('.05 + .002 * finite(speed)'),'linear 5/25 percent haste, no 25 percent cap');
+ check(rules.includes('Math.ceil(Math.max(1, original) / (1 + finite(bonus)))'),'frequency scaling preserves server-tick resolution');
+ check(rules.includes('Math.min(24, 5 + .03 * finite(intelligence))'),'smaller intelligence-scaled music radius');
+ check(java('CareerCatBehavior').includes('CatMusicSupport.attackInterval')&&java('CatEngineeringCombat').includes('CatMusicSupport.attackInterval'),'regular and cannon weapon intervals both consume buff');
+ check(java('CareerCatBehavior').includes('new CatMusicSupportGoal(cat)'),'real goal selector installs music AI');
+ check(/isPreviewOnly\(\)\s*\{\s*return false;/.test(java('CatOutfitType'))&&java('CatSuitSetting').includes('case MEDICAL, MUSIC'),'music is active with low-survival suit');
+ check(java('genetics/CatAttributeEffects').includes('music')&&java('genetics/CatAttributeEffects').includes('CatOutfitType.MUSIC'),'music Speed bonus enters real effective genes');
+ check(state.includes('CatVisualStates<State>')&&java('CatVisualStates').includes('Map<Level, Bucket<T>>')&&java('CatVisualStates').includes('entry.entity.get() == entity'),'world and identity isolate integrated server, client, and preview entities');
+ check(state.includes('Math.max(previous.bonus, amount)')&&state.includes('offer.tick != tick'),'same-tick strongest only, stale offers discarded');
+ check(java('CommonEvents').includes('CatMusicSupport.flush(level)'),'server-end tick aggregation');
+ check(goal.includes('CatMusicDps::recent')&&goal.includes('CatCombatRole.RANGED')&&goal.includes('intelligence / 80'),'DPS selection, ranged coverage fallback, graded intelligence');
+ check(java('CatMusicDps').includes('source.getEntity()')&&java('CommonEvents').includes('recordMusicDps'),'real damage event samples instead of arbitrary suit rank');
+ check(goal.includes('cat.hasLineOfSight(other)')&&goal.includes('distance(cat, other) <= radius * radius'),'group sphere and terrain obstruction');
+ check(goal.includes('aerial')&&goal.includes('cat.getY()'),'aerial anchor uses ground-projected navigation');
+ check(!goal.includes('ally.set')&&!state.includes('patient.setNoAi')&&!state.includes('patient.setDeltaMovement'),'recipient AI and pose untouched');
+ check(java('client/CatPerformanceLayer').includes('CatMusicSupport.glowing(cat)')&&!java('client/CatPerformanceLayer').includes('isPlayingPerformance'),'purple outlines require received buff, never idle traits');
+ const model=java('client/HissingCatModel');
+ check(model.includes('!healing && !music && traits')&&model.includes('CatMusicSupport.pose(cat)')&&model.includes('CatMusicSupport.age(cat'),'existing traits retain animations, musical role uses synchronized pose/age');
+ check(model.includes('CatPipaAnimation')&&model.includes('CatStreetDanceAnimation')&&model.includes('part.resetPose()'),'both existing animations and shared model reset');
+ check(records.includes('CatProfileData.ACCESSORY_SLOTS + slot')&&records.includes('CatProfileData.INVENTORY_SLOTS')&&!records.includes('CatChest'),'only existing nine general slots');
+ check(records.includes('Math.floorMod(after + offset')&&records.includes('now >= state.until'),'ordered looping after native song duration');
+ check(records.includes('ItemStack.matches')&&records.includes('isBeingViewed(cat)'),'live inventory replacement; opening profile does not interrupt playback');
+ check(records.includes('++sequenceCounter')&&!records.includes('setItem(')&&!records.includes('removeItem('),'unique switch token, never consume inventory');
+ check(java('CatProfileContainer').includes('CatMusicRecords.inventoryChanged(cat)'),'existing inventory changes notify playback');
+ check(java('CommonEvents').indexOf('CatMusicRecords.tick(cat)')<java('CommonEvents').indexOf('if (CatProfileData.isBeingViewed(cat))'),'playlist ticks even while profile locks AI');
+ const audio=java('client/CatMusicRecordClient');
+ check(audio.includes('SoundSource.RECORDS')&&audio.includes('current.sequence == packet.sequence()')&&audio.includes('current.refresh(packet.remaining())'),'records volume channel and heartbeat without restarts');
+ check(audio.includes('getSoundManager().stop(previous)')&&!audio.includes('stop(null'),'stop only owned sound instance, not other jukeboxes');
+ check(audio.includes('getUUID().equals(packet.uuid())')&&audio.includes('checkWorld(mc)'),'stale UUID and world switch cleanup');
+ const net=java('network/ModNetwork');
+ check(net.includes('MusicSupportPacket::handle')&&net.includes('MusicRecordPacket::handle'),'both S2C messages registered');
+ check(java('client/CatPerformanceOutline').includes('CatMusicEffects.draw')&&java('client/CatPerformanceOutline').includes('new State()'),'new glyphs inside existing GL guard');
+ check(java('client/CatPerformanceOutline').includes('entity instanceof Cat cat && cn.laowu.mod.CatMusicSupport.glowing(cat)'),'generic medical layer cannot overwrite haste in dual-state cats');
+ check(audio.includes('if (sound.obsolete()) remove(mc, id)')&&audio.includes('else if (sound.isStopped()) sound.finish()'),'muted/lost sounds release resources; completed sequence remains latched without heartbeat restarts');
+ const shader=read(port+'/src/main/resources/assets/laowu/shaders/core/performance_boundary.fsh');
+ check(shader.includes('dual')&&shader.includes('green')&&shader.includes('purple'),'healing and haste can display simultaneously');
+ check(java('client/CatMusicEffects').includes('GL11.GL_LEQUAL')&&java('client/CatMusicEffects').includes('drawGlyphs'),'real perspective projection and terrain depth');
+ for(const ext of ['json','vsh','fsh'])check(read(port+'/src/main/resources/assets/laowu/shaders/core/music_haste.'+ext).length>50,'packaged haste shader '+ext);
+ for(const lang of ['zh_cn','en_us']){
+  const t=JSON.parse(read(port+'/src/main/resources/assets/laowu/lang/'+lang+'.json'));
+  const text=Object.entries(t).filter(([k])=>k.startsWith('item.laowu.music_suit.')).map(([,v])=>v).join(' ');
+  check((text.includes('9')||text.includes('nine'))&&!text.includes('27'),'music description specifies nine slots');
+  check(!!t['item.laowu.career_suit.snapshot.music_haste']&&!!t['item.laowu.career_suit.snapshot.music_radius'],'live music examples localized');
+ }
+ const same=['CatMusicRules','CatMusicDps','CatMusicSupport','CatMusicSupportGoal','CatMusicRecords'].map(java).join('\n');
+ if(shared)check(shared===same,'shared server rules identical across loaders');shared=same;
+}
+console.log('PASS: '+count+' music career, nine-slot records, haste/AI, authority and rendering wiring checks');

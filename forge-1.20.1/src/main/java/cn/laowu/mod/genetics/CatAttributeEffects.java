@@ -3,6 +3,7 @@ package cn.laowu.mod.genetics;
 import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatPoseData;
+import cn.laowu.mod.CatSupportRules;
 import cn.laowu.mod.ServerConfig;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -21,6 +22,8 @@ import java.util.UUID;
 public final class CatAttributeEffects {
     private static final double VANILLA_CAT_MAX_HEALTH = 10.0D;
     private static final double VANILLA_CAT_ATTACK_DAMAGE = 3.0D;
+    private static final UUID ACCESSORY_KNOCKBACK_MODIFIER =
+            UUID.fromString("1f5e4129-a267-4641-8e6b-d672850ac65d");
 
     private static final UUID HEALTH_MODIFIER =
             UUID.fromString("ab5961b3-c3db-45a8-bdf1-82a88dc89208");
@@ -54,6 +57,12 @@ public final class CatAttributeEffects {
     private static int effectiveValue(CatAttributeProfile attributes,
                                       CatTraitProfile traits, CatStat stat,
                                       TraitContext context) {
+        return effectiveValue(attributes, traits, stat, context, 0);
+    }
+
+    private static int effectiveValue(CatAttributeProfile attributes,
+                                      CatTraitProfile traits, CatStat stat,
+                                      TraitContext context, int accessoryBonus) {
         if (attributes == null) return -1;
         CatTraitProfile resolved = traits == null ? CatTraitProfile.EMPTY : traits;
         int value = attributes.current(stat);
@@ -176,7 +185,7 @@ public final class CatAttributeEffects {
                 value += CatTrait.NIGHT_OWL.nightSpeedBonus(nightLevel);
             }
         }
-        return Mth.clamp(value, 0, 999);
+        return Mth.clamp(value + accessoryBonus, 0, 999);
     }
 
     public static int effectiveValue(Cat cat, CatStat stat) {
@@ -187,7 +196,10 @@ public final class CatAttributeEffects {
     /** Living-panel path; uses the same transient conditions as server attributes. */
     public static int effectiveValue(Cat cat, CatAttributeProfile attributes,
                                      CatTraitProfile traits, CatStat stat) {
-        return effectiveValue(attributes, traits, stat, context(cat));
+        return effectiveValue(attributes, traits, stat, context(cat),
+                cn.laowu.mod.accessory.CatAccessories.statBonus(cat, stat)
+                        + cn.laowu.mod.CatCockroachSwarm.statBonus(cat, stat)
+                        + CatTraitScriptState.bonus(cat, stat));
     }
 
     /** Maintains derived modifiers once per second without scanning the world. */
@@ -205,10 +217,10 @@ public final class CatAttributeEffects {
                         CatTraitProfile traits) {
         if (cat.level().isClientSide || attributes == null) return;
         TraitContext context = context(cat);
-        int health = effectiveValue(attributes, traits, CatStat.HEALTH, context);
-        int attack = effectiveValue(attributes, traits, CatStat.ATTACK, context);
-        int stamina = effectiveValue(attributes, traits, CatStat.STAMINA, context);
-        int speed = effectiveValue(attributes, traits, CatStat.SPEED, context);
+        int health = effectiveValue(cat, attributes, traits, CatStat.HEALTH);
+        int attack = effectiveValue(cat, attributes, traits, CatStat.ATTACK);
+        int stamina = effectiveValue(cat, attributes, traits, CatStat.STAMINA);
+        int speed = effectiveValue(cat, attributes, traits, CatStat.SPEED);
 
         float oldHealth = cat.getHealth();
         float oldMaximum = cat.getMaxHealth();
@@ -226,11 +238,8 @@ public final class CatAttributeEffects {
             cat.setHealth(Math.min(cat.getMaxHealth(), cat.getMaxHealth() * ratio));
         }
 
-        // Combat Power is a career input, not a universal replacement for a
-        // vanilla cat's biological attack. Only an equipped career cat gets
-        // this base damage; CareerCatBehavior then applies that outfit's own
-        // damage multiplier and attack-speed formula.
-        boolean careerCombat = CatClothesData.getOutfit(cat) != CatOutfitType.NONE;
+        // Ordinary cats use the same input with K=0.5; support K=0 forbids damage.
+        boolean careerCombat = !CatClothesData.getOutfit(cat).isPreviewOnly();
         setModifier(cat, Attributes.ATTACK_DAMAGE, ATTACK_MODIFIER,
                 "Create Meowchanics career combat power",
                 careerCombat
@@ -244,9 +253,13 @@ public final class CatAttributeEffects {
                 "Create Meowchanics armor toughness", armorToughness(stamina),
                 AttributeModifier.Operation.ADDITION);
         setModifier(cat, Attributes.MOVEMENT_SPEED, SPEED_MODIFIER,
-                "Create Meowchanics movement speed", movementMultiplier(speed) - 1.0D,
+                "Create Meowchanics movement speed", movementMultiplier(speed, CatClothesData.getOutfit(cat)) - 1.0D,
                 AttributeModifier.Operation.MULTIPLY_BASE);
         int longFurLevel = traits.level(CatTrait.LONG_FUR);
+        setModifier(cat, Attributes.KNOCKBACK_RESISTANCE, ACCESSORY_KNOCKBACK_MODIFIER,
+                "Create Meowchanics accessory knockback resistance",
+                cn.laowu.mod.accessory.CatAccessories.knockbackImmune(cat) ? 1.0D : 0.0D,
+                AttributeModifier.Operation.ADDITION);
         setModifier(cat, Attributes.FOLLOW_RANGE, FOLLOW_RANGE_MODIFIER,
                 "Create Meowchanics long fur vision",
                 longFurLevel <= 0 ? 0.0D
@@ -272,6 +285,10 @@ public final class CatAttributeEffects {
 
     public static double movementMultiplier(int effectiveSpeed) {
         return 0.75D + 0.005D * cn.laowu.mod.ServerConfig.scale(CatStat.SPEED, effectiveSpeed);
+    }
+
+    public static double movementMultiplier(int effectiveSpeed, CatOutfitType outfit) {
+        return movementMultiplier(effectiveSpeed) * (outfit.isSupport() ? CatSupportRules.MOVEMENT_BONUS : 1.0D);
     }
 
     public static int attackIntervalTicks(int effectiveSpeed) {
@@ -345,7 +362,11 @@ public final class CatAttributeEffects {
                 activeBody && cat.isInWaterOrRain(),
                 activeBody && cat.getHealth() >= cat.getMaxHealth() - 0.001F,
                 activeBody && (cat.isInSittingPose() || cat.isPassenger()),
-                activeBody && CatTraitEffects.isTimidOutnumbered(cat));
+                activeBody && CatTraitEffects.isTimidOutnumbered(cat),
+                activeBody && outfit == CatOutfitType.ENGINEERING,
+                activeBody && outfit == CatOutfitType.MEDICAL,
+                activeBody && outfit == CatOutfitType.MUSIC,
+                activeBody ? outfit : CatOutfitType.NONE);
     }
 
     private record TraitContext(boolean night, boolean day, boolean bristlingRage,
@@ -355,27 +376,17 @@ public final class CatAttributeEffects {
                                  boolean dynamite,
                                  boolean protectiveInstinct, boolean wet,
                                 boolean fullHealth, boolean sitting,
-                                boolean timid) {
-        private CatOutfitType outfit() {
-            if (mechanical) return CatOutfitType.TERMINATOR;
-            if (fishing) return CatOutfitType.FISHING;
-            if (flight) return CatOutfitType.FLIGHT;
-            if (blazingForm) return CatOutfitType.FIRE;
-            if (honey) return CatOutfitType.HONEY;
-            if (transport) return CatOutfitType.TRANSPORT;
-            if (dynamite) return CatOutfitType.DYNAMITE;
-            return CatOutfitType.NONE;
-        }
+                                boolean timid, boolean engineering, boolean medical, boolean music, CatOutfitType outfit) {
         private static TraitContext onlyNight(boolean night) {
             return new TraitContext(night, false, false, false, false,
                     false, false, false, false, false, false, false, false,
-                    false, false);
+                    false, false, false, false, false, CatOutfitType.NONE);
         }
 
         private static TraitContext onlyTime(boolean night, boolean day) {
             return new TraitContext(night, day, false, false, false,
                     false, false, false, false, false, false, false, false,
-                    false, false);
+                    false, false, false, false, false, CatOutfitType.NONE);
         }
     }
 

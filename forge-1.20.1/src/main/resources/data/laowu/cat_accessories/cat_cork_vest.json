@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_cork_vest",
+  "exclusive_group": "laowu:lifeguard",
+  "effects": {
+    "emergency_shield": 15
+  }
+}

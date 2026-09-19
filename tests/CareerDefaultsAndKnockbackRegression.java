@@ -19,7 +19,7 @@ public final class CareerDefaultsAndKnockbackRegression {
     }
 
     private static void resetDefaults() {
-        double[] expected = {0.75D, 0.55D, 2D, 0.6D, 0.85D, 0D, 1.35D};
+        double[] expected = {0.75D, 0.55D, 2D, 0.75D, 1.2D, 0D, 1.5D, 3D, 0D, 0D, 1.75D, 1D, .85D};
         CompoundTag serverBefore = ServerConfig.snapshot();
         check(ClientWorldSettings.editableCareerDefaults(null).isEmpty(), "No unsynced reset");
         for (int mask = 0; mask < 1 << expected.length; mask++) {

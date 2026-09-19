@@ -1,7 +1,9 @@
 package cn.laowu.mod;
 
 import cn.laowu.mod.genetics.CatStat;
+import cn.laowu.mod.genetics.CatTraitType;
 import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitRegistry;
 import cn.laowu.mod.item.CatFilterRules;
 import cn.laowu.mod.item.CatFilterLogic;
 import com.simibubi.create.content.logistics.filter.AbstractFilterMenu;
@@ -32,7 +34,8 @@ public final class CatFilterMenu extends AbstractFilterMenu {
     private static final int CURRENT_ENABLED_INDEX = CAREER_FILTER_INDEX + 1;
     private static final int LIMIT_ENABLED_INDEX = CURRENT_ENABLED_INDEX + 1;
     private static final int LOGIC_FLAGS_INDEX = LIMIT_ENABLED_INDEX + 1;
-    private static final int DATA_COUNT = LOGIC_FLAGS_INDEX + 1;
+    private static final int BASE_CURRENT_INDEX = LOGIC_FLAGS_INDEX + 1;
+    private static final int DATA_COUNT = BASE_CURRENT_INDEX + 1;
     private static final int LOGIC_BUTTON_BASE = 25_000;
     private static final int ENABLE_BUTTON_BASE = 25_100;
 
@@ -50,6 +53,8 @@ public final class CatFilterMenu extends AbstractFilterMenu {
 
     private final SimpleContainerData ranges = new SimpleContainerData(DATA_COUNT);
     private String nameQuery = "";
+    private final List<CatTraitType> traitCatalog;
+    private final long traitRevision;
 
     public CatFilterMenu(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
         this(containerId, inventory, buffer.readItem());
@@ -57,8 +62,23 @@ public final class CatFilterMenu extends AbstractFilterMenu {
 
     public CatFilterMenu(int containerId, Inventory inventory, ItemStack filterStack) {
         super(LaoWuMod.CAT_FILTER_MENU.get(), containerId, inventory, filterStack);
-        load(CatFilterRules.read(filterStack));
+        var rules = CatFilterRules.read(filterStack);
+        boolean client = inventory.player.level().isClientSide;
+        var catalog = new ArrayList<>(CatTraitRegistry.values(client));
+        for (var trait : rules.requiredTraits())
+            if (catalog.stream().noneMatch(t -> t.id().equals(trait.id()))) catalog.add(trait);
+        this.traitCatalog = List.copyOf(catalog);
+        this.traitRevision = CatTraitRegistry.revision(client);
+        load(rules);
         addDataSlots(ranges);
+    }
+
+    public List<CatTraitType> traitCatalog() { return traitCatalog; }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return (player.level().isClientSide || traitRevision == CatTraitRegistry.revision(false))
+                && super.stillValid(player);
     }
 
     @Override
@@ -110,10 +130,12 @@ public final class CatFilterMenu extends AbstractFilterMenu {
         ranges.set(CURRENT_ENABLED_INDEX, 0);
         ranges.set(LIMIT_ENABLED_INDEX, 0);
         ranges.set(LOGIC_FLAGS_INDEX, 0);
+        ranges.set(BASE_CURRENT_INDEX, 0);
     }
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (!player.level().isClientSide && traitRevision != CatTraitRegistry.revision(false)) return false;
         if (id >= LOGIC_BUTTON_BASE && id < LOGIC_BUTTON_BASE + 10) {
             int option = (id - LOGIC_BUTTON_BASE) / 2;
             int bit = 1 << option;
@@ -158,9 +180,9 @@ public final class CatFilterMenu extends AbstractFilterMenu {
             return true;
         }
         if (id >= ADD_TRAIT_BUTTON_BASE
-                && id <= ADD_TRAIT_BUTTON_BASE + CatTrait.values().length) {
+                && id <= ADD_TRAIT_BUTTON_BASE + traitCatalog.size()) {
             int selection = id - ADD_TRAIT_BUTTON_BASE;
-            if (selection <= 0 || selection > CatTrait.values().length) return false;
+            if (selection <= 0 || selection > traitCatalog.size()) return false;
             for (int slot = 0; slot < MAX_REQUIRED_TRAITS; slot++) {
                 if (traitSelection(slot) == selection) return true;
             }
@@ -201,6 +223,8 @@ public final class CatFilterMenu extends AbstractFilterMenu {
         return true;
     }
 
+    public boolean baseCurrent() { return ranges.get(BASE_CURRENT_INDEX) == 1; }
+
     public boolean enabled(int page, CatStat stat) {
         return (ranges.get(page == 1 ? LIMIT_ENABLED_INDEX : CURRENT_ENABLED_INDEX)
                 & (1 << stat.ordinal())) != 0;
@@ -233,22 +257,22 @@ public final class CatFilterMenu extends AbstractFilterMenu {
         return ranges.get(index(page, true, stat));
     }
 
-    /** Zero means an empty requirement slot; other values are ordinal + 1. */
+    /** Zero means an empty requirement slot; other values are the frozen catalog index + 1. */
     public int traitSelection(int slot) {
         return slot < 0 || slot >= MAX_REQUIRED_TRAITS
                 ? 0 : ranges.get(TRAIT_SELECTION_START + slot);
     }
 
-    public CatTrait selectedTrait(int slot) {
+    public CatTraitType selectedTrait(int slot) {
         int selection = traitSelection(slot);
-        return selection <= 0 || selection > CatTrait.values().length
-                ? null : CatTrait.values()[selection - 1];
+        return selection <= 0 || selection > traitCatalog.size()
+                ? null : traitCatalog.get(selection - 1);
     }
 
-    public List<CatTrait> selectedTraits() {
-        List<CatTrait> selected = new ArrayList<>(MAX_REQUIRED_TRAITS);
+    public List<CatTraitType> selectedTraits() {
+        List<CatTraitType> selected = new ArrayList<>(MAX_REQUIRED_TRAITS);
         for (int slot = 0; slot < MAX_REQUIRED_TRAITS; slot++) {
-            CatTrait trait = selectedTrait(slot);
+            CatTraitType trait = selectedTrait(slot);
             if (trait != null) selected.add(trait);
         }
         return List.copyOf(selected);
@@ -283,7 +307,7 @@ public final class CatFilterMenu extends AbstractFilterMenu {
 
     public static int addTraitButton(int selection) {
         return ADD_TRAIT_BUTTON_BASE
-                + Mth.clamp(selection, 0, CatTrait.values().length);
+                + Mth.clamp(selection, 0, CatTrait.values().length + CatTraitRegistry.MAX_CUSTOM_TRAITS + MAX_REQUIRED_TRAITS);
     }
 
     public static int removeTraitButton(int slot) {
@@ -297,6 +321,11 @@ public final class CatFilterMenu extends AbstractFilterMenu {
                 + Mth.clamp(selection, 0, IDENTITY_FIELD_STRIDE - 1);
     }
 
+    private int traitIndex(CatTraitType trait) {
+        for (int i = 0; i < traitCatalog.size(); i++) if (traitCatalog.get(i).id().equals(trait.id())) return i;
+        return -1;
+    }
+
     private void load(CatFilterRules rules) {
         for (CatStat stat : CatStat.values()) {
             for (int page = CatFilterRules.CURRENT_PAGE;
@@ -305,10 +334,10 @@ public final class CatFilterMenu extends AbstractFilterMenu {
                 ranges.set(index(page, true, stat), rules.max(page, stat));
             }
         }
-        List<CatTrait> traits = rules.requiredTraits();
+        List<CatTraitType> traits = rules.requiredTraits();
         for (int slot = 0; slot < MAX_REQUIRED_TRAITS; slot++) {
             ranges.set(TRAIT_SELECTION_START + slot, slot < traits.size()
-                    ? traits.get(slot).ordinal() + 1 : 0);
+                    ? traitIndex(traits.get(slot)) + 1 : 0);
         }
         ranges.set(GROWTH_FILTER_INDEX, rules.growth().ordinal());
         ranges.set(OWNERSHIP_FILTER_INDEX, rules.ownership().ordinal());
@@ -317,6 +346,7 @@ public final class CatFilterMenu extends AbstractFilterMenu {
         ranges.set(CURRENT_ENABLED_INDEX, rules.logic().currentMask());
         ranges.set(LIMIT_ENABLED_INDEX, rules.logic().limitMask());
         ranges.set(LOGIC_FLAGS_INDEX, rules.logic().flags());
+        ranges.set(BASE_CURRENT_INDEX, rules.baseCurrent() ? 1 : 0);
     }
 
     public CatFilterRules rules() {
@@ -340,7 +370,8 @@ public final class CatFilterMenu extends AbstractFilterMenu {
                 CatFilterRules.CareerFilter.values()[Mth.clamp(careerSelection(), 0,
                         CatFilterRules.CareerFilter.values().length - 1)],
                 nameQuery).withLogic(new CatFilterLogic(ranges.get(CURRENT_ENABLED_INDEX),
-                        ranges.get(LIMIT_ENABLED_INDEX), ranges.get(LOGIC_FLAGS_INDEX)));
+                        ranges.get(LIMIT_ENABLED_INDEX), ranges.get(LOGIC_FLAGS_INDEX)))
+                .withBaseCurrent(baseCurrent());
     }
 
     private static int index(int page, boolean maximum, CatStat stat) {

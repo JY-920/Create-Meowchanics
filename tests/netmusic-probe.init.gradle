@@ -1,0 +1,78 @@
+// Isolated NetMusic integration probe; never included by normal build or copied into user instances.
+// Pass -PnetMusicJar=<installed NetMusic jar>. Omit it to verify the optional-mod fallback.
+// Add -PnetMusicClient and runClient to exercise the real client decoder.
+allprojects {
+    afterEvaluate { p ->
+        def neo = p.extensions.findByName('neoForge') != null
+        def client = p.hasProperty('netMusicClient')
+        def jarPath = p.findProperty('netMusicJar')?.toString()
+        def probe = p.sourceSets.create('netMusicProbe') {
+            java.srcDir(p.file('../tests/netmusic/' + (neo ? 'neo' : 'forge')))
+            java.include(client ? '**/NetMusicClientProbe.java' : '**/NetMusicServerProbe.java')
+            if (client) {
+                java.srcDir(p.file('../tests/client/' + (neo ? 'neo' : 'forge')))
+                java.include('**/AgentWatchVisualProbe.java')
+            }
+            compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+            runtimeClasspath += output + p.sourceSets.main.runtimeClasspath
+        }
+        def runDir = p.layout.buildDirectory.dir('netmusic-probe/' + (client ? 'client' : 'server') + (jarPath ? '-present' : '-absent')).get().asFile
+        if (jarPath) {
+            def input = p.file(jarPath)
+            if (!input.isFile()) throw new GradleException('Missing NetMusic jar: ' + input)
+            if (neo) p.dependencies.add('localRuntime', p.files(input))
+            else {
+                def flat = p.layout.buildDirectory.dir('netmusic-probe/libs').get().asFile
+                p.copy { from input; into flat; rename { 'netmusic-1.5.2.jar' } }
+                p.repositories.flatDir { dirs flat }
+                p.dependencies.add('runtimeOnly', p.fg.deobf('local.netmusic:netmusic:1.5.2')) { transitive = false }
+            }
+        }
+        if (!client) {
+            def resources = p.layout.buildDirectory.dir('netmusic-probe/resources').get().asFile
+            probe.resources.srcDir(resources)
+            def fixture = p.tasks.register('prepareNetMusicFixture') {
+                outputs.dir(resources)
+                doLast {
+                    def path = new File(resources, 'data/laowu/' + (neo ? 'structure' : 'structures') + '/netmusic_probe.nbt')
+                    path.parentFile.mkdirs()
+                    def out = new DataOutputStream(new java.util.zip.GZIPOutputStream(new FileOutputStream(path)))
+                    try {
+                        out.writeByte(10); out.writeUTF('')
+                        out.writeByte(3); out.writeUTF('DataVersion'); out.writeInt(neo ? 3955 : 3465)
+                        out.writeByte(9); out.writeUTF('size'); out.writeByte(3); out.writeInt(3)
+                        [8, 5, 8].each { out.writeInt(it) }
+                        out.writeByte(9); out.writeUTF('palette'); out.writeByte(10); out.writeInt(1)
+                        out.writeByte(8); out.writeUTF('Name'); out.writeUTF('minecraft:air'); out.writeByte(0)
+                        ['blocks', 'entities'].each { out.writeByte(9); out.writeUTF(it); out.writeByte(10); out.writeInt(0) }
+                        out.writeByte(0)
+                    } finally { out.close() }
+                }
+            }
+            p.tasks.named('processNetMusicProbeResources') { dependsOn fixture }
+        }
+        def runName = client ? 'client' : 'gameTestServer'
+        if (neo) {
+            p.neoForge.mods.named('laowu') { sourceSet(probe) }
+            p.neoForge.runs.named(runName) {
+                gameDirectory = runDir
+                systemProperty 'laowu.netmusic_expected', (jarPath != null).toString()
+                systemProperty 'laowu.netmusic_fixture', p.file('../build/netmusic-test-tools/tone.mp3').absolutePath
+            }
+        } else {
+            p.dependencies.add('runtimeOnly', 'io.github.llamalad7:mixinextras-forge:0.4.1') { transitive = false }
+            p.minecraft.runs.named(runName) {
+                workingDirectory runDir
+                property 'laowu.netmusic_expected', (jarPath != null).toString()
+                property 'laowu.netmusic_fixture', p.file('../build/netmusic-test-tools/tone.mp3').absolutePath
+                args '--mixin', 'laowu.mixins.json'
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', p.file('build/createSrgToMcp/output.srg').absolutePath
+                mods.named('laowu') { source(probe) }
+            }
+        }
+        p.tasks.matching { it.name == (client ? 'runClient' : 'runGameTestServer') }.configureEach {
+            dependsOn p.tasks.named('netMusicProbeClasses')
+        }
+    }
+}

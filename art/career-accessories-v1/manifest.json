@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "note": "2026-09-17: nine new supplied icons installed; only the cockroach accessory remains a vanilla placeholder. Stable item IDs and crafting unchanged.",
+  "items": [
+    {
+      "id": "cat_reel_hook",
+      "outfit": "fishing",
+      "name": "鱼钩",
+      "en": "Fishing Hook",
+      "icon": "fishing_rod",
+      "ingredient": "fishing_rod",
+      "effects": {
+        "speed": 10,
+        "fishing_pull": 1
+      },
+      "drawing": "带倒钩的银色鱼钩，尾部绕一小圈鱼线",
+      "previous_name": "回收鱼钩",
+      "source": "鱼钩.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "f676b7c35986f31b2f44948edc7c0821b57951a98cc8b7fd749aa3da8ea8abc6",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_blue_flame_nozzle",
+      "outfit": "fire",
+      "name": "烈焰蛋糕",
+      "en": "Blaze Cake",
+      "icon": "blaze_powder",
+      "ingredient": "blaze_powder",
+      "effects": {
+        "stamina": -20,
+        "super_flame_multiplier": 1.5
+      },
+      "drawing": "黄铜短喷嘴，前端一簇青蓝色火苗",
+      "previous_name": "蓝焰喷嘴",
+      "source": "烈焰蛋糕切片-喷火猫.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "5d7731d2655df0b79e5454cab6d12c48920782ed02e3d4165c0409dbe44adb29",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_honey_stamp",
+      "outfit": "honey",
+      "name": "蜂蜜饮",
+      "en": "Honey Drink",
+      "icon": "honey_bottle",
+      "ingredient": "honey_bottle",
+      "effects": {
+        "attack": -10,
+        "honey_patch": 1
+      },
+      "drawing": "木柄蜂巢印章，底部滴落金色蜂蜜",
+      "previous_name": "蜂蜜印章",
+      "source": "美味蜂蜜饮-蜂蜜猫.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "1bef51a5797f2caf78ac889ca19e3cd06c3648e09900a0b3a3c26d72167b0f9f",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_concentrated_pouch",
+      "outfit": "transport",
+      "name": "加急快递",
+      "en": "Express Parcel",
+      "icon": "dragon_breath",
+      "ingredient": "glowstone_dust",
+      "effects": {
+        "speed": -30,
+        "enhanced_potions": 1
+      },
+      "drawing": "棕色小药囊，露出带双刻线的紫色药瓶",
+      "previous_name": "浓缩药囊",
+      "source": "加急快递-运输猫.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "c50e093848847fd96ba51d5695ce38763b66c28bd5a343b2c6c8f5cbeae74320",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_mixed_magazine",
+      "outfit": "engineering",
+      "name": "工具箱",
+      "en": "Toolbox",
+      "icon": "iron_nugget",
+      "ingredient": "iron_ingot",
+      "effects": {
+        "speed": -10,
+        "engineering_special_ammo": 1
+      },
+      "drawing": "黄铜弹匣，露出大齿轮和一截传动杆",
+      "previous_name": "复合弹匣",
+      "source": "拓展工具箱-工程猫.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "2c1f904c5cbfedb55aedbd2b20e6ebc523946d8f7d8a25014ae757ffeb84256f",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_guard_bandage",
+      "outfit": "medical",
+      "name": "守护绷带",
+      "en": "Guardian Bandage",
+      "icon": "paper",
+      "ingredient": "paper",
+      "effects": {
+        "intelligence": -10,
+        "medical_guard": 20
+      },
+      "drawing": "白色绷带卷，绿色十字旁点缀小盾牌",
+      "previous_name": "守护绷带",
+      "source": "绷带.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "efb22727f85812adfe720b1424716d01701fdd106f88fbc84bf755afcfc26abd",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_rhythm_tambourine",
+      "outfit": "music",
+      "name": "扩展音响",
+      "en": "Expansion Speaker",
+      "icon": "amethyst_shard",
+      "ingredient": "amethyst_shard",
+      "effects": {
+        "health": -10,
+        "music_speed_bonus": 20
+      },
+      "drawing": "紫色小铃鼓，鼓面印向前的双箭头",
+      "previous_name": "节拍铃鼓",
+      "source": "拓展音响.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "675dbd34642c4851f464718537a6fcc24942f2652286cb4c7cabbe51b9693050",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_medic_smoke_canister",
+      "outfit": "agent",
+      "name": "香草冰淇淋",
+      "en": "Vanilla Ice Cream",
+      "icon": "slime_ball",
+      "ingredient": "slime_ball",
+      "effects": {
+        "attack": -10,
+        "healing_smoke": 1
+      },
+      "drawing": "深灰烟罐带绿色十字，顶部冒浅绿烟",
+      "previous_name": "急救烟罐",
+      "source": "香草猫冰淇淋-特工猫.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "3b5e8f92d349e7b190be1bb6d423e82bf4f6efe25d71e586d2d92ecf58b7e2b5",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_purifying_filter",
+      "outfit": "diving",
+      "name": "牛奶饮",
+      "en": "Milk Drink",
+      "icon": "nautilus_shell",
+      "ingredient": "nautilus_shell",
+      "effects": {
+        "attack": -10,
+        "diving_cleanse": 1
+      },
+      "drawing": "青白色圆筒滤芯，中央水滴和小十字",
+      "previous_name": "净化滤芯",
+      "source": "美味牛奶饮-潜水猫.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "9bb190a0c4810f6136821f89869fa07ca68574d490db1c4b5abb4746c038455a",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_rebirth_ootheca",
+      "outfit": "cockroach",
+      "name": "爆珠奶茶",
+      "en": "Boba Milk Tea",
+      "icon": "egg",
+      "ingredient": "egg",
+      "effects": {
+        "stamina": -20,
+        "cockroach_split": 1
+      },
+      "drawing": "棕褐色带分节的卵鞘，裂缝中露出两个小亮点",
+      "art_status": "supplied",
+      "source": "C:/Users/16611/Downloads/爆珠蟑螂奶茶.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "e85eade8c89ab8f34556477bd203a5ac7444607b9e23b78bc8bb0e8646b5ef05",
+      "previous_name": "蜕生卵鞘"
+    }
+  ]
+}

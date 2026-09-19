@@ -1,0 +1,69 @@
+{
+  "Time": "2026-09-19 18:14:37",
+  "Version": "2.2.1",
+  "Stamp": "20260919-181436-2.2.1-death-outcome",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "499D003AA805570D8766905C430CA1396C8EA306848B45A68398EF1FE2788F26"
+      },
+      "Bytes": 7027975,
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "5D4BDCFA79106248FCC819098B8F9E1480E629723388CD7550A682625C0B1697"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260919-181436-2.2.1-death-outcome\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "1A859AB09528071892B27305D59AFB22D93106A50674C98761239DDFF757E6C4"
+      },
+      "Bytes": 7029411,
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "47C9C467574685F1892B85AB3E9E74E857D51B9F3F785217DAE6FD627D2C6B08"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260919-181436-2.2.1-death-outcome\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Config": {
+    "Key": "cat_death_outcome",
+    "Default": 1,
+    "Values": {
+      "0": "No pancake; inventory/accessories drop normally",
+      "1": "Pancake item",
+      "2": "Living flattened pancake entity"
+    },
+    "Scope": "Tamed cats only; existing untamed-career item behavior, doMobLoot and split priority retained"
+  },
+  "Verification": {
+    "DeathConfigPerPort": 90,
+    "FullKubeJSPerPort": "111/111 reported, including one existing intentional ProtoChunk promotion skip",
+    "KubeJSScriptErrorsPerPort": 0,
+    "ClientUI": "Both loaders passed all three modes, visibility, draft preservation, validation and global lock",
+    "NormalBuilds": "Both passed, accessory API v3, trait API v1, release isolation and 23252 accessory assertions per port",
+    "Review": "Read-only scoped review: no concrete correctness findings",
+    "History": "See docs/death-outcome-verification.md for first-run Forge file-watcher fixture failure and resolution"
+  },
+  "PublicArchiveUpdated": false
+}

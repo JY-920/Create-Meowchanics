@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "item": "laowu:cockroach_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_cockroach_suit"
+        },
+        {
+          "item": "minecraft:bread"
+        }
+      ],
+      "results": [
+        {
+          "item": "laowu:incomplete_cockroach_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_cockroach_suit"
+        },
+        {
+          "item": "minecraft:sugar"
+        }
+      ],
+      "results": [
+        {
+          "item": "laowu:incomplete_cockroach_suit"
+        }
+      ]
+    }
+  ],
+  "transitionalItem": {
+    "item": "laowu:incomplete_cockroach_suit"
+  }
+}

@@ -59,8 +59,9 @@ public final class CatScannerItemRenderer extends BlockEntityWithoutLevelRendere
                     ? CatTraitData.read(target.cat()).orElse(CatTraitProfile.EMPTY)
                     : CatTraitData.read(target.pancake()).orElse(CatTraitProfile.EMPTY);
             if (profile.isPresent()) {
-                bodyTextures = target.isLiving()
-                        ? CatScannerTextureManager.resolve(target.cat(), profile.get(), traits)
+                var inspection = target.isLiving() ? target.cat() : CatAccessoryPreview.forStack(target.pancake());
+                bodyTextures = inspection != null
+                        ? CatScannerTextureManager.resolve(inspection, profile.get(), traits)
                         : CatScannerTextureManager.resolve(profile.get(), traits,
                         CatTraitEffects.isNight(Minecraft.getInstance().level),
                         CatTraitEffects.isDay(Minecraft.getInstance().level));

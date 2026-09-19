@@ -74,6 +74,7 @@ public final class CatAttributeEditorMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int encodedId) {
         if (player.level().isClientSide) return true;
+        if (!stillValid(player) || encodedId < 0 || encodedId >= 200) return false;
         Entity target = resolveTarget(player);
         if (target == null) return false;
 

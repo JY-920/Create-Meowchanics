@@ -7,6 +7,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class CatTeamGlowColourMixin {
     @Inject(method = {"getTeamColor", "m_19876_"}, at = @At("HEAD"), cancellable = true)
     private void laowu$preview(CallbackInfoReturnable<Integer> cir) {
+        if ((Object) this instanceof net.minecraft.world.entity.Entity entity
+                && cn.laowu.mod.client.CatAgentWatchClient.visible(entity)) {
+            cir.setReturnValue(cn.laowu.mod.client.CatAgentWatchClient.RED);
+            return;
+        }
         if ((Object) this instanceof net.minecraft.world.entity.animal.Cat cat
                 && cn.laowu.mod.client.CatTeamPreview.visible(cat))
             cir.setReturnValue(cn.laowu.mod.CatTeamRules.rgb(cat));

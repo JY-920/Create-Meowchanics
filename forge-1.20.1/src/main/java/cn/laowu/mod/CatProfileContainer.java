@@ -41,6 +41,8 @@ public final class CatProfileContainer extends SimpleContainer {
                 saved.add(entry);
             }
             cat.getPersistentData().put(CatProfileData.ITEMS_TAG, saved);
+            cn.laowu.mod.accessory.CatAccessories.equipmentChanged(cat);
+            CatMusicRecords.inventoryChanged(cat);
         }
     }
 

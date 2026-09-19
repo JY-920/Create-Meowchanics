@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_catnip_pouch",
+  "effects": {
+    "critical_haste": 15
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "source": "models/entity/cockroach_suit.bbmodel#animation",
+  "length": 0.5,
+  "loop": true,
+  "tracks": {
+    "left_hind_leg": [
+      {
+        "channel": "rotation",
+        "time": 0,
+        "interpolation": "linear",
+        "value": [
+          -90,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0,
+        "interpolation": "linear",
+        "value": [
+          0,
+          -2,
+          3
+        ]
+      }
+    ],
+    "right_hind_leg": [
+      {
+        "channel": "rotation",
+        "time": 0,
+        "interpolation": "linear",
+        "value": [
+          -90,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0,
+        "interpolation": "linear",
+        "value": [
+          0,
+          -2,
+          3
+        ]
+      }
+    ],
+    "left_front_leg": [
+      {
+        "channel": "rotation",
+        "time": 0,
+        "interpolation": "linear",
+        "value": [
+          90,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0,
+        "interpolation": "linear",
+        "value": [
+          0,
+          -3,
+          0
+        ]
+      }
+    ],
+    "right_front_leg": [
+      {
+        "channel": "rotation",
+        "time": 0,
+        "interpolation": "linear",
+        "value": [
+          90,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0,
+        "interpolation": "linear",
+        "value": [
+          0,
+          -3,
+          0
+        ]
+      }
+    ],
+    "group10": [
+      {
+        "channel": "rotation",
+        "time": 0,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "rotation",
+        "time": 0.25,
+        "interpolation": "catmullrom",
+        "value": [
+          -20,
+          -25,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0.25,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "rotation",
+        "time": 0.5,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0.5,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "group11": [
+      {
+        "channel": "rotation",
+        "time": 0,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "rotation",
+        "time": 0.25,
+        "interpolation": "catmullrom",
+        "value": [
+          -20,
+          25,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0.25,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "rotation",
+        "time": 0.5,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "channel": "position",
+        "time": 0.5,
+        "interpolation": "catmullrom",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  }
+}

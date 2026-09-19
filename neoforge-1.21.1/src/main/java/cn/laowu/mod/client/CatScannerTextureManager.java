@@ -111,6 +111,8 @@ public final class CatScannerTextureManager {
     private static Layers resolveValues(int[] current, int[] limits,
                                         CatTraitProfile traits) {
         StringBuilder key = new StringBuilder(current.length * 9);
+        // Definitions can change title/rarity/max level without changing the cat's saved IDs.
+        key.append(cn.laowu.mod.genetics.CatTraitRegistry.revision(true)).append('|');
         for (int index = 0; index < current.length; index++) {
             key.append(current[index]).append('/').append(limits[index]).append(';');
         }

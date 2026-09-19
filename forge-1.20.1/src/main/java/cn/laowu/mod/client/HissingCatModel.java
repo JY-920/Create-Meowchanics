@@ -38,6 +38,9 @@ public final class HissingCatModel extends CatModel<Cat> {
     private boolean pancake;
     private boolean playingPipa;
     private boolean playingStreetDance;
+    private int cockroachMode;
+    private float cockroachAge;
+    private float cockroachWingWeight;
     private final ModelPart pipa = new ModelPart(List.of(), Map.of());
     private final ModelPart plectrum = new ModelPart(List.of(), Map.of());
     private float liveHeadXRot;
@@ -85,18 +88,42 @@ public final class HissingCatModel extends CatModel<Cat> {
             part.xScale = part.yScale = part.zScale = 1.0F;
         }
         super.prepareMobModel(cat, limbSwing, limbSwingAmount, partialTick);
+        if (cn.laowu.mod.CatEngineeringCombat.deployed(cat) && !cat.isInSittingPose()) {
+            // Vanilla seated geometry only: never set the server's stay/sit command flag.
+            body.xRot = 0.7853982F; body.y -= 4; body.z += 5;
+            head.y -= 3.3F; head.z += 1;
+            tail1.y += 8; tail1.z -= 2; tail1.xRot = 1.7278761F;
+            tail2.y += 2; tail2.z -= 0.8F; tail2.xRot = 2.670354F;
+            leftFrontLeg.xRot = rightFrontLeg.xRot = -0.15707964F;
+            leftFrontLeg.y = rightFrontLeg.y = 16.1F;
+            leftFrontLeg.z = rightFrontLeg.z = -7;
+            leftHindLeg.xRot = rightHindLeg.xRot = -1.5707964F;
+            leftHindLeg.y = rightHindLeg.y = 21;
+            leftHindLeg.z = rightHindLeg.z = 1;
+            state = 3;
+        }
     }
 
     @Override
     public void setupAnim(Cat cat, float limbSwing, float limbSwingAmount, float ageInTicks,
                           float netHeadYaw, float headPitch) {
+        boolean healing = cn.laowu.mod.CatMedicalHealing.casting(cat);
+        boolean combatMusic = cn.laowu.mod.CatMusicSupport.performing(cat);
+        boolean music = combatMusic || CatMusicRecordClient.performing(cat);
+        if (healing || music) { limbSwing = 0; limbSwingAmount = 0; }
         super.setupAnim(cat, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        if (cn.laowu.mod.CatPilotFlight.carried(cat) || cn.laowu.mod.CatDivingMount.carried(cat)) {
+            // The complete pilot follows the locally predicted body heading; no old network head yaw.
+            head.xRot = head.yRot = 0;
+        }
         liveHeadXRot = head.xRot;
         liveHeadYRot = head.yRot;
         hissing = CatPoseData.isHissing(cat);
         pancake = CatPoseData.isPancake(cat);
         playingPipa = false;
         playingStreetDance = false;
+        cockroachMode = cn.laowu.mod.CatCockroachSwarm.mode(cat);
+        cockroachAge = cn.laowu.mod.CatCockroachSwarm.age(cat, ageInTicks - cat.tickCount);
         boolean vanillaVisible = !hissing && !pancake;
         setVanillaGeometryVisible(vanillaVisible);
         var traits = CatTraitData.read(cat).orElse(null);
@@ -108,7 +135,7 @@ public final class HissingCatModel extends CatModel<Cat> {
         boolean splitTail = traits != null && traits.has(CatTrait.NEKOMATA);
         tail1.visible = vanillaVisible && !splitTail;
         tail2.visible = vanillaVisible && !splitTail;
-        if (vanillaVisible && traits != null && traits.has(CatTrait.STREET_DANCE)
+        if (vanillaVisible && !healing && !music && traits != null && traits.has(CatTrait.STREET_DANCE)
                 && cat.isAlive() && cat.onGround() && !cat.isInWater()
                 && !cat.isPassenger() && limbSwingAmount < 0.08F
                 && cat.getLieDownAmount(0.0F) <= 0.0F
@@ -117,7 +144,7 @@ public final class HissingCatModel extends CatModel<Cat> {
                     rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2);
             playingStreetDance = CatStreetDanceAnimation.isAvailable() && Float.isFinite(ageInTicks);
         }
-        if (vanillaVisible && traits != null && traits.has(CatTrait.PIPA_PERFORMANCE)
+        if (vanillaVisible && !healing && !music && traits != null && traits.has(CatTrait.PIPA_PERFORMANCE)
                 && cat.isAlive() && cat.onGround() && !cat.isInWater()
                 && !cat.isPassenger() && limbSwingAmount < 0.08F
                 && cat.getLieDownAmount(0.0F) <= 0.0F
@@ -126,6 +153,55 @@ public final class HissingCatModel extends CatModel<Cat> {
             CatPipaAnimation.apply(ageInTicks, head, body, leftHindLeg,
                     rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2, pipa, plectrum);
             playingPipa = true;
+        }
+        if (vanillaVisible && music) {
+            float musicAge = combatMusic ? cn.laowu.mod.CatMusicSupport.age(cat, ageInTicks - cat.tickCount)
+                    : CatMusicRecordClient.age(cat, ageInTicks - cat.tickCount);
+            int musicPose = combatMusic ? cn.laowu.mod.CatMusicSupport.pose(cat) : CatMusicRecordClient.pose(cat);
+            if (musicPose == 0) {
+                CatPipaAnimation.apply(musicAge, head, body, leftHindLeg,
+                        rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2, pipa, plectrum);
+                playingPipa = CatPipaAnimation.isAvailable();
+            } else {
+                CatStreetDanceAnimation.apply(musicAge, head, body, leftHindLeg,
+                        rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2);
+                playingStreetDance = CatStreetDanceAnimation.isAvailable();
+            }
+        }
+        if (vanillaVisible && healing) {
+            float castAge = cn.laowu.mod.CatMedicalHealing.castAge(cat, ageInTicks - cat.tickCount);
+            if (cn.laowu.mod.CatMedicalHealing.stationed(cat))
+                CatMedicalAnimation.applyStationed(castAge, head, body, leftHindLeg, rightHindLeg,
+                        leftFrontLeg, rightFrontLeg, tail1, tail2);
+            else CatMedicalAnimation.apply(castAge, head, body, leftHindLeg, rightHindLeg,
+                        leftFrontLeg, rightFrontLeg, tail1, tail2);
+        }
+        boolean riding=vanillaVisible && (cn.laowu.mod.CatPilotFlight.carried(cat) || cn.laowu.mod.CatDivingMount.swimming(cat));
+        var transition=CatPoseTransitions.sample(cat,riding,vanillaVisible&&!healing&&!music?cockroachMode:0,ageInTicks-cat.tickCount);
+        cockroachWingWeight=transition.wings();
+        cockroachAge=transition.age();
+        cockroachMode=transition.mode();
+        if(vanillaVisible && !healing && !music) {
+            CatPoseTransitions.apply(transition.ride(),()->CatRideAnimation.apply(ageInTicks,head,body,leftHindLeg,rightHindLeg,
+                    leftFrontLeg,rightFrontLeg,tail1,tail2),head,body,leftHindLeg,rightHindLeg,leftFrontLeg,rightFrontLeg,tail1,tail2);
+            CatPoseTransitions.apply(transition.dash(),()->CatCockroachAnimation.dash(cockroachAge,leftHindLeg,rightHindLeg,
+                    leftFrontLeg,rightFrontLeg),leftHindLeg,rightHindLeg,leftFrontLeg,rightFrontLeg);
+            if(riding)liveHeadXRot=liveHeadYRot=0;
+        }
+        var strike = cn.laowu.mod.CatAgentMeleeMotion.current(cat);
+        if (vanillaVisible && strike != null && !healing && !music) {
+            float strikeAge = cat.level().getGameTime() - strike.started() + ageInTicks - cat.tickCount;
+            CatAgentAttackAnimation.apply(strike.move(), strikeAge / strike.duration(), head, body,
+                    leftHindLeg, rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2);
+            liveHeadXRot = liveHeadYRot = 0;
+            playingStreetDance = playingPipa = false;
+        }
+        if (vanillaVisible && CatEngineeringAnimation.isPosing(cat)
+                && !cn.laowu.mod.CatEngineeringCombat.deployed(cat)) {
+            CatEngineeringAnimation.apply(cat, head, body, leftHindLeg, rightHindLeg,
+                    leftFrontLeg, rightFrontLeg, tail1, tail2);
+            playingStreetDance = false;
+            playingPipa = false;
         }
     }
 
@@ -266,11 +342,14 @@ public final class HissingCatModel extends CatModel<Cat> {
             // Blockbench model Y is converted with poseY = 24 - modelY.
             boolean modelOriginRoot = outfit == CatOutfitType.FLIGHT
                     || outfit == CatOutfitType.TRANSPORT;
-            float pivotX = modelOriginRoot ? 0.0F : 1.6F;
-            float pivotY = modelOriginRoot ? 24.0F : 14.5F;
-            float pivotZ = modelOriginRoot ? 0.0F : -10.1F;
+            // Preserve supplied pivots. Diving has a tilted root at model (-2.25, 6.5, 1.25).
+            boolean diving = outfit == CatOutfitType.DIVING;
+            float pivotX = diving ? 2.25F : modelOriginRoot || outfit.hasImportedModel() ? 0.0F : 1.6F;
+            float pivotY = diving ? 17.5F : modelOriginRoot ? 24.0F : outfit.hasImportedModel() ? 18.6F : 14.5F;
+            float pivotZ = diving ? 1.25F : modelOriginRoot ? 0.0F : outfit.hasImportedModel() ? -9.5F : -10.1F;
             transforms.put("group", bodyAttachedAccessoryDelta(pivotX, pivotY, pivotZ));
         }
+        if (outfit == CatOutfitType.COCKROACH) CatCockroachAnimation.wings(transforms, cockroachMode, cockroachAge, cockroachWingWeight);
         return Map.copyOf(transforms);
     }
 

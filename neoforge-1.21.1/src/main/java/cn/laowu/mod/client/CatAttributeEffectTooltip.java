@@ -35,24 +35,18 @@ final class CatAttributeEffectTooltip {
                         number(snapshot.health())));
             }
             case ATTACK -> {
-                if (outfit == CatOutfitType.NONE) {
-                    lines.add(Component.translatable(
-                                    "gui.laowu.cat_stats.effect.no_career_damage")
-                            .withStyle(ChatFormatting.GRAY));
+                var snapshot = CareerCatBehavior.snapshotEffective(outfit, 0, resolved, 0, 0);
+                if (snapshot.attacks()) {
+                    lines.add(line("gui.laowu.cat_stats.effect.career_damage", number(snapshot.attackDamage())));
                 } else {
-                    var snapshot = CareerCatBehavior.snapshotEffective(
-                            outfit, 0, resolved, 0, 0);
-                    if (snapshot.attacks()) {
-                    lines.add(line("gui.laowu.cat_stats.effect.career_damage",
-                            number(snapshot.attackDamage())));
-                    } else if (outfit == CatOutfitType.TRANSPORT) {
-                        lines.add(Component.translatable(
-                                        "gui.laowu.cat_stats.effect.support_no_attack")
-                                .withStyle(ChatFormatting.GRAY));
-                    }
+                    lines.add(Component.translatable("gui.laowu.cat_stats.effect.support_no_attack")
+                            .withStyle(ChatFormatting.GRAY));
                 }
             }
             case STAMINA -> {
+                if (outfit == CatOutfitType.ENGINEERING)
+                    lines.add(line("gui.laowu.cat_stats.effect.crank_capacity",
+                            number(cn.laowu.mod.CatCrankPower.stressCapacity(resolved))));
                 var snapshot = CareerCatBehavior.snapshotEffective(
                         outfit, 0, 0, 0, resolved);
                 lines.add(line("gui.laowu.cat_stats.effect.armor",
@@ -62,7 +56,7 @@ final class CatAttributeEffectTooltip {
             }
             case SPEED -> {
                 lines.add(line("gui.laowu.cat_stats.effect.movement",
-                        number(CatAttributeEffects.movementMultiplier(resolved))));
+                        number(CatAttributeEffects.movementMultiplier(resolved, outfit))));
                 var snapshot = CareerCatBehavior.snapshotEffective(
                         outfit, 0, 0, resolved, 0);
                 if (snapshot.attacks()) {

@@ -1,9 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["S S", "C C", "CCC"],
+  "pattern": [
+    " S ",
+    "LLL",
+    " B "
+  ],
   "key": {
-    "S": { "item": "minecraft:string" },
-    "C": { "item": "laowu:cat_sheet" }
+    "S": {
+      "item": "minecraft:string"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "create:brass_ingot"
+    }
   },
-  "result": { "item": "laowu:cat_pouch" }
+  "result": {
+    "item": "laowu:cat_pouch"
+  }
 }

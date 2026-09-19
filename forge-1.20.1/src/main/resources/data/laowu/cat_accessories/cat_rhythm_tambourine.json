@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_rhythm_tambourine",
+  "required_outfit": "music",
+  "effects": {
+    "health": -10,
+    "music_speed_bonus": 20
+  }
+}

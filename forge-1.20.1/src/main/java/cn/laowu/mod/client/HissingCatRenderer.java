@@ -18,6 +18,7 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
         addLayer(new HissingCatGeometryLayer(this));
         addLayer(new PancakeCatGeometryLayer(this));
         addLayer(new CatClothesLayer(this));
+        addLayer(new CatPilotHarnessLayer(this));
         addLayer(new CatAppearanceLayer(this,
                 new CatAppearanceModel(context.bakeLayer(CatAppearanceModel.LAYER))));
         addLayer(new AdaptiveCatCollarLayer(this, context.getModelSet()));
@@ -67,7 +68,13 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
     @Override
     protected void setupRotations(Cat cat, PoseStack pose, float ageInTicks,
                                   float bodyYaw, float partialTick) {
+        boolean carried = cn.laowu.mod.CatPilotFlight.carried(cat) || cn.laowu.mod.CatDivingMount.carried(cat);
+        bodyYaw = carried ? CatPilotFlightClient.viewYaw(cat.getVehicle(), partialTick)
+                : CatEngineeringAnimation.prepare(cat, bodyYaw, partialTick);
         super.setupRotations(cat, pose, ageInTicks, bodyYaw, partialTick);
+        if (CatEngineeringAnimation.isPosing(cat)) return;
+        if (carried) return;
+        if (cn.laowu.mod.CatEngineeringCombat.deployed(cat)) return;
         if (CatTraitData.read(cat)
                 .map(profile -> profile.has(CatTrait.OIIAI)).orElse(false)) {
             pose.mulPose(Axis.YP.rotationDegrees(ageInTicks * 20.0F));

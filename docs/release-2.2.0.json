@@ -1,0 +1,117 @@
+{
+  "Version": "2.2.0",
+  "Zip": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\releases\\create-meowchanics-2.2.0-dual-loader.zip",
+  "Sha256": "7BC19B8511729EB5B7CA2E0971C845F8624367B750716F0D61D6D025F48283F2",
+  "Bytes": 13507408,
+  "FileCount": 5,
+  "Verified": true,
+  "Time": "2026-09-18 13:27:15",
+  "BasedOn": "2.2.0-dev.agentsmoke.2",
+  "PublicVersion": "2.2.0",
+  "InternalBuild": "",
+  "Manifest": {
+    "format_version": 1,
+    "mod_id": "laowu",
+    "version": "2.2.0",
+    "build_date": "2026-09-18",
+    "based_on": "2.2.0-dev.agentsmoke.2",
+    "revision": "instant-smoke-aggro-fix",
+    "files": [
+      {
+        "path": "CHANGELOG.zh-CN.md",
+        "bytes": 10593,
+        "sha256": "DDEF3F5B21A0C15A020916BDCEF9348A2881AC9B9D916324DDB0A082758228A1"
+      },
+      {
+        "path": "forge-1.20.1/create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "bytes": 6965309,
+        "sha256": "1C362E2A148A9946102AFB9AACF867C00C669C5C8812A0DFD45B45C7AA693CD3"
+      },
+      {
+        "path": "neoforge-1.21.1/create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "bytes": 6966846,
+        "sha256": "37227D45320C699C32E7E2688436D6300DFC1DA6F01EBD75854DFEB944242216"
+      },
+      {
+        "path": "README.md",
+        "bytes": 2999,
+        "sha256": "160837FDDDB37DF36F03D4CD307FFAD423DD283EF78C04F9CB0A350E50FC271F"
+      }
+    ]
+  },
+  "Archive": {
+    "Directory": "releases/release-backups/20260918-125444-2.2.0-before-smoke-refresh",
+    "PreviousPublicZipSha256": "7C7FF7C995A7C7B3AF24766587B3F08E82A2B0710BAC7025A76B49EF65D1427C",
+    "Verified": true
+  },
+  "Validation": {
+    "BothNormalBuildsPassed": true,
+    "BuildLogs": [
+      "forge-1.20.1/build/smoke220-release-build.log",
+      "neoforge-1.21.1/build/smoke220-release-build.log"
+    ],
+    "PublicApiV3ContractPassed": true,
+    "RuntimeJarIsolationPassed": true,
+    "AccessoryChecksPerLoader": 23252,
+    "SourceCheckGroupsPassed": 27,
+    "MixinPackageChecksPassed": 284,
+    "Original36AccessorySpritesPassed": true,
+    "SDKChecksPassed": 287,
+    "SmokeOriginalCodeBaseline": "Forge: real AI iron golem reproduces stale revenge after concealment expires",
+    "SmokeNative": {
+      "forge": "4/4",
+      "neoforge": "4/4"
+    },
+    "FullGameTestsRerun": true,
+    "FullKubeJSWith36ExamplesAndSdkDemo": {
+      "forge": "84/86",
+      "neoforge": "86/86",
+      "ForgeKnownFailures": [
+        "smartArtillery: Re-deploys after closing on distant enemy",
+        "radiusHostilesAndWalls: No sequences finished"
+      ],
+      "AllSmokeAndAccessoryCasesPassed": true,
+      "ProtoChunkPromotion": "Not enabled in this full run; prior real Twilight verification documented separately"
+    },
+    "GameTestLogs": [
+      "forge-1.20.1/build/smoke220-sdk1.log",
+      "neoforge-1.21.1/build/smoke220-sdk1.log"
+    ],
+    "VisualClientStarted": false,
+    "RuntimeJarDeltaVsAgentsmoke2": {
+      "ChangedExistingClasses": [
+        "CatAgentCombatGoal",
+        "CatAgentSmoke",
+        "CatHealingSmoke",
+        "CommonEvents",
+        "client/CatHealingSmokeParticle",
+        "client/ClientModEvents"
+      ],
+      "AddedClasses": [
+        "mixin/LivingEntityAgentSmokeTargetMixin"
+      ],
+      "OtherChanges": [
+        "assets/laowu/lang/zh_cn.json",
+        "assets/laowu/lang/en_us.json",
+        "laowu.mixins.json",
+        "version metadata"
+      ],
+      "RemovedEntries": 0,
+      "OtherCodeAndArtByteIdentical": true
+    }
+  },
+  "SDK": {
+    "Version": "1.0.0",
+    "Unchanged": true,
+    "ApiVersion": 3,
+    "SchemaVersion": 1,
+    "Path": "releases/kubejsX老吴学开发教程.zip",
+    "OriginalName": "cat-accessory-kubejs-sdk-1.0.0.zip",
+    "Sha256": "3FCBBDD7CF998703B27A67469CB6E017BA3601DC2BAD1E46C07F413B614E9F26"
+  },
+  "Uploaded": false,
+  "GitCommittedOrPushed": false,
+  "DeployedThisTurn": true,
+  "DeploymentRecord": "docs/deployment-2.2.0-smoke.json",
+  "UserWorldsConfigsScriptsChanged": false
+}

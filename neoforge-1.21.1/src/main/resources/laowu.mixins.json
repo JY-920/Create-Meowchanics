@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "CraftingGridOriginMixin",
+    "CatHandCrankPowerMixin",
     "CatOwnerTeleportDistanceMixin",
     "CatNavigationMixin",
     "PetCollarTeamMixin",
@@ -14,6 +15,8 @@
     "CatToolBreakProtectionMixin",
     "CatToolItemMixin",
     "LivingEntityCatTotemMixin",
+    "LivingEntityCatAccessoryDamageMixin",
+    "LivingEntityAgentSmokeTargetMixin",
     "PlayerAttackMixin",
     "ContraptionCatPancakeCollisionMixin",
     "PloughMovementBehaviourMixin",
@@ -24,6 +27,7 @@
     "CatMorningGiftMixin"
   ],
   "client": [
+    "PilotSkyhookPoseMixin",
     "CatCreativeSearchMixin",
     "LaserHandFrameMixin",
     "LaserEntityFrameMixin",

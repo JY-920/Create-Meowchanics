@@ -1,0 +1,46 @@
+{
+  "Version": "2.1.4-dev.accessories.37",
+  "Zip": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\releases\\create-meowchanics-accessories.37-dual-loader.zip",
+  "Bytes": 13497361,
+  "Sha256": "CBE070E35B129ED4F7503EEEDCD341613A8A01F1BBFBDFDBDFE134BC9DFA9177",
+  "FileCount": 4,
+  "Verified": true,
+  "SDKBundled": false,
+  "Time": "2026-09-17 23:27:10",
+  "Builds": {
+    "forge": "forge-1.20.1/build/accessories37-distribution-build.log",
+    "neoforge": "neoforge-1.21.1/build/accessories37-distribution-build.log",
+    "bothSucceeded": true,
+    "matchPreviouslyTestedHashes": true
+  },
+  "Manifest": {
+    "format_version": 1,
+    "mod_id": "laowu",
+    "version": "2.1.4-dev.accessories.37",
+    "files": [
+      {
+        "path": "README.md",
+        "bytes": 3108,
+        "sha256": "4CB7FED80D40D0D5C336A458BEFC063F1394CF95DC98513443F2F2A50A1A9B76"
+      },
+      {
+        "path": "forge-1.20.1/create-meowchanics-2.1.4-dev.accessories.37-forge-1.20.1.jar",
+        "bytes": 6962924,
+        "sha256": "DE952EA5D82A54C74EA26CD3FA4373CA80017B19E928EA504BA8B069CBBC6FF3"
+      },
+      {
+        "path": "neoforge-1.21.1/create-meowchanics-2.1.4-dev.accessories.37-neoforge-1.21.1.jar",
+        "bytes": 6964472,
+        "sha256": "03F6B63F56320F38751AFAD93E8C3FE11C0E55FDFDE7DFCAAECB163FA5701DFA"
+      }
+    ]
+  },
+  "KnownTestExceptions": [
+    "Forge scripted full suite: smartArtillery and radiusHostilesAndWalls (75/77)",
+    "Forge native full suite: smartArtillery (76/77)"
+  ],
+  "Uploaded": false,
+  "DeployedThisTurn": false,
+  "ExistingReleaseArtifactsOverwritten": false,
+  "UserWorldsConfigsAndScriptsChanged": false
+}

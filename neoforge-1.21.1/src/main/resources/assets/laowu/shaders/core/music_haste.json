@@ -1,0 +1,8 @@
+{
+  "blend": {"func":"add","srcrgb":"1","dstrgb":"1-srcalpha","srcalpha":"1","dstalpha":"1-srcalpha"},
+  "vertex":"laowu:music_haste",
+  "fragment":"laowu:music_haste",
+  "attributes":["Position","UV0","Color"],
+  "samplers":[],
+  "uniforms":[]
+}

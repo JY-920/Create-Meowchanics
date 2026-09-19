@@ -44,7 +44,8 @@ public enum CatSuitSetting {
     public CatStat stat() { return stat; }
     public boolean isAttackSetting() { return ordinal() <= MIN_INTERVAL.ordinal(); }
     public boolean appliesTo(CatOutfitType outfit) {
-        return outfit != CatOutfitType.NONE && !(outfit == CatOutfitType.TRANSPORT && isAttackSetting());
+        return outfit != CatOutfitType.NONE && !outfit.isPreviewOnly()
+                && !(outfit.isSupport() && isAttackSetting());
     }
     public boolean valid(double value) {
         return Double.isFinite(value) && value >= minimum && value <= ServerConfig.MAX_MULTIPLIER
@@ -67,15 +68,20 @@ public enum CatSuitSetting {
             case DAMAGE -> outfit.defaultDamageCoefficient();
             case INTERVAL_BASE -> switch (outfit) {
                 case TERMINATOR, NONE -> 24;
-                case FISHING, FLIGHT -> 36;
-                case FIRE -> 14;
-                case HONEY -> 42;
+                case FISHING -> 36;
+                case FLIGHT -> 40;
+                case FIRE -> 15;
+                case HONEY -> 41;
                 case TRANSPORT -> 34;
                 case DYNAMITE -> 56;
+                case ENGINEERING -> 50;
+                case MEDICAL, MUSIC, AGENT, COCKROACH -> 24;
+                case DIVING -> 28;
             };
             case INTERVAL_PER_SPEED -> switch (outfit) {
-                case TERMINATOR, DYNAMITE, NONE -> 0.12D;
+                case TERMINATOR, DYNAMITE, NONE, AGENT, DIVING -> 0.12D;
                 case FIRE, TRANSPORT -> 0.08D;
+                case ENGINEERING -> 0.25D;
                 default -> 0.10D;
             };
             case MIN_INTERVAL -> switch (outfit) {
@@ -84,36 +90,54 @@ public enum CatSuitSetting {
                 case FIRE -> 5;
                 case HONEY -> 24;
                 case DYNAMITE -> 38;
-                case NONE -> 8;
+                case ENGINEERING -> 20;
+                case NONE, MEDICAL, MUSIC -> 8;
+                case AGENT -> 10;
+                case DIVING -> 14;
+                case COCKROACH -> 12;
             };
             case HEALTH -> switch (outfit) {
                 case TERMINATOR, FISHING -> 20;
-                case FLIGHT -> 12;
+                case FLIGHT -> 30;
                 case FIRE -> 40;
                 case HONEY, DYNAMITE -> 24;
                 case TRANSPORT -> 30;
+                case ENGINEERING -> 30;
+                case MEDICAL, MUSIC, AGENT -> 6;
+                case DIVING -> 24;
+                case COCKROACH -> 12;
                 case NONE -> 0;
             };
             case ARMOR -> switch (outfit) {
-                case TERMINATOR, TRANSPORT -> 6;
+                case TERMINATOR -> 6;
+                case TRANSPORT -> 10;
                 case FISHING, HONEY, DYNAMITE -> 5;
-                case FLIGHT -> 3;
+                case FLIGHT -> 7;
                 case FIRE -> 10;
+                case ENGINEERING -> 12;
+                case MEDICAL, MUSIC, AGENT -> 2;
+                case DIVING -> 6;
+                case COCKROACH -> 4;
                 case NONE -> 0;
             };
             case TOUGHNESS -> switch (outfit) {
                 case TERMINATOR, TRANSPORT -> 3;
                 case FISHING, HONEY, DYNAMITE -> 2;
-                case FLIGHT -> 1;
+                case FLIGHT -> 3;
                 case FIRE -> 4;
-                case NONE -> 0;
+                case ENGINEERING -> 5;
+                case DIVING -> 2;
+                case COCKROACH -> 1;
+                case NONE, MEDICAL, MUSIC, AGENT -> 0;
             };
             case ATTACK_STAT -> outfit == CatOutfitType.TERMINATOR || outfit == CatOutfitType.FLIGHT
-                    || outfit == CatOutfitType.DYNAMITE ? 10 : 0;
-            case SPEED_STAT -> outfit == CatOutfitType.HONEY || outfit == CatOutfitType.TRANSPORT ? 10 : 0;
-            case STAMINA_STAT -> outfit == CatOutfitType.FIRE ? 10 : 0;
-            case LUCK_STAT -> outfit == CatOutfitType.FISHING ? 10 : 0;
-            case HEALTH_STAT, INTELLIGENCE_STAT -> 0;
+                    || outfit == CatOutfitType.DYNAMITE || outfit == CatOutfitType.AGENT ? 10 : 0;
+            case SPEED_STAT -> outfit == CatOutfitType.HONEY || outfit == CatOutfitType.TRANSPORT
+                    || outfit == CatOutfitType.MEDICAL || outfit == CatOutfitType.MUSIC ? 10 : 0;
+            case STAMINA_STAT -> outfit == CatOutfitType.FIRE || outfit == CatOutfitType.DIVING ? 10 : 0;
+            case LUCK_STAT -> outfit == CatOutfitType.ENGINEERING || outfit == CatOutfitType.FISHING ? 10 : 0;
+            case INTELLIGENCE_STAT -> 0;
+            case HEALTH_STAT -> 0;
         };
     }
     public double read(CompoundTag draft, CatOutfitType outfit) {

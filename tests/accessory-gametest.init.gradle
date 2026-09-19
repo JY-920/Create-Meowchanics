@@ -1,0 +1,110 @@
+// Optional, isolated real-Minecraft + KubeJS integration test. Not part of production jars.
+// gradlew runGameTestServer --init-script ../tests/accessory-gametest.init.gradle --no-configuration-cache
+allprojects {
+    afterEvaluate { p ->
+        def neo = p.extensions.findByName('neoForge') != null
+        def noScripts = p.hasProperty('accessoryNoKubeJS')
+        def examples36=p.hasProperty('accessoryExamples36')
+        def sdkDemo=p.hasProperty('accessorySdkDemo')
+        def traitExamples=p.hasProperty('traitExamples')
+        def traitOnly=p.hasProperty('traitKubeProbeOnly')
+        def loadingOnly = p.hasProperty('catLoadingProbeOnly')
+        def smokeOnly = p.hasProperty('agentSmokeProbeOnly')
+        def deathPancakeOnly = p.hasProperty('tamedDeathPancakeProbeOnly')
+        def twilight = p.findProperty('catLoadingTwilight')?.toString()
+        if (twilight) p.repositories.maven { url = uri('https://cursemaven.com') }
+        if((examples36||sdkDemo||traitExamples)&&noScripts)throw new GradleException('Examples36 requires the real KubeJS runtime')
+        def testSet = p.sourceSets.create('accessoryGameTest') {
+            java.srcDirs(p.file("../tests/gametest/" + (neo ? "neo" : "forge")))
+            if (traitOnly) java.include('**/CatTraitScriptProbe.java')
+            if (loadingOnly) java.include('**/CatLoadingProbe.java')
+            if (smokeOnly) java.include('**/AgentSmokeAggroProbe.java')
+            if (deathPancakeOnly) java.include('**/TamedDeathPancakeProbe.java')
+            if (!noScripts) resources.srcDirs(p.file('../tests/gametest/resources'))
+            compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+            runtimeClasspath += output + p.sourceSets.main.runtimeClasspath
+        }
+        // Optional clean fixture for verifying a new build without old failed-test entities/world state.
+        def testBase = examples36 ? 'accessory-gametest/examples36/' : p.hasProperty('accessoryFreshRun') ? 'accessory-gametest/fresh-accessories27/' : 'accessory-gametest/'
+        def fixtureId = p.findProperty('accessoryRunId')?.toString()
+        if(fixtureId && !(fixtureId ==~ /[a-zA-Z0-9_-]+/))throw new GradleException('Invalid test fixture ID')
+        def testRun = p.layout.buildDirectory.dir(testBase + (noScripts ? 'no-kubejs' : 'run') + (fixtureId ? '-'+fixtureId : '')).get().asFile
+        def structures = p.layout.buildDirectory.dir('accessory-gametest/resources').get().asFile
+        testSet.resources.srcDir(structures)
+        def structure = p.tasks.register('prepareAccessoryStructure') {
+            outputs.dir(structures)
+            outputs.file(new File(structures, 'data/laowu/' + (neo ? 'structure' : 'structures') + '/artillery_probe.nbt'))
+            doLast {
+                // Keep every moving test entity inside its ticking, isolated fixture.
+                [accessory_probe: [5, 5, 5], artillery_probe: [72, 12, 14]].each { name, size ->
+                    def path = new File(structures, 'data/laowu/' + (neo ? 'structure' : 'structures') + '/' + name + '.nbt')
+                    path.parentFile.mkdirs()
+                    def out = new DataOutputStream(new java.util.zip.GZIPOutputStream(new FileOutputStream(path)))
+                    try {
+                        out.writeByte(10); out.writeUTF('')
+                        out.writeByte(3); out.writeUTF('DataVersion'); out.writeInt(neo ? 3955 : 3465)
+                        out.writeByte(9); out.writeUTF('size'); out.writeByte(3); out.writeInt(3)
+                        size.each { out.writeInt(it) }
+                        out.writeByte(9); out.writeUTF('palette'); out.writeByte(10); out.writeInt(1)
+                        out.writeByte(8); out.writeUTF('Name'); out.writeUTF('minecraft:air'); out.writeByte(0)
+                        ['blocks','entities'].each { out.writeByte(9); out.writeUTF(it); out.writeByte(10); out.writeInt(0) }
+                        out.writeByte(0)
+                    } finally { out.close() }
+                }
+            }
+        }
+        p.tasks.named('processAccessoryGameTestResources') { dependsOn structure }
+        def prepare = p.tasks.register('prepareAccessoryScripts', Copy) {
+            from p.file('../tests/gametest/kubejs')
+            if(examples36){
+                from p.file('../docs/examples/cat-accessories-36/common/kubejs')
+                from p.file('../docs/examples/cat-accessories-36/'+(neo?'neoforge':'forge')+'/kubejs')
+            }
+            if(traitExamples)from p.file('../docs/examples/cat-traits-v1/'+(neo?'neoforge':'forge')+'/kubejs')
+            if(sdkDemo)from p.file('../docs/kubejs-sdk/examples/new-accessory/'+(neo?'neoforge':'forge')+'/kubejs')
+            into new File(testRun, 'kubejs')
+        }
+        if (neo) {
+            if (twilight) p.dependencies.add('localRuntime', twilight) { transitive = false }
+            if (!noScripts) {
+                p.dependencies.add('localRuntime', 'dev.latvian.mods:kubejs-neoforge:2101.7.2-build.377') { transitive = false }
+                p.dependencies.add('localRuntime', 'dev.latvian.mods:rhino:2101.2.7-build.81') { transitive = false }
+            }
+            p.neoForge.mods.named('laowu') { sourceSet(testSet) }
+            p.neoForge.runs.named('gameTestServer') {
+                gameDirectory = testRun
+                systemProperty 'laowu.trait_examples', traitExamples.toString()
+                systemProperty 'laowu.examples36', examples36.toString()
+                systemProperty 'laowu.sdk_demo', sdkDemo.toString()
+                systemProperty 'laowu.chunk_loading_promotion', p.hasProperty('catLoadingPromotion').toString()
+                systemProperty 'laowu.twilight_required', (twilight != null).toString()
+            }
+        } else {
+            p.repositories.maven { url = uri('https://maven.architectury.dev') }
+            def fg = p.extensions.getByName('fg')
+            if (twilight) p.dependencies.add('runtimeOnly', fg.deobf(twilight)) { transitive = false }
+            // Create's production jar embeds this; the slim development artifact does not.
+            p.dependencies.add('runtimeOnly', 'io.github.llamalad7:mixinextras-forge:0.4.1') { transitive = false }
+            if (!noScripts) {
+                p.dependencies.add('runtimeOnly', fg.deobf('dev.latvian.mods:kubejs-forge:2001.6.5-build.26')) { transitive = false }
+                p.dependencies.add('runtimeOnly', fg.deobf('dev.latvian.mods:rhino-forge:2001.2.2-build.17')) { transitive = false }
+                p.dependencies.add('runtimeOnly', fg.deobf('dev.architectury:architectury-forge:9.2.14')) { transitive = false }
+            }
+            p.minecraft.runs.named('gameTestServer') {
+               workingDirectory testRun
+                property 'laowu.trait_examples', traitExamples.toString()
+                property 'laowu.examples36', examples36.toString()
+                property 'laowu.sdk_demo', sdkDemo.toString()
+                property 'laowu.chunk_loading_promotion', p.hasProperty('catLoadingPromotion').toString()
+                property 'laowu.twilight_required', (twilight != null).toString()
+                args '--mixin', 'laowu.mixins.json'
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', p.file('build/createSrgToMcp/output.srg').absolutePath
+                mods.named('laowu') { source(testSet) }
+            }
+        }
+        p.tasks.matching { it.name == 'runGameTestServer' }.configureEach {
+            dependsOn prepare, p.tasks.named('accessoryGameTestClasses')
+        }
+    }
+}

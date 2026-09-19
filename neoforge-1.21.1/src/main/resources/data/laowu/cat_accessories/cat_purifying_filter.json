@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_purifying_filter",
+  "required_outfit": "diving",
+  "effects": {
+    "attack": -10,
+    "diving_cleanse": 1
+  }
+}

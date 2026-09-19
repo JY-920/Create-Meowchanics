@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_blue_flame_nozzle",
+  "required_outfit": "fire",
+  "effects": {
+    "stamina": -20,
+    "super_flame_multiplier": 1.5
+  }
+}

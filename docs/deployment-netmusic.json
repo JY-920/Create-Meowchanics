@@ -1,0 +1,103 @@
+{
+  "Time": "2026-09-18 23:45:07",
+  "Version": "2.2.0",
+  "Stamp": "20260918-234506-2.2.0-netmusic",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "306F93079F562621736B39518CFAF10F86817D380F1C2677FEE5F705F2409D45"
+      },
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "Bytes": 7024647,
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "83A719E9CAB831D2BEF1FBCB0208026584FD9135C1D04E93B62C60273B9D6A88"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260918-234506-2.2.0-netmusic\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "B58F1D4F58A741A0E781775E1ADE9643DD48F69AA1E83125B3F1ED490DA4C810"
+      },
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "Bytes": 7025998,
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "D6233C0A35E8233ACD8427D221F7B9ACCC4152D2B2F0E6BEA744E6086D7D88F5"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260918-234506-2.2.0-netmusic\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "UnrelatedGamesPreserved": [
+    {
+      "ProcessId": 40872,
+      "GameDir": "D:\\PCL2\\PCL\\.minecraft\\versions\\Chapter of Yuusha 3",
+      "Unrelated": true
+    }
+  ],
+  "UserWorldsConfigsScriptsChanged": false,
+  "OtherModsChanged": false,
+  "PublicReleaseZipUpdated": false,
+  "Compatibility": {
+    "NetMusic": "1.5.2",
+    "MusicInventorySlots": 9,
+    "Optional": true,
+    "ExternalSongPlatformsTested": false,
+    "VersionSuffixAdded": false
+  },
+  "Verification": {
+    "sourceChecks": {
+      "netmusic": 43,
+      "musicCareer": 81,
+      "accessoryArtAndMusicSpeed": 303
+    },
+    "forge": {
+      "serverWithNetMusic": "PASS",
+      "serverWithoutNetMusic": "PASS",
+      "realClientDecoderAndSoundEngine": "PASS",
+      "normalBuild": "PASS",
+      "accessoryChecks": 23252,
+      "accessoryApiV3": "PASS",
+      "traitApiV1": "PASS",
+      "releaseIsolation": "PASS"
+    },
+    "neoforge": {
+      "serverWithNetMusic": "PASS",
+      "serverWithoutNetMusic": "PASS",
+      "realClientDecoderAndSoundEngine": "PASS",
+      "normalBuild": "PASS",
+      "accessoryChecks": 23252,
+      "accessoryApiV3": "PASS",
+      "traitApiV1": "PASS",
+      "releaseIsolation": "PASS"
+    },
+    "logs": [
+      "forge-1.20.1/build/netmusic-server-present.log",
+      "forge-1.20.1/build/netmusic-server-absent.log",
+      "forge-1.20.1/build/netmusic-client.log",
+      "forge-1.20.1/build/netmusic-release-build.log",
+      "neoforge-1.21.1/build/netmusic-server-present.log",
+      "neoforge-1.21.1/build/netmusic-server-absent.log",
+      "neoforge-1.21.1/build/netmusic-client.log",
+      "neoforge-1.21.1/build/netmusic-release-build.log"
+    ]
+  }
+}

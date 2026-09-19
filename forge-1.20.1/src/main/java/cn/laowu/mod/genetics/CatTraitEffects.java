@@ -236,7 +236,7 @@ public final class CatTraitEffects {
                 >= CatTrait.THORNS.thornsChance(level)) return;
 
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
-        if (outfit == CatOutfitType.NONE || outfit == CatOutfitType.TRANSPORT) return;
+        if (outfit == CatOutfitType.NONE || outfit.isSupport() || outfit.isPreviewOnly()) return;
         float damage = cn.laowu.mod.ServerConfig.scaleDamage(
                 cat.getAttributeValue(Attributes.ATTACK_DAMAGE),
                 CatTrait.THORNS.thornsDamagePercent(level) / 100.0D);

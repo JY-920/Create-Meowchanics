@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let checks = 0;
 function check(value, description) { checks++; assert.ok(value, description); }
-const careers = ['terminator', 'fishing', 'flight', 'fire', 'honey', 'transport', 'dynamite'];
+const careers = ['terminator', 'fishing', 'flight', 'fire', 'honey', 'transport', 'dynamite', 'engineering', 'medical'];
 const texts = {};
 for (const loader of ['forge-1.20.1', 'neoforge-1.21.1']) {
   const read = name => readFileSync(path.join(root, loader, 'src/main/java/cn/laowu/mod', name), 'utf8');
@@ -45,8 +45,9 @@ for (const loader of ['forge-1.20.1', 'neoforge-1.21.1']) {
     loader + ': fishing retains ordinary hit and deliberate knockback');
   check(!explosion.includes('CatProjectileDamage'), loader + ': last-stand self-explosion is not a projectile change');
   check(!read('entity/LogisticsSupportProjectile.java').includes('.hurt('), loader + ': support remains non-damaging');
-  check(impact.includes('return hurt(target, source, amount, false)')
-    && impact.includes('() -> target.hurt(source, amount)'), loader + ': suppression default does not replace hurt or rescale damage');
+  check(impact.includes('source.getEntity() instanceof net.minecraft.world.entity.animal.Cat cat')
+    && impact.includes('&& cn.laowu.mod.accessory.CatAccessories.projectileKnockback(cat)')
+    && impact.includes('() -> target.hurt(source, amount)'), loader + ': optional accessory enables knockback without rescaling damage');
   check(impact.includes('finally') && impact.includes('current.remove()')
     && !/setDeltaMovement|KNOCKBACK_RESISTANCE|getPersistentData/.test(impact),
     loader + ': no victim motion overwrite or persistent immunity');
@@ -121,7 +122,7 @@ for (const loader of ['forge-1.20.1', 'neoforge-1.21.1']) {
   for (const lang of ['zh_cn', 'en_us']) {
     const values = JSON.parse(readFileSync(path.join(root, loader, 'src/main/resources/assets/laowu/lang', lang + '.json'), 'utf8'));
     for (const id of careers) check(!!values['screen.laowu.world.career.' + id], loader + ': translated ' + id);
-    for (const id of careers.filter(id => id !== 'transport'))
+    for (const id of careers.filter(id => !['transport', 'medical'].includes(id)))
       check(values['item.laowu.' + id + '_suit.tooltip.behaviour1'].includes('_K'), loader + ': dynamic formula ' + id);
     for (const key of ['tab_attributes', 'tab_careers', 'career_help', 'career_note', 'career_example', 'career_reset', 'career_reset_help'])
       check(!!values['screen.laowu.world.' + key], loader + ': translated ' + key);

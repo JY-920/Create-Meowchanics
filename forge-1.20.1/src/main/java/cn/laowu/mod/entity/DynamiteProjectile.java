@@ -25,13 +25,17 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 
 /** A tumbling, non-block-breaking explosive thrown by a dynamite career cat. */
-public final class DynamiteProjectile extends ThrowableItemProjectile {
+public final class DynamiteProjectile extends ThrowableItemProjectile implements cn.laowu.mod.api.CatAccessoryProjectile {
     public static final double MAX_TRAVEL_DISTANCE = 10.0D;
     private static final double BLAST_RADIUS = 2.75D;
     private static final String DAMAGE_TAG = "LaoWuDynamiteDamage";
     private static final String DISTANCE_TAG = "LaoWuDynamiteDistance";
 
     private float attackDamage = 2.0F;
+    @Override public float getAccessoryDamage() { return attackDamage; }
+    @Override public void setAccessoryDamage(double amount) {
+        attackDamage = (float) cn.laowu.mod.accessory.CatAccessoryScriptRules.damage(amount);
+    }
     private double travelledDistance;
 
     public DynamiteProjectile(EntityType<? extends DynamiteProjectile> type,

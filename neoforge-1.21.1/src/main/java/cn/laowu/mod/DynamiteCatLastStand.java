@@ -162,7 +162,10 @@ public final class DynamiteCatLastStand {
     private static void detonate(ServerLevel level, Cat cat) {
         Vec3 center = cat.position().add(0.0D, cat.getBbHeight() * 0.45D, 0.0D);
         float damage = ServerConfig.scaleDamage(cat.getAttributeValue(Attributes.ATTACK_DAMAGE),
-                FINAL_DAMAGE_MULTIPLIER);
+                cn.laowu.mod.accessory.CatAccessories.explosionMultiplier(cat, FINAL_DAMAGE_MULTIPLIER));
+        double scriptedDamage = cn.laowu.mod.accessory.CatAccessoryHooks.beforeExplosion(cat, damage);
+        if (scriptedDamage < 0) { finishDeath(cat); return; }
+        damage = (float)scriptedDamage;
 
         level.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
                 center.x, center.y, center.z, 1,
@@ -187,11 +190,13 @@ public final class DynamiteCatLastStand {
             if (!target.hurt(level.damageSources().explosion(cat, cat), damage)) continue;
 
             Vec3 away = target.position().subtract(center);
-            if (away.lengthSqr() > 1.0E-5D) {
+            double knockback = 1.0D - Mth.clamp(target.getAttributeValue(
+                    Attributes.KNOCKBACK_RESISTANCE), 0.0D, 1.0D);
+            if (away.lengthSqr() > 1.0E-5D && knockback > 0.0D) {
                 double distance = Math.sqrt(away.lengthSqr());
                 double strength = 1.0D - Math.min(1.0D, distance / BLAST_RADIUS);
-                Vec3 impulse = away.normalize().scale(0.35D + 0.55D * strength);
-                target.push(impulse.x, 0.18D + 0.18D * strength, impulse.z);
+                Vec3 impulse = away.normalize().scale((0.35D + 0.55D * strength) * knockback);
+                target.push(impulse.x, (0.18D + 0.18D * strength) * knockback, impulse.z);
             }
         }
 

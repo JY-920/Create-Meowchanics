@@ -1,0 +1,74 @@
+{
+  "Version": "2.2.0-dev.agentsmoke.1",
+  "Time": "2026-09-18 11:11:46",
+  "BackupStamp": "20260918-111146-agentsmoke.1",
+  "Targets": [
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-dev.agentsmoke.1-forge-1.20.1.jar",
+      "Sha256": "FBB95C8B32D844160DA40C2812430352BA47B39378D5ED3DFAA508EC009C5D62",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260918-111146-agentsmoke.1\\create-meowchanics-2.2.0-dev.chunkload.1-forge-1.20.1.jar",
+      "BackupSha256": "199B3E6C5E070B48032DB0447178F485928EF35CC1BF25E204078BB3664906C5",
+      "ActiveLaowuCount": 1
+    },
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-dev.agentsmoke.1-neoforge-1.21.1.jar",
+      "Sha256": "53AD859CA802DB8D6D921BBE9596240A6B46D7F65B737E5B87481221CFC16FBE",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260918-111146-agentsmoke.1\\create-meowchanics-2.2.0-dev.chunkload.1-neoforge-1.21.1.jar",
+      "BackupSha256": "F4E26C52A56DD9F87DDE62B8C084F7CC7C61832BEE7B7669FB430671101DEE52",
+      "ActiveLaowuCount": 1
+    }
+  ],
+  "UserWorldsConfigsScriptsChanged": false,
+  "LocalTestServersChangedOrStarted": false,
+  "BasedOn": "2.2.0-dev.chunkload.1",
+  "Change": {
+    "SmokeIntelligenceRequirementRemoved": true,
+    "SmokeCooldownTicks": 200,
+    "SmokeCloakTicks": 50,
+    "NearbyAllyAndThreatRequired": true,
+    "SmartFlankingThresholdUnchanged": 60,
+    "BackstabMultiplierAndWatchRadiusUnchanged": true,
+    "LocalizedTooltipsUpdated": [
+      "zh_cn",
+      "en_us"
+    ],
+    "HealingSmokeUnchanged": true
+  },
+  "Validation": {
+    "ForgeKubeJS": "81/81",
+    "NeoForgeKubeJS": "81/81",
+    "OptInProtoChunkCaseSkippedThisRun": true,
+    "ZeroIntelligenceSmokeActuallyThrownBothLoaders": true,
+    "IntelligenceValuesChecked": [
+      0,
+      59,
+      60,
+      100
+    ],
+    "NearbyAllyAndThreatGatesPassed": true,
+    "CooldownBoundaryAndReacquisitionPassed": true,
+    "NormalBuildBothLoaders": true,
+    "DefinitionChecksPerLoader": 23252,
+    "ApiV3CompatibilityAndReleaseIsolation": true,
+    "SourceCheckGroups": 27,
+    "PackageAssetsBothLoaders": true,
+    "ChunkloadFixCommonEventsByteIdentical": true,
+    "ChangedRuntimeClasses": [
+      "cn/laowu/mod/CatAgentCombatGoal.class"
+    ],
+    "OtherJarChanges": [
+      "version metadata",
+      "assets/laowu/lang/en_us.json",
+      "assets/laowu/lang/zh_cn.json"
+    ],
+    "Logs": [
+      "forge-1.20.1/build/agentsmoke1-sdk1.log",
+      "neoforge-1.21.1/build/agentsmoke1-sdk1.log",
+      "forge-1.20.1/build/agentsmoke1-build.log",
+      "neoforge-1.21.1/build/agentsmoke1-build.log"
+    ]
+  },
+  "GitCommittedOrPushed": false
+}

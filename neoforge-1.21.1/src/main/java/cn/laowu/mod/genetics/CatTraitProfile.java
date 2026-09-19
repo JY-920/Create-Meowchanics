@@ -48,8 +48,8 @@ public final class CatTraitProfile {
 
         List<CatTraitInstance> selected = new ArrayList<>(MAX_TRAITS);
         var disabled = ServerConfig.disabledTraitIds();
-        List<CatTrait> available = new ArrayList<>(List.of(CatTrait.values()));
-        available.removeIf(trait -> disabled.contains(trait.id().toString()));
+        List<CatTraitType> available = new ArrayList<>(CatTraitRegistry.values(false));
+        available.removeIf(trait -> !trait.natural() || disabled.contains(trait.id().toString()));
         if (forceDoughy && available.contains(CatTrait.DOUGHY)) {
             selected.add(new CatTraitInstance(CatTrait.DOUGHY, 1));
             available.remove(CatTrait.DOUGHY);
@@ -57,11 +57,11 @@ public final class CatTraitProfile {
         }
 
         while (selected.size() < desired && !available.isEmpty()) {
-            List<CatTrait> compatible = available.stream()
+            List<CatTraitType> compatible = available.stream()
                     .filter(candidate -> compatibleWith(selected, candidate)).toList();
             if (compatible.isEmpty()) break;
 
-            CatTrait chosen = chooseWeightedTrait(compatible, random);
+            CatTraitType chosen = chooseWeightedTrait(compatible, random);
             selected.add(new CatTraitInstance(chosen, 1));
             available.remove(chosen);
         }
@@ -91,15 +91,15 @@ public final class CatTraitProfile {
         CatTraitProfile father = first == null ? EMPTY : first;
         CatTraitProfile mother = second == null ? EMPTY : second;
         var disabled = ServerConfig.disabledTraitIds();
-        EnumSet<CatTrait> fatherTraits = EnumSet.noneOf(CatTrait.class);
-        EnumSet<CatTrait> motherTraits = EnumSet.noneOf(CatTrait.class);
-        father.traits.forEach(instance -> fatherTraits.add(instance.trait()));
-        mother.traits.forEach(instance -> motherTraits.add(instance.trait()));
+        java.util.Set<ResourceLocation> fatherTraits = new java.util.HashSet<>();
+        java.util.Set<ResourceLocation> motherTraits = new java.util.HashSet<>();
+        father.traits.forEach(instance -> fatherTraits.add(instance.trait().id()));
+        mother.traits.forEach(instance -> motherTraits.add(instance.trait().id()));
 
         List<CatTraitInstance> selected = new ArrayList<>(MAX_TRAITS);
-        for (CatTrait trait : CatTrait.values()) {
-            if (trait != CatTrait.DOUGHY && !disabled.contains(trait.id().toString()) && fatherTraits.contains(trait)
-                    && motherTraits.contains(trait)
+        for (CatTraitType trait : CatTraitRegistry.values(false)) {
+            if (trait.inheritable() && !disabled.contains(trait.id().toString()) && fatherTraits.contains(trait.id())
+                    && motherTraits.contains(trait.id())
                     && compatibleWith(selected, trait)) {
                 selected.add(new CatTraitInstance(trait, 1));
             }
@@ -109,19 +109,19 @@ public final class CatTraitProfile {
                 < Math.max(0.0F, Math.min(1.0F, mutationChance));
         int parentalLimit = mutates && selected.size() < MAX_TRAITS
                 ? MAX_TRAITS - 1 : MAX_TRAITS;
-        List<CatTrait> oneParentTraits = new ArrayList<>();
-        for (CatTrait trait : CatTrait.values()) {
-            if (trait == CatTrait.DOUGHY || disabled.contains(trait.id().toString())) continue;
-            if (fatherTraits.contains(trait) ^ motherTraits.contains(trait)) {
+        List<CatTraitType> oneParentTraits = new ArrayList<>();
+        for (CatTraitType trait : CatTraitRegistry.values(false)) {
+            if (!trait.inheritable() || disabled.contains(trait.id().toString())) continue;
+            if (fatherTraits.contains(trait.id()) ^ motherTraits.contains(trait.id())) {
                 oneParentTraits.add(trait);
             }
         }
-        List<CatTrait> passedInheritanceRoll = new ArrayList<>();
-        for (CatTrait trait : oneParentTraits) {
+        List<CatTraitType> passedInheritanceRoll = new ArrayList<>();
+        for (CatTraitType trait : oneParentTraits) {
             if (random.nextBoolean()) passedInheritanceRoll.add(trait);
         }
         shuffle(passedInheritanceRoll, random);
-        for (CatTrait trait : passedInheritanceRoll) {
+        for (CatTraitType trait : passedInheritanceRoll) {
             if (selected.size() >= parentalLimit) break;
             if (compatibleWith(selected, trait)) {
                 selected.add(new CatTraitInstance(trait, 1));
@@ -129,10 +129,10 @@ public final class CatTraitProfile {
         }
 
         if (mutates && selected.size() < MAX_TRAITS) {
-            List<CatTrait> mutationPool = Arrays.stream(CatTrait.values())
-                    .filter(trait -> !disabled.contains(trait.id().toString()))
-                    .filter(trait -> !fatherTraits.contains(trait)
-                            && !motherTraits.contains(trait))
+            List<CatTraitType> mutationPool = CatTraitRegistry.values(false).stream()
+                    .filter(trait -> trait.mutation() && !disabled.contains(trait.id().toString()))
+                    .filter(trait -> !fatherTraits.contains(trait.id())
+                            && !motherTraits.contains(trait.id()))
                     .filter(trait -> compatibleWith(selected, trait))
                     .toList();
             if (!mutationPool.isEmpty()) {
@@ -140,16 +140,16 @@ public final class CatTraitProfile {
                         chooseWeightedTrait(mutationPool, mode, random), 1));
             }
         }
-        return selected.isEmpty() ? EMPTY : new CatTraitProfile(selected);
+        return CatTraitHooks.breed(father, mother, selected.isEmpty() ? EMPTY : new CatTraitProfile(selected));
     }
 
     /** Select rarity first so adding traits does not silently reweight a tier. */
-    private static CatTrait chooseWeightedTrait(List<CatTrait> compatible,
+    private static CatTraitType chooseWeightedTrait(List<CatTraitType> compatible,
                                                 RandomSource random) {
         return chooseWeightedTrait(compatible, CatBreedingMode.NORMAL, random);
     }
 
-    private static CatTrait chooseWeightedTrait(List<CatTrait> compatible,
+    private static CatTraitType chooseWeightedTrait(List<CatTraitType> compatible,
                                                 CatBreedingMode mode,
                                                 RandomSource random) {
         CatBreedingMode resolvedMode = mode == null ? CatBreedingMode.NORMAL : mode;
@@ -170,22 +170,30 @@ public final class CatTraitProfile {
             }
         }
         CatTraitRarity selectedRarity = chosenRarity;
-        List<CatTrait> candidates = compatible.stream()
+        List<CatTraitType> candidates = compatible.stream()
                 .filter(candidate -> candidate.rarity() == selectedRarity)
                 .toList();
-        return candidates.get(random.nextInt(candidates.size()));
+        int traitWeight = candidates.stream().mapToInt(CatTraitType::generationWeight).sum();
+        int choice = random.nextInt(traitWeight);
+        for (CatTraitType candidate : candidates) {
+            choice -= candidate.generationWeight();
+            if (choice < 0) return candidate;
+        }
+        return candidates.get(candidates.size() - 1);
     }
 
-    private static void shuffle(List<CatTrait> values, RandomSource random) {
+    private static void shuffle(List<CatTraitType> values, RandomSource random) {
         for (int index = values.size() - 1; index > 0; index--) {
             Collections.swap(values, index, random.nextInt(index + 1));
         }
     }
 
-    private static boolean compatibleWith(List<CatTraitInstance> selected, CatTrait candidate) {
+    private static boolean compatibleWith(List<CatTraitInstance> selected, CatTraitType candidate) {
         EnumSet<CatTraitSlot> occupied = EnumSet.noneOf(CatTraitSlot.class);
         for (CatTraitInstance instance : selected) {
-            if (instance.trait() == candidate) return false;
+            if (instance.trait().id().equals(candidate.id())
+                    || instance.trait().conflicts().contains(candidate.id())
+                    || candidate.conflicts().contains(instance.trait().id())) return false;
             occupied.addAll(instance.trait().occupiedSlots());
         }
         return Collections.disjoint(occupied, candidate.occupiedSlots());
@@ -195,12 +203,16 @@ public final class CatTraitProfile {
         return traits;
     }
 
-    public boolean has(CatTrait trait) {
-        return traits.stream().anyMatch(instance -> instance.trait() == trait);
+    public boolean has(CatTrait trait) { return has((CatTraitType) trait); }
+    public boolean has(CatTraitType trait) { return level(trait) > 0; }
+    public int level(CatTrait trait) { return level((CatTraitType) trait); }
+    public int level(CatTraitType trait) {
+        int raw = rawLevel(trait);
+        return raw <= 0 || trait == null || !trait.available() ? 0 : trait.clampLevel(raw);
     }
-
-    public int level(CatTrait trait) {
-        return traits.stream().filter(instance -> instance.trait() == trait)
+    /** Stored ownership/level, including missing custom definitions. */
+    public int rawLevel(CatTraitType trait) {
+        return trait == null ? 0 : traits.stream().filter(instance -> instance.trait().id().equals(trait.id()))
                 .mapToInt(CatTraitInstance::level).findFirst().orElse(0);
     }
 
@@ -209,12 +221,13 @@ public final class CatTraitProfile {
      * future appearance/behaviour conflicts. A non-positive level removes the
      * trait; adding an incompatible fifth trait leaves the profile unchanged.
      */
-    public CatTraitProfile withLevel(CatTrait trait, int level) {
+    public CatTraitProfile withLevel(CatTrait trait, int level) { return withLevel((CatTraitType) trait, level); }
+    public CatTraitProfile withLevel(CatTraitType trait, int level) {
         if (trait == null) return this;
         List<CatTraitInstance> edited = new ArrayList<>(traits);
         int existingIndex = -1;
         for (int index = 0; index < edited.size(); index++) {
-            if (edited.get(index).trait() == trait) {
+            if (edited.get(index).trait().id().equals(trait.id())) {
                 existingIndex = index;
                 break;
             }
@@ -226,13 +239,14 @@ public final class CatTraitProfile {
             return edited.isEmpty() ? EMPTY : new CatTraitProfile(edited);
         }
 
-        CatTraitInstance replacement = new CatTraitInstance(trait, level);
+        if (!trait.available()) return this;
+        CatTraitInstance replacement = new CatTraitInstance(trait, trait.clampLevel(level));
         if (existingIndex >= 0) {
             edited.set(existingIndex, replacement);
             return new CatTraitProfile(edited);
         }
         // Existing levels can still be managed; only newly acquired traits are blocked.
-        if (ServerConfig.isTraitDisabled(trait)
+        if (!trait.enabled() || ServerConfig.isTraitDisabled(trait)
                 || edited.size() >= MAX_TRAITS || !compatibleWith(edited, trait)) return this;
         edited.add(replacement);
         return new CatTraitProfile(edited);
@@ -252,7 +266,8 @@ public final class CatTraitProfile {
         return root;
     }
 
-    public static Optional<CatTraitProfile> load(CompoundTag root) {
+    public static Optional<CatTraitProfile> load(CompoundTag root) { return load(root, false); }
+    public static Optional<CatTraitProfile> load(CompoundTag root, boolean clientSide) {
         if (root == null || !root.contains(VERSION_TAG, Tag.TAG_INT)
                 || root.getInt(VERSION_TAG) != DATA_VERSION
                 || !root.contains(ENTRIES_TAG, Tag.TAG_LIST)) return Optional.empty();
@@ -262,8 +277,13 @@ public final class CatTraitProfile {
         for (int index = 0; index < entries.size() && loaded.size() < MAX_TRAITS; index++) {
             CompoundTag entry = entries.getCompound(index);
             ResourceLocation id = ResourceLocation.tryParse(entry.getString(ID_TAG));
-            CatTrait trait = CatTrait.byId(id).orElse(null);
-            if (trait == null || !compatibleWith(loaded, trait)) continue;
+            CatTraitType trait = CatTraitRegistry.resolve(id, clientSide);
+            if (trait == null || entry.getString(ID_TAG).length() > 128
+                    || loaded.stream().anyMatch(old -> old.trait().id().equals(id))) continue;
+            // Preserve saved custom entries across definition removal/conflict edits.
+            // Continue validating legacy native/native conflicts exactly as before.
+            if (trait instanceof CatTrait && !compatibleWith(loaded.stream()
+                    .filter(old -> old.trait() instanceof CatTrait).toList(), trait)) continue;
             loaded.add(new CatTraitInstance(trait, entry.getInt(LEVEL_TAG)));
         }
         return Optional.of(loaded.isEmpty() ? EMPTY : new CatTraitProfile(loaded));

@@ -1,0 +1,43 @@
+// Mandatory additive ABI contract. Deliberate breaking changes need a versioned adapter,
+// NOT editing/removing the frozen v3 baseline to make a failing build pass.
+def contractFile=rootProject.file('../compatibility/cat-accessory-api-v3.json')
+def verifyApi=tasks.register('verifyCatAccessoryApiV3') {
+    notCompatibleWithConfigurationCache('Inspects compiled bytecode and the checked-in scripting contract')
+    dependsOn tasks.named('compileJava')
+    inputs.file(contractFile)
+    inputs.files(sourceSets.main.output.classesDirs)
+    inputs.dir('src/main/java/cn/laowu/mod')
+    doLast {
+        def contract=new groovy.json.JsonSlurper().parse(contractFile)
+        def javaHome=javaToolchains.launcherFor { languageVersion=java.toolchain.languageVersion }.get().metadata.installationPath.asFile
+        def javap=new File(javaHome,'bin/javap'+(System.getProperty('os.name').toLowerCase().contains('windows')?'.exe':''))
+        contract.java_signatures.each { name, signatures ->
+            def capture=new ByteArrayOutputStream()
+            exec { executable javap; args '-public','-classpath',sourceSets.main.output.classesDirs.asPath,name; standardOutput=capture }
+            def actual=capture.toString('UTF-8').readLines().collect { it.trim() }.toSet()
+            signatures.each { signature ->
+                if(!actual.contains(signature))throw new GradleException("v3 ABI removed/changed: "+name+" :: "+signature+". Preserve it or add a compatible adapter.")
+            }
+        }
+        def source=file('src/main/java/cn/laowu/mod/accessory/CatAccessoryDefinition.java').getText('UTF-8')
+        [STATS:contract.stats,OUTFITS:contract.outfits,MECHANISMS:contract.mechanisms].each { field, expected ->
+            def match=(source =~ /(?s) \Q${field}\E = Set\.of\((.*?)\);/)
+            if(!match.find())throw new GradleException('Cannot inspect v3 '+field+'; update inspector without weakening frozen contract')
+            def found=(match.group(1)=~/"([^"]+)"/).collect { it[1] }.toSet()
+            expected.each { if(!found.contains(it))throw new GradleException('Removed v3 data key: '+it) }
+        }
+        def hooks=file('src/main/java/cn/laowu/mod/accessory/CatAccessoryHooks.java').getText('UTF-8')
+        def match=(hooks =~ /(?s)EVENT_NAMES = List\.of\((.*?)\);/)
+        if(!match.find())throw new GradleException('Cannot inspect v3 event list')
+        def events=(match.group(1)=~/"([^"]+)"/).collect { it[1] }.toSet()
+        contract.events.each { if(!events.contains(it))throw new GradleException('Removed v3 event: '+it) }
+        contract.stable_builtin_ids.each { id ->
+            def definition=file('src/main/resources/data/laowu/cat_accessories/'+id.split(':')[1]+'.json')
+            if(!definition.isFile() || new groovy.json.JsonSlurper().parse(definition).item!=id)
+                throw new GradleException('Removed/renamed saved accessory ID: '+id)
+        }
+        logger.lifecycle('PASS: frozen cat accessory API v3 signatures, data keys, events and 36 saved IDs')
+    }
+}
+tasks.named('check') { dependsOn verifyApi }
+tasks.named('jar') { dependsOn verifyApi }

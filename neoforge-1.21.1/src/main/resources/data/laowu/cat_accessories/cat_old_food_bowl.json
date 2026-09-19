@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_old_food_bowl",
+  "effects": {
+    "rest_heal": 1
+  }
+}

@@ -24,7 +24,7 @@ public final class CatFilterDescription {
             if (!rules.enabled(page, stat)) continue;
             attributes.add(Component.translatable("item.laowu.cat_filter.summary.range",
                     Component.translatable("attribute.laowu.cat." + stat.serializedName()),
-                    Component.translatable(page == 0 ? "gui.laowu.cat_stats.current" : "gui.laowu.cat_stats.limit"),
+                    Component.translatable(page == 0 ? (rules.baseCurrent() ? "gui.laowu.cat_filter.base_current" : "gui.laowu.cat_stats.current") : "gui.laowu.cat_stats.limit"),
                     rules.min(page, stat), rules.max(page, stat)));
         }
         List<Component> traits = new ArrayList<>();

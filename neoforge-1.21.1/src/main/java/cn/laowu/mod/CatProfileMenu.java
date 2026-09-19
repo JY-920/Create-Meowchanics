@@ -67,7 +67,12 @@ public final class CatProfileMenu extends AbstractContainerMenu {
                     ACCESSORY_X, ACCESSORY_Y + row * 20) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return false;
+                    return cn.laowu.mod.accessory.CatAccessories.mayEquip(
+                            catInventory, getContainerSlot(), stack, playerInventory.player.level().isClientSide);
+                }
+                @Override
+                public int getMaxStackSize() {
+                    return 1;
                 }
             });
         }
@@ -124,9 +129,11 @@ public final class CatProfileMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(stack, catSlots, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(stack,
-                CatProfileData.ACCESSORY_SLOTS, catSlots, false)) {
-            return ItemStack.EMPTY;
+        } else {
+            boolean equipped = cn.laowu.mod.accessory.CatAccessories.isAccessory(stack, player.level().isClientSide)
+                    && moveItemStackTo(stack, 0, CatProfileData.ACCESSORY_SLOTS, false);
+            if (!equipped && !moveItemStackTo(stack, CatProfileData.ACCESSORY_SLOTS, catSlots, false))
+                return ItemStack.EMPTY;
         }
 
         if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);

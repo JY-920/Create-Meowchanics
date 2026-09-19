@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_roly_poly",
+  "exclusive_group": "laowu:lifeguard",
+  "effects": {
+    "heavy_hit_cap": 30
+  }
+}

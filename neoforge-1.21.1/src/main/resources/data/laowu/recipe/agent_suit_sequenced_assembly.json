@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:agent_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_agent_suit"
+        },
+        {
+          "item": "minecraft:tinted_glass"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_agent_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_agent_suit"
+        },
+        {
+          "item": "minecraft:flint"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_agent_suit"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:incomplete_agent_suit"
+  }
+}

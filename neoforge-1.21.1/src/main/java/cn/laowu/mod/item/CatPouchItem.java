@@ -1,6 +1,12 @@
 package cn.laowu.mod.item;
 
-import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.*;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -31,6 +37,61 @@ public final class CatPouchItem extends Item {
 
     public CatPouchItem(Properties properties) {
         super(properties.stacksTo(1));
+    }
+
+    /** Handles normal cats and living flattened cats before vanilla sit/pose interaction. */
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack pouch, Player player,
+                                                   LivingEntity target, InteractionHand hand) {
+        if (!(target instanceof Cat cat)) return InteractionResult.PASS;
+        if (player.level().isClientSide) return InteractionResult.SUCCESS;
+        if (!(player.level() instanceof ServerLevel level) || !player.isAlive()
+                || player.isSpectator() || pouch.getCount() != 1
+                || player.getItemInHand(hand) != pouch || pouch.getItem() != this
+                || cat.level() != level || !cat.isAlive() || cat.isRemoved()
+                || player.distanceToSqr(cat) > 64 || !player.hasLineOfSight(cat))
+            return InteractionResult.FAIL;
+        if (count(pouch) >= CAPACITY) {
+            message(player, "full");
+            return InteractionResult.CONSUME;
+        }
+        if (busy(cat, level) || cat.isVehicle() || CatPilotFlight.carried(cat)
+                || CatDivingMount.carried(cat) || DynamiteCatLastStand.isActive(cat)
+                || DynamiteCatLastStand.isFinishing(cat)) {
+            message(player, "busy");
+            return InteractionResult.CONSUME;
+        }
+
+        ItemStack pancake = CatPancakeItem.capture(cat);
+        CompoundTag root = ItemCustomData.copy(pancake);
+        CompoundTag snapshot = root.getCompound(CatPancakeItem.CAT_DATA_TAG);
+        // World attachments must not be recreated when this pancake is released.
+        for (String key : List.of("Passengers", "Leash", "RootVehicle")) snapshot.remove(key);
+        ItemCustomData.set(pancake, root);
+        if (!insertOne(pouch, pancake)) return InteractionResult.FAIL;
+        // Commit the stored pancake first. This is capture, never a death/drop/attribute penalty.
+        cat.stopRiding();
+        if (cat.isLeashed()) cat.dropLeash(true, true);
+        CatProfileData.forgetStoredEntity(cat);
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD,
+                cat.getX(), cat.getY() + .2, cat.getZ(), 6, .15, .1, .15, .01);
+        cat.discard();
+        player.getInventory().setChanged();
+        player.containerMenu.broadcastChanges();
+        message(player, "captured");
+        return InteractionResult.CONSUME;
+    }
+
+    private static boolean busy(Cat cat, ServerLevel level) {
+        if (CatProfileData.isBeingViewed(cat)) return true;
+        for (ServerPlayer viewer : level.players())
+            if (viewer.containerMenu instanceof CatPackageMenu menu && menu.getCatId() == cat.getId())
+                return true;
+        return false;
+    }
+
+    private static void message(Player player, String suffix) {
+        player.displayClientMessage(Component.translatable("message.laowu.cat_pouch." + suffix), true);
     }
 
     public static int count(ItemStack pouch) {

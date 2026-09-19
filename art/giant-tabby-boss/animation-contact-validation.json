@@ -1,0 +1,42 @@
+[
+  {
+    "name": "animation.giant_tabby.idle",
+    "frames": 121,
+    "minimum_y": 0
+  },
+  {
+    "name": "animation.giant_tabby.walk",
+    "frames": 49,
+    "minimum_y": -4.275174882995003e-7
+  },
+  {
+    "name": "animation.giant_tabby.run",
+    "frames": 25,
+    "minimum_y": -4.6692584199092835e-7
+  },
+  {
+    "name": "animation.giant_tabby.bite",
+    "frames": 37,
+    "minimum_y": 0
+  },
+  {
+    "name": "animation.giant_tabby.paw_swipe",
+    "frames": 46,
+    "minimum_y": -4.641512365566314e-7
+  },
+  {
+    "name": "animation.giant_tabby.pounce",
+    "frames": 55,
+    "minimum_y": -4.949285017374905e-7
+  },
+  {
+    "name": "animation.giant_tabby.hurt",
+    "frames": 19,
+    "minimum_y": 0
+  },
+  {
+    "name": "animation.giant_tabby.death",
+    "frames": 73,
+    "minimum_y": -4.75413836298344e-7
+  }
+]

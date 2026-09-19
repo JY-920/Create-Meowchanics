@@ -6,6 +6,7 @@ import cn.laowu.mod.CatClothesData;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.DynamiteCatLastStand;
 import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.ServerConfig;
 import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.network.ModNetwork;
 import cn.laowu.mod.genetics.CatGenomeData;
@@ -70,7 +71,7 @@ public final class CatPancakeItem extends Item {
     private static final int REQUIRED_FAN_TICKS = 30;
     private static final int FAN_SEARCH_RADIUS = 16;
     private static final int MAX_CHARGE_TICKS = 80;
-    private static final int CAREER_DEATH_ATTRIBUTE_LOSS = 20;
+
 
     public CatPancakeItem(Properties properties) {
         super(properties);
@@ -111,16 +112,19 @@ public final class CatPancakeItem extends Item {
         return pancake;
     }
 
-    /** Captures a killed profession cat in a state that can later be restored alive. */
+    /** Captures a killed tamed or profession cat in a state that can later be restored alive. */
     public static ItemStack captureDeathDrop(Cat cat) {
         ItemStack pancake = capture(cat);
-        CatAttributeProfile attributes = CatAttributeData.ensure(cat);
-        CatStat[] stats = CatStat.values();
-        CatStat reducedStat = stats[cat.getRandom().nextInt(stats.length)];
-        int reducedCurrent = Math.max(CatAttributeProfile.MIN_VALUE,
-                attributes.current(reducedStat) - CAREER_DEATH_ATTRIBUTE_LOSS);
-        CatAttributeData.set(pancake, attributes.withValues(reducedStat,
-                reducedCurrent, attributes.potential(reducedStat)));
+        int loss = ServerConfig.deathAttributePenaltyEnabled() ? ServerConfig.deathAttributeLoss() : 0;
+        if (loss > 0) {
+            CatAttributeProfile attributes = CatAttributeData.ensure(cat);
+            CatStat[] stats = CatStat.values();
+            CatStat reducedStat = stats[cat.getRandom().nextInt(stats.length)];
+            int reducedCurrent = Math.max(CatAttributeProfile.MIN_VALUE, attributes.current(reducedStat) - loss);
+            CatAttributeData.set(pancake, attributes.withValues(reducedStat,
+                    reducedCurrent, attributes.potential(reducedStat)));
+        }
+        // Even without a penalty, clear the death state so the pancake restores a living cat.
 
         CompoundTag root = pancake.getTag();
         if (root != null && root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
@@ -536,9 +540,9 @@ public final class CatPancakeItem extends Item {
         return false;
     }
 
-    private static void restoreCat(ServerLevel level, ItemEntity pancakeEntity, ItemStack stack) {
+    private static Cat createRestoredCat(ServerLevel level, ItemStack stack) {
         Cat cat = EntityType.CAT.create(level);
-        if (cat == null) return;
+        if (cat == null) return null;
 
         CompoundTag root = stack.getTag();
         if (root != null && root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
@@ -576,6 +580,28 @@ public final class CatPancakeItem extends Item {
             cat.getPersistentData().putString(CatClothesData.OUTFIT_TAG, outfit.id());
         }
         CatPoseData.setPose(cat, 0);
+        return cat;
+    }
+
+    /** Uses the same snapshot as the item outcome; caller retains the item if insertion is rejected. */
+    public static boolean spawnDeathPancake(Cat original, ItemStack stack) {
+        if (!(original.level() instanceof ServerLevel level)) return false;
+        Cat cat = createRestoredCat(level, stack);
+        if (cat == null) return false;
+        cat.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(), 0);
+        cat.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        CatPancakeBehavior.flatten(cat);
+        if (!level.addFreshEntity(cat)) return false;
+        ModNetwork.syncToTracking(cat, CatPoseData.PANCAKE);
+        ModNetwork.syncCatClothesToTracking(cat);
+        ModNetwork.syncCatAttributesToTracking(cat);
+        ModNetwork.syncCatTraitsToTracking(cat);
+        return true;
+    }
+
+    private static void restoreCat(ServerLevel level, ItemEntity pancakeEntity, ItemStack stack) {
+        Cat cat = createRestoredCat(level, stack);
+        if (cat == null) return;
         cat.moveTo(pancakeEntity.getX(), pancakeEntity.getY() + 0.15D, pancakeEntity.getZ(),
                 pancakeEntity.getYRot(), 0.0F);
         cat.setDeltaMovement(pancakeEntity.getDeltaMovement().scale(0.2D));

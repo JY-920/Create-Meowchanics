@@ -134,9 +134,10 @@ function.
 | Intelligence | `1 + 0.01E` critical-damage multiplier | 1x | 1.5x | 2x |
 | Luck | `2% + 0.18%E` cat-attack critical chance | 2% | 11% | 20% |
 
-Combat Power does not replace an unequipped vanilla cat's biological attack.
-The conversion is installed only while a career outfit is present, then that
-outfit applies its own damage multiplier. Attack interval is clamped to at
+Unequipped cats now use the lower formula `1 + 0.04E` for Combat Power.
+Career outfits use `(2 + 0.08E) × K`; support cats cannot attack.
+Support movement gets a further 1.20 multiplier at the same Speed, and
+the medical outfit defaults to +10 Speed. Attack interval is clamped to at
 least one tick when temporary effects push E above 100. Critical chance is
 clamped to 100%; a successful critical hit multiplies its total damage by
 `1 + 0.01E` using Intelligence and emits the ordinary critical particles and
@@ -155,7 +156,7 @@ conditions are preserved. Unchecked fields remain unrestricted.
 
 ### Career-outfit combat
 
-Every tamed cat wearing a career outfit participates when its owner attacks or
+Tamed offensive career cats participate when their owner attacks or
 is attacked, or when the cat itself is attacked. An ordered-sitting cat, a cat
 seated on a Create seat, and a cat pancake do not fight. Active combat retains
 the 32-block owner leash and never selects a player or another cat as a target.
@@ -174,8 +175,9 @@ with effective Intelligence `60+` also intercepts a fresh attacker of a nearby
 same-owner fishing cat. These are effective-value checks, so traits may change
 the chosen behaviour without modifying inherited values.
 
-All career outfits supply `+10` maximum health, `+4` armour and `+2` armour
-toughness. The Fishing Suit additionally supplies `+10` effective Luck. Fishing
+Career outfits have distinct, configurable health, armour and toughness bonuses;
+see the [current balance table](career-balance-accessories.13.md). The Fishing Suit
+retains its existing `+20` health, `+5` armour, `+2` toughness and `+10` effective Luck. Fishing
 loot uses the vanilla fishing loot table with `3E/100` loot luck (clamped to
 `0..5`), so effective Luck 100 is equivalent to Luck of the Sea III and values
 above the normal training ceiling can continue toward V.
@@ -405,8 +407,8 @@ The profile renders the live cat model, the shared six-attribute panel and the
 same shared 72x27 trait-card renderer used by Breeding Boxes. Both current
 values and Attribute Limits are always visible in this full profile view; the
 current-number glyphs begin two visible pixels after their attribute icon. Four
-reserved accessory slots reject insertion until the actual accessory system
-exists; old development-test contents remain removable. The nine general cat
+accessory slots accept registered cat accessories, one per slot, with duplicate
+and exclusive-group checks (see cat-accessories.md). Old test contents remain removable. The nine general cat
 inventory slots accept arbitrary items. A
 normal player inventory is appended below the authored cat panel. All thirteen
 cat slots are immediately persisted in `LaoWuProfileItems`, including their

@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_stamina_badge",
+  "effects": {
+    "stamina": 10
+  }
+}

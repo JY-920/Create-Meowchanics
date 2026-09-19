@@ -1,13 +1,17 @@
 param(
     [string[]]$JarPath = @(),
-    [switch]$ExpectConflict
+    [switch]$ExpectConflict,
+    [switch]$ReleaseBuild
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $versions = @('forge-1.20.1', 'neoforge-1.21.1') | ForEach-Object {
     $match = Select-String -LiteralPath "$projectRoot/$_/gradle.properties" -Pattern '^mod_version=(.+)$'
-    $match.Matches.Groups[1].Value
+    $publicVersion = $match.Matches.Groups[1].Value
+    $internal = Select-String -LiteralPath "$projectRoot/$_/gradle.properties" -Pattern '^internal_build=(.+)$'
+    if (!$ReleaseBuild -and $internal) { "$publicVersion-dev.$($internal.Matches.Groups[1].Value)" }
+    else { $publicVersion }
 }
 if ($versions[0] -ne $versions[1]) { throw 'Loader versions differ' }
 $version = $versions[0]

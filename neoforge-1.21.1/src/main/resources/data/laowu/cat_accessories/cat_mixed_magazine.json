@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_mixed_magazine",
+  "required_outfit": "engineering",
+  "effects": {
+    "speed": -10,
+    "engineering_special_ammo": 1
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "note": "2026-09-17: all ten general accessories have supplied original icons. No negative attribute costs.",
+  "items": [
+    {
+      "id": "cat_chew_bone",
+      "name": "磨牙骨",
+      "en": "Chew Bone",
+      "icon": "bone",
+      "ingredient": "bone",
+      "drawing": "有小牙印的米白色骨头，附两三道磨痕",
+      "effects": {
+        "damage_combo": 4
+      },
+      "previous_name": "磨牙骨",
+      "source": "磨牙骨头.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "53dc5948404524367fd1642c5514c88b6bce09dffbbc6485372f0c2e1c4276ce",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_mouse_plush",
+      "name": "猫咪玩偶",
+      "en": "Cat Plush",
+      "icon": "rabbit_hide",
+      "ingredient": "rabbit_hide",
+      "drawing": "灰色布老鼠，尖鼻、粉耳与细长卷尾",
+      "effects": {
+        "opening_damage": 35
+      },
+      "previous_name": "老鼠玩偶",
+      "source": "玩偶.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "6e8138f2a1d05b04e3fa48beb2f40834b6cb2de1ef3b2d655d368dba0a151568",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_catnip_pouch",
+      "name": "猫薄荷饮",
+      "en": "Catnip Drink",
+      "icon": "wheat_seeds",
+      "ingredient": "wheat_seeds",
+      "drawing": "绿色小布香包，露出一片猫薄荷叶",
+      "effects": {
+        "critical_haste": 15
+      },
+      "previous_name": "猫薄荷香包",
+      "source": "美味猫薄荷饮.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "b073e749e15ce862eb2f671286e50c454c0e31570b123a336892ed9b8569f840",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_spiked_collar",
+      "name": "钉刺项圈",
+      "en": "Spiked Collar",
+      "icon": "iron_nugget",
+      "ingredient": "iron_nugget",
+      "drawing": "深色项圈，外缘三枚银色钝刺",
+      "effects": {
+        "melee_reflect": 50
+      },
+      "previous_name": "钉刺项圈",
+      "source": "项圈.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "aef3198ea4d220702603c1ebd8f1d35f2b1f9ae9788e8e188e1d9ee031b9c309",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_cork_vest",
+      "name": "软木护胸",
+      "en": "Cork Vest",
+      "icon": "leather_chestplate",
+      "ingredient": "leather",
+      "drawing": "圆角软木小护胸，两侧皮带，正中盾形纹",
+      "effects": {
+        "emergency_shield": 15
+      },
+      "previous_name": "软木护胸",
+      "source": "软木护胸.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "53a6b0011820676fb6fea8215998855888734a6a2301e6a348daa56a015aaa5e",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_roly_poly",
+      "name": "金基咪",
+      "en": "Golden Kimi",
+      "icon": "totem_of_undying",
+      "ingredient": "slime_ball",
+      "drawing": "圆底猫脸不倒翁，微微倾斜，突出厚重底座",
+      "effects": {
+        "heavy_hit_cap": 30
+      },
+      "previous_name": "不倒翁玩具",
+      "source": "小眼睛金基米.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "f0f56e0d3809444ca7a7c2c9d1abe68de90a4b5ea15fd636fce81c535e742d4e",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_old_food_bowl",
+      "name": "旧饭碗",
+      "en": "Old Food Bowl",
+      "icon": "bowl",
+      "ingredient": "bowl",
+      "drawing": "带缺口的陶瓷猫碗，碗边画小鱼纹",
+      "effects": {
+        "rest_heal": 1
+      },
+      "previous_name": "旧饭碗",
+      "source": "旧饭碗.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "5df3135b7d9edad422841aaa41b4437279eb7d4085327bb07184a1c0de53a97c",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_warm_scarf",
+      "name": "暖绒围巾",
+      "en": "Warm Scarf",
+      "icon": "red_dye",
+      "ingredient": "red_wool",
+      "drawing": "暖红或橙色卷起的绒围巾，末端小流苏",
+      "effects": {
+        "healing_received": 20
+      },
+      "previous_name": "暖绒围巾",
+      "source": "围巾.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "c08e64d1a4936131245eb5d14ce4c08daad28754c1ab9e14d3076fb54b5855cc",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_tracking_tag",
+      "name": "追踪吊牌",
+      "en": "Companion Tag",
+      "icon": "name_tag",
+      "ingredient": "gold_nugget",
+      "drawing": "黄铜或金色吊牌，猫爪与小人相邻，突出主人陪伴",
+      "effects": {
+        "owner_attack_bonus": 30
+      },
+      "previous_name": "追踪吊牌",
+      "source": "吊牌.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "4ed823a1bef1550aa0afceebab04f27a8923bf32262dca45aba64d9469ccdb00",
+      "art_status": "supplied"
+    },
+    {
+      "id": "cat_sorting_pouch",
+      "name": "收纳袋",
+      "en": "Sorting Pouch",
+      "icon": "bundle",
+      "ingredient": "chest",
+      "drawing": "棕色束口布袋，袋口露出两件小物品，侧面分类标签",
+      "effects": {
+        "sample_pickup": 1
+      },
+      "previous_name": "收纳布袋",
+      "source": "袋子.png",
+      "width": 16,
+      "height": 16,
+      "sha256": "3039f3b3df683871650065fdf2ffd81973ad17ac90c7d1d3c925772e289766c8",
+      "art_status": "supplied"
+    }
+  ]
+}

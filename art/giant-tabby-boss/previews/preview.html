@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<title>巨型橘猫 · Boss 模型预览</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; width: 1600px; height: 1150px; overflow: hidden; background: #f0ede3; color: #403b30; font-family: 'Microsoft YaHei', sans-serif; }
+  header { height: 147px; padding: 35px 56px 0; display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid #d8d1c0; }
+  h1 { font-size: 46px; line-height: 1.25; margin: 0 0 10px; font-weight: 700; letter-spacing: 3px; }
+  .sub { font-size: 16px; color: #827a69; letter-spacing: 1px; }
+  .badge { margin-top: 11px; padding: 11px 20px; border: 1px solid #b79258; color: #93703b; border-radius: 4px; font-size: 15px; letter-spacing: 2px; }
+  main { display: grid; grid-template-columns: 1110px 490px; height: 894px; }
+  .hero { position: relative; overflow: hidden; background-image: linear-gradient(#ded8c944 1px,transparent 1px),linear-gradient(90deg,#ded8c944 1px,transparent 1px); background-size: 48px 48px; }
+  .hero img { position: absolute; width: 1310px; height: 936px; object-fit: contain; left: -88px; top: -23px; }
+  .label { font-size: 14px; letter-spacing: 3px; color: #8b806b; position: absolute; top: 30px; left: 40px; }
+  .spec { position: absolute; bottom: 32px; left: 40px; display: flex; gap: 34px; color: #80735d; font-size: 14px; }
+  .spec strong { font-size: 24px; color: #6b5737; margin-right: 7px; font-weight: 500; }
+  aside { border-left: 1px solid #d8d1c0; display: grid; grid-template-rows: 294px 294px 306px; background: #e8e3d6; }
+  .view { position: relative; overflow: hidden; border-bottom: 1px solid #d8d1c0; }
+  .view img { width: 100%; height: 100%; object-fit: contain; padding: 18px 0 0; }
+  .view .label { top: 18px; left: 25px; font-size: 12px; }
+  .view.front img { object-fit: cover; transform: scale(.9); }
+  .note { padding: 31px 31px; line-height: 2; font-size: 15px; color: #81745f; }
+  .note strong { display: block; color: #65553a; font-size: 18px; margin-bottom: 10px; font-weight: 500; }
+  footer { height: 109px; padding: 26px 56px; background: #e3dccb; color: #80745f; font-size: 14px; line-height: 1.9; border-top: 1px solid #d0c6b1; }
+</style>
+<header>
+  <div><h1>巨型橘猫</h1><div class="sub">《火柴人 VS 我的世界》第 40 集 · 参考重建模型</div></div>
+  <div class="badge">BOSS ASSET / V1</div>
+</header>
+<main>
+  <section class="hero"><div class="label">模型实渲 · 三分之四视角</div><img src="hero.png" alt="巨型橘猫三维模型"><div class="spec"><span><strong>23</strong>方块</span><span><strong>20</strong>骨骼</span><span><strong>8</strong>基础动作</span><span><strong>128²</strong>像素贴图</span></div></section>
+  <aside>
+    <div class="view"><div class="label">侧面 · 中立姿态</div><img src="side.png" alt="侧面"></div>
+    <div class="view front"><div class="label">正面 · 中立姿态</div><img src="front.png" alt="正面"></div>
+    <div class="note"><strong>为 Boss 制作预留动作</strong>待机 / 行走 / 奔跑 / 咬击<br>挥爪 / 扑击 / 受击 / 倒地<br><br>Blockbench 可编辑 · 内嵌贴图<br>本次为模型资产，尚未接入游戏战斗。</div>
+  </aside>
+</main>
+<footer>保留厚长躯干、小头、绿眼、红项圈、白色腹线与白爪。截图中的红色火柴人不属于猫模型。<br>依据可见画面独立重建；未公开视角为风格补全，不是提取的官方原模型。预览来自实际 3D 文件。</footer>
+</html>

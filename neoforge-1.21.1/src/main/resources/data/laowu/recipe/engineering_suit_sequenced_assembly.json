@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "id": "laowu:engineering_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_engineering_suit"
+        },
+        {
+          "item": "create:goggles"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_engineering_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_engineering_suit"
+        },
+        {
+          "item": "create:brown_toolbox"
+        }
+      ],
+      "results": [
+        {
+          "id": "laowu:incomplete_engineering_suit"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "laowu:incomplete_engineering_suit"
+  }
+}

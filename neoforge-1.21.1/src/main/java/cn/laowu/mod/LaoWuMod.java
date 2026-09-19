@@ -29,6 +29,7 @@ import cn.laowu.mod.item.CatHoeItem;
 import cn.laowu.mod.item.CatTotemItem;
 import cn.laowu.mod.item.TerminatorSuitItem;
 import cn.laowu.mod.item.AdoptionBoxBlockItem;
+import cn.laowu.mod.item.WishAdoptionBoxBlockItem;
 import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.entity.CatBallEntity;
 import cn.laowu.mod.entity.ButterCatBoss;
@@ -63,6 +64,8 @@ import cn.laowu.mod.create.BreedingBoxBlockEntity;
 import cn.laowu.mod.create.BreedingBoxTier;
 import cn.laowu.mod.create.AdoptionBoxBlock;
 import cn.laowu.mod.create.AdoptionBoxBlockEntity;
+import cn.laowu.mod.create.WishAdoptionBoxBlock;
+import cn.laowu.mod.create.WishAdoptionBoxBlockEntity;
 import cn.laowu.mod.genetics.CatBreedingMode;
 import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.BreedingBoxMenu;
@@ -177,6 +180,10 @@ public final class LaoWuMod {
     public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>,
             MapCodec<CatToolEmpoweredLootModifier>> CAT_TOOL_EMPOWERED_LOOT =
             LOOT_MODIFIERS.register("cat_tool_empowered", () -> CatToolEmpoweredLootModifier.CODEC);
+    public static final DeferredHolder<ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> CAT_HEALING_SMOKE =
+            PARTICLE_TYPES.register("cat_healing_smoke", () -> new net.minecraft.core.particles.SimpleParticleType(false));
+    public static final DeferredHolder<ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> CAT_AGENT_SMOKE =
+            PARTICLE_TYPES.register("cat_agent_smoke", () -> new net.minecraft.core.particles.SimpleParticleType(false));
     public static final DeferredHolder<ParticleType<?>, ParticleType<NozzleFluidPuffData>> NOZZLE_FLUID_PUFF =
             PARTICLE_TYPES.register("nozzle_fluid_puff", () -> new ParticleType<>(false) {
                 @Override
@@ -245,6 +252,12 @@ public final class LaoWuMod {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AdoptionBoxBlockEntity>> ADOPTION_BOX_BE =
             BLOCK_ENTITIES.register("adoption_box", () -> BlockEntityType.Builder
                     .of(AdoptionBoxBlockEntity::new, ADOPTION_BOX.get()).build(null));
+    public static final DeferredBlock<WishAdoptionBoxBlock> WISH_ADOPTION_BOX = BLOCKS.register("wish_adoption_box",
+            () -> new WishAdoptionBoxBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL)
+                    .noOcclusion().strength(0.8F)));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WishAdoptionBoxBlockEntity>> WISH_ADOPTION_BOX_BE =
+            BLOCK_ENTITIES.register("wish_adoption_box", () -> BlockEntityType.Builder
+                    .of(WishAdoptionBoxBlockEntity::new, WISH_ADOPTION_BOX.get()).build(null));
     public static final DeferredHolder<EntityType<?>, EntityType<ButterCatBoss>> BUTTER_CAT =
             ENTITY_TYPES.register("butter_cat", () -> EntityType.Builder
                     .<ButterCatBoss>of(ButterCatBoss::new, MobCategory.MONSTER)
@@ -294,6 +307,18 @@ public final class LaoWuMod {
             () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.TRANSPORT));
     public static final DeferredItem<TerminatorSuitItem> DYNAMITE_SUIT = ITEMS.register("dynamite_suit",
             () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.DYNAMITE));
+    public static final DeferredItem<TerminatorSuitItem> ENGINEERING_SUIT = ITEMS.register("engineering_suit",
+            () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.ENGINEERING));
+    public static final DeferredItem<TerminatorSuitItem> MEDICAL_SUIT = ITEMS.register("medical_suit",
+            () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.MEDICAL));
+    public static final DeferredItem<TerminatorSuitItem> MUSIC_SUIT = ITEMS.register("music_suit",
+            () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.MUSIC));
+    public static final DeferredItem<TerminatorSuitItem> AGENT_SUIT = ITEMS.register("agent_suit",
+            () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.AGENT));
+    public static final DeferredItem<TerminatorSuitItem> DIVING_SUIT = ITEMS.register("diving_suit",
+            () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.DIVING));
+    public static final DeferredItem<TerminatorSuitItem> COCKROACH_SUIT = ITEMS.register("cockroach_suit",
+            () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.COCKROACH));
     public static final DeferredItem<Item> CAT_INGOT = ITEMS.register("cat_ingot",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> CAT_SHEET = ITEMS.register("cat_sheet",
@@ -309,21 +334,33 @@ public final class LaoWuMod {
     public static final DeferredItem<Item> CAT_COMPONENT = ITEMS.register("cat_component",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_CAT_COMPONENT = ITEMS.register(
-            "incomplete_cat_component", () -> new Item(new Item.Properties()));
+            "incomplete_cat_component", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_TERMINATOR_SUIT = ITEMS.register(
-            "incomplete_terminator_suit", () -> new Item(new Item.Properties()));
+            "incomplete_terminator_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_FISHING_SUIT = ITEMS.register(
-            "incomplete_fishing_suit", () -> new Item(new Item.Properties()));
+            "incomplete_fishing_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_FLIGHT_SUIT = ITEMS.register(
-            "incomplete_flight_suit", () -> new Item(new Item.Properties()));
+            "incomplete_flight_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_TRANSPORT_SUIT = ITEMS.register(
-            "incomplete_transport_suit", () -> new Item(new Item.Properties()));
+            "incomplete_transport_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_FIRE_SUIT = ITEMS.register(
-            "incomplete_fire_suit", () -> new Item(new Item.Properties()));
+            "incomplete_fire_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_HONEY_SUIT = ITEMS.register(
-            "incomplete_honey_suit", () -> new Item(new Item.Properties()));
+            "incomplete_honey_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_DYNAMITE_SUIT = ITEMS.register(
-            "incomplete_dynamite_suit", () -> new Item(new Item.Properties()));
+            "incomplete_dynamite_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
+    public static final DeferredItem<Item> INCOMPLETE_ENGINEERING_SUIT = ITEMS.register(
+            "incomplete_engineering_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
+    public static final DeferredItem<Item> INCOMPLETE_MEDICAL_SUIT = ITEMS.register(
+            "incomplete_medical_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
+    public static final DeferredItem<Item> INCOMPLETE_MUSIC_SUIT = ITEMS.register(
+            "incomplete_music_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
+    public static final DeferredItem<Item> INCOMPLETE_AGENT_SUIT = ITEMS.register(
+            "incomplete_agent_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
+    public static final DeferredItem<Item> INCOMPLETE_DIVING_SUIT = ITEMS.register(
+            "incomplete_diving_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
+    public static final DeferredItem<Item> INCOMPLETE_COCKROACH_SUIT = ITEMS.register(
+            "incomplete_cockroach_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<CatTotemItem> CAT_TOTEM = ITEMS.register("cat_totem",
             () -> new CatTotemItem(new Item.Properties()));
     public static final DeferredItem<CatEngineerGogglesItem> CAT_ENGINEER_GOGGLES =
@@ -447,7 +484,7 @@ public final class LaoWuMod {
     public static final DeferredItem<Item> CAT_SHELL = ITEMS.register("cat_shell",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> INCOMPLETE_CAT_GRENADE = ITEMS.register("incomplete_cat_grenade",
-            () -> new Item(new Item.Properties()));
+            () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
     public static final DeferredItem<Item> CAT_POWDER = ITEMS.register("cat_powder",
             () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> CAT_DOUGH = ITEMS.register("cat_dough",
@@ -494,6 +531,8 @@ public final class LaoWuMod {
             () -> new BreedingBoxBlockItem(ADVANCED_BREEDING_BOX.get(), new Item.Properties()));
     public static final DeferredItem<AdoptionBoxBlockItem> ADOPTION_BOX_ITEM = ITEMS.register("adoption_box",
             () -> new AdoptionBoxBlockItem(ADOPTION_BOX.get(), new Item.Properties()));
+    public static final DeferredItem<WishAdoptionBoxBlockItem> WISH_ADOPTION_BOX_ITEM = ITEMS.register("wish_adoption_box",
+            () -> new WishAdoptionBoxBlockItem(WISH_ADOPTION_BOX.get(), new Item.Properties()));
     public static final DeferredHolder<FluidType, HissingGasFluidType> HISSING_GAS_TYPE = FLUID_TYPES.register(
             "hissing_gas", HissingGasFluidType::new);
     public static final DeferredHolder<Fluid, FlowingFluid> HISSING_GAS = FLUIDS.register(
@@ -526,6 +565,7 @@ public final class LaoWuMod {
                         output.accept(HISSING_COLLECTOR_ITEM.get());
                         output.accept(DEVOURING_CAT_ITEM.get());
                         output.accept(ADOPTION_BOX_ITEM.get());
+                        output.accept(WISH_ADOPTION_BOX_ITEM.get());
                         output.accept(CAT_CARRIER_ITEM.get());
                         output.accept(CAT_BLOCK_ITEM.get());
                         output.accept(CAT_INGOT.get());
@@ -586,7 +626,13 @@ public final class LaoWuMod {
                         output.accept(FIRE_SUIT.get());
                         output.accept(HONEY_SUIT.get());
                         output.accept(TRANSPORT_SUIT.get());
-                        output.accept(DYNAMITE_SUIT.get());
+                                output.accept(DYNAMITE_SUIT.get());
+                                output.accept(ENGINEERING_SUIT.get());
+                                output.accept(MEDICAL_SUIT.get());
+                                output.accept(MUSIC_SUIT.get());
+                                output.accept(AGENT_SUIT.get());
+                                output.accept(DIVING_SUIT.get());
+                                output.accept(COCKROACH_SUIT.get());
                         output.accept(BREEDING_CAT_FOOD.get());
                         output.accept(MUTATION_CAT_FOOD.get());
                         output.accept(ATTACK_BREEDING_CAT_FOOD.get());
@@ -627,12 +673,20 @@ public final class LaoWuMod {
                         output.accept(MATERIAL_DEBUG_WAND.get());
                     })
                     .build());
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CAT_ACCESSORIES_TAB =
+            CREATIVE_TABS.register("cat_accessories", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.laowu.cat_accessories"))
+                    .icon(cn.laowu.mod.accessory.CatAccessoryItems::tabIcon)
+                    .displayItems((parameters, output) -> cn.laowu.mod.accessory.CatAccessoryItems.display(output))
+                    .build());
     public static final DeferredHolder<MenuType<?>, MenuType<CatPackageMenu>> CAT_PACKAGE_MENU = MENUS.register(
             "cat_package", () -> IMenuTypeExtension.create(CatPackageMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<BreedingBoxMenu>> BREEDING_BOX_MENU = MENUS.register(
             "breeding_box", () -> IMenuTypeExtension.create(BreedingBoxMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<AdoptionBoxMenu>> ADOPTION_BOX_MENU = MENUS.register(
             "adoption_box", () -> IMenuTypeExtension.create(AdoptionBoxMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<WishAdoptionBoxMenu>> WISH_ADOPTION_BOX_MENU = MENUS.register(
+            "wish_adoption_box", () -> IMenuTypeExtension.create(WishAdoptionBoxMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<CatTraitEditorMenu>> CAT_TRAIT_EDITOR_MENU =
             MENUS.register("cat_trait_editor",
                     () -> IMenuTypeExtension.create(CatTraitEditorMenu::new));
@@ -653,6 +707,30 @@ public final class LaoWuMod {
                     .clientTrackingRange(8)
                     .updateInterval(1)
                     .build("cat_pancake_projectile"));
+    public static final net.neoforged.neoforge.registries.DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.CatFlightCarrier>> CAT_FLIGHT_CARRIER =
+            ENTITY_TYPES.register("cat_flight_carrier", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.CatFlightCarrier>of(cn.laowu.mod.entity.CatFlightCarrier::new, MobCategory.MISC)
+                    .sized(0.85F, 3.3F).clientTrackingRange(10).updateInterval(1).build("cat_flight_carrier"));
+    public static final net.neoforged.neoforge.registries.DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.CatDivingCarrier>> CAT_DIVING_CARRIER =
+            ENTITY_TYPES.register("cat_diving_carrier", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.CatDivingCarrier>of(cn.laowu.mod.entity.CatDivingCarrier::new, MobCategory.MISC)
+                    .sized(0.85F, 2.4F).clientTrackingRange(10).updateInterval(1).build("cat_diving_carrier"));
+    public static final net.neoforged.neoforge.registries.DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.CatHoneyPatch>> CAT_HONEY_PATCH =
+            ENTITY_TYPES.register("cat_honey_patch", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.CatHoneyPatch>of(cn.laowu.mod.entity.CatHoneyPatch::new, MobCategory.MISC)
+                    .sized(2.5F, .1F).clientTrackingRange(4).updateInterval(20).build("laowu:cat_honey_patch"));
+    public static final net.neoforged.neoforge.registries.DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.AgentSmokeBomb>> AGENT_SMOKE_BOMB =
+            ENTITY_TYPES.register("agent_smoke_bomb", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.AgentSmokeBomb>of(cn.laowu.mod.entity.AgentSmokeBomb::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(10).updateInterval(1).build("agent_smoke_bomb"));
+    public static final DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.EngineeringCannon>> ENGINEERING_CANNON =
+            ENTITY_TYPES.register("engineering_cannon", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.EngineeringCannon>of(cn.laowu.mod.entity.EngineeringCannon::new, MobCategory.MISC)
+                    .sized(1.1F, 1.1F).clientTrackingRange(10).updateInterval(1).build("engineering_cannon"));
+    public static final DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.EngineeringCogwheelProjectile>> ENGINEERING_COGWHEEL_PROJECTILE =
+            ENTITY_TYPES.register("engineering_cogwheel_projectile", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.EngineeringCogwheelProjectile>of(cn.laowu.mod.entity.EngineeringCogwheelProjectile::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F).clientTrackingRange(10).updateInterval(1).build("engineering_cogwheel_projectile"));
     public static final DeferredHolder<EntityType<?>, EntityType<FishingRodProjectile>> FISHING_ROD_PROJECTILE =
             ENTITY_TYPES.register("fishing_rod_projectile", () -> EntityType.Builder
                     .<FishingRodProjectile>of(FishingRodProjectile::new, MobCategory.MISC)
@@ -722,11 +800,16 @@ public final class LaoWuMod {
             KIMI_ARMOR_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("kimi_armor_dye",
             () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(cn.laowu.mod.recipe.KimiArmorDyeRecipe::new));
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<cn.laowu.mod.recipe.WishAdoptionBoxRecipe>>
+            WISH_ADOPTION_BOX_RECIPE = RECIPE_SERIALIZERS.register("wish_adoption_box",
+            cn.laowu.mod.recipe.WishAdoptionBoxRecipe.Serializer::new);
+
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<cn.laowu.mod.recipe.LaserPointerDyeRecipe>>
             LASER_POINTER_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("laser_pointer_dye",
             () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(cn.laowu.mod.recipe.LaserPointerDyeRecipe::new));
 
     public LaoWuMod(IEventBus modBus, ModContainer modContainer) {
+        cn.laowu.mod.accessory.CatAccessoryItems.register((name, factory) -> ITEMS.register(name, factory));
         ITEMS.register(modBus);
         BLOCKS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
@@ -746,8 +829,13 @@ public final class LaoWuMod {
         modBus.addListener(LaoWuMod::registerCapabilities);
         modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, "laowu-client.toml");
         modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC, "laowu-server.toml");
+        modBus.addListener((net.neoforged.fml.event.config.ModConfigEvent.Loading event) -> {
+            if (event.getConfig().getSpec() == ServerConfig.SPEC && ServerConfig.migrateLegacyBalanceDefaults())
+                ServerConfig.SPEC.save();
+        });
         modContainer.registerConfig(ModConfig.Type.COMMON, GlobalConfig.SPEC, GlobalConfig.FILE_NAME);
         NeoForge.EVENT_BUS.register(CommonEvents.class);
+        NeoForge.EVENT_BUS.register(cn.laowu.mod.accessory.CatAccessoryEvents.class);
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerAboutToStartEvent event) -> ServerConfig.resetWorldState());
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent event) -> ServerConfig.resetWorldState());
         ModNetwork.register(modBus);
@@ -770,6 +858,7 @@ public final class LaoWuMod {
                     registerAlwaysVisibleDescription(INTERMEDIATE_BREEDING_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(ADVANCED_BREEDING_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(ADOPTION_BOX_ITEM.get());
+                    registerAlwaysVisibleDescription(WISH_ADOPTION_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(CAT_CARRIER_ITEM.get());
                     registerAlwaysVisibleDescription(CAT_LASER_POINTER.get());
                     registerAlwaysVisibleDescription(CAT_STORAGE_BOX.get());
@@ -849,6 +938,8 @@ public final class LaoWuMod {
                 BreedingBoxBlockEntity::getItemHandler);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ADOPTION_BOX_BE.get(),
                 AdoptionBoxBlockEntity::getItemHandler);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, WISH_ADOPTION_BOX_BE.get(),
+                WishAdoptionBoxBlockEntity::getItemHandler);
     }
 
     private static TooltipModifier createDescription(Item item) {

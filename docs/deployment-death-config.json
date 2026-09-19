@@ -1,0 +1,142 @@
+{
+  "Time": "2026-09-18 15:05:43",
+  "Version": "2.2.0",
+  "Stamp": "20260918-150542-2.2.0-death-config",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "A808277CE8CB5688389B3D50459E651095D7A996E4B804D99FF589BFAE4DAC33"
+      },
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "E4114CF7B75E6C65172D160EA3217BBE4C9B68B0B5CB1237FE103076AE7A36CE"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260918-150542-2.2.0-death-config\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "398A82A1440C27D9A564161BF5CE98BC84B82E70B77208EC5595EA583140842D"
+      },
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "60F8B916FFDCEA45D5E8AE69A1C7F9B91E245678A4D51208058F56BEED5CC507"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260918-150542-2.2.0-death-config\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "UserWorldsConfigsScriptsChanged": false,
+  "ServersUpdated": false,
+  "PublicReleaseZipUpdated": false,
+  "SDKZipUpdated": false,
+  "Builds": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "Sha256": "A808277CE8CB5688389B3D50459E651095D7A996E4B804D99FF589BFAE4DAC33",
+      "Bytes": 6967714,
+      "PreviousBuildArchive": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\artifact-archive\\20260918-145029-before-death-config\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "Changed": [
+        "assets/laowu/lang/en_us.json",
+        "assets/laowu/lang/zh_cn.json",
+        "cn/laowu/mod/client/WorldSettingsScreen.class",
+        "cn/laowu/mod/client/WorldSettingsScreen$1.class",
+        "cn/laowu/mod/GlobalConfig.class",
+        "cn/laowu/mod/item/CatPancakeItem.class",
+        "cn/laowu/mod/item/CatPancakeItem$1.class",
+        "cn/laowu/mod/ServerConfig.class"
+      ],
+      "Added": [],
+      "Removed": [],
+      "OnlyIntendedClassesAndTranslationsChanged": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "Sha256": "398A82A1440C27D9A564161BF5CE98BC84B82E70B77208EC5595EA583140842D",
+      "Bytes": 6969313,
+      "PreviousBuildArchive": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\artifact-archive\\20260918-145029-before-death-config\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "Changed": [
+        "assets/laowu/lang/en_us.json",
+        "assets/laowu/lang/zh_cn.json",
+        "cn/laowu/mod/client/WorldSettingsScreen.class",
+        "cn/laowu/mod/client/WorldSettingsScreen$1.class",
+        "cn/laowu/mod/GlobalConfig.class",
+        "cn/laowu/mod/item/CatPancakeItem.class",
+        "cn/laowu/mod/item/CatPancakeItem$1.class",
+        "cn/laowu/mod/ServerConfig.class"
+      ],
+      "Added": [],
+      "Removed": [],
+      "OnlyIntendedClassesAndTranslationsChanged": true
+    }
+  ],
+  "Validation": {
+    "NormalBuildsPassed": true,
+    "NativeDeathTests": {
+      "forge": "12/12",
+      "neoforge": "12/12"
+    },
+    "DeathConfigChecksPerLoader": 74,
+    "DeathWiringAndTranslationChecks": 59,
+    "FullKubeJS36AndSdkTests": {
+      "neoforge": {
+        "Passed": 98,
+        "Total": 98,
+        "Log": "neoforge-1.21.1/build/death-config-kube1.log"
+      },
+      "forgeFirst": {
+        "Passed": 96,
+        "Total": 98,
+        "Failed": [
+          "autoArtillery32",
+          "scriptsAndPersistence"
+        ],
+        "Log": "forge-1.20.1/build/death-config-kube1.log"
+      },
+      "forgeRepeat": {
+        "Passed": 97,
+        "Total": 98,
+        "Failed": [
+          "smartArtillery"
+        ],
+        "Log": "forge-1.20.1/build/death-config-kube2.log"
+      }
+    },
+    "FullForgeSuiteAllGreen": false,
+    "AllDeathTestsPassedInFullSuites": true,
+    "SourceCheckGroupsPassed": 28,
+    "AccessoryChecksPerLoader": 23252,
+    "MixinPackageChecksPassed": 284,
+    "SDKBundleChecksPassed": 287,
+    "PublicApiV3Passed": true,
+    "ReleaseIsolationPassed": true,
+    "NativeDeathLogs": [
+      "forge-1.20.1/build/death-config-native1.log",
+      "neoforge-1.21.1/build/death-config-native1.log"
+    ],
+    "ConfigRegressionLog": "build/death-config-regression.log",
+    "ProtoChunkPromotion": "Not enabled; opt-in test reports SKIP and succeeds, included in runner totals",
+    "RestorationTest": "Calls production restoreCat directly; fan detection not retested",
+    "ClientGuiManualVisualTest": "Not run; both client classes compiled and source layout/translation parity verified",
+    "ArtilleryFailures": "Observed different failures between unchanged full-suite runs; no artillery or KubeJS runtime class/resource bytes changed, no stability fix claimed",
+    "SDKZipSha256": "3FCBBDD7CF998703B27A67469CB6E017BA3601DC2BAD1E46C07F413B614E9F26"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_fire_charm",
+  "effects": {
+    "fire_immune": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "laowu:wish_adoption_box",
+  "category": "misc",
+  "pattern": [
+    " P ",
+    "EAE",
+    " C "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "A": {
+      "item": "laowu:adoption_box"
+    },
+    "C": {
+      "item": "create:cardboard"
+    }
+  },
+  "result": {
+    "id": "laowu:wish_adoption_box",
+    "count": 1
+  }
+}

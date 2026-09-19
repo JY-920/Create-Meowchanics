@@ -1,0 +1,81 @@
+{
+  "Version": "2.2.0-dev.agentsmoke.2",
+  "Time": "2026-09-18 12:10:55",
+  "BackupStamp": "20260918-121054-agentsmoke.2",
+  "Targets": [
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-dev.agentsmoke.2-forge-1.20.1.jar",
+      "Sha256": "67228DA00E6AC5E761F61FB786C53C1C22555AA6A9CC5E3C261C8D7F17A99764",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260918-121054-agentsmoke.2\\create-meowchanics-2.2.0-dev.agentsmoke.1-forge-1.20.1.jar",
+      "BackupSha256": "FBB95C8B32D844160DA40C2812430352BA47B39378D5ED3DFAA508EC009C5D62",
+      "ActiveLaowuCount": 1
+    },
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-dev.agentsmoke.2-neoforge-1.21.1.jar",
+      "Sha256": "8BDF80E6AA2497895DEE48123D84E9CC926B132AD6308F40E6E0ACF77A54E470",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260918-121054-agentsmoke.2\\create-meowchanics-2.2.0-dev.agentsmoke.1-neoforge-1.21.1.jar",
+      "BackupSha256": "53AD859CA802DB8D6D921BBE9596240A6B46D7F65B737E5B87481221CFC16FBE",
+      "ActiveLaowuCount": 1
+    }
+  ],
+  "UserWorldsConfigsScriptsChanged": false,
+  "LocalTestServersChangedOrStarted": false,
+  "BasedOn": "2.2.0-dev.agentsmoke.1",
+  "Change": {
+    "ExcludedSmokeAllyRole": "SUPPORT",
+    "CurrentExcludedOutfits": [
+      "medical",
+      "music",
+      "transport"
+    ],
+    "MixedSupportAndNonSupportTeamStillEligible": true,
+    "NoOutfitCatsUnchanged": true,
+    "OnlySmokeTriggerEligibilityChanged": true,
+    "IntelligenceRequirementStillNone": true,
+    "SmokeCooldownTicksUnchanged": 200,
+    "AllyRadiusBlocksUnchanged": 12,
+    "LocalizedTooltipsUpdated": [
+      "zh_cn",
+      "en_us"
+    ]
+  },
+  "Validation": {
+    "ForgeKubeJSFirstRun": "81/82",
+    "ForgeKubeJSFreshRetry": "81/82",
+    "NeoForgeKubeJS": "82/82",
+    "SmokeRoleTestsBothLoaders": true,
+    "RealSupportOnlyTeamDoesNotConceal": true,
+    "RealMixedTeamAllowsZeroIntelligenceSmoke": true,
+    "AllOutfitRolesChecked": true,
+    "PreviousIntelligenceAndCooldownTestsPassed": true,
+    "OptInProtoChunkCaseSkippedThisRun": true,
+    "NormalBuildBothLoaders": true,
+    "DefinitionChecksPerLoader": 23252,
+    "ApiV3AndReleaseIsolationBothLoaders": true,
+    "PackageAssetsBothLoaders": true,
+    "SourceCheckGroups": 27,
+    "ChangedRuntimeClasses": [
+      "cn/laowu/mod/CatAgentCombatGoal.class"
+    ],
+    "ChunkloadFixCommonEventsAndAgentWatchByteIdentical": true,
+    "KnownFailure": {
+      "Loader": "forge-1.20.1",
+      "Test": "AgentWatchProbe.radiusHostilesAndWalls",
+      "Occurrences": 2,
+      "Message": "No sequences finished",
+      "EarlierRecordedFailure": "docs/release-2.2.0.json; docs/kubejs-sdk/verification/RESULTS.md",
+      "RuntimeAndFixtureNotModifiedThisTurn": true,
+      "Resolved": false
+    },
+    "Logs": [
+      "forge-1.20.1/build/agentsmoke2-sdk1.log",
+      "forge-1.20.1/build/agentsmoke2-sdk2.log",
+      "neoforge-1.21.1/build/agentsmoke2-sdk1.log",
+      "forge-1.20.1/build/agentsmoke2-build.log",
+      "neoforge-1.21.1/build/agentsmoke2-build.log"
+    ]
+  },
+  "GitCommittedOrPushed": false
+}

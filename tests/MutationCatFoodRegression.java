@@ -185,7 +185,7 @@ public final class MutationCatFoodRegression {
             check(child.has(CatTrait.NIGHT_OWL) && child.has(CatTrait.LOLI), "Shared priorities preserved");
             check(child.traits().size() <= 4, "Four-trait cap");
             Set<CatTraitSlot> slots = EnumSet.noneOf(CatTraitSlot.class);
-            Set<CatTrait> unique = EnumSet.noneOf(CatTrait.class);
+            Set<cn.laowu.mod.genetics.CatTraitType> unique = new java.util.HashSet<>();
             int newTraits = 0;
             for (CatTraitInstance trait : child.traits()) {
                 check(trait.level() == 1 && unique.add(trait.trait()), "No duplicate or inherited levels");

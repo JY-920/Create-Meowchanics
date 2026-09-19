@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_reel_hook",
+  "required_outfit": "fishing",
+  "effects": {
+    "speed": 10,
+    "fishing_pull": 1
+  }
+}

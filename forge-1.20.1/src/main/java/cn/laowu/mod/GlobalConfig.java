@@ -9,7 +9,10 @@ import java.util.Map;
 /** Instance-wide overrides. Only the host/server file is authoritative in a world. */
 public final class GlobalConfig {
     public static final String FILE_NAME = "laowu-global.toml";
-    public static final String[] SWITCHES = {"show_hell_recipes", "wild_cats_flee", "cats_hiss"};
+    public static final String[] SWITCHES = {"show_hell_recipes", "wild_cats_flee", "cats_hiss",
+            ServerConfig.DEATH_PENALTY_ENABLED_KEY};
+    public static final ForgeConfigSpec.ConfigValue<Number> DEATH_ATTRIBUTE_LOSS;
+    public static final ForgeConfigSpec.ConfigValue<Number> DEATH_OUTCOME;
     public static final ForgeConfigSpec SPEC;
     public static final ForgeConfigSpec.ConfigValue<java.util.List<?>> DISABLED_TRAITS;
     public static final Map<CatStat, ForgeConfigSpec.ConfigValue<Number>> MULTIPLIERS = new EnumMap<>(CatStat.class);
@@ -33,6 +36,16 @@ public final class GlobalConfig {
                 .<Number>define("wild_cats_flee", -1, GlobalConfig::validSwitch));
         SWITCH_VALUES.put("cats_hiss", b.comment("猫咪是否哈气；航空箱产气不受此开关影响。-1=存档，0=关，1=开。")
                 .<Number>define("cats_hiss", -1, GlobalConfig::validSwitch));
+        SWITCH_VALUES.put(ServerConfig.DEATH_PENALTY_ENABLED_KEY,
+                b.comment("死亡变猫饼时是否随机扣除一项基础属性。-1=存档，0=关，1=开；存档默认开启。")
+                        .<Number>define(ServerConfig.DEATH_PENALTY_ENABLED_KEY, -1, GlobalConfig::validSwitch));
+        DEATH_OUTCOME = b.comment("驯养猫死亡处理：-1=存档，0=不生成猫饼但正常掉落装备，1=猫饼物品，2=猫饼生物。")
+                .<Number>define(ServerConfig.DEATH_OUTCOME_KEY, -1, value -> value instanceof Number number
+                        && Double.isFinite(number.doubleValue()) && number.doubleValue() == Math.rint(number.doubleValue())
+                        && number.doubleValue() >= -1 && number.doubleValue() <= 2);
+        DEATH_ATTRIBUTE_LOSS = b.comment("死亡时随机一项基础属性的扣除点数；-1=存档（默认20），0=不扣除。",
+                "非负整数强制覆盖并锁定；最低扣到0，不改变属性上限。死亡扣属性开关关闭时不生效。")
+                .<Number>define(ServerConfig.DEATH_ATTRIBUTE_LOSS_KEY, -1, GlobalConfig::validDeathAttributeLoss);
         b.comment("属性倍率：每项-1=使用存档设置（存档默认1）；0~999999=全局强制倍率。",
                 "仅缩放实际能力公式的属性输入，不改写猫咪基础属性、培养上限或套装固定加成。",
                 "Each multiplier: -1 = per-world (default 1); 0..999999 = forced global value.",
@@ -82,6 +95,25 @@ public final class GlobalConfig {
         return v == -1.0D || v == 0.0D || v == 1.0D;
     }
 
+    static boolean validDeathAttributeLoss(Object value) {
+        if (!(value instanceof Number number)) return false;
+        return number.doubleValue() == -1 || ServerConfig.validDeathAttributeLoss(number.doubleValue());
+    }
+    private static int deathAttributeLossOverride() {
+        return SPEC.isLoaded() ? DEATH_ATTRIBUTE_LOSS.get().intValue() : -1;
+    }
+    public static int deathAttributeLoss(int worldValue) {
+        int override = deathAttributeLossOverride();
+        return override < 0 ? worldValue : override;
+    }
+    private static int deathOutcomeOverride() {
+        return SPEC.isLoaded() ? DEATH_OUTCOME.get().intValue() : -1;
+    }
+    public static int deathOutcome(int worldValue) {
+        int override = deathOutcomeOverride();
+        return override < 0 ? worldValue : override;
+    }
+
     private static double multiplierOverride(CatStat stat) {
         return SPEC.isLoaded() ? MULTIPLIERS.get(stat).get().doubleValue() : -1.0D;
     }
@@ -110,6 +142,8 @@ public final class GlobalConfig {
     }
 
     public static boolean isLocked(String key) {
+        if (ServerConfig.DEATH_OUTCOME_KEY.equals(key)) return deathOutcomeOverride() >= 0;
+        if (ServerConfig.DEATH_ATTRIBUTE_LOSS_KEY.equals(key)) return deathAttributeLossOverride() >= 0;
         if (CatTraitConfig.KEY.equals(key))
             return SPEC.isLoaded() && !CatTraitConfig.inherits(DISABLED_TRAITS.get());
         for (CatStat stat : CatStat.values()) {

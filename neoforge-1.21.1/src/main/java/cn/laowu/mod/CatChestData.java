@@ -19,7 +19,11 @@ public final class CatChestData {
         return CatClothesData.getOutfit(cat) == CatOutfitType.TRANSPORT;
     }
 
-    /** Transport cats use the package UI; flight cats expose the same storage as a normal chest. */
+    /**
+     * Retain flight storage for legacy contents, death drops and an already-open
+     * menu. CommonEvents only allows opening a pilot backpack when nonempty.
+     * Empty pilot cats no longer provide a new portable container.
+     */
     public static boolean hasInventory(Cat cat) {
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
         return outfit == CatOutfitType.TRANSPORT || outfit == CatOutfitType.FLIGHT;

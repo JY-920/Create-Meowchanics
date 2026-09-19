@@ -29,6 +29,38 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 /** Physical-client endpoint for packets whose payload classes are shared with a dedicated server. */
 @OnlyIn(Dist.CLIENT)
 public final class ClientPacketHandler {
+    public static void handleAgentWatch(cn.laowu.mod.network.AgentWatchPacket packet) {
+        var level = net.minecraft.client.Minecraft.getInstance().level;
+        if (level != null) CatAgentWatchClient.receive(level, packet.entityId(), packet.uuid(), packet.duration());
+    }
+    public static void handleAgentMelee(cn.laowu.mod.network.AgentMeleePacket packet) {
+        var level = net.minecraft.client.Minecraft.getInstance().level;
+        if (level != null && level.getEntity(packet.entityId()) instanceof net.minecraft.world.entity.animal.Cat cat
+                && cat.getUUID().equals(packet.uuid()))
+            cn.laowu.mod.CatAgentMeleeMotion.receive(cat, packet.move(), packet.duration(), packet.age());
+    }
+    public static void handleCockroachState(cn.laowu.mod.network.CockroachStatePacket packet) {
+        var level = net.minecraft.client.Minecraft.getInstance().level;
+        if (level != null && level.getEntity(packet.entityId()) instanceof net.minecraft.world.entity.animal.Cat cat
+                && cat.getUUID().equals(packet.uuid()))
+            cn.laowu.mod.CatCockroachSwarm.receive(cat, packet.allies(), packet.mode(), packet.age());
+    }
+    public static void handleMusicSupport(cn.laowu.mod.network.MusicSupportPacket packet) {
+        var level = Minecraft.getInstance().level;
+        if (level != null && level.getEntity(packet.entityId()) instanceof net.minecraft.world.entity.animal.Cat cat
+                && cat.getUUID().equals(packet.uuid()))
+            cn.laowu.mod.CatMusicSupport.receive(cat, packet.pose(), packet.age(), packet.bonus(), packet.radius());
+    }
+    public static void handleMusicRecord(cn.laowu.mod.network.MusicRecordPacket packet) {
+        CatMusicRecordClient.receive(packet);
+    }
+
+    public static void handleMedical(cn.laowu.mod.network.MedicalHealingPacket p) {
+        var level = Minecraft.getInstance().level;
+        if (level != null && level.getEntity(p.entityId()) instanceof net.minecraft.world.entity.LivingEntity patient && patient.getUUID().equals(p.uuid()))
+            cn.laowu.mod.CatMedicalHealing.receive(patient, p.casting(), p.aura(), p.age(), p.radius(), p.stationed());
+    }
+
     public static void handle(SyncCatPosePacket packet) {
         if (Minecraft.getInstance().level == null) return;
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
@@ -78,6 +110,10 @@ public final class ClientPacketHandler {
     }
 
     public static void handleTraits(SyncCatTraitsPacket packet) {
+        if (packet.entityId() == -1) {
+            cn.laowu.mod.genetics.CatTraitRegistry.receive(packet.traits());
+            return;
+        }
         if (Minecraft.getInstance().level == null) return;
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
         if (entity instanceof Cat cat) {

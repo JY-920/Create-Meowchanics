@@ -5,6 +5,7 @@
   "package": "cn.laowu.mod.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "CatHandCrankPowerMixin",
     "CatOwnerTeleportDistanceMixin",
     "CatNavigationMixin",
     "PetCollarTeamMixin",
@@ -15,6 +16,8 @@
     "CatToolBreakProtectionMixin",
     "CatToolItemMixin",
     "LivingEntityCatTotemMixin",
+    "LivingEntityCatAccessoryDamageMixin",
+    "LivingEntityAgentSmokeTargetMixin",
     "ContraptionCatPancakeCollisionMixin",
     "PloughMovementBehaviourMixin",
     "PotatoCannonAmmoMixin",
@@ -23,6 +26,7 @@
     "RollerMovementBehaviourMixin"
   ],
   "client": [
+    "PilotSkyhookPoseMixin",
     "PerformanceBlendModeAccessor",
     "CatCreativeSearchMixin",
     "LaserHandFrameMixin",

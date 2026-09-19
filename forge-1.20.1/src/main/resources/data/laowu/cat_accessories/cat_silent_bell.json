@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_silent_bell",
+  "exclusive_group": "laowu:threat",
+  "effects": {
+    "aggro_bias": -3
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "Version": "2.1.4-dev.accessories.35",
+  "Time": "2026-09-17 20:31:53",
+  "BackupStamp": "20260917-203148-accessories.35",
+  "ServersRemainOff": true,
+  "Targets": [
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.1.4-dev.accessories.35-forge-1.20.1.jar",
+      "Sha256": "3E40EA0BE4420BBD86D2DC7233B69D9F544A4295C71C24108A28D5352CEAAA76",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260917-203148-accessories.35\\create-meowchanics-2.1.4-dev.accessories.33-forge-1.20.1.jar",
+      "BackupSha256": "CB360E58117EA5FE39BCDF29458EB735A9C8E1717B015623331C57766D20FA97",
+      "ActiveLaowuCount": 1
+    },
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\local-multiplayer-server",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\local-multiplayer-server\\mods\\create-meowchanics-2.1.4-dev.accessories.35-forge-1.20.1.jar",
+      "Sha256": "3E40EA0BE4420BBD86D2DC7233B69D9F544A4295C71C24108A28D5352CEAAA76",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\local-multiplayer-server\\mod-backups\\create-meowchanics\\20260917-203148-accessories.35\\create-meowchanics-2.1.4-dev.accessories.33-forge-1.20.1.jar",
+      "BackupSha256": "CB360E58117EA5FE39BCDF29458EB735A9C8E1717B015623331C57766D20FA97",
+      "ActiveLaowuCount": 1
+    },
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.1.4-dev.accessories.35-neoforge-1.21.1.jar",
+      "Sha256": "234E9AEDB91B5A6AB53BDCDA7701D91BEA72854AEFF0B41B02C576E35E8431DF",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260917-203148-accessories.35\\create-meowchanics-2.1.4-dev.accessories.33-neoforge-1.21.1.jar",
+      "BackupSha256": "BA912C78CF9FE79C4F0A1D92ABC9161B111EB756FA7F07D8FE5B8217E2D7CC0D",
+      "ActiveLaowuCount": 1
+    },
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\local-multiplayer-server",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\local-multiplayer-server\\mods\\create-meowchanics-2.1.4-dev.accessories.35-neoforge-1.21.1.jar",
+      "Sha256": "234E9AEDB91B5A6AB53BDCDA7701D91BEA72854AEFF0B41B02C576E35E8431DF",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\local-multiplayer-server\\mod-backups\\create-meowchanics\\20260917-203148-accessories.35\\create-meowchanics-2.1.4-dev.accessories.33-neoforge-1.21.1.jar",
+      "BackupSha256": "BA912C78CF9FE79C4F0A1D92ABC9161B111EB756FA7F07D8FE5B8217E2D7CC0D",
+      "ActiveLaowuCount": 1
+    }
+  ]
+}

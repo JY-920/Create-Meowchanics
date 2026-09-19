@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "item": "laowu:music_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_music_suit"
+        },
+        {
+          "item": "minecraft:light_gray_wool"
+        }
+      ],
+      "results": [
+        {
+          "item": "laowu:incomplete_music_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_music_suit"
+        },
+        {
+          "item": "minecraft:jukebox"
+        }
+      ],
+      "results": [
+        {
+          "item": "laowu:incomplete_music_suit"
+        }
+      ]
+    }
+  ],
+  "transitionalItem": {
+    "item": "laowu:incomplete_music_suit"
+  }
+}

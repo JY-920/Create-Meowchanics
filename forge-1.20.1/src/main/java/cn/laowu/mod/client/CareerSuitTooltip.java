@@ -22,8 +22,19 @@ public final class CareerSuitTooltip {
 
     public static void modify(ItemTooltipEvent event, Item item,
                               CatOutfitType outfit) {
+        modify(event, item, outfit, Screen.hasShiftDown(), Screen.hasControlDown());
+    }
+
+    /** Same real tooltip builder with explicit keys for deterministic client regression coverage. */
+    static void modify(ItemTooltipEvent event, Item item, CatOutfitType outfit,
+                       boolean shiftDown, boolean controlDown) {
         int insertionIndex = Math.min(1, event.getToolTip().size());
-        if (Screen.hasShiftDown()) {
+        if (outfit.isPreviewOnly()) {
+            event.getToolTip().addAll(insertionIndex, TooltipHelper.cutStringTextComponent(
+                    Component.translatable(item.getDescriptionId() + ".tooltip.summary").getString(), PALETTE));
+            return;
+        }
+        if (shiftDown) {
             insertionIndex = addSnapshot(event.getToolTip(), insertionIndex,
                     outfit, 50);
             event.getToolTip().add(insertionIndex++, Component.empty());
@@ -31,10 +42,10 @@ public final class CareerSuitTooltip {
             return;
         }
 
-        if (Screen.hasControlDown()) {
+        if (controlDown) {
             CatSuitSettings settings = CatSuitSettings.current(outfit);
             String coefficient = format(cn.laowu.mod.ServerConfig.careerDamageCoefficient(outfit));
-            event.getToolTip().add(insertionIndex++, Component.translatable(
+            if (!outfit.isSupport()) event.getToolTip().add(insertionIndex++, Component.translatable(
                     "item.laowu.career_suit.configured_damage",
                     coefficient).withStyle(ChatFormatting.GOLD));
             event.getToolTip().add(insertionIndex++, Component.translatable(
@@ -47,27 +58,38 @@ public final class CareerSuitTooltip {
                         item.getDescriptionId() + ".tooltip.condition" + section).withStyle(ChatFormatting.GRAY));
                 String detail = Component.translatable(
                         item.getDescriptionId() + ".tooltip.behaviour" + section).getString();
-                if (section == 1 && outfit != CatOutfitType.TRANSPORT)
-                    detail = detail.replace("_K", "_" + coefficient);
-                if (section == 2 && outfit != CatOutfitType.TRANSPORT)
-                    detail = Component.translatable("item.laowu.career_suit.configured_interval",
-                            format(settings.value(CatSuitSetting.MIN_INTERVAL)),
-                            format(settings.value(CatSuitSetting.INTERVAL_BASE)),
-                            format(settings.value(CatSuitSetting.INTERVAL_PER_SPEED))).getString();
+                if (section == 1 && !outfit.isSupport())
+                    detail = Component.translatable("item.laowu.career_suit.damage_detail",
+                            detail.replace("_K", "_" + coefficient)).getString();
                 if (section == 3) detail = bonusDescription(settings);
                 List<Component> lines = TooltipHelper.cutStringTextComponent(
                         detail, PALETTE.primary(), PALETTE.highlight(), 1);
                 event.getToolTip().addAll(insertionIndex, lines);
                 insertionIndex += lines.size();
+                if (section == 1 && !outfit.isSupport()) {
+                    String interval = Component.translatable("item.laowu.career_suit.configured_interval",
+                            format(settings.value(CatSuitSetting.MIN_INTERVAL)),
+                            format(settings.value(CatSuitSetting.INTERVAL_BASE)),
+                            format(settings.value(CatSuitSetting.INTERVAL_PER_SPEED))).getString();
+                    var intervalLines = TooltipHelper.cutStringTextComponent(interval, PALETTE.primary(), PALETTE.highlight(), 1);
+                    event.getToolTip().addAll(insertionIndex, intervalLines);
+                    insertionIndex += intervalLines.size();
+                }
             }
             return;
         }
 
-        String summary = Component.translatable(
-                item.getDescriptionId() + ".tooltip.summary").getString();
-        List<Component> intro = TooltipHelper.cutStringTextComponent(summary, PALETTE);
-        event.getToolTip().addAll(insertionIndex, intro);
-        insertionIndex += intro.size();
+        event.getToolTip().add(insertionIndex++, Component.translatable(
+                "item.laowu.career_suit.role",
+                Component.translatable("item.laowu.career_suit.role." + outfit.role().name().toLowerCase(Locale.ROOT)))
+                .withStyle(ChatFormatting.GRAY));
+        for (String section : List.of("combat", "work")) {
+            String description = Component.translatable("item.laowu.career_suit." + section,
+                    Component.translatable(item.getDescriptionId() + ".tooltip." + section)).getString();
+            var lines = TooltipHelper.cutStringTextComponent(description, PALETTE);
+            event.getToolTip().addAll(insertionIndex, lines);
+            insertionIndex += lines.size();
+        }
         event.getToolTip().add(insertionIndex++, Component.empty());
         List<Component> ctrlHint = TooltipHelper.cutStringTextComponent(
                 Component.translatable(
@@ -87,6 +109,7 @@ public final class CareerSuitTooltip {
                     Component.translatable("screen.laowu.world.suit_setting." + setting.id()),
                     format(settings.value(setting))).getString());
         }
+        if (settings.outfit().isSupport()) entries.add(Component.translatable("item.laowu.career_suit.support_movement").getString());
         return entries.isEmpty() ? Component.translatable("item.laowu.career_suit.no_bonus").getString()
                 : String.join("; ", entries);
     }
@@ -112,7 +135,37 @@ public final class CareerSuitTooltip {
                         format(20.0D / snapshot.attackIntervalTicks())).getString()
                 : Component.translatable(
                         "item.laowu.career_suit.no_attack").getString();
-        return addValue(tooltip, index, "speed", attackSpeed);
+        index = addValue(tooltip, index, "speed", attackSpeed);
+        if (outfit == CatOutfitType.MEDICAL) {
+            double intelligence = cn.laowu.mod.ServerConfig.scale(cn.laowu.mod.genetics.CatStat.INTELLIGENCE,
+                    CatSuitSettings.current(outfit).attribute(attributeValue, cn.laowu.mod.genetics.CatStat.INTELLIGENCE));
+            index = addValue(tooltip, index, "healing", format(cn.laowu.mod.CatSupportRules.healingPerSecond(intelligence)));
+            index = addValue(tooltip, index, "healing_radius", format(cn.laowu.mod.CatSupportRules.medicalRadius(intelligence)));
+        }
+        if (outfit == CatOutfitType.MUSIC) {
+            var settings = CatSuitSettings.current(outfit);
+            double speed = cn.laowu.mod.ServerConfig.scale(cn.laowu.mod.genetics.CatStat.SPEED,
+                    settings.attribute(attributeValue, cn.laowu.mod.genetics.CatStat.SPEED));
+            double intelligence = cn.laowu.mod.ServerConfig.scale(cn.laowu.mod.genetics.CatStat.INTELLIGENCE,
+                    settings.attribute(attributeValue, cn.laowu.mod.genetics.CatStat.INTELLIGENCE));
+            index = addValue(tooltip, index, "music_haste", format(cn.laowu.mod.CatMusicRules.haste(speed) * 100));
+            index = addValue(tooltip, index, "music_radius", format(cn.laowu.mod.CatMusicRules.radius(intelligence)));
+        }
+        if (outfit == CatOutfitType.AGENT) {
+            int intelligence = CatSuitSettings.current(outfit).attribute(attributeValue,
+                    cn.laowu.mod.genetics.CatStat.INTELLIGENCE);
+            index = addValue(tooltip, index, "watch_radius", format(cn.laowu.mod.CatAgentWatch.radius(intelligence)));
+        }
+        if (outfit == CatOutfitType.FLIGHT) {
+            var settings = CatSuitSettings.current(outfit);
+            double stamina = cn.laowu.mod.ServerConfig.scale(cn.laowu.mod.genetics.CatStat.STAMINA,
+                    (int)Math.round(attributeValue + settings.value(CatSuitSetting.STAMINA_STAT)));
+            double speed = cn.laowu.mod.ServerConfig.scale(cn.laowu.mod.genetics.CatStat.SPEED,
+                    (int)Math.round(attributeValue + settings.value(CatSuitSetting.SPEED_STAT)));
+            index = addValue(tooltip, index, "flight_time", format(cn.laowu.mod.CatPilotFlightRules.durationTicks(stamina) / 20.0));
+            index = addValue(tooltip, index, "flight_speed", format(cn.laowu.mod.CatPilotFlightRules.speedPerTick(speed) * 20));
+        }
+        return index;
     }
 
     private static int addValue(List<Component> tooltip, int index,

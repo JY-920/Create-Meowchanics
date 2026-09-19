@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_stability_anchor",
+  "effects": {
+    "knockback_resistance": 1
+  }
+}

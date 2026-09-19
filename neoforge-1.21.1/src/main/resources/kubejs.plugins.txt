@@ -1,0 +1,2 @@
+cn.laowu.mod.compat.kubejs.CatAccessoriesKubePlugin
+cn.laowu.mod.compat.kubejs.CatTraitsKubePlugin

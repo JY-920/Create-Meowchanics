@@ -401,6 +401,7 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
         if (minecraft == null || minecraft.level == null) return null;
         Cat cat = EntityType.CAT.create(minecraft.level);
         if (cat == null) return null;
+        cat.setId(CatAccessoryPreview.nextEntityId());
 
         CompoundTag root = ItemCustomData.copy(stack);
         if (!root.isEmpty() && root.contains(CatPancakeItem.CAT_DATA_TAG, Tag.TAG_COMPOUND)) {

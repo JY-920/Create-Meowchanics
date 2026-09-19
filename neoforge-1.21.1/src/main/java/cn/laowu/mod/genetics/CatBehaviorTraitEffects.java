@@ -403,7 +403,8 @@ public final class CatBehaviorTraitEffects {
         // Sitting is an explicit player command and must win over autonomous
         // flight. Resetting the anchor here makes the next take-off start from
         // the cat's new resting position instead of an obsolete altitude.
-        if (cat.isOrderedToSit()) {
+        if (cat.isOrderedToSit() || cn.laowu.mod.CatClothesData.getOutfit(cat) == cn.laowu.mod.CatOutfitType.ENGINEERING
+                && cn.laowu.mod.CatEngineeringCombat.validTarget(cat, cat.getTarget())) {
             if (data.getBoolean(SKY_ACTIVE_TAG) || cat.isNoGravity()) clearSkyState(cat);
             return false;
         }
@@ -931,6 +932,7 @@ public final class CatBehaviorTraitEffects {
         for (ItemEntity drop : drops) {
             ItemStack stack = drop.getItem();
             if (stack.getItem().getFoodProperties(stack, null) == null) continue;
+            if (!cn.laowu.mod.accessory.CatCommonAccessories.allowsPickup(hunter, CatProfileData.openContainer(hunter), stack)) continue;
             ItemStack remainder = storeInCatInventory(hunter, stack.copy());
             if (remainder.isEmpty()) drop.discard();
             else drop.setItem(remainder);

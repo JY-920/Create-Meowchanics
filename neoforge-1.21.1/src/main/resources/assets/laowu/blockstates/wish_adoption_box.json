@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "laowu:block/wish_adoption_box" },
+    "facing=east":  { "model": "laowu:block/wish_adoption_box", "y": 90 },
+    "facing=south": { "model": "laowu:block/wish_adoption_box", "y": 180 },
+    "facing=west":  { "model": "laowu:block/wish_adoption_box", "y": 270 }
+  }
+}

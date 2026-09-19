@@ -28,10 +28,12 @@ public final class GlobalWorldConfigRegression {
         Object globalSpec = GlobalConfig.SPEC;
         check(ServerConfig.multiplier(CatStat.HEALTH) == 1, "Unloaded default multiplier");
         check(ServerConfig.MAX_MULTIPLIER == 999999, "Multiplier cap");
-        check(ServerConfig.CAREERS.size() == 7, "All seven careers, not NONE");
+        check(ServerConfig.CAREERS.size() == 13, "Thirteen active careers including medical and music support, not NONE");
         for (CatOutfitType outfit : ServerConfig.CAREERS)
             check(ServerConfig.careerDamageCoefficient(outfit) == outfit.defaultDamageCoefficient(), "Unloaded career default " + outfit);
         check(ServerConfig.catsHiss() && !ServerConfig.wildCatsFlee(), "Unloaded switch defaults");
+        check(ServerConfig.deathAttributePenaltyEnabled() && ServerConfig.deathAttributeLoss() == 20,
+                "Unloaded death penalty retains original default");
         CommentedConfig legacyWorld = CommentedConfig.inMemory();
         legacyWorld.set("attribute_multipliers.health", 2D);
         legacyWorld.set("show_hell_recipes", true);
@@ -47,7 +49,7 @@ public final class GlobalWorldConfigRegression {
         load(globalSpec, global);
         CommentedConfig worldA = CommentedConfig.inMemory();
         load(worldSpec, worldA);
-        String[] suitNames = {"机械套装", "钓鱼套装", "飞行套装", "喷火套装", "采蜜套装", "物流套装", "雷管套装"};
+        String[] suitNames = {"机械套装", "钓鱼套装", "飞行套装", "喷火套装", "采蜜套装", "物流套装", "雷管套装", "工程套装", "医疗套装"};
         for (int i = 0; i < suitNames.length; i++) {
             CatOutfitType outfit = ServerConfig.CAREERS.get(i);
             String path = ServerConfig.CAREER_DAMAGE_TAG + "." + outfit.id();
@@ -101,9 +103,9 @@ public final class GlobalWorldConfigRegression {
             check(ServerConfig.snapshot().getInt("revision") != revision, "Career lock-only change invalidates drafts");
             setGlobal(global, path, -1);
         }
-        check(ServerConfig.careerDamageCoefficient(CatOutfitType.NONE) == 1, "Unsuited cats keep their native damage");
+        check(ServerConfig.careerDamageCoefficient(CatOutfitType.NONE) == 0.5, "Ordinary cats use the lower attribute formula");
 
-        double[] originals = {0.75D, 0.55D, 2.0D, 0.6D, 0.85D, 0D, 1.35D};
+        double[] originals = {0.75D, 0.55D, 2.0D, 0.75D, 1.2D, 0D, 1.5D, 3D, 0D};
         for (int i = 0; i < originals.length; i++) {
             check(ServerConfig.CAREERS.get(i).defaultDamageCoefficient() == originals[i],
                     "Original suit balance " + ServerConfig.CAREERS.get(i));
@@ -276,6 +278,8 @@ public final class GlobalWorldConfigRegression {
         CareerDefaultsAndKnockbackRegression.run();
         SuitSettingsRegression.run();
         MutationCatFoodRegression.run();
+        DeathPenaltyConfigRegression.run();
+        cn.laowu.mod.genetics.CatTraitScriptRegression.run();
         System.out.println("PASS: " + checks + " checks; both worlds, all overrides, unlock/restore, "
                 + "formula coefficients, 999999 cap, forged-lock write guard, remote authority, reloads and TOML validation");
     }

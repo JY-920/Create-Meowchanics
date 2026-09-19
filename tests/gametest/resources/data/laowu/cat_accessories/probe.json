@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "kubejs:accessory_probe",
+  "effects": {},
+  "charge": {
+    "capacity": 10,
+    "initial": 10
+  }
+}

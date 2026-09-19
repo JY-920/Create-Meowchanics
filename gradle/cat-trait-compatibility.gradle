@@ -1,0 +1,38 @@
+// Additive trait scripting ABI. Preserve this v1 contract, or supply a versioned adapter.
+def traitContractFile=rootProject.file('../compatibility/cat-trait-api-v1.json')
+def verifyTraits=tasks.register('verifyCatTraitApiV1') {
+    notCompatibleWithConfigurationCache('Inspects compiled trait scripting API')
+    dependsOn tasks.named('compileJava')
+    inputs.file(traitContractFile)
+    inputs.files(sourceSets.main.output.classesDirs)
+    inputs.dir('src/main/java/cn/laowu/mod')
+    doLast {
+        def contract=new groovy.json.JsonSlurper().parse(traitContractFile)
+        def javaHome=javaToolchains.launcherFor { languageVersion=java.toolchain.languageVersion }.get().metadata.installationPath.asFile
+        def javap=new File(javaHome,'bin/javap'+(System.getProperty('os.name').toLowerCase().contains('windows')?'.exe':''))
+        contract.java_signatures.each { name, signatures ->
+            def capture=new ByteArrayOutputStream()
+            exec { executable javap; args '-public','-classpath',sourceSets.main.output.classesDirs.asPath,name; standardOutput=capture }
+            def actual=capture.toString('UTF-8').readLines().collect { it.trim() }.toSet()
+            signatures.each { signature ->
+                if(!actual.contains(signature))throw new GradleException('Trait API v1 removed/changed: '+name+' :: '+signature)
+            }
+        }
+        def definition=file('src/main/java/cn/laowu/mod/genetics/ScriptedCatTraitDefinition.java').getText('UTF-8')
+        def keys=(definition =~ /(?s)KEYS = Set\.of\((.*?)\);/)
+        if(!keys.find())throw new GradleException('Cannot inspect trait schema keys; update inspector without weakening contract')
+        def actualKeys=(keys.group(1)=~/"([^"]+)"/).collect { it[1] }.toSet()
+        contract.definition_keys.each { if(!actualKeys.contains(it))throw new GradleException('Removed trait data key: '+it) }
+        def hooks=file('src/main/java/cn/laowu/mod/genetics/CatTraitHooks.java').getText('UTF-8')
+        def events=(hooks =~ /(?s)EVENT_NAMES = List\.of\((.*?)\);/)
+        if(!events.find())throw new GradleException('Cannot inspect trait events')
+        def actualEvents=(events.group(1)=~/"([^"]+)"/).collect { it[1] }.toSet()
+        contract.events.each { if(!actualEvents.contains(it))throw new GradleException('Removed trait event: '+it) }
+        def natives=file('src/main/java/cn/laowu/mod/genetics/CatTrait.java').getText('UTF-8')
+        def ids=(natives =~ /(?m)^\s+[A-Z][A-Z0-9_]*\("([a-z0-9_]+)"/).collect { 'laowu:'+it[1] }.toSet()
+        contract.stable_builtin_ids.each { if(!ids.contains(it))throw new GradleException('Removed native saved trait ID: '+it) }
+        logger.lifecycle('PASS: frozen trait API v1 signatures, schema keys, 13 events and 82 native saved IDs')
+    }
+}
+tasks.named('check') { dependsOn verifyTraits }
+tasks.named('jar') { dependsOn verifyTraits }

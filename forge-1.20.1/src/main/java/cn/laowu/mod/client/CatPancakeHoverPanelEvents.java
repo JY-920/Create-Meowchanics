@@ -41,7 +41,7 @@ public final class CatPancakeHoverPanelEvents {
                 cn.laowu.mod.genetics.CatTraitEffects.isNight(
                         Minecraft.getInstance().level),
                 cn.laowu.mod.genetics.CatTraitEffects.isDay(
-                        Minecraft.getInstance().level), null);
+                        Minecraft.getInstance().level), CatAccessoryPreview.forStack(event.getItemStack()));
         pose.popPose();
 
         // The ordinary tooltip keeps its vanilla position on the mouse's right;

@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_spiked_collar",
+  "effects": {
+    "melee_reflect": 50
+  }
+}

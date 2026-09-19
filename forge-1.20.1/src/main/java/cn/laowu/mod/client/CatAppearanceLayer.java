@@ -45,10 +45,10 @@ public final class CatAppearanceLayer extends RenderLayer<Cat, CatModel<Cat>> {
                        float limbSwing, float limbSwingAmount, float partialTick,
                        float ageInTicks, float netHeadYaw, float headPitch) {
         CatTraitProfile traits = CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY);
-        if (traits.traits().isEmpty()
-                || !(getParentModel() instanceof HissingCatModel model)) return;
+        if (!(getParentModel() instanceof HissingCatModel model)) return;
 
         boolean ordinaryGeometry = !model.isHissing() && !model.isPancake();
+        // Career performances do not require a PIPA_PERFORMANCE (or any other) trait.
         if (model.isPlayingPipa() && !cat.isInvisible()) {
             pose.pushPose();
             applyBabyBodyTransform(pose, cat);

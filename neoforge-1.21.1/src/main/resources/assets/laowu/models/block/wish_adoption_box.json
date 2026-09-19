@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "laowu:block/wish_adoption_box"
+  }
+}

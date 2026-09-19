@@ -1,0 +1,13 @@
+{
+  "Version": "2.2.0-dev.chunkload.1",
+  "Archive": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\releases\\create-meowchanics-2.2.0-dev.chunkload.1-dual-loader.zip",
+  "Sha256": "56C40CD0F6A8647D2D2B77A44D60193E2F8ED4470178F7C8DEB4267DA61E95B8",
+  "Bytes": 13499456,
+  "FileCount": 5,
+  "Verified": true,
+  "OriginalReleaseAndSdkUnchanged": true,
+  "ValidationReport": "docs/fix-chunkload.1.md",
+  "DeploymentReport": "docs/deployment-chunkload.1.json",
+  "Uploaded": false,
+  "GitCommittedOrPushed": false
+}

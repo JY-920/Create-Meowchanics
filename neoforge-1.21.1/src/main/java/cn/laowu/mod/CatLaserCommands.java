@@ -18,10 +18,12 @@ public final class CatLaserCommands {
         int count = 0;
         for (Cat cat : player.level().getEntitiesOfClass(Cat.class, player.getBoundingBox().inflate(32),
                 c -> c.isAlive() && c.isTame() && player.getUUID().equals(c.getOwnerUUID())
-                        && !c.isPassenger() && !CatPoseData.isPancake(c)
+                        && CatEngineeringCombat.canReceiveOrders(c) && !CatPoseData.isPancake(c)
                         && !CatProfileData.isBeingViewed(c) && c.distanceToSqr(player) <= 1024)) {
-            if (aim.target() != null && CatClothesData.getOutfit(cat) == CatOutfitType.TRANSPORT) continue;
+            if (aim.target() != null && (CatClothesData.getOutfit(cat).isSupport()
+                    || CatClothesData.getOutfit(cat).isPreviewOnly())) continue;
             if (aim.target() != null && !CatTeamRules.canHarm(cat, aim.target())) continue;
+            if (aim.target() == null) CatEngineeringCombat.release(cat);
             install(cat);
             if (CatPoseData.isHissing(cat) || HissingCatBehavior.isFighting(cat))
                 HissingCatBehavior.interruptPair(cat, 600);
@@ -44,7 +46,7 @@ public final class CatLaserCommands {
     private static boolean valid(Cat cat) {
         var owner = cat.getOwner();
         return owner != null && owner.isAlive() && cat.isAlive() && !cat.isOrderedToSit()
-                && !cat.isPassenger() && !CatPoseData.isPancake(cat)
+                && CatEngineeringCombat.canReceiveOrders(cat) && !CatPoseData.isPancake(cat)
                 && !CatProfileData.isBeingViewed(cat)
                 && cat.distanceToSqr(owner) <= CareerCatBehavior.MAX_OWNER_DISTANCE_SQR
                 && cat.getPersistentData().getLong(UNTIL) > cat.level().getGameTime();
@@ -63,6 +65,10 @@ public final class CatLaserCommands {
     private static void clear(Cat cat) {
         if (cat.getPersistentData().hasUUID(TARGET)) cat.setTarget(null);
         for (String key : List.of(UNTIL, TARGET, X, Y, Z)) cat.getPersistentData().remove(key);
+    }
+    public static void cancel(Cat cat) {
+        clear(cat);
+        CatCommandFlight.update(cat, false, false);
     }
     public static void tick(Cat cat) {
         if (cat.getPersistentData().contains(UNTIL)) {

@@ -26,13 +26,17 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 
 /** Heavy ranged shot used by honey-gathering cats. */
-public final class HoneyMissileProjectile extends ThrowableItemProjectile {
+public final class HoneyMissileProjectile extends ThrowableItemProjectile implements cn.laowu.mod.api.CatAccessoryProjectile {
     public static final double MAX_TRAVEL_DISTANCE = 13.0D;
     private static final String DAMAGE_TAG = "LaoWuHoneyMissileDamage";
     private static final String DISTANCE_TAG = "LaoWuHoneyMissileDistance";
     private static final int SLOWNESS_DURATION_TICKS = 60;
 
     private float attackDamage = 2.0F;
+    @Override public float getAccessoryDamage() { return attackDamage; }
+    @Override public void setAccessoryDamage(double amount) {
+        attackDamage = (float) cn.laowu.mod.accessory.CatAccessoryScriptRules.damage(amount);
+    }
     private double travelledDistance;
 
     public HoneyMissileProjectile(EntityType<? extends HoneyMissileProjectile> type,
@@ -95,9 +99,10 @@ public final class HoneyMissileProjectile extends ThrowableItemProjectile {
             return;
         }
 
-        CatProjectileDamage.hurt(target, level.damageSources().mobProjectile(this, cat), attackDamage);
-        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,
-                SLOWNESS_DURATION_TICKS, 1), cat);
+        if (CatProjectileDamage.hurt(target, level.damageSources().mobProjectile(this, cat), attackDamage)) {
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,SLOWNESS_DURATION_TICKS,1),cat);
+            if(cn.laowu.mod.accessory.CatAccessories.value(cat,"honey_patch")>0)CatHoneyPatch.create(cat,target);
+        }
         spawnImpact(level, result.getLocation(), 16);
         discard();
     }

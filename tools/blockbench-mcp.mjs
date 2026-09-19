@@ -34,6 +34,9 @@ if (action === 'schema') {
   if (action === 'eval-file') {
     name = 'risky_eval';
     args = { code: readFileSync(argument, 'utf8') };
+  } else if (action === 'save-project') {
+    name = 'risky_eval';
+    args = { code: `(() => { if (Project.name !== ${JSON.stringify(extra)}) throw new Error('Wrong project'); return Codecs.project.compile(); })()` };
   } else if (action === 'import-cat') {
     const project = JSON.parse(readFileSync(argument, 'utf8'));
     project.animations = [];
@@ -51,6 +54,13 @@ if (action === 'schema') {
   }
   result = await rpc('tools/call', { name, arguments: args });
   if (result.isError) throw new Error(JSON.stringify(result));
+  if (action === 'save-project') {
+    let project = result.content.find(item => item.type === 'text')?.text;
+    for (let i = 0; i < 4 && typeof project === 'string'; i++) project = JSON.parse(project);
+    if (!project?.meta || !project?.animations) throw new Error('Invalid project export');
+    writeFileSync(path.resolve(argument), JSON.stringify(project) + '\n');
+    result = { project: path.resolve(argument), animations: project.animations.length, elements: project.elements.length };
+  }
   if (action === 'capture') {
     const img = result.content.find(item => item.type === 'image');
     if (!img) throw new Error('Screenshot did not contain image data');

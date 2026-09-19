@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_guard_bandage",
+  "required_outfit": "medical",
+  "effects": {
+    "intelligence": -10,
+    "medical_guard": 20
+  }
+}

@@ -5,9 +5,18 @@ absurd Create-powered production, logistics, and combat system.
 
 ## Changelog
 
-See the [2.1.4 Chinese changelog](docs/changelog-2.1.4.md) for the latest update notes; the [2.1.3 feature changelog](docs/changelog-2.1.3.md) is retained for reference.
+See the [2.2.1 Chinese changelog](docs/changelog-2.2.1.md) for music playback, trait scripting and configurable tamed-cat death outcomes. The [2.2.0 changelog](docs/changelog-2.2.0.md), [2.1.4 changelog](docs/changelog-2.1.4.md) and [2.1.3 feature changelog](docs/changelog-2.1.3.md) are retained for reference.
+
+## Cat scripting
+
+See the [cat trait KubeJS API v1 guide](docs/cat-traits-kubejs.md) and
+[loader-specific runnable examples](docs/examples/cat-traits-v1/README.md) to register
+custom traits, script effects, and preserve saved IDs across reloads.
+The existing accessory API v1–v3 remains supported.
 
 ## Source trees
+
+Version 2.2.1 builds on the accessory development series. [Earlier development notes](docs/changelog-develop.md) remain as historical records; the versioned changelog describes the final behavior. Internal build IDs are separate from [public release versions](docs/versioning.md).
 
 | Directory | Minecraft | Loader | Create | Java | Status |
 | --- | --- | --- | --- | --- | --- |

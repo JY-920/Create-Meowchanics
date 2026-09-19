@@ -102,10 +102,30 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 public final class CommonEvents {
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void cockroachHurt(LivingDamageEvent.Post event) {
+        if (event.getNewDamage() > 0 && event.getEntity() instanceof Cat cat) CatCockroachSwarm.hurt(cat);
+    }
+    @SubscribeEvent
+    public static void recordMusicDps(net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Post event) {
+        CatMusicDps.record(event.getSource(), event.getEntity(), event.getNewDamage());
+    }
+
+    @SubscribeEvent
+    public static void pilotLogout(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity().getVehicle() instanceof cn.laowu.mod.entity.CatFlightCarrier carrier) carrier.release(true);
+        if (event.getEntity().getVehicle() instanceof cn.laowu.mod.entity.CatDivingCarrier carrier) carrier.release();
+    }
     private static final String CAT_GRENADE_EXPLODED_TAG = "LaoWuCatGrenadeExploded";
     private static final String TAME_PANIC_REMOVED_TAG = "LaoWuTamePanicRemoved";
     private static final Set<Cat> TAME_PANIC_DISABLED =
             Collections.newSetFromMap(new WeakHashMap<>());
+    // Joining can happen inside ChunkMap's unfinished FULL promotion. Never
+    // read weather/blocks there: Twilight Forest's rain hook requests that same
+    // chunk and waits for the promotion that is still waiting for this event.
+    // Weak entries also cover canceled joins/unloaded cats without retaining a world.
+    private static final Set<Cat> PENDING_CAT_INITIALIZATION =
+            Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
     private static final float CAT_GRENADE_DAMAGE = 30.0F;
     private static final double CAT_GRENADE_RADIUS = 3.0D;
 
@@ -116,6 +136,13 @@ public final class CommonEvents {
 
     @SubscribeEvent
     public static void preventForbiddenTargets(LivingChangeTargetEvent event) {
+        if (CatAgentSmoke.hiddenFrom(event.getEntity(), event.getNewAboutToBeSetTarget())) {
+            event.setNewAboutToBeSetTarget(null); return;
+        }
+        if (event.getEntity() instanceof Cat supporter && CatClothesData.getOutfit(supporter).isSupport()) {
+            event.setNewAboutToBeSetTarget(null);
+            return;
+        }
         if (CatTeamRules.friendly(event.getEntity(), event.getNewAboutToBeSetTarget())) {
             event.setNewAboutToBeSetTarget(null);
             return;
@@ -143,6 +170,7 @@ public final class CommonEvents {
                             event.getEntity().getBoundingBox().inflate(16.0D),
                             candidate -> candidate.isAlive()
                                     && !CatPoseData.isPancake(candidate)
+                                    && !CatAgentSmoke.hiddenFrom(event.getEntity(), candidate)
                                     && CatTraitData.ensure(candidate)
                                     .has(CatTrait.ATTENTION_MAGNET))
                     .stream()
@@ -152,9 +180,16 @@ public final class CommonEvents {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void preventConcealedAgentRetarget(LivingChangeTargetEvent event) {
+        if (CatAgentSmoke.hiddenFrom(event.getEntity(), event.getNewAboutToBeSetTarget())) event.setNewAboutToBeSetTarget(null);
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void preventPetTeamFriendlyFire(LivingIncomingDamageEvent event) {
-        if (CatTeamRules.friendly(event.getSource().getEntity(), event.getEntity())) {
+        if (event.getSource().getEntity() instanceof Cat supporter && CatClothesData.getOutfit(supporter).isSupport()
+                && !(event.getSource().is(DamageTypes.THORNS) && cn.laowu.mod.accessory.CatCommonAccessories.isReflecting())
+                || CatTeamRules.friendly(event.getSource().getEntity(), event.getEntity())) {
             event.setCanceled(true);
         }
     }
@@ -217,6 +252,10 @@ public final class CommonEvents {
         ServerConfig.tick(event.getServer());
         for (ServerLevel level : event.getServer().getAllLevels()) {
             NaturalCatMaterialSpawner.tick(level);
+            CatHealingSmoke.flush(level);
+            CatMedicalHealing.flush(level);
+            CatMusicSupport.flush(level);
+            CatAgentWatch.flush(level);
         }
     }
 
@@ -247,15 +286,21 @@ public final class CommonEvents {
                         player.getItemBySlot(EquipmentSlot.FEET))));
     }
 
-    /** Assign genetics once and materialise their entity attributes on joining. */
+    /** Queue only; both ensure() methods can indirectly refresh world-dependent attributes. */
     @SubscribeEvent
     public static void initializeCatTraits(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide() && event.getEntity() instanceof Cat cat) {
-            CatProfileData.recoverInterruptedViewLock(cat);
-            CatTraitData.ensure(cat);
-            CatAttributeData.ensure(cat);
-            CatAttributeEffects.refresh(cat);
+            PENDING_CAT_INITIALIZATION.add(cat);
         }
+    }
+
+    /** First normal tick after each join, including reused entities changing dimension. */
+    private static void initializeCatAfterJoin(Cat cat) {
+        if (!PENDING_CAT_INITIALIZATION.remove(cat)) return;
+        CatProfileData.recoverInterruptedViewLock(cat);
+        CatTraitData.ensure(cat);
+        CatAttributeData.ensure(cat);
+        CatAttributeEffects.refresh(cat);
     }
 
     /** Keeps Big Chonky Cat's collision and eye position aligned with its model. */
@@ -339,8 +384,10 @@ public final class CommonEvents {
                 || cat.level().isClientSide
                 || event.getSource().is(DamageTypes.THORNS)
                 || event.getAmount() <= 0.0F
-                || !CatAttributeEffects.rollCriticalHit(cat)) return;
+                || !(CatAgentCombatGoal.guaranteedCritical(cat, event.getEntity(), event.getSource().getDirectEntity())
+                || CatAttributeEffects.rollCriticalHit(cat))) return;
 
+        cn.laowu.mod.accessory.CatCommonAccessories.critical(cat, event.getEntity(), event.getSource());
         event.setAmount(CatAttributeEffects.criticalDamage(event.getAmount(), cat));
         if (cat.level() instanceof ServerLevel level) {
             LivingEntity target = event.getEntity();
@@ -413,6 +460,14 @@ public final class CommonEvents {
 
     @SubscribeEvent
     public static void onHissingGasBucketInteract(PlayerInteractEvent.RightClickBlock event) {
+        // Intercept before the box opens its menu; other Create filter interactions are unchanged.
+        if (event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatFilterItem filter
+                && event.getLevel().getBlockEntity(event.getPos()) instanceof cn.laowu.mod.create.WishAdoptionBoxBlockEntity) {
+            event.setCancellationResult(filter.useOn(new net.minecraft.world.item.context.UseOnContext(
+                    event.getEntity(), event.getHand(), event.getHitVec())));
+            event.setCanceled(true);
+            return;
+        }
         if (event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatStorageBoxItem box) {
             var result = box.useOn(new net.minecraft.world.item.context.UseOnContext(
                     event.getEntity(), event.getHand(), event.getHitVec()));
@@ -622,12 +677,25 @@ public final class CommonEvents {
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
         if (event.getEntity() instanceof Cat cat && !cat.level().isClientSide) {
+            initializeCatAfterJoin(cat);
             if (CatTeamRules.friendly(cat, cat.getTarget())) cat.setTarget(null);
             if (DynamiteCatLastStand.tick(cat)) return;
             disableTamedCatPanic(cat);
             if (!ServerConfig.catsHiss()) HissingCatBehavior.stopDisabledHissing(cat);
             CatAttributeEffects.tick(cat);
+            cn.laowu.mod.accessory.CatAccessories.tick(cat);
             CatTraitEffects.tick(cat);
+            cn.laowu.mod.genetics.CatTraitHooks.tick(cat);
+            CatCockroachSwarm.tick(cat);
+            CatAgentSmoke.tick(cat);
+            CatPilotFlight.recover(cat);
+            CatDivingMount.recover(cat);
+            CatMusicRecords.tick(cat);
+            if (CatPilotFlight.carried(cat) || CatDivingMount.carried(cat)) {
+                cat.setTarget(null);
+                CareerCatBehavior.tick(cat);
+                return;
+            }
             if (CatProfileData.isBeingViewed(cat)) {
                 cat.getNavigation().stop();
                 cat.setDeltaMovement(0.0D, cat.getDeltaMovement().y, 0.0D);
@@ -635,9 +703,15 @@ public final class CommonEvents {
             }
             CatCombatControl.tick(cat);
             CareerCatBehavior.tick(cat);
+            if (CatMedicalHealing.casting(cat) || CatMusicSupport.performing(cat)) {
+                CatMedicalHealing.holdStill(cat);
+                return; // Keep hissing/behaviour traits from replacing the caster's healing pose.
+            }
             CatLaserCommands.tick(cat);
+            if (CatEngineeringCombat.deployed(cat)) return;
             if (CatLaserCommands.hasOrder(cat)) return;
             if (CatPancakeBehavior.tickPancake(cat)) return;
+            if (CatEngineeringBehavior.findCrank(cat) != null) return;
             if (CatLogisticsBehavior.tick(cat)) {
                 HissingGasProduction.tick(cat);
                 return;
@@ -681,6 +755,7 @@ public final class CommonEvents {
         float absorbed = Math.min(event.getNewDamage(), cat.getAbsorptionAmount());
         float healthDamage = Math.max(0.0F, event.getNewDamage() - absorbed);
         if (healthDamage > 0.0F && CatTraitEffects.tryNineLives(cat, healthDamage)) {
+            cn.laowu.mod.accessory.CatCommonAccessories.prevented(cat);
             event.setNewDamage(absorbed);
         }
     }
@@ -719,11 +794,18 @@ public final class CommonEvents {
 
     @SubscribeEvent
     public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getEntity() instanceof ServerPlayer observer && event.getTarget() instanceof LivingEntity watched)
+            CatAgentWatch.syncTo(watched, observer);
         if (event.getEntity() instanceof ServerPlayer player && event.getTarget() instanceof Cat cat) {
             ModNetwork.syncToPlayer(player, cat, CatPoseData.getPose(cat));
+            ModNetwork.syncCatAccessories(cat, player, cn.laowu.mod.accessory.CatAccessories.state(cat));
             ModNetwork.syncAudioToPlayer(player, cat);
             CatChestData.syncToPlayer(player, cat);
+            CatMusicSupport.syncTo(cat, player);
             CatClothesData.syncToPlayer(player, cat);
+            CatMusicRecords.syncTo(cat, player);
+            CatCockroachSwarm.syncTo(cat, player);
+            CatAgentMeleeMotion.syncTo(cat, player);
             if (CatGenomeData.has(cat)) {
                 ModNetwork.syncCatGenomeToPlayer(player, cat);
             }
@@ -769,6 +851,13 @@ public final class CommonEvents {
     @SubscribeEvent
     public static void onCatInteract(PlayerInteractEvent.EntityInteract event) {
         if (event.getTarget() instanceof Cat cat
+                && event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatPouchItem pouch) {
+            event.setCancellationResult(pouch.interactLivingEntity(
+                    event.getItemStack(), event.getEntity(), cat, event.getHand()));
+            event.setCanceled(true);
+            return;
+        }
+        if (event.getTarget() instanceof Cat cat
                 && event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatStorageBoxItem box) {
             event.setCancellationResult(box.interactLivingEntity(event.getItemStack(), event.getEntity(), cat, event.getHand()));
             event.setCanceled(true);
@@ -813,6 +902,13 @@ public final class CommonEvents {
             return;
         }
         if (!(event.getTarget() instanceof Cat cat)) return;
+        InteractionResult pilotRide = CatPilotFlight.interact(cat, event.getEntity(), event.getHand());
+        if (pilotRide == InteractionResult.PASS) pilotRide = CatDivingMount.interact(cat, event.getEntity(), event.getHand());
+        if (pilotRide != InteractionResult.PASS) {
+            event.setCancellationResult(pilotRide);
+            event.setCanceled(true);
+            return;
+        }
 
         if (CatBehaviorTraitEffects.refusesFood(cat, event.getItemStack())
                 || (!cat.isBaby() && (cat.isFood(event.getItemStack())
@@ -1023,17 +1119,20 @@ public final class CommonEvents {
         if (!cat.isTame() || !cat.isOwnedBy(event.getEntity())) return;
 
         var player = event.getEntity();
-        var held = event.getItemStack();
         boolean flightOpening = CatClothesData.getOutfit(cat) == CatOutfitType.FLIGHT
-                && !held.isEmpty() && player.isShiftKeyDown();
+                && player.isShiftKeyDown();
         if (flightOpening) {
+            // Contents are server-only NBT. Consume the gesture on both sides,
+            // then let the server decide whether a legacy backpack may open.
             event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
             event.setCanceled(true);
             if (event.getLevel().isClientSide) return;
             if (player instanceof ServerPlayer serverPlayer) {
+                var inventory = CatChestData.openContainer(cat);
+                if (inventory.isEmpty()) return;
                 serverPlayer.openMenu(new SimpleMenuProvider(
                         (containerId, playerInventory, ignored) -> ChestMenu.threeRows(
-                                containerId, playerInventory, CatChestData.openContainer(cat)),
+                                containerId, playerInventory, inventory),
                         Component.translatable("container.laowu.flight_cat_chest")));
                 cat.playSound(SoundEvents.CHEST_OPEN, 0.6F, 1.2F);
             }
@@ -1213,11 +1312,15 @@ public final class CommonEvents {
             CatOutfitType outfit = CatClothesData.getOutfit(cat);
             CatLogisticsBehavior.abort(cat);
             ModNetwork.setAudioSession(cat, false);
-            CatProfileData.dropOnDeath(cat);
+            boolean split = CatCockroachSplit.trySplit(cat,event.getSource());
+            int outcome = cat.isTame() ? ServerConfig.deathOutcome() : ServerConfig.DEATH_ITEM;
+            CatProfileData.dropOnDeath(cat,!split && outcome != ServerConfig.DEATH_NONE);
             CatChestData.dropOnDeath(cat);
-            if (outfit != CatOutfitType.NONE
+            if (!split && outcome != ServerConfig.DEATH_NONE && (cat.isTame() || outfit != CatOutfitType.NONE)
                     && cat.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-                cat.spawnAtLocation(CatPancakeItem.captureDeathDrop(cat));
+                var pancake = CatPancakeItem.captureDeathDrop(cat);
+                if (outcome != ServerConfig.DEATH_ENTITY || !CatPancakeItem.spawnDeathPancake(cat, pancake))
+                    cat.spawnAtLocation(pancake);
             }
         }
     }

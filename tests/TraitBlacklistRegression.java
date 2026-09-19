@@ -119,7 +119,7 @@ public final class TraitBlacklistRegression {
         }
         ServerConfig.DISABLED_TRAITS.set(List.of(night, dough));
         Set<String> disabled = ServerConfig.disabledTraitIds();
-        Set<CatTrait> observed = EnumSet.noneOf(CatTrait.class);
+        Set<cn.laowu.mod.genetics.CatTraitType> observed = new java.util.HashSet<>();
         for (int i = 0; i < 3000; i++) {
             for (CatTraitProfile profile : List.of(CatTraitProfile.founder(random),
                     CatTraitProfile.injected(random), CatTraitProfile.breed(parent, parent, 1F, random),

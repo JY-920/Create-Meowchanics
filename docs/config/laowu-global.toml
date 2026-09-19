@@ -101,6 +101,11 @@ wild_cats_flee = -1
 # 猫咪哈气（不影响航空箱产气）
 cats_hiss = -1
 
+# 死亡变猫饼时随机扣一项基础属性：-1=存档（默认开启），0=强制关闭，1=强制开启。
+cat_death_attribute_penalty_enabled = -1
+# 扣除点数：-1=存档（默认20）；0=不扣除；其他非负整数=全局强制。属性上限不变，最低扣到0。
+cat_death_attribute_loss = -1
+
 # 每项倍率：-1 = 存档设置（默认 1）；0~999999 = 强制倍率。
 # 支持小数，如 1.5；-1 与 0 之间的数值无效。
 # 仅缩放能力公式中的属性输入，不改写猫咪基础属性/上限。
@@ -131,23 +136,31 @@ fishing = -1
 # 飞行套装；套装默认系数 K = 2.0
 # -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
 flight = -1
-# 喷火套装；套装默认系数 K = 0.6
+# 喷火套装；套装默认系数 K = 0.75
 # -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
 fire = -1
-# 采蜜套装；套装默认系数 K = 0.85
+# 采蜜套装；套装默认系数 K = 1.2
 # -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
 honey = -1
 # 物流套装；套装默认系数 K = 0.0（辅助职业，不主动攻击）
 # -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
 transport = -1
-# 雷管套装；套装默认系数 K = 1.35
+# 雷管套装；套装默认系数 K = 1.5
 # -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
 dynamite = -1
+# 工程套装；套装默认系数 K = 3.0
+# -1 = 沿用存档；填写 0~999999 则强制使用该 K，并锁定游戏内对应选项。
+engineering = -1
+# 医疗套装；套装默认系数 K = 0.0（辅助职业，不攻击）
+# -1 = 沿用存档；修改 K 不会启用辅助猫攻击。
+medical = -1
+# 音乐猫咪（辅助职业，不攻击）；存档默认 0。
+music = -1
 
 # 套装攻速、防护、六维属性加成。每项 -1 沿用存档；其他有效值全局锁定。
 # 间隔=max(最短间隔, round(基础间隔-速度缩短系数×速度属性×速度倍率))。20tick=1秒。
 # 基础/最短间隔：整数1~999999；属性加成：整数0~999999；其他系数/加成：0~999999。
-# 生物属性上限、有效属性999上限和受伤无敌帧仍有效。物流猫不使用攻击参数。
+# 生物属性上限、有效属性999上限和受伤无敌帧仍有效。物流、医疗、音乐猫不使用攻击参数。
 
 # 机械套装
 [career_settings.terminator]
@@ -205,17 +218,17 @@ luck_stat_bonus = -1
 
 # 飞行套装
 [career_settings.flight]
-# 基础攻击间隔；存档默认 36；-1 沿用存档。
+# 基础攻击间隔；存档默认 40；-1 沿用存档。
 attack_interval_base = -1
 # 速度缩短系数；存档默认 0.1；-1 沿用存档。
 attack_interval_per_speed = -1
 # 最短攻击间隔；存档默认 20；-1 沿用存档。
 minimum_attack_interval = -1
-# 生命值加成；存档默认 12；-1 沿用存档。
+# 生命值加成；存档默认 30；-1 沿用存档。
 health_bonus = -1
-# 护甲值加成；存档默认 3；-1 沿用存档。
+# 护甲值加成；存档默认 7；-1 沿用存档。
 armor_bonus = -1
-# 韧性加成；存档默认 1；-1 沿用存档。
+# 韧性加成；存档默认 3；-1 沿用存档。
 toughness_bonus = -1
 # 战斗力属性加成；存档默认 10；-1 沿用存档。
 attack_stat_bonus = -1
@@ -232,7 +245,7 @@ luck_stat_bonus = -1
 
 # 喷火套装
 [career_settings.fire]
-# 基础攻击间隔；存档默认 14；-1 沿用存档。
+# 基础攻击间隔；存档默认 15；-1 沿用存档。
 attack_interval_base = -1
 # 速度缩短系数；存档默认 0.08；-1 沿用存档。
 attack_interval_per_speed = -1
@@ -259,7 +272,7 @@ luck_stat_bonus = -1
 
 # 采蜜套装
 [career_settings.honey]
-# 基础攻击间隔；存档默认 42；-1 沿用存档。
+# 基础攻击间隔；存档默认 41；-1 沿用存档。
 attack_interval_base = -1
 # 速度缩短系数；存档默认 0.1；-1 沿用存档。
 attack_interval_per_speed = -1
@@ -294,7 +307,7 @@ attack_interval_per_speed = -1
 minimum_attack_interval = -1
 # 生命值加成；存档默认 30；-1 沿用存档。
 health_bonus = -1
-# 护甲值加成；存档默认 6；-1 沿用存档。
+# 护甲值加成；存档默认 10；-1 沿用存档。
 armor_bonus = -1
 # 韧性加成；存档默认 3；-1 沿用存档。
 toughness_bonus = -1
@@ -330,6 +343,87 @@ attack_stat_bonus = -1
 # 生命属性加成；存档默认 0；-1 沿用存档。
 health_stat_bonus = -1
 # 速度属性加成；存档默认 0；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 0；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 工程套装（低攻速炮台职业）
+[career_settings.engineering]
+# 基础攻击间隔；存档默认 50；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.25；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 20；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 30；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 12；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 5；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 0；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 0；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 10；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 医疗套装（辅助职业，不使用攻击参数）
+[career_settings.medical]
+# 基础攻击间隔；存档默认 24；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.1；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 8；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 6；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 2；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 0；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 0；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 10；-1 沿用存档。
+speed_stat_bonus = -1
+# 耐力属性加成；存档默认 0；-1 沿用存档。
+stamina_stat_bonus = -1
+# 智力属性加成；存档默认 0；-1 沿用存档。
+intelligence_stat_bonus = -1
+# 幸运属性加成；存档默认 0；-1 沿用存档。
+luck_stat_bonus = -1
+
+# 音乐套装（辅助职业，不使用攻击参数）
+[career_settings.music]
+# 基础攻击间隔；存档默认 24；-1 沿用存档。
+attack_interval_base = -1
+# 速度缩短系数；存档默认 0.1；-1 沿用存档。
+attack_interval_per_speed = -1
+# 最短攻击间隔；存档默认 8；-1 沿用存档。
+minimum_attack_interval = -1
+# 生命值加成；存档默认 6；-1 沿用存档。
+health_bonus = -1
+# 护甲值加成；存档默认 2；-1 沿用存档。
+armor_bonus = -1
+# 韧性加成；存档默认 0；-1 沿用存档。
+toughness_bonus = -1
+# 战斗力属性加成；存档默认 0；-1 沿用存档。
+attack_stat_bonus = -1
+# 生命属性加成；存档默认 0；-1 沿用存档。
+health_stat_bonus = -1
+# 速度属性加成；存档默认 10；-1 沿用存档。
 speed_stat_bonus = -1
 # 耐力属性加成；存档默认 0；-1 沿用存档。
 stamina_stat_bonus = -1

@@ -1,0 +1,65 @@
+{
+  "Time": "2026-09-19 17:35:27",
+  "Version": "2.2.1",
+  "Stamp": "20260919-173526-2.2.1-release",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "5D4BDCFA79106248FCC819098B8F9E1480E629723388CD7550A682625C0B1697"
+      },
+      "Bytes": 7026163,
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "B1CF21B7BEC8BA6C714F077EC3221D0E04F4E430200F8E5175F55B5D2470FC9A"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260919-173526-2.2.1-release\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "47C9C467574685F1892B85AB3E9E74E857D51B9F3F785217DAE6FD627D2C6B08"
+      },
+      "Bytes": 7027589,
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "799E40A198F02266B4A86CE1498AEBAFA8E8F9ECC73332B1838AD60807C11285"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260919-173526-2.2.1-release\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Verification": {
+    "Clients": "Both installed NetMusic 1.5.2 client probes PASS; actual native/vanilla audio, network/local/vertical motion suppression, stationary resume, both model poses and stop cleanup",
+    "Builds": "Normal build both loaders PASS, 23252 accessory assertions per port, API v3/trait v1, release isolation",
+    "Wiring": {
+      "NetMusic": 41,
+      "MusicCareer": 81
+    },
+    "Jars": "Embedded mod version 2.2.1; removed lyric renderer/bridge and probe classes absent",
+    "Logs": [
+      "forge-1.20.1/build/music-221-client.log",
+      "neoforge-1.21.1/build/music-221-client.log",
+      "forge-1.20.1/build/release-221.log",
+      "neoforge-1.21.1/build/release-221.log"
+    ],
+    "Scope": "No fresh full KubeJS gameplay regression in this visual-only patch; compatibility signatures verified by normal build."
+  }
+}

@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /** Stable trait definitions. Saved cats refer to these by resource location. */
-public enum CatTrait {
+public enum CatTrait implements CatTraitType {
     THORNS("thorns", CatTraitRarity.EXCELLENT, true),
     NIGHT_OWL("night_owl", CatTraitRarity.COMMON, true),
     HEAT_RESISTANCE("heat_resistance", CatTraitRarity.GOOD, false),

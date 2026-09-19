@@ -24,6 +24,7 @@ public final class CatTeamRules {
                 teamA == null ? null : teamA.getName(), teamB == null ? null : teamB.getName());
     }
     public static boolean canHarm(Cat attacker, LivingEntity target) {
+        if (CatClothesData.getOutfit(attacker).isSupport()) return false;
         if (target == null || target == attacker || !target.isAlive() || target == attacker.getOwner()
                 || target instanceof net.minecraft.world.entity.player.Player) return false;
         if (attacker.isTame() && target instanceof TamableAnimal pet && pet.isTame())

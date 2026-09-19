@@ -15,6 +15,12 @@ final class CatOutfitModels {
             case HONEY -> definition("honey_suit", false, "honey_suit_translucent");
             case TRANSPORT -> definition("transport_suit", false, null);
             case DYNAMITE -> definition("dynamite_suit", false, null);
+            case ENGINEERING -> definition("engineering_suit", false, null);
+            case MEDICAL -> definition("medical_suit", false, null);
+            case MUSIC -> definition("music_suit", false, null);
+            case AGENT -> definition("agent_suit", false, null);
+            case DIVING -> definition("diving_suit", false, null);
+            case COCKROACH -> definition("cockroach_suit", false, null);
             case NONE -> null;
         };
     }

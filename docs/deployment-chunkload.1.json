@@ -1,0 +1,47 @@
+{
+  "Version": "2.2.0-dev.chunkload.1",
+  "Time": "2026-09-18 10:58:06",
+  "BackupStamp": "20260918-105805-chunkload.1",
+  "Targets": [
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-dev.chunkload.1-forge-1.20.1.jar",
+      "Sha256": "199B3E6C5E070B48032DB0447178F485928EF35CC1BF25E204078BB3664906C5",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260918-105805-chunkload.1\\create-meowchanics-2.1.4-dev.accessories.36-forge-1.20.1.jar",
+      "BackupSha256": "3B75508858FBD8D44CB31AB89007C19515333F249A5C08A8C31A3ED02FCDAD9C",
+      "ActiveLaowuCount": 1
+    },
+    {
+      "Root": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-dev.chunkload.1-neoforge-1.21.1.jar",
+      "Sha256": "F4E26C52A56DD9F87DDE62B8C084F7CC7C61832BEE7B7669FB430671101DEE52",
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260918-105805-chunkload.1\\create-meowchanics-2.1.4-dev.accessories.36-neoforge-1.21.1.jar",
+      "BackupSha256": "0D11FB191280D5567D861ACCDD909896C388A0BB272799DBA8118BD5D8320763",
+      "ActiveLaowuCount": 1
+    }
+  ],
+  "UserWorldsConfigsScriptsChanged": false,
+  "LocalTestServersChangedOrStarted": false,
+  "Validation": {
+    "ForgeKubeJS": "81/81 (proto promotion opt-in skipped here; exercised with Twilight separately)",
+    "NeoForgeKubeJS": "81/81 (proto promotion opt-in skipped here; exercised with Twilight separately)",
+    "ForgeTwilight": "4/4; Twilight Forest 4.3.2508; active cloud hook verified",
+    "NeoForgeTwilight": "4/4; Twilight Forest 4.8.3345; active cloud hook verified",
+    "ForgeBuild": true,
+    "NeoForgeBuild": true,
+    "ApiV3AndReleaseIsolation": true,
+    "DefinitionChecksPerLoader": 23252,
+    "NodeGroups": 27,
+    "MixinChecks": 276,
+    "UnchangedSdkBundleChecks": 287,
+    "ChangedRuntimeClasses": [
+      "cn/laowu/mod/CommonEvents.class"
+    ],
+    "LongOriginalModpackPlaytest": false
+  },
+  "SDK": {
+    "Version": "1.0.0",
+    "Unchanged": true,
+    "Sha256": "3FCBBDD7CF998703B27A67469CB6E017BA3601DC2BAD1E46C07F413B614E9F26"
+  }
+}

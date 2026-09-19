@@ -12,6 +12,12 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = LaoWuMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class ClientInputEvents {
+    @SubscribeEvent
+    public static void resetAccessories(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+        cn.laowu.mod.accessory.CatAccessoryRegistry.resetClient();
+        cn.laowu.mod.genetics.CatTraitRegistry.resetClient();
+        CatAccessoryPreview.reset();
+    }
     private static net.minecraft.client.player.LocalPlayer preferencePlayer;
     private static boolean lastSpawnPreference;
 
@@ -40,6 +46,7 @@ public final class ClientInputEvents {
         Minecraft minecraft = Minecraft.getInstance();
         syncSpawnPreference(minecraft);
         CatLaserWheelScreen.inputTick();
+        CatPilotFlightClient.tick(minecraft);
         while (ClientModEvents.OPEN_HELD_ITEM_TRANSFORM.consumeClick()) {
             if (minecraft.player != null && minecraft.screen == null) {
                 ItemStack held = minecraft.player.getMainHandItem();

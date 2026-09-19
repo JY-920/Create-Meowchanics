@@ -8,6 +8,8 @@ import cn.laowu.mod.GlobalConfig;
 import cn.laowu.mod.ServerConfig;
 import cn.laowu.mod.genetics.CatStat;
 import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitType;
+import cn.laowu.mod.genetics.CatTraitRegistry;
 import cn.laowu.mod.genetics.CatTraitConfig;
 import cn.laowu.mod.network.ModNetwork;
 import net.minecraft.client.gui.GuiGraphics;
@@ -37,9 +39,12 @@ public final class WorldSettingsScreen extends Screen {
     private CatOutfitType selectedCareer = CatOutfitType.TERMINATOR;
     private boolean careerPage;
     private boolean traitPage;
+    private boolean deathPage;
+    private Button deathTab, deathPenaltyToggle, deathOutcome;
+    private EditBox deathLoss;
     private static final int TRAIT_ROWS = 6;
     private final List<Button> traitButtons = new ArrayList<>();
-    private List<CatTrait> filteredTraits = List.of();
+    private List<CatTraitType> filteredTraits = List.of();
     private EditBox traitSearch;
     private String traitQuery = "";
     private int traitOffset;
@@ -52,7 +57,8 @@ public final class WorldSettingsScreen extends Screen {
         super(Component.translatable("screen.laowu.world.title"));
         this.parent = parent;
         draft = ClientWorldSettings.values();
-        ModNetwork.requestWorldSettings(false, new CompoundTag());
+        if (net.minecraft.client.Minecraft.getInstance().getConnection() != null)
+            ModNetwork.requestWorldSettings(false, new CompoundTag());
     }
 
     @Override protected void init() {
@@ -65,14 +71,17 @@ public final class WorldSettingsScreen extends Screen {
         panelWidth = Math.min(460, width - 20);
         left = (width - panelWidth) / 2;
         top = Math.max(4, (height - 234) / 2);
-        int tabWidth = (panelWidth - 12) / 3;
+        int tabWidth = (panelWidth - 18) / 4;
         attributesTab = addRenderableWidget(Button.builder(Component.translatable("screen.laowu.world.tab_attributes"),
                 b -> changePage(0)).bounds(left, top + 30, tabWidth, 18).build());
         careersTab = addRenderableWidget(Button.builder(Component.translatable("screen.laowu.world.tab_careers"),
                 b -> changePage(1)).bounds(left + tabWidth + 6, top + 30, tabWidth, 18).build());
         traitsTab = addRenderableWidget(Button.builder(Component.translatable("screen.laowu.world.tab_traits"),
                 b -> changePage(2)).bounds(left + 2 * (tabWidth + 6), top + 30,
-                        panelWidth - 2 * (tabWidth + 6), 18).build());
+                        tabWidth, 18).build());
+        deathTab = addRenderableWidget(Button.builder(Component.translatable("screen.laowu.world.tab_death"),
+                b -> changePage(3)).bounds(left + 3 * (tabWidth + 6), top + 30,
+                        panelWidth - 3 * (tabWidth + 6), 18).build());
         for (CatStat stat : CatStat.values()) {
             EditBox box = input(stat.ordinal(), stat.serializedName(), draft.getDouble(stat.serializedName()),
                     Component.translatable("stat.laowu.cat." + stat.serializedName()),
@@ -121,6 +130,21 @@ public final class WorldSettingsScreen extends Screen {
         switches.add(addRenderableWidget(toggle("show_hell_recipes", top + 120)));
         switches.add(addRenderableWidget(toggle("wild_cats_flee", top + 120)));
         switches.add(addRenderableWidget(toggle("cats_hiss", top + 142)));
+        deathOutcome = addRenderableWidget(Button.builder(deathOutcomeLabel(), button -> {
+            if (!editable || isLocked(ServerConfig.DEATH_OUTCOME_KEY)) return;
+            draft.putInt(ServerConfig.DEATH_OUTCOME_KEY, (draft.getInt(ServerConfig.DEATH_OUTCOME_KEY) + 1) % 3);
+            deathLoss.setFocused(false); setFocused(null);
+            updatePageVisibility(); updateSave();
+        }).bounds(left, top + 54, panelWidth, 20).tooltip(settingTooltip(ServerConfig.DEATH_OUTCOME_KEY,
+                Component.translatable("screen.laowu.world.death_outcome.help"))).build());
+        deathOutcome.active = editable && !isLocked(ServerConfig.DEATH_OUTCOME_KEY);
+        deathPenaltyToggle = addRenderableWidget(toggle(ServerConfig.DEATH_PENALTY_ENABLED_KEY, top + 80));
+        deathLoss = input(1, ServerConfig.DEATH_ATTRIBUTE_LOSS_KEY, draft.getInt(ServerConfig.DEATH_ATTRIBUTE_LOSS_KEY),
+                Component.translatable("screen.laowu.world.death_loss"),
+                Component.translatable("screen.laowu.world.death_loss.help"));
+        deathLoss.setY(top + 106);
+        deathLoss.setResponder(value -> updateSave());
+        addRenderableWidget(deathLoss);
         initTraits();
         save = addRenderableWidget(Button.builder(Component.translatable("screen.laowu.world.save"), b -> {
             for (CatStat stat : CatStat.values())
@@ -128,6 +152,11 @@ public final class WorldSettingsScreen extends Screen {
             for (CatOutfitType outfit : ServerConfig.CAREERS)
                 for (CatSuitSetting setting : CatSuitSetting.values())
                     setting.write(draft, outfit, Double.parseDouble(careerFields.get(outfit).get(setting).getValue()));
+            // Hidden invalid input must not block None mode or overwrite the last valid stored amount.
+            try {
+                int loss = Integer.parseInt(deathLoss.getValue());
+                if (ServerConfig.validDeathAttributeLoss(loss)) draft.putInt(ServerConfig.DEATH_ATTRIBUTE_LOSS_KEY, loss);
+            } catch (NumberFormatException ignored) {}
             save.active = false;
             ModNetwork.requestWorldSettings(true, draft.copy());
         }).bounds(left, top + 212, (panelWidth - 6) / 2, 20).build());
@@ -153,6 +182,8 @@ public final class WorldSettingsScreen extends Screen {
     private void changePage(int page) {
         careerPage = page == 1;
         traitPage = page == 2;
+        deathPage = page == 3;
+        deathLoss.setFocused(false);
         setFocused(null);
         fields.values().forEach(box -> box.setFocused(false));
         clearCareerFocus();
@@ -179,7 +210,10 @@ public final class WorldSettingsScreen extends Screen {
         updateSave();
     }
     private void updatePageVisibility() {
-        fields.values().forEach(box -> box.visible = !careerPage && !traitPage);
+        fields.values().forEach(box -> box.visible = !careerPage && !traitPage && !deathPage);
+        deathOutcome.visible = deathPage;
+        deathOutcome.setMessage(deathOutcomeLabel());
+        deathPenaltyToggle.visible = deathLoss.visible = deathPage && deathHasPancake();
         careerFields.forEach((outfit, inputs) -> inputs.forEach((setting, box) ->
                 box.visible = careerPage && outfit == selectedCareer && (setting.stat() != null) == suitBonusesPage));
         previousCareer.visible = nextCareer.visible = careerSelector.visible = suitSection.visible = careerPage;
@@ -188,8 +222,9 @@ public final class WorldSettingsScreen extends Screen {
                 ? "screen.laowu.world.suit_bonuses" : "screen.laowu.world.suit_combat"));
         resetCareers.visible = careerPage;
         resetCareers.active = !ClientWorldSettings.editableSuitDefaults(draft, selectedCareer).isEmpty();
-        switches.forEach(button -> button.visible = !careerPage && !traitPage);
-        attributesTab.active = careerPage || traitPage;
+        switches.forEach(button -> button.visible = !careerPage && !traitPage && !deathPage);
+        attributesTab.active = careerPage || traitPage || deathPage;
+        deathTab.active = !deathPage;
         careersTab.active = !careerPage;
         traitsTab.active = !traitPage;
         traitSearch.visible = traitPage;
@@ -217,7 +252,7 @@ public final class WorldSettingsScreen extends Screen {
             final int index = row;
             traitButtons.add(addRenderableWidget(Button.builder(Component.empty(), b -> {
                 if (!editable || isLocked(CatTraitConfig.KEY)) return;
-                CatTrait trait = filteredTraits.get(traitOffset + index);
+                CatTraitType trait = filteredTraits.get(traitOffset + index);
                 var disabled = new java.util.TreeSet<>(CatTraitConfig.read(draft));
                 String id = trait.id().toString();
                 if (!disabled.remove(id)) disabled.add(id);
@@ -238,7 +273,7 @@ public final class WorldSettingsScreen extends Screen {
     }
     private void filterTraits() {
         String query = traitQuery.strip().toLowerCase(Locale.ROOT);
-        filteredTraits = java.util.Arrays.stream(CatTrait.values()).filter(trait -> query.isEmpty()
+        filteredTraits = CatTraitRegistry.values(true).stream().filter(trait -> query.isEmpty()
                 || (trait.title().getString() + " " + trait.id() + " "
                 + trait.description(1).getString()).toLowerCase(Locale.ROOT).contains(query)).toList();
         refreshTraits();
@@ -253,7 +288,7 @@ public final class WorldSettingsScreen extends Screen {
             b.visible = traitPage && index < filteredTraits.size();
             b.active = b.visible && editable && !isLocked(CatTraitConfig.KEY);
             if (index >= filteredTraits.size()) continue;
-            CatTrait trait = filteredTraits.get(index);
+            CatTraitType trait = filteredTraits.get(index);
             boolean banned = disabled.contains(trait.id().toString());
             b.active &= banned || disabled.size() < CatTraitConfig.MAX_IDS;
             Component label = Component.translatable(banned ? "screen.laowu.world.trait_banned"
@@ -270,7 +305,8 @@ public final class WorldSettingsScreen extends Screen {
             draft.putBoolean(key, !draft.getBoolean(key));
             button.setMessage(toggleLabel(key));
         }).bounds(left + (key.equals("wild_cats_flee") ? (panelWidth + 6) / 2 : 0),
-                y, key.equals("cats_hiss") ? panelWidth : (panelWidth - 6) / 2, 20)
+                y, key.equals("cats_hiss") || key.equals(ServerConfig.DEATH_PENALTY_ENABLED_KEY)
+                        ? panelWidth : (panelWidth - 6) / 2, 20)
                 .tooltip(settingTooltip(key, Component.translatable("screen.laowu.world." + key + ".help"))).build();
         b.active = editable && !isLocked(key);
         return b;
@@ -283,12 +319,13 @@ public final class WorldSettingsScreen extends Screen {
         return draft != null && draft.getCompound(ServerConfig.LOCKS_TAG).getBoolean(key);
     }
     private boolean hasEditableSetting() {
+        if (!isLocked(ServerConfig.DEATH_OUTCOME_KEY)) return true;
         for (CatStat stat : CatStat.values()) if (!isLocked(stat.serializedName())) return true;
         for (CatOutfitType outfit : ServerConfig.CAREERS)
             for (CatSuitSetting setting : CatSuitSetting.values())
                 if (setting.appliesTo(outfit) && !isLocked(setting.lockKey(outfit))) return true;
         for (String key : GlobalConfig.SWITCHES) if (!isLocked(key)) return true;
-        return !isLocked(CatTraitConfig.KEY);
+        return !isLocked(CatTraitConfig.KEY) || !isLocked(ServerConfig.DEATH_ATTRIBUTE_LOSS_KEY);
     }
     private boolean hasGlobalLocks() {
         if (draft == null) return false;
@@ -312,6 +349,19 @@ public final class WorldSettingsScreen extends Screen {
         try { return setting.valid(Double.parseDouble(box.getValue())); }
         catch (NumberFormatException ex) { return false; }
     }
+    private boolean validDeathInput() {
+        if (!deathHasPancake()) return true;
+        if (deathLoss == null) return false;
+        try { return ServerConfig.validDeathAttributeLoss(Integer.parseInt(deathLoss.getValue())); }
+        catch (NumberFormatException ex) { return false; }
+    }
+    private boolean deathHasPancake() {
+        return draft.getInt(ServerConfig.DEATH_OUTCOME_KEY) != ServerConfig.DEATH_NONE;
+    }
+    private Component deathOutcomeLabel() {
+        return settingLabel(ServerConfig.DEATH_OUTCOME_KEY, Component.translatable("screen.laowu.world.death_outcome",
+                Component.translatable("screen.laowu.world.death_outcome." + draft.getInt(ServerConfig.DEATH_OUTCOME_KEY))));
+    }
     private CatSuitSettings previewSuit() {
         var inputs = careerFields.get(selectedCareer);
         if (!inputs.entrySet().stream().allMatch(entry -> validSuitInput(entry.getKey(), entry.getValue()))) return null;
@@ -320,7 +370,7 @@ public final class WorldSettingsScreen extends Screen {
     private void updateSave() {
         if (save == null) return;
         save.active = editable && hasEditableSetting() && fields.size() == CatStat.values().length
-                && careerFields.size() == ServerConfig.CAREERS.size()
+                && careerFields.size() == ServerConfig.CAREERS.size() && validDeathInput()
                 && fields.values().stream().allMatch(WorldSettingsScreen::validInput)
                 && careerFields.values().stream().allMatch(inputs -> inputs.size() == CatSuitSetting.values().length
                     && inputs.entrySet().stream().allMatch(entry -> validSuitInput(entry.getKey(), entry.getValue())));
@@ -350,6 +400,15 @@ public final class WorldSettingsScreen extends Screen {
                 if (filteredTraits.isEmpty())
                     g.drawCenteredString(font, Component.translatable("screen.laowu.world.trait_empty"),
                             width / 2, top + 116, 0xFFAAAAAA);
+            } else if (deathPage) {
+                if (deathHasPancake()) {
+                Component label = settingLabel(ServerConfig.DEATH_ATTRIBUTE_LOSS_KEY,
+                        Component.translatable("screen.laowu.world.death_loss"));
+                g.drawString(font, font.plainSubstrByWidth(label.getString(), Math.max(12, panelWidth - 96)),
+                        left, top + 111, 0xFFFFFFFF);
+                }
+                g.drawWordWrap(font, Component.translatable("screen.laowu.world.death_help"),
+                        left, top + (deathHasPancake() ? 138 : 84), panelWidth, 0xFFAAAAAA);
             } else if (careerPage) {
                 List<CatSuitSetting> section = suitBonusesPage ? CatSuitSetting.BONUSES : CatSuitSetting.COMBAT;
                 for (int index = 0; index < section.size(); index++) {
@@ -369,7 +428,7 @@ public final class WorldSettingsScreen extends Screen {
                             Component.translatable("stat.laowu.cat." + stat.serializedName())));
                 }
             }
-            if (!traitPage) {
+            if (!traitPage && !deathPage) {
             EditBox selectedBox = fields.get(selected);
             double multiplier = validInput(selectedBox) ? Double.parseDouble(selectedBox.getValue()) : 1;
             CatSuitSettings preview = careerPage ? previewSuit() : null;

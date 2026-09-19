@@ -18,7 +18,53 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String VERSION = "21";
+    private static final String VERSION = "43";
+
+    public static void sendCatEditorAction(int containerId, int actionId) {
+        CHANNEL.sendToServer(new CatEditorActionPacket(containerId, actionId));
+    }
+
+    public static void musicSupport(Cat cat, net.minecraft.server.level.ServerPlayer player, MusicSupportPacket packet) {
+        if (player != null) CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        else CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat), packet);
+    }
+    public static void cockroachState(Cat cat, net.minecraft.server.level.ServerPlayer player, CockroachStatePacket packet) {
+        if (player != null) CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        else CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat), packet);
+    }
+    public static void agentMelee(Cat cat, net.minecraft.server.level.ServerPlayer player, AgentMeleePacket packet) {
+        if (player != null) CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        else CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat), packet);
+    }
+    public static void agentWatch(net.minecraft.world.entity.LivingEntity cat, net.minecraft.server.level.ServerPlayer player, AgentWatchPacket packet) {
+        if (player != null) CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        else CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat), packet);
+    }
+    public static void musicRecord(Cat cat, net.minecraft.server.level.ServerPlayer player, MusicRecordPacket packet) {
+        if (player != null) CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        else CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat), packet);
+    }
+
+    public static void syncMedical(net.minecraft.world.entity.LivingEntity cat, boolean casting, boolean aura, int age,
+                                   float radius, boolean stationed) {
+        var packet = new MedicalHealingPacket(cat.getId(), cat.getUUID(), casting, aura, age, radius, stationed);
+        CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> cat), packet);
+    }
+
+    public static void pilotFlightInput(float forward, float side, float yaw, float pitch, boolean up, boolean down) {
+        CHANNEL.sendToServer(new PilotFlightInputPacket(forward, side, yaw, pitch, up, down));
+    }
+
+    public static void sendAccessoryDefinitions(net.minecraft.server.level.ServerPlayer player) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new CatAccessoriesSyncPacket(-1,
+                cn.laowu.mod.accessory.CatAccessoryRegistry.networkData()));
+    }
+    public static void syncCatAccessories(Cat cat, net.minecraft.server.level.ServerPlayer player,
+                                         net.minecraft.nbt.CompoundTag data) {
+        var packet = new CatAccessoriesSyncPacket(cat.getId(), data);
+        if (player != null) CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        else CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> cat), packet);
+    }
 
     public static void requestLaserSettings(int action) {
         CHANNEL.sendToServer(new LaserSettingsRequestPacket(action));
@@ -51,6 +97,28 @@ public final class ModNetwork {
             () -> VERSION, VERSION::equals, VERSION::equals);
 
     public static void register() {
+        CHANNEL.registerMessage(31, AgentWatchPacket.class, AgentWatchPacket::encode, AgentWatchPacket::decode, AgentWatchPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(30, AgentMeleePacket.class, AgentMeleePacket::encode, AgentMeleePacket::decode, AgentMeleePacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(27, MusicSupportPacket.class, MusicSupportPacket::encode, MusicSupportPacket::decode, MusicSupportPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(29, CockroachStatePacket.class, CockroachStatePacket::encode, CockroachStatePacket::decode, CockroachStatePacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(28, MusicRecordPacket.class, MusicRecordPacket::encode, MusicRecordPacket::decode, MusicRecordPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(26, CatEditorActionPacket.class, CatEditorActionPacket::encode,
+                CatEditorActionPacket::decode, CatEditorActionPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(25, MedicalHealingPacket.class, MedicalHealingPacket::encode,
+                MedicalHealingPacket::decode, MedicalHealingPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(24, PilotFlightInputPacket.class, PilotFlightInputPacket::encode,
+                PilotFlightInputPacket::decode, PilotFlightInputPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(23, CatAccessoriesSyncPacket.class, CatAccessoriesSyncPacket::encode,
+                CatAccessoriesSyncPacket::decode, CatAccessoriesSyncPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(21, LaserSettingsRequestPacket.class, LaserSettingsRequestPacket::encode,
                 LaserSettingsRequestPacket::decode, LaserSettingsRequestPacket::handle,
                 java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
@@ -170,6 +238,11 @@ public final class ModNetwork {
     public static void syncCatAttributesToPlayer(net.minecraft.server.level.ServerPlayer player, Cat cat) {
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
                 new SyncCatAttributesPacket(cat.getId(), CatAttributeData.serialized(cat)));
+    }
+
+    public static void sendTraitDefinitions(net.minecraft.server.level.ServerPlayer player) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
+                new SyncCatTraitsPacket(-1, cn.laowu.mod.genetics.CatTraitRegistry.networkData()));
     }
 
     public static void syncCatTraitsToTracking(Cat cat) {

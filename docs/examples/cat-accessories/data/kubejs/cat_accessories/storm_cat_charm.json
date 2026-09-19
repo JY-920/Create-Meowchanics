@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "item": "kubejs:storm_cat_charm",
+  "charge": { "capacity": 100, "initial": 20 },
+  "effects": {
+    "speed": 12,
+    "projectile_knockback": 1,
+    "extra_strike_chance": 20
+  }
+}

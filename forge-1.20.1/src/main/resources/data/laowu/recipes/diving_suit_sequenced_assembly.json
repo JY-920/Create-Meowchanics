@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "item": "laowu:diving_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_diving_suit"
+        },
+        {
+          "item": "create:copper_diving_helmet"
+        }
+      ],
+      "results": [
+        {
+          "item": "laowu:incomplete_diving_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_diving_suit"
+        },
+        {
+          "item": "create:mechanical_pump"
+        }
+      ],
+      "results": [
+        {
+          "item": "laowu:incomplete_diving_suit"
+        }
+      ]
+    }
+  ],
+  "transitionalItem": {
+    "item": "laowu:incomplete_diving_suit"
+  }
+}

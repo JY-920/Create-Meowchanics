@@ -40,7 +40,9 @@ void main() {
     }
     if (payload.g < 0.01) discard;
     float width = clamp(payload.b * 2.0, 0.5, 1.5);
-    float seed = payload.a;
+    bool healing = payload.a > 0.5;
+    bool dual = payload.a > 0.975;
+    float seed = (payload.a - (healing ? 0.55 : 0.0)) / 0.4;
     // Low-frequency breathing in the outer glow, with a steady lavender rim.
     float breath = 0.88 + 0.12 * sin(Time * 3.2 + seed * 6.283185);
     float core = closeEdge * 0.80;
@@ -49,5 +51,7 @@ void main() {
     float alpha = (core + glow) * (1.0 - inside.r) * falloff * payload.g * vertexAlpha;
     if (alpha < 0.008) discard;
     vec3 purple = mix(vec3(0.42, 0.10, 0.88), vec3(0.82, 0.52, 1.0), closeEdge);
-    fragColor = vec4(purple, clamp(alpha, 0.0, 0.94));
+    vec3 green = mix(vec3(0.015, 0.72, 0.12), vec3(0.65, 1.0, 0.77), closeEdge);
+    vec3 color = dual ? (closeEdge > 0.5 ? green : purple) : (healing ? green : purple);
+    fragColor = vec4(color, clamp(alpha, 0.0, 0.94));
 }

@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cat accessory definition schema v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "item",
+    "effects"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "item": {
+      "type": "string",
+      "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$",
+      "maxLength": 256
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "required_outfit": {
+      "enum": [
+        "any",
+        "none",
+        "terminator",
+        "fishing",
+        "flight",
+        "fire",
+        "honey",
+        "transport",
+        "dynamite",
+        "engineering",
+        "medical",
+        "music",
+        "agent",
+        "diving",
+        "cockroach"
+      ],
+      "default": "any"
+    },
+    "exclusive_group": {
+      "type": "string",
+      "pattern": "^$|^[a-z0-9_.-]+:[a-z0-9_./-]+$",
+      "maxLength": 256
+    },
+    "script": {
+      "type": "string",
+      "pattern": "^$|^[a-z0-9_.-]+:[a-z0-9_./-]+$",
+      "maxLength": 256
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "health": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300
+        },
+        "attack": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300
+        },
+        "speed": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300
+        },
+        "stamina": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300
+        },
+        "intelligence": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300
+        },
+        "luck": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300
+        },
+        "aggro_bias": {
+          "type": "number",
+          "minimum": -16,
+          "maximum": 16
+        },
+        "knockback_resistance": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "fire_immune": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "projectile_knockback": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "extra_strike_chance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "loot_magnet_radius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 16
+        },
+        "pilot_dodge_per_speed": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "self_destruct_multiplier": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "moving_damage_reduction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 80
+        },
+        "fishing_pull": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "super_flame_multiplier": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "honey_patch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "enhanced_potions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "engineering_special_ammo": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "medical_guard": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 80
+        },
+        "music_movement_bonus": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "music_speed_bonus": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 300
+        },
+        "healing_smoke": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "diving_cleanse": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cockroach_split": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "damage_combo": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "opening_damage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "critical_haste": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "melee_reflect": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "emergency_shield": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "heavy_hit_cap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "rest_heal": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "healing_received": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "owner_attack_bonus": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "sample_pickup": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "charge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "capacity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "default": 0
+        },
+        "initial": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "default": 0
+        }
+      },
+      "description": "Runtime additionally requires initial <= capacity. Standard JSON Schema cannot compare these sibling values."
+    }
+  }
+}

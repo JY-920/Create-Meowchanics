@@ -1,0 +1,47 @@
+{
+  "Time": "2026-09-18 13:14:55",
+  "Version": "2.2.0",
+  "Stamp": "20260918-131454-2.2.0-smoke",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "1C362E2A148A9946102AFB9AACF867C00C669C5C8812A0DFD45B45C7AA693CD3"
+      },
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-dev.agentsmoke.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0-dev.agentsmoke.2",
+        "Sha256": "67228DA00E6AC5E761F61FB786C53C1C22555AA6A9CC5E3C261C8D7F17A99764"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260918-131454-2.2.0-smoke\\create-meowchanics-2.2.0-dev.agentsmoke.2-forge-1.20.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "37227D45320C699C32E7E2688436D6300DFC1DA6F01EBD75854DFEB944242216"
+      },
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-dev.agentsmoke.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0-dev.agentsmoke.2",
+        "Sha256": "8BDF80E6AA2497895DEE48123D84E9CC926B132AD6308F40E6E0ACF77A54E470"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260918-131454-2.2.0-smoke\\create-meowchanics-2.2.0-dev.agentsmoke.2-neoforge-1.21.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "UserWorldsConfigsScriptsChanged": false,
+  "ServersUpdated": false
+}

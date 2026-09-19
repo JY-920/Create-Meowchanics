@@ -1,8 +1,9 @@
 package cn.laowu.mod.client;
 
 import cn.laowu.mod.CatTraitEditorMenu;
-import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitType;
 import cn.laowu.mod.genetics.CatTraitSlot;
+import cn.laowu.mod.network.ModNetwork;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -32,10 +33,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
     private static final int CATALOG_ROWS = 6;
     private static final int SCROLLBAR_WIDTH = 5;
 
-    private static final List<CatTrait> CATALOG = Arrays.stream(CatTrait.values())
-            .sorted(Comparator.comparingInt(CatTraitEditorScreen::rarityOrder)
-                    .thenComparingInt(Enum::ordinal))
-            .toList();
+    private List<CatTraitType> CATALOG = List.of();
 
     private final List<Button> installedMinus = new ArrayList<>();
     private final List<Button> installedPlus = new ArrayList<>();
@@ -43,7 +41,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
     private Button scrollUp;
     private Button scrollDown;
     private EditBox searchBox;
-    private List<CatTrait> filteredCatalog = CATALOG;
+    private List<CatTraitType> filteredCatalog = CATALOG;
     private int catalogOffset;
     private boolean draggingScrollbar;
     private double scrollbarGrabOffset;
@@ -61,6 +59,8 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         installedMinus.clear();
         installedPlus.clear();
         catalogAdd.clear();
+        CATALOG = menu.catalog().stream().sorted(Comparator.comparingInt(CatTraitEditorScreen::rarityOrder)
+                .thenComparing(trait -> trait.id().toString())).toList();
         filteredCatalog = CATALOG;
         catalogOffset = 0;
         draggingScrollbar = false;
@@ -78,11 +78,11 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
             int row = slot;
             int y = topPos + FIRST_ROW_Y + slot * ROW_HEIGHT + 4;
             installedMinus.add(addRenderableWidget(Button.builder(Component.literal("−"), button -> {
-                        CatTrait trait = installedTrait(row);
+                        CatTraitType trait = installedTrait(row);
                         if (trait != null) sendButton(trait, false);
                     }).bounds(leftPos + INSTALLED_X + 151, y, 17, 18).build()));
             installedPlus.add(addRenderableWidget(Button.builder(Component.literal("+"), button -> {
-                        CatTrait trait = installedTrait(row);
+                        CatTraitType trait = installedTrait(row);
                         if (trait != null) sendButton(trait, true);
                     }).bounds(leftPos + INSTALLED_X + 171, y, 17, 18).build()));
         }
@@ -91,7 +91,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
             int row = slot;
             int y = topPos + FIRST_ROW_Y + slot * ROW_HEIGHT + 4;
             catalogAdd.add(addRenderableWidget(Button.builder(Component.literal("+"), button -> {
-                        CatTrait trait = catalogTrait(row);
+                        CatTraitType trait = catalogTrait(row);
                         if (trait != null) sendButton(trait, true);
                     }).bounds(leftPos + CATALOG_X + 174, y, 17, 18).build()));
         }
@@ -113,7 +113,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         refreshButtons();
     }
 
-    private static boolean matchesSearch(CatTrait trait, String needle) {
+    private static boolean matchesSearch(CatTraitType trait, String needle) {
         StringBuilder searchable = new StringBuilder(trait.title().getString());
         for (int level = 1; level <= trait.maxLevel(); level++) {
             searchable.append('\n').append(trait.description(level).getString());
@@ -127,11 +127,10 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         refreshButtons();
     }
 
-    private void sendButton(CatTrait trait, boolean increase) {
+    private void sendButton(CatTraitType trait, boolean increase) {
         if (minecraft == null || minecraft.gameMode == null || trait == null) return;
-        int id = (increase ? CatTrait.values().length : 0) + trait.ordinal();
-        minecraft.gameMode.handleInventoryButtonClick(menu.containerId,
-                hasShiftDown() ? id + 1_000 : id);
+        int id = menu.action(trait, increase, hasShiftDown());
+        if (id >= 0) ModNetwork.sendCatEditorAction(menu.containerId, id);
     }
 
     private void scroll(int amount) {
@@ -217,7 +216,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
                 || catalogAdd.size() != CATALOG_ROWS) return;
 
         for (int slot = 0; slot < INSTALLED_ROWS; slot++) {
-            CatTrait trait = installedTrait(slot);
+            CatTraitType trait = installedTrait(slot);
             boolean present = trait != null;
             Button minus = installedMinus.get(slot);
             Button plus = installedPlus.get(slot);
@@ -229,7 +228,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         }
 
         for (int slot = 0; slot < CATALOG_ROWS; slot++) {
-            CatTrait trait = catalogTrait(slot);
+            CatTraitType trait = catalogTrait(slot);
             Button add = catalogAdd.get(slot);
             add.visible = trait != null;
             add.setTooltip(trait != null && cn.laowu.mod.ServerConfig.isTraitDisabled(trait)
@@ -242,28 +241,31 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         scrollDown.active = catalogOffset < maximum;
     }
 
-    private boolean canAdd(CatTrait candidate) {
-        if (cn.laowu.mod.ServerConfig.isTraitDisabled(candidate)) return false;
-        List<CatTrait> installed = installedTraits();
+    private boolean canAdd(CatTraitType candidate) {
+        if (!candidate.enabled() || cn.laowu.mod.ServerConfig.isTraitDisabled(candidate)) return false;
+        List<CatTraitType> installed = installedTraits();
         if (installed.size() >= 4) return false;
         EnumSet<CatTraitSlot> occupied = EnumSet.noneOf(CatTraitSlot.class);
-        for (CatTrait trait : installed) occupied.addAll(trait.occupiedSlots());
+        for (CatTraitType trait : installed) {
+            if (trait.conflicts().contains(candidate.id()) || candidate.conflicts().contains(trait.id())) return false;
+            occupied.addAll(trait.occupiedSlots());
+        }
         for (CatTraitSlot slot : candidate.occupiedSlots()) {
             if (occupied.contains(slot)) return false;
         }
         return true;
     }
 
-    private List<CatTrait> installedTraits() {
+    private List<CatTraitType> installedTraits() {
         return CATALOG.stream().filter(trait -> menu.level(trait) > 0).toList();
     }
 
-    private CatTrait installedTrait(int slot) {
-        List<CatTrait> installed = installedTraits();
+    private CatTraitType installedTrait(int slot) {
+        List<CatTraitType> installed = installedTraits();
         return slot >= 0 && slot < installed.size() ? installed.get(slot) : null;
     }
 
-    private CatTrait catalogTrait(int visibleSlot) {
+    private CatTraitType catalogTrait(int visibleSlot) {
         int index = catalogOffset + visibleSlot;
         return index >= 0 && index < filteredCatalog.size()
                 ? filteredCatalog.get(index) : null;
@@ -359,13 +361,13 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
                 INSTALLED_X + 4, 31, 0x404040, false);
 
         for (int slot = 0; slot < INSTALLED_ROWS; slot++) {
-            CatTrait trait = installedTrait(slot);
+            CatTraitType trait = installedTrait(slot);
             if (trait == null) continue;
             int y = FIRST_ROW_Y + slot * ROW_HEIGHT;
             drawTraitRow(graphics, trait, y, INSTALLED_X + 5, true);
         }
         for (int slot = 0; slot < CATALOG_ROWS; slot++) {
-            CatTrait trait = catalogTrait(slot);
+            CatTraitType trait = catalogTrait(slot);
             if (trait == null) continue;
             int y = FIRST_ROW_Y + slot * ROW_HEIGHT;
             drawTraitRow(graphics, trait, y, CATALOG_X + 5, false);
@@ -376,7 +378,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
                 imageWidth / 2, imageHeight - 14, 0x404040);
     }
 
-    private void drawTraitRow(GuiGraphics graphics, CatTrait trait, int y,
+    private void drawTraitRow(GuiGraphics graphics, CatTraitType trait, int y,
                               int x, boolean installedPanel) {
         Integer colour = trait.rarity().textFormatting().getColor();
         graphics.drawString(font, trait.title(), x, y + 4,
@@ -389,7 +391,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         graphics.drawString(font, secondary, x, y + 15, 0xFFF1F1F1, false);
     }
 
-    private Component stateText(CatTrait trait) {
+    private Component stateText(CatTraitType trait) {
         int level = menu.level(trait);
         if (level <= 0) {
             return Component.translatable("gui.laowu.cat_trait_editor.absent");
@@ -402,7 +404,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
     }
 
     private void renderTraitDescription(GuiGraphics graphics, int mouseX, int mouseY) {
-        CatTrait trait = hoveredTrait(mouseX - leftPos, mouseY - topPos);
+        CatTraitType trait = hoveredTrait(mouseX - leftPos, mouseY - topPos);
         if (trait == null) return;
         int level = Math.max(1, menu.level(trait));
         List<FormattedCharSequence> lines = new ArrayList<>();
@@ -423,7 +425,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         graphics.renderTooltip(font, lines, mouseX, mouseY);
     }
 
-    private CatTrait hoveredTrait(int localX, int localY) {
+    private CatTraitType hoveredTrait(int localX, int localY) {
         if (localY < FIRST_ROW_Y) return null;
         if (localX >= INSTALLED_X && localX < INSTALLED_X + INSTALLED_WIDTH) {
             int row = (localY - FIRST_ROW_Y) / ROW_HEIGHT;
@@ -436,7 +438,7 @@ public final class CatTraitEditorScreen extends AbstractContainerScreen<CatTrait
         return null;
     }
 
-    private static int rarityOrder(CatTrait trait) {
+    private static int rarityOrder(CatTraitType trait) {
         return switch (trait.rarity()) {
             case COMMON -> 0;
             case GOOD -> 1;

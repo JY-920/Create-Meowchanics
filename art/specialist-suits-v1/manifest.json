@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "date": "2026-09-15",
+  "source_directory": "C:/Users/16611/Downloads",
+  "notes": "User-supplied PNGs copied byte-for-byte; BBModels preserve source JSON (line ending/trailing newline normalization only). Original cat texture index 0 is rendered by the native cat; suit faces use texture index 1. No gameplay abilities or crafting costs assigned.",
+  "careers": [
+    {
+      "source_archive_sha256": "6eab8ae42e1238817ea13863b88dde549ef5506cfb32b0686815eec32a7e7db1",
+      "source_complete_icon": "特工猫.png",
+      "name": "特工",
+      "source_incomplete_icon": "特工.png",
+      "id": "agent",
+      "assets": [
+        {
+          "sha256": "5cf877822fc4c7df1077f5b2d684fba0b769e8b1d2988267e4b2f006c9defc1d",
+          "path": "models/entity/agent_suit.bbmodel"
+        },
+        {
+          "sha256": "3a4e971f065be219eac1a4b065552d5887dc090f5caf75da346e350e25df954d",
+          "path": "textures/entity/agent_suit.png"
+        },
+        {
+          "sha256": "e925a2e6436940b69337d35ab9df027e3b3e7db1ec5be3d43500ec9d4b9fdca2",
+          "path": "textures/item/agent_suit.png"
+        },
+        {
+          "sha256": "7739ff2365846389fa15fdcb40bdf96aa9cf60501ae88268e219ca6e4fcecc33",
+          "path": "textures/item/incomplete_agent_suit.png"
+        }
+      ],
+      "source_archive": "特工猫.zip"
+    },
+    {
+      "source_archive_sha256": "c355c057f44c2301a8e5042e9888f11040078dfa30d15b1e51e607a988c08c9b",
+      "source_complete_icon": "潜水猫 (1).png",
+      "name": "潜水",
+      "source_incomplete_icon": "潜水.png",
+      "id": "diving",
+      "assets": [
+        {
+          "sha256": "3811baeca37d67012d20234c6ee01ba2130813b39dad525b6f0f4784137d4f57",
+          "path": "models/entity/diving_suit.bbmodel"
+        },
+        {
+          "sha256": "8a2812b4e974cf9b025fb3469313567367321cfac92495e1abf2ff6eeb9b670b",
+          "path": "textures/entity/diving_suit.png"
+        },
+        {
+          "sha256": "af31895d84c6d15a6065dfbac3cb58688eb7516135824baad45034890b477b45",
+          "path": "textures/item/diving_suit.png"
+        },
+        {
+          "sha256": "2b1a680ef7fc0f42a09ee31fb36dbf36cbb37694224783780b9fdb5fbe469c80",
+          "path": "textures/item/incomplete_diving_suit.png"
+        }
+      ],
+      "source_archive": "潜水猫.zip"
+    },
+    {
+      "source_archive_sha256": "92adcd601c42bcca63238b47751ab8745342b02b9fe640963ae29d5345d31614",
+      "source_complete_icon": "蟑螂猫.png",
+      "name": "蟑螂",
+      "source_incomplete_icon": "蟑螂.png",
+      "id": "cockroach",
+      "assets": [
+        {
+          "sha256": "2b527b58c258b5ca35904d054fbd45235052f9d817d7c3ee629d9b9bbf580deb",
+          "path": "models/entity/cockroach_suit.bbmodel"
+        },
+        {
+          "sha256": "3ebf067e5158be1224a1494d14d35baf4cecd7c4efd04c9b56dd3538d3a55fe2",
+          "path": "textures/entity/cockroach_suit.png"
+        },
+        {
+          "sha256": "6a5b83500dc48c0ede190a2f5946da26cc0ca73e70bd004c85709e4fd5134e19",
+          "path": "textures/item/cockroach_suit.png"
+        },
+        {
+          "sha256": "dc9b1ca9ae032d840aed1b5c3ecfea074fe497149e9f8f2da84efdd2aeceb71a",
+          "path": "textures/item/incomplete_cockroach_suit.png"
+        }
+      ],
+      "source_archive": "蟑螂猫.zip"
+    }
+  ]
+}

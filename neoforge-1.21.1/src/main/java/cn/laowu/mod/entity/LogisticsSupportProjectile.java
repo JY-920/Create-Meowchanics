@@ -39,6 +39,7 @@ public final class LogisticsSupportProjectile extends ThrowableItemProjectile {
     private UUID targetUuid;
     private ResourceLocation effectId;
     private int durationTicks;
+    private int amplifier;
 
     public LogisticsSupportProjectile(EntityType<? extends LogisticsSupportProjectile> type,
                                       Level level) {
@@ -51,6 +52,7 @@ public final class LogisticsSupportProjectile extends ThrowableItemProjectile {
         this.targetUuid = target.getUUID();
         this.effectId = effect.unwrapKey().map(key -> key.location()).orElse(null);
         this.durationTicks = Math.max(1, durationTicks);
+        this.amplifier = cn.laowu.mod.CareerCatBehavior.logisticsAmplifier(owner);
         setItem(new ItemStack(packageItem()));
     }
 
@@ -122,7 +124,7 @@ public final class LogisticsSupportProjectile extends ThrowableItemProjectile {
         Entity owner = getOwner();
         if (effect != null && owner instanceof Cat cat && cat.isAlive()
                 && target.isAlive() && cn.laowu.mod.CatTeamRules.friendly(cat, target)) {
-            target.addEffect(new MobEffectInstance(effect, durationTicks, 0,
+            target.addEffect(new MobEffectInstance(effect, durationTicks, amplifier,
                     false, true, true), cat);
             level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
                     target.getX(), target.getY(0.6D), target.getZ(),
@@ -151,6 +153,7 @@ public final class LogisticsSupportProjectile extends ThrowableItemProjectile {
         if (targetUuid != null) tag.putUUID(TARGET_TAG, targetUuid);
         if (effectId != null) tag.putString(EFFECT_TAG, effectId.toString());
         tag.putInt(DURATION_TAG, durationTicks);
+        tag.putInt("AccessoryAmplifier", amplifier);
     }
 
     @Override
@@ -160,6 +163,7 @@ public final class LogisticsSupportProjectile extends ThrowableItemProjectile {
         effectId = tag.contains(EFFECT_TAG) ? ResourceLocation.tryParse(
                 tag.getString(EFFECT_TAG)) : null;
         durationTicks = Math.max(1, tag.getInt(DURATION_TAG));
+        amplifier = Math.max(0,Math.min(1,tag.getInt("AccessoryAmplifier")));
         if (getItem().isEmpty()) setItem(new ItemStack(packageItem()));
     }
 

@@ -106,6 +106,8 @@ public final class CareerCatBehavior {
     private static final String NEXT_LOGISTICS_SUPPORT_TAG =
             "LaoWuCareerNextLogisticsSupport";
 
+    private static final String NEXT_LOGISTICS_RECEIVED_TAG = "LaoWuNextLogisticsReceived";
+
     private static final int WATER_SCAN_INTERVAL = 20 * 10;
     private static final int MAX_WATER_BLOCKS = 300;
     private static final int WATER_SEARCH_RANGE = 32;
@@ -144,10 +146,18 @@ public final class CareerCatBehavior {
         } else {
             applyAttackCoefficient(cat, outfit);
         }
+        CatEngineeringBehavior.tick(cat);
+        CatMedicalWork.tick(cat);
+        CatAgentWatch.tick(cat);
+        if (outfit.isPreviewOnly()) {
+            // Preview outfits must not inherit an old career target or install career AI.
+            if (cat.getTarget() != null) cat.setTarget(null);
+            return;
+        }
         if (outfit == CatOutfitType.NONE || CatPoseData.isPancake(cat)) return;
 
         ensureCareerCombat(cat);
-        if (outfit == CatOutfitType.TRANSPORT) {
+        if (outfit.isSupport()) {
             // Logistics cats are pure support. Clear any stale target retained
             // from another outfit or a vanilla reaction without interrupting
             // their ordinary idle/follow navigation when no target exists.
@@ -163,6 +173,7 @@ public final class CareerCatBehavior {
             case FISHING -> tickFishing(level, cat);
             case FIRE -> tickFire(cat);
             case HONEY -> tickHoney(level, cat);
+            case COCKROACH -> CatCockroachFarming.tick(cat);
             default -> {
                 // Flight combat and logistics support are goal-driven.
             }
@@ -171,6 +182,15 @@ public final class CareerCatBehavior {
 
     /** Called on equipment changes so health and armour update before the next entity tick. */
     public static void onOutfitChanged(Cat cat, boolean preserveMissingHealth) {
+        CatEngineeringCombat.release(cat);
+        CatPilotFlight.release(cat);
+        CatDivingMount.release(cat);
+        CatMedicalWork.stop(cat);
+        CatAgentWatch.stop(cat);
+        CatMedicalHealing.stop(cat);
+        CatMusicSupport.stop(cat);
+        CatMusicRecords.stop(cat);
+        CatCockroachSwarm.clear(cat);
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
         applyAttributes(cat, outfit, preserveMissingHealth);
         CatAttributeEffects.refresh(cat);
@@ -236,9 +256,9 @@ public final class CareerCatBehavior {
                 AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
 
-    private static int careerAttackIntervalTicks(Cat cat) {
-        return careerAttackIntervalTicks(CatClothesData.getOutfit(cat),
-                Math.max(0, CatAttributeEffects.effectiveValue(cat, CatStat.SPEED)));
+    public static int careerAttackIntervalTicks(Cat cat) {
+        return CatMusicSupport.attackInterval(cat, careerAttackIntervalTicks(CatClothesData.getOutfit(cat),
+                Math.max(0, CatAttributeEffects.effectiveValue(cat, CatStat.SPEED))));
     }
 
     private static int careerAttackIntervalTicks(CatOutfitType outfit, int speed) {
@@ -273,7 +293,7 @@ public final class CareerCatBehavior {
     private static CareerSnapshot snapshotEffective(CatOutfitType outfit,
                                                     int health, int attack, int speed, int stamina,
                                                     CatSuitSettings settings) {
-        boolean attacks = outfit != CatOutfitType.TRANSPORT && outfit != CatOutfitType.NONE;
+        boolean attacks = !outfit.isSupport() && !outfit.isPreviewOnly();
         return new CareerSnapshot(
                 Attributes.MAX_HEALTH.sanitizeValue(
                         CatAttributeEffects.maximumHealth(health) + settings.value(CatSuitSetting.HEALTH)),
@@ -283,7 +303,8 @@ public final class CareerCatBehavior {
                         CatAttributeEffects.armorToughness(stamina) + settings.value(CatSuitSetting.TOUGHNESS)),
                 attacks ? Attributes.ATTACK_DAMAGE.sanitizeValue(
                         CatAttributeEffects.attackDamage(attack) * settings.value(CatSuitSetting.DAMAGE)) : 0.0D,
-                attacks ? settings.intervalTicks(ServerConfig.scale(CatStat.SPEED, speed)) : 0, attacks);
+                attacks ? (outfit == CatOutfitType.NONE ? 20
+                        : settings.intervalTicks(ServerConfig.scale(CatStat.SPEED, speed))) : 0, attacks);
     }
 
     public record CareerSnapshot(double health, double armor, double toughness,
@@ -294,12 +315,17 @@ public final class CareerCatBehavior {
         if (!COMBAT_GOALS_INSTALLED.add(cat)) return;
         cat.goalSelector.addGoal(0, new DynamiteCatLastStand.ControlGoal(cat));
         cat.goalSelector.addGoal(3, new LogisticsSupportGoal(cat));
+        cat.goalSelector.addGoal(3, new CatMedicalSupportGoal(cat));
+        cat.goalSelector.addGoal(3, new CatMusicSupportGoal(cat));
+        cat.goalSelector.addGoal(3, new CatAgentCombatGoal(cat));
+        cat.goalSelector.addGoal(3, new CatCockroachCombat(cat));
         cat.goalSelector.addGoal(4, new CareerMeleeGoal(cat));
         cat.goalSelector.addGoal(4, new MechanicalLaserGoal(cat));
         cat.goalSelector.addGoal(4, new HoneyMissileGoal(cat));
         cat.goalSelector.addGoal(4, new DynamiteThrowGoal(cat));
         cat.goalSelector.addGoal(4, new FishingRangedGoal(cat));
         cat.goalSelector.addGoal(4, new FlightDiveGoal(cat));
+        cat.goalSelector.addGoal(4, new CatEngineeringCombat(cat));
         cat.targetSelector.addGoal(1, new CareerOwnerHurtByGoal(cat));
         cat.targetSelector.addGoal(2, new CareerOwnerHurtTargetGoal(cat));
         cat.targetSelector.addGoal(3, new CareerHurtByGoal(cat));
@@ -396,6 +422,7 @@ public final class CareerCatBehavior {
         Vec3 end = origin.add(direction.scale(FIRE_BREATH_RANGE));
         AABB affectedArea = new AABB(origin, end).inflate(1.4D);
         float damage = (float) cat.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        damage *= (float)Math.max(1,cn.laowu.mod.accessory.CatAccessories.value(cat,"super_flame_multiplier"));
 
         for (LivingEntity candidate : level.getEntitiesOfClass(
                 LivingEntity.class, affectedArea,
@@ -438,18 +465,19 @@ public final class CareerCatBehavior {
         if (side.lengthSqr() < 1.0E-5D) side = new Vec3(1.0D, 0.0D, 0.0D);
         side = side.normalize();
         Vec3 up = side.cross(direction).normalize();
+        boolean blue=cn.laowu.mod.accessory.CatAccessories.value(cat,"super_flame_multiplier")>1;
         for (int step = 1; step <= 4; step++) {
             double distance = FIRE_BREATH_RANGE * step / 4.0D;
             double spread = 0.04D + distance * 0.09D;
             Vec3 point = origin.add(direction.scale(distance))
                     .add(side.scale((cat.getRandom().nextDouble() * 2.0D - 1.0D) * spread))
                     .add(up.scale((cat.getRandom().nextDouble() * 2.0D - 1.0D) * spread));
-            level.sendParticles(ParticleTypes.FLAME, point.x, point.y, point.z,
+            level.sendParticles(blue?ParticleTypes.SOUL_FIRE_FLAME:ParticleTypes.FLAME, point.x, point.y, point.z,
                     3, spread * 0.45D, spread * 0.28D, spread * 0.45D, 0.018D);
         }
         if (cat.tickCount % 4 == 0) {
             Vec3 moltenCenter = origin.add(direction.scale(FIRE_BREATH_RANGE * 0.72D));
-            level.sendParticles(ParticleTypes.LAVA,
+            level.sendParticles(blue?ParticleTypes.SOUL_FIRE_FLAME:ParticleTypes.LAVA,
                     moltenCenter.x, moltenCenter.y, moltenCenter.z,
                     2, 0.35D, 0.22D, 0.35D, 0.015D);
             level.sendParticles(ParticleTypes.SMOKE, end.x, end.y, end.z,
@@ -469,8 +497,8 @@ public final class CareerCatBehavior {
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
         return cat.isTame() && cat.isAlive() && !CatPoseData.isPancake(cat)
                 && !DynamiteCatLastStand.isActive(cat)
-                && outfit != CatOutfitType.NONE && outfit != CatOutfitType.TRANSPORT
-                && !isResting(cat);
+                && outfit != CatOutfitType.NONE && !outfit.isSupport()
+                && !outfit.isPreviewOnly() && !isResting(cat) && !CatPilotFlight.carried(cat) && !CatDivingMount.carried(cat);
     }
 
     public static boolean canParticipateInCombat(Cat cat) {
@@ -483,12 +511,12 @@ public final class CareerCatBehavior {
     }
 
     private static boolean isRangedOutfit(CatOutfitType outfit) {
-        return outfit == CatOutfitType.FISHING || outfit == CatOutfitType.TERMINATOR
-                || outfit == CatOutfitType.HONEY || outfit == CatOutfitType.DYNAMITE;
+        return outfit.role() == CatCombatRole.RANGED;
     }
 
     private static boolean isMeleeOutfit(CatOutfitType outfit) {
-        return outfit == CatOutfitType.FIRE || outfit == CatOutfitType.FLIGHT;
+        return outfit != CatOutfitType.NONE && outfit.role() == CatCombatRole.MELEE
+                && !outfit.isPreviewOnly();
     }
 
     private static boolean isResting(Cat cat) {
@@ -509,7 +537,7 @@ public final class CareerCatBehavior {
                 || !rangedCat.isTame() || isResting(rangedCat)) return;
         CatOutfitType protectedOutfit = CatClothesData.getOutfit(rangedCat);
         if (!isRangedOutfit(protectedOutfit)
-                && protectedOutfit != CatOutfitType.TRANSPORT) return;
+                && !protectedOutfit.isSupport()) return;
         UUID ownerId = rangedCat.getOwnerUUID();
         if (ownerId == null) return;
 
@@ -754,9 +782,8 @@ public final class CareerCatBehavior {
     }
 
     private static boolean canProvideLogisticsSupport(Cat cat) {
-        return cat.isTame() && cat.isAlive() && !CatPoseData.isPancake(cat)
-                && CatClothesData.getOutfit(cat) == CatOutfitType.TRANSPORT
-                && !isResting(cat) && cat.getOwnerUUID() != null;
+        return CatSupportRules.canWork(cat)
+                && CatClothesData.getOutfit(cat) == CatOutfitType.TRANSPORT;
     }
 
     private static int logisticsIntelligence(Cat cat) {
@@ -779,7 +806,7 @@ public final class CareerCatBehavior {
     }
 
     private static int logisticsDecisionInterval(int intelligence) {
-        return Mth.clamp(40 - Math.round(intelligence * 0.25F), 15, 40);
+        return Mth.clamp(10 - intelligence / 20, 5, 10);
     }
 
     private static int logisticsPathRefreshInterval(int intelligence) {
@@ -787,13 +814,15 @@ public final class CareerCatBehavior {
     }
 
     private static int logisticsSupportInterval(int intelligence) {
-        // Ten seconds at Intelligence 0, eight at 50, six at 100.
-        return Mth.clamp(200 - Math.round(intelligence * 0.8F), 120, 200);
+        return CatSupportRules.LOGISTICS_CAST_TICKS;
     }
 
-    private static boolean hasAllLogisticsSupportEffects(Cat cat) {
+    public static int logisticsAmplifier(Cat cat) {
+        return cn.laowu.mod.accessory.CatAccessories.value(cat,"enhanced_potions")>0?1:0;
+    }
+    private static boolean hasAllLogisticsSupportEffects(Cat supporter, Cat cat) {
         for (MobEffect effect : LOGISTICS_SUPPORT_EFFECTS) {
-            if (!cat.hasEffect(effect)) return false;
+            if (!cat.hasEffect(effect) || cat.getEffect(effect).getAmplifier() < logisticsAmplifier(supporter)) return false;
         }
         return true;
     }
@@ -803,10 +832,12 @@ public final class CareerCatBehavior {
         if (candidate == supporter || !candidate.isAlive()
                 || CatPoseData.isPancake(candidate)
                 || supporter.distanceToSqr(candidate) > maximumDistanceSqr
-                || hasAllLogisticsSupportEffects(candidate)) return false;
+                || hasAllLogisticsSupportEffects(supporter, candidate)
+                || candidate.getPersistentData().getLong(NEXT_LOGISTICS_RECEIVED_TAG)
+                    > supporter.level().getGameTime()) return false;
         if (!CatTeamRules.friendly(supporter, candidate)) return false;
         CatOutfitType outfit = CatClothesData.getOutfit(candidate);
-        if (outfit == CatOutfitType.NONE || outfit == CatOutfitType.TRANSPORT) return false;
+        if (outfit == CatOutfitType.NONE || outfit.isSupport() || outfit.isPreviewOnly()) return false;
         LivingEntity enemy = candidate.getTarget();
         return enemy != null && enemy.isAlive();
     }
@@ -819,7 +850,7 @@ public final class CareerCatBehavior {
         MobEffect selected = null;
         int missingEffects = 0;
         for (MobEffect effect : LOGISTICS_SUPPORT_EFFECTS) {
-            if (recipient.hasEffect(effect)) continue;
+            if (recipient.hasEffect(effect) && recipient.getEffect(effect).getAmplifier() >= logisticsAmplifier(cat)) continue;
             missingEffects++;
             if (cat.getRandom().nextInt(missingEffects) == 0) selected = effect;
         }
@@ -830,7 +861,8 @@ public final class CareerCatBehavior {
         Vec3 aim = recipient.getBoundingBox().getCenter()
                 .subtract(projectile.position());
         projectile.shoot(aim.x, aim.y, aim.z, 1.05F, 0.0F);
-        level.addFreshEntity(projectile);
+        if (!cn.laowu.mod.accessory.CatAccessoryHooks.projectile(cat, recipient, projectile)) return false;
+        if (!level.addFreshEntity(projectile)) return false;
         cat.swing(InteractionHand.MAIN_HAND);
         level.playSound(null, cat.blockPosition(), SoundEvents.SNOWBALL_THROW,
                 SoundSource.NEUTRAL, 0.65F,
@@ -899,8 +931,8 @@ public final class CareerCatBehavior {
             cat.getLookControl().setLookAt(recipient, 35.0F, 35.0F);
 
             double castRange = logisticsCastRange(intelligence);
-            if (cat.distanceToSqr(recipient) > castRange * castRange) {
-                if (--nextPathRefresh <= 0 || cat.getNavigation().isDone()) {
+            if (cat.distanceToSqr(recipient) > castRange * castRange || !cat.hasLineOfSight(recipient)) {
+                if (--nextPathRefresh <= 0) {
                     nextPathRefresh = logisticsPathRefreshInterval(intelligence);
                     cat.getNavigation().moveTo(recipient,
                             logisticsMoveSpeed(intelligence));
@@ -921,8 +953,12 @@ public final class CareerCatBehavior {
             if (now < nextSupport) return;
 
             if (launchLogisticsSupport(level, cat, recipient)) {
-                data.putLong(NEXT_LOGISTICS_SUPPORT_TAG, now + interval);
+                recipient.getPersistentData().putLong(NEXT_LOGISTICS_RECEIVED_TAG,
+                        now + CatSupportRules.LOGISTICS_TARGET_TICKS);
             }
+            // Failed/cancelled deliveries also back off, rather than spamming a hook every tick.
+            data.putLong(NEXT_LOGISTICS_SUPPORT_TAG, now + interval);
+            nextSearchTick = cat.tickCount + interval;
             recipient = null;
         }
 
@@ -1023,6 +1059,19 @@ public final class CareerCatBehavior {
         @Override
         protected void checkAndPerformAttack(LivingEntity target,
                                              double distanceToEnemySqr) {
+            if (CatClothesData.getOutfit(cat) == CatOutfitType.COCKROACH) {
+                CatCockroachCombat.tryAttack(cat, target);
+                return;
+            }
+            if (CatClothesData.getOutfit(cat) == CatOutfitType.DIVING) {
+                if (cat.distanceToSqr(target) <= CatDivingAttack.RANGE * CatDivingAttack.RANGE
+                        && cat.getSensing().hasLineOfSight(target) && isTimeToAttack()) {
+                    resetAttackCooldown();
+                    cat.swing(InteractionHand.MAIN_HAND);
+                    CatDivingAttack.spray(cat, target);
+                }
+                return;
+            }
             if (CatClothesData.getOutfit(cat) != CatOutfitType.FIRE) {
                 super.checkAndPerformAttack(target, distanceToEnemySqr);
                 return;
@@ -1053,14 +1102,20 @@ public final class CareerCatBehavior {
 
         @Override
         public boolean canUse() {
-            return canFight(cat) && CatClothesData.getOutfit(cat) == CatOutfitType.FIRE
+            return canFight(cat) && (CatClothesData.getOutfit(cat) == CatOutfitType.FIRE
+                    || CatClothesData.getOutfit(cat) == CatOutfitType.COCKROACH
+                    || CatClothesData.getOutfit(cat) == CatOutfitType.DIVING)
                     && canTarget(cat, cat.getTarget())
-                    && super.canUse();
+                    // A pounce may end within vanilla's 20-tick path retry window.
+                    // Resume our shared-cooldown bite immediately; do not fall back to CatAttackGoal.
+                    && (CatClothesData.getOutfit(cat) == CatOutfitType.COCKROACH || super.canUse());
         }
 
         @Override
         public boolean canContinueToUse() {
-            return canFight(cat) && CatClothesData.getOutfit(cat) == CatOutfitType.FIRE
+            return canFight(cat) && (CatClothesData.getOutfit(cat) == CatOutfitType.FIRE
+                    || CatClothesData.getOutfit(cat) == CatOutfitType.COCKROACH
+                    || CatClothesData.getOutfit(cat) == CatOutfitType.DIVING)
                     && canTarget(cat, cat.getTarget())
                     && super.canContinueToUse();
         }
@@ -1389,6 +1444,7 @@ public final class CareerCatBehavior {
                 aim = aim.add(target.getDeltaMovement().scale(flightTicks));
             }
             projectile.shoot(aim.x, aim.y, aim.z, 2.4F, 0.0F);
+            if (!cn.laowu.mod.accessory.CatAccessoryHooks.projectile(cat, target, projectile)) return;
             level.addFreshEntity(projectile);
             cat.swing(InteractionHand.MAIN_HAND);
             level.playSound(null, cat.blockPosition(), SoundEvents.BEACON_POWER_SELECT,
@@ -1527,6 +1583,7 @@ public final class CareerCatBehavior {
             float inaccuracy = intelligence < COMPETENT_INTELLIGENCE ? 2.5F
                     : intelligence < TACTICAL_INTELLIGENCE ? 1.0F : 0.2F;
             projectile.shoot(aim.x, aim.y, aim.z, 1.35F, inaccuracy);
+            if (!cn.laowu.mod.accessory.CatAccessoryHooks.projectile(cat, target, projectile)) return;
             level.addFreshEntity(projectile);
             cat.swing(InteractionHand.MAIN_HAND);
             level.playSound(null, cat.blockPosition(), SoundEvents.HONEY_BLOCK_SLIDE,
@@ -1669,6 +1726,7 @@ public final class CareerCatBehavior {
             float inaccuracy = intelligence < COMPETENT_INTELLIGENCE ? 4.0F
                     : intelligence < TACTICAL_INTELLIGENCE ? 1.5F : 0.4F;
             projectile.shoot(aim.x, aim.y, aim.z, 1.0F, inaccuracy);
+            if (!cn.laowu.mod.accessory.CatAccessoryHooks.projectile(cat, target, projectile)) return;
             level.addFreshEntity(projectile);
             cat.swing(InteractionHand.MAIN_HAND);
             level.playSound(null, cat.blockPosition(), SoundEvents.TNT_PRIMED,
@@ -1812,6 +1870,7 @@ public final class CareerCatBehavior {
                     : intelligence < TACTICAL_INTELLIGENCE ? 4.0F : 1.5F;
             projectile.shoot(aim.x, aim.y + horizontal * 0.045D, aim.z,
                     1.65F, inaccuracy);
+            if (!cn.laowu.mod.accessory.CatAccessoryHooks.projectile(cat, target, projectile)) return;
             level.addFreshEntity(projectile);
             cat.swing(InteractionHand.MAIN_HAND);
             level.playSound(null, cat.blockPosition(), SoundEvents.FISHING_BOBBER_THROW,

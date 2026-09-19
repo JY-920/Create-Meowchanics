@@ -1,0 +1,49 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "item": "laowu:medical_suit"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_medical_suit"
+        },
+        {
+          "item": "minecraft:white_wool"
+        }
+      ],
+      "results": [
+        {
+          "item": "laowu:incomplete_medical_suit"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "laowu:incomplete_medical_suit"
+        },
+        {
+          "item": "minecraft:golden_apple"
+        }
+      ],
+      "results": [
+        {
+          "item": "laowu:incomplete_medical_suit"
+        }
+      ]
+    }
+  ],
+  "transitionalItem": {
+    "item": "laowu:incomplete_medical_suit"
+  }
+}

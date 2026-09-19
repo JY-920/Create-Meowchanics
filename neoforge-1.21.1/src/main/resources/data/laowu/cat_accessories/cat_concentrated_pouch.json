@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_concentrated_pouch",
+  "required_outfit": "transport",
+  "effects": {
+    "speed": -30,
+    "enhanced_potions": 1
+  }
+}

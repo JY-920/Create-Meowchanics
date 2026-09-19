@@ -81,7 +81,7 @@ public final class TraitDebugWandItem extends Item {
                                 ? new CatTraitEditorMenu(id, inventory, cat)
                                 : new CatTraitEditorMenu(id, inventory, (ItemEntity) target),
                         Component.translatable("screen.laowu.cat_trait_editor")),
-                buffer -> buffer.writeUUID(target.getUUID()));
+                buffer -> CatTraitEditorMenu.writeOpeningData(buffer, target));
         return InteractionResult.CONSUME;
     }
 

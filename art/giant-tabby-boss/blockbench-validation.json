@@ -1,0 +1,96 @@
+{
+  "name": "巨型橘猫 Boss · 参考复刻",
+  "cubes": 23,
+  "bones": 20,
+  "animations": 8,
+  "textures": [
+    {
+      "name": "giant_tabby_boss.png",
+      "width": 128,
+      "height": 128,
+      "error": 0
+    }
+  ],
+  "parents": [
+    {
+      "name": "root",
+      "parent": null
+    },
+    {
+      "name": "torso",
+      "parent": "root"
+    },
+    {
+      "name": "body_mass",
+      "parent": "torso"
+    },
+    {
+      "name": "neck",
+      "parent": "torso"
+    },
+    {
+      "name": "head",
+      "parent": "neck"
+    },
+    {
+      "name": "jaw",
+      "parent": "head"
+    },
+    {
+      "name": "right_ear",
+      "parent": "head"
+    },
+    {
+      "name": "left_ear",
+      "parent": "head"
+    },
+    {
+      "name": "collar",
+      "parent": "head"
+    },
+    {
+      "name": "left_front_leg",
+      "parent": "torso"
+    },
+    {
+      "name": "left_front_leg_paw",
+      "parent": "left_front_leg"
+    },
+    {
+      "name": "right_front_leg",
+      "parent": "torso"
+    },
+    {
+      "name": "right_front_leg_paw",
+      "parent": "right_front_leg"
+    },
+    {
+      "name": "left_hind_leg",
+      "parent": "torso"
+    },
+    {
+      "name": "left_hind_leg_paw",
+      "parent": "left_hind_leg"
+    },
+    {
+      "name": "right_hind_leg",
+      "parent": "torso"
+    },
+    {
+      "name": "right_hind_leg_paw",
+      "parent": "right_hind_leg"
+    },
+    {
+      "name": "tail_base",
+      "parent": "torso"
+    },
+    {
+      "name": "tail_middle",
+      "parent": "tail_base"
+    },
+    {
+      "name": "tail_tip",
+      "parent": "tail_middle"
+    }
+  ]
+}

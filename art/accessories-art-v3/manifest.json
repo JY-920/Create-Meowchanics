@@ -1,0 +1,187 @@
+{
+  "source": "User-supplied accessory sprites, 2026-09-17",
+  "source_directory": "C:/Users/16611/Downloads/猫饰品",
+  "note": "Original 16x16 PNG bytes, no resize/recolor. All 36 accessories now have supplied art. Absolute source overrides source_directory.",
+  "items": [
+    {
+      "id": "cat_catnip_pouch",
+      "source": "美味猫薄荷饮.png",
+      "name": "猫薄荷饮",
+      "en": "Catnip Drink",
+      "width": 16,
+      "height": 16,
+      "sha256": "b073e749e15ce862eb2f671286e50c454c0e31570b123a336892ed9b8569f840"
+    },
+    {
+      "id": "cat_medic_smoke_canister",
+      "source": "香草猫冰淇淋-特工猫.png",
+      "name": "香草冰淇淋",
+      "en": "Vanilla Ice Cream",
+      "width": 16,
+      "height": 16,
+      "sha256": "3b5e8f92d349e7b190be1bb6d423e82bf4f6efe25d71e586d2d92ecf58b7e2b5"
+    },
+    {
+      "id": "cat_spiked_collar",
+      "source": "项圈.png",
+      "name": "钉刺项圈",
+      "en": "Spiked Collar",
+      "width": 16,
+      "height": 16,
+      "sha256": "aef3198ea4d220702603c1ebd8f1d35f2b1f9ae9788e8e188e1d9ee031b9c309"
+    },
+    {
+      "id": "cat_mouse_plush",
+      "source": "玩偶.png",
+      "name": "猫咪玩偶",
+      "en": "Cat Plush",
+      "width": 16,
+      "height": 16,
+      "sha256": "6e8138f2a1d05b04e3fa48beb2f40834b6cb2de1ef3b2d655d368dba0a151568"
+    },
+    {
+      "id": "cat_roly_poly",
+      "source": "小眼睛金基米.png",
+      "name": "金基咪",
+      "en": "Golden Kimi",
+      "width": 16,
+      "height": 16,
+      "sha256": "f0f56e0d3809444ca7a7c2c9d1abe68de90a4b5ea15fd636fce81c535e742d4e"
+    },
+    {
+      "id": "cat_cork_vest",
+      "source": "软木护胸.png",
+      "name": "软木护胸",
+      "en": "Cork Vest",
+      "width": 16,
+      "height": 16,
+      "sha256": "53a6b0011820676fb6fea8215998855888734a6a2301e6a348daa56a015aaa5e"
+    },
+    {
+      "id": "cat_tracking_tag",
+      "source": "吊牌.png",
+      "name": "追踪吊牌",
+      "en": "Companion Tag",
+      "width": 16,
+      "height": 16,
+      "sha256": "4ed823a1bef1550aa0afceebab04f27a8923bf32262dca45aba64d9469ccdb00"
+    },
+    {
+      "id": "cat_sorting_pouch",
+      "source": "袋子.png",
+      "name": "收纳袋",
+      "en": "Sorting Pouch",
+      "width": 16,
+      "height": 16,
+      "sha256": "3039f3b3df683871650065fdf2ffd81973ad17ac90c7d1d3c925772e289766c8"
+    },
+    {
+      "id": "cat_old_food_bowl",
+      "source": "旧饭碗.png",
+      "name": "旧饭碗",
+      "en": "Old Food Bowl",
+      "width": 16,
+      "height": 16,
+      "sha256": "5df3135b7d9edad422841aaa41b4437279eb7d4085327bb07184a1c0de53a97c"
+    },
+    {
+      "id": "cat_warm_scarf",
+      "source": "围巾.png",
+      "name": "暖绒围巾",
+      "en": "Warm Scarf",
+      "width": 16,
+      "height": 16,
+      "sha256": "c08e64d1a4936131245eb5d14ce4c08daad28754c1ab9e14d3076fb54b5855cc"
+    },
+    {
+      "id": "cat_chew_bone",
+      "source": "磨牙骨头.png",
+      "name": "磨牙骨",
+      "en": "Chew Bone",
+      "width": 16,
+      "height": 16,
+      "sha256": "53dc5948404524367fd1642c5514c88b6bce09dffbbc6485372f0c2e1c4276ce"
+    },
+    {
+      "id": "cat_purifying_filter",
+      "source": "美味牛奶饮-潜水猫.png",
+      "name": "牛奶饮",
+      "en": "Milk Drink",
+      "width": 16,
+      "height": 16,
+      "sha256": "9bb190a0c4810f6136821f89869fa07ca68574d490db1c4b5abb4746c038455a"
+    },
+    {
+      "id": "cat_rhythm_tambourine",
+      "source": "拓展音响.png",
+      "name": "扩展音响",
+      "en": "Expansion Speaker",
+      "width": 16,
+      "height": 16,
+      "sha256": "675dbd34642c4851f464718537a6fcc24942f2652286cb4c7cabbe51b9693050"
+    },
+    {
+      "id": "cat_mixed_magazine",
+      "source": "拓展工具箱-工程猫.png",
+      "name": "工具箱",
+      "en": "Toolbox",
+      "width": 16,
+      "height": 16,
+      "sha256": "2c1f904c5cbfedb55aedbd2b20e6ebc523946d8f7d8a25014ae757ffeb84256f"
+    },
+    {
+      "id": "cat_concentrated_pouch",
+      "source": "加急快递-运输猫.png",
+      "name": "加急快递",
+      "en": "Express Parcel",
+      "width": 16,
+      "height": 16,
+      "sha256": "c50e093848847fd96ba51d5695ce38763b66c28bd5a343b2c6c8f5cbeae74320"
+    },
+    {
+      "id": "cat_guard_bandage",
+      "source": "绷带.png",
+      "name": "守护绷带",
+      "en": "Guardian Bandage",
+      "width": 16,
+      "height": 16,
+      "sha256": "efb22727f85812adfe720b1424716d01701fdd106f88fbc84bf755afcfc26abd"
+    },
+    {
+      "id": "cat_honey_stamp",
+      "source": "美味蜂蜜饮-蜂蜜猫.png",
+      "name": "蜂蜜饮",
+      "en": "Honey Drink",
+      "width": 16,
+      "height": 16,
+      "sha256": "1bef51a5797f2caf78ac889ca19e3cd06c3648e09900a0b3a3c26d72167b0f9f"
+    },
+    {
+      "id": "cat_reel_hook",
+      "source": "鱼钩.png",
+      "name": "鱼钩",
+      "en": "Fishing Hook",
+      "width": 16,
+      "height": 16,
+      "sha256": "f676b7c35986f31b2f44948edc7c0821b57951a98cc8b7fd749aa3da8ea8abc6"
+    },
+    {
+      "id": "cat_blue_flame_nozzle",
+      "source": "烈焰蛋糕切片-喷火猫.png",
+      "name": "烈焰蛋糕",
+      "en": "Blaze Cake",
+      "width": 16,
+      "height": 16,
+      "sha256": "5d7731d2655df0b79e5454cab6d12c48920782ed02e3d4165c0409dbe44adb29"
+    },
+    {
+      "id": "cat_rebirth_ootheca",
+      "source": "C:/Users/16611/Downloads/爆珠蟑螂奶茶.png",
+      "name": "爆珠奶茶",
+      "en": "Boba Milk Tea",
+      "width": 16,
+      "height": 16,
+      "sha256": "e85eade8c89ab8f34556477bd203a5ac7444607b9e23b78bc8bb0e8646b5ef05"
+    }
+  ]
+}

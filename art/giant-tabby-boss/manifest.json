@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "kind": "standalone-boss-art-not-gameplay",
+  "id": "giant_tabby_boss",
+  "title": "巨型橘猫（暂定名）",
+  "reference": {
+    "supplied_image": "42ae2f7b699ece60dfc22b2cd889728b.jpg",
+    "episode": "Alan Becker — Creeper Clan / Animation vs. Minecraft Shorts Ep 40",
+    "bilibili": "https://www.bilibili.com/video/BV163426vE3s/?t=625",
+    "youtube": "https://www.youtube.com/watch?v=FcQlQAs5EDM",
+    "screenshot_time_seconds": 625,
+    "notes": "Observed side, rear and running thumbnail views. Red line figure is Red, not part of the collar. Unseen front/underside details are inferred. Newly authored reconstruction, not an official extracted model."
+  },
+  "scale": {
+    "units_per_block": 16,
+    "neutral_ear_height_blocks": 3.8125,
+    "body_width_blocks": 2,
+    "nose_to_tail_blocks": 7.6875,
+    "forward": "-Z",
+    "up": "+Y",
+    "floor_y": 0,
+    "notes": "Editable reconstruction scale, not a measured canonical world size."
+  },
+  "counts": {
+    "cubes": 23,
+    "bones": 20,
+    "animations": 8
+  },
+  "texture": {
+    "width": 128,
+    "height": 128,
+    "filtering": "nearest",
+    "extruded_gutter_pixels": 1
+  },
+  "animations": [
+    {
+      "name": "animation.giant_tabby.idle",
+      "seconds": 4,
+      "loop": "loop",
+      "purpose": "visual only; no damage events"
+    },
+    {
+      "name": "animation.giant_tabby.walk",
+      "seconds": 1.6,
+      "loop": "loop",
+      "purpose": "visual only; no damage events"
+    },
+    {
+      "name": "animation.giant_tabby.run",
+      "seconds": 0.8,
+      "loop": "loop",
+      "purpose": "visual only; no damage events"
+    },
+    {
+      "name": "animation.giant_tabby.bite",
+      "seconds": 1.2,
+      "loop": "once",
+      "purpose": "visual only; no damage events"
+    },
+    {
+      "name": "animation.giant_tabby.paw_swipe",
+      "seconds": 1.5,
+      "loop": "once",
+      "purpose": "visual only; no damage events"
+    },
+    {
+      "name": "animation.giant_tabby.pounce",
+      "seconds": 1.8,
+      "loop": "once",
+      "purpose": "in-place visual clip; entity controls horizontal movement"
+    },
+    {
+      "name": "animation.giant_tabby.hurt",
+      "seconds": 0.6,
+      "loop": "once",
+      "purpose": "visual only; no damage events"
+    },
+    {
+      "name": "animation.giant_tabby.death",
+      "seconds": 2.4,
+      "loop": "hold",
+      "purpose": "visual only; no damage events"
+    }
+  ],
+  "files": {
+    "giant_tabby_boss.bbmodel": {
+      "bytes": 547164,
+      "sha256": "4cddeffa959ef94f2cab80202a852db0298fcfa77d376d69448b3d7859757837"
+    },
+    "giant_tabby_boss.png": {
+      "bytes": 1601,
+      "sha256": "1b0cbc1e01a747c2b584f7e0172e490747cba5e863969dc61ab3836da4f6a8a8"
+    }
+  }
+}

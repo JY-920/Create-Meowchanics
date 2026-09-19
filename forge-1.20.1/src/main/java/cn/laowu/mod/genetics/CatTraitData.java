@@ -22,7 +22,7 @@ public final class CatTraitData {
         if (cached != null) return Optional.of(cached);
         CompoundTag data = cat.getPersistentData();
         if (!data.contains(TAG, Tag.TAG_COMPOUND)) return Optional.empty();
-        Optional<CatTraitProfile> loaded = CatTraitProfile.load(data.getCompound(TAG));
+        Optional<CatTraitProfile> loaded = CatTraitProfile.load(data.getCompound(TAG), cat.level().isClientSide);
         loaded.ifPresent(profile -> CACHE.put(cat, profile));
         return loaded;
     }
@@ -30,7 +30,7 @@ public final class CatTraitData {
     public static Optional<CatTraitProfile> read(ItemStack stack) {
         CompoundTag root = stack.getTag();
         if (root == null || !root.contains(TAG, Tag.TAG_COMPOUND)) return Optional.empty();
-        return CatTraitProfile.load(root.getCompound(TAG));
+        return CatTraitProfile.load(root.getCompound(TAG), net.minecraftforge.fml.util.thread.EffectiveSide.get().isClient());
     }
 
     public static CatTraitProfile ensure(Cat cat) {
@@ -63,6 +63,7 @@ public final class CatTraitData {
         // after updating the cache so Forge's Size event reads the new profile.
         cat.refreshDimensions();
         if (!cat.level().isClientSide) {
+            CatTraitScriptState.prune(cat, profile);
             CatAttributeData.read(cat).ifPresent(attributes ->
                     CatAttributeEffects.refresh(cat, attributes, profile));
         }
@@ -73,11 +74,16 @@ public final class CatTraitData {
     }
 
     public static CompoundTag serialized(Cat cat) {
-        return ensure(cat).save();
+        CompoundTag tag = ensure(cat).save();
+        var bonuses = CatTraitScriptState.networkData(cat);
+        if (!bonuses.isEmpty()) tag.put("ScriptBonuses", bonuses);
+        return tag;
     }
 
     public static void setSerialized(Cat cat, CompoundTag serialized) {
-        CatTraitProfile.load(serialized).ifPresent(profile -> set(cat, profile));
+        if (cat.level().isClientSide)
+            cat.getPersistentData().put(CatTraitScriptState.CLIENT_TAG, serialized.getCompound("ScriptBonuses").copy());
+        CatTraitProfile.load(serialized, cat.level().isClientSide).ifPresent(profile -> set(cat, profile));
     }
 
     public static void copyToStack(Cat cat, ItemStack stack) {

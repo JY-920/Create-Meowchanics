@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_tracking_tag",
+  "effects": {
+    "owner_attack_bonus": 30
+  }
+}

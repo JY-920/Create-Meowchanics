@@ -21,10 +21,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-/** Purple reinforcement rim, driven exclusively by the rendered performance pose. */
+/** Posed-model outlines: purple performance and green recovery share one state-isolated pass. */
 @Mod.EventBusSubscriber(modid="laowu", value=Dist.CLIENT)
 public final class CatPerformanceOutline {
-    private static final int LIMIT=12;
+    private static final int LIMIT=32;
     private static final LinkedHashMap<UUID,Capture> CAPTURES=new LinkedHashMap<>();
     private static final BufferBuilder[] STORAGE=new BufferBuilder[LIMIT];
     private static final PerformanceSceneSnapshot SCENE=new PerformanceSceneSnapshot();
@@ -32,9 +32,12 @@ public final class CatPerformanceOutline {
     private static TextureTarget mask;
     private static boolean accepting;
     private static long lastDraw;
+    // AFTER_LEVEL is dispatched with GameRenderer's projection stack on Forge.
+    // Retain the actual world camera pose while the entity stage is still active.
+    private static Matrix4f worldView = new Matrix4f(), worldProjection = new Matrix4f();
     private record Part(BufferBuilder.RenderedBuffer mesh,ResourceLocation texture) {}
     private record Capture(List<Part> parts,Matrix4f view,Matrix4f projection,float strength,float width,
-                           float seed) {}
+                           float seed, CatMedicalEffects.Target healing, CatMusicEffects.Target music) {}
     static void setShader(ShaderInstance value){clear();shader=value;}
     static void setMask(ShaderInstance value){clear();maskShader=value;}
     static void clear(){
@@ -58,21 +61,35 @@ public final class CatPerformanceOutline {
 
     @SubscribeEvent
     public static void onRenderStage(RenderLevelStageEvent event){
-        if(event.getStage()==RenderLevelStageEvent.Stage.AFTER_SKY){
+        if(event.getStage()==RenderLevelStageEvent.Stage.AFTER_SKY
+                || event.getStage()==RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS){
             if(frameLevel!=Minecraft.getInstance().level){clear();frameLevel=Minecraft.getInstance().level;lastDraw=ticks();}
             clearMeshes();accepting=true;
         }else if(event.getStage()==RenderLevelStageEvent.Stage.AFTER_ENTITIES){
             accepting=false;
+            worldView = new Matrix4f(event.getPoseStack().last().pose());
+            worldProjection = new Matrix4f(event.getProjectionMatrix());
         }else if(event.getStage()==RenderLevelStageEvent.Stage.AFTER_LEVEL){
             // Match Gojo's outline pass: Iris/Oculus can replace earlier particle targets.
             render(event);
         }
     }
 
-    static void capture(Cat cat,HissingCatModel model,PoseStack poses,ResourceLocation body){
+    static void capture(Cat cat,HissingCatModel model,PoseStack poses,ResourceLocation body,float partial){
+        captureBody(cat,model,poses,body,partial,cn.laowu.mod.CatMusicSupport.glowing(cat));
+    }
+    static <T extends net.minecraft.world.entity.LivingEntity> void capturePatient(
+            T entity,net.minecraft.client.model.EntityModel<T> model,PoseStack poses,ResourceLocation body,float partial){
+        // The generic medical layer can run after the cat-specific layer; preserve both states.
+        captureBody(entity,model,poses,body,partial,
+                entity instanceof Cat cat && cn.laowu.mod.CatMusicSupport.glowing(cat));
+    }
+    private static <T extends net.minecraft.world.entity.LivingEntity> void captureBody(
+            T cat,net.minecraft.client.model.EntityModel<T> model,PoseStack poses,ResourceLocation body,float partial,boolean boosted){
         Minecraft mc=Minecraft.getInstance();
+        boolean healing=cn.laowu.mod.CatMedicalHealing.glowing(cat);
         if(!accepting||shader==null||maskShader==null||mc.level!=cat.level()
-                ||!model.isPlayingPerformance()||!cat.isAlive()||cat.isInvisible())return;
+                ||(!boosted&&!healing)||!cat.isAlive()||cat.isInvisible())return;
         double distance=cat.distanceToSqr(mc.gameRenderer.getMainCamera().getPosition());
         if(distance>96*96)return;
         int slot=0;
@@ -89,12 +106,49 @@ public final class CatPerformanceOutline {
         List<Part> parts=new ArrayList<>(1);parts.add(new Part(data,body));
         CAPTURES.put(cat.getUUID(),new Capture(parts,new Matrix4f(RenderSystem.getModelViewMatrix()),
                 new Matrix4f(RenderSystem.getProjectionMatrix()),.92f,
-                (float)Math.max(.5,Math.min(1.5,12/Math.sqrt(Math.max(1,distance)))),Math.floorMod(cat.getId(),251)/251f));
+                (float)Math.max(.5,Math.min(1.5,12/Math.sqrt(Math.max(1,distance)))),Math.floorMod(cat.getId(),251)/251f,
+                healing ? new CatMedicalEffects.Target(cat.getPosition(partial),cat.getBbWidth(),cat.getBbHeight(),
+                        cat instanceof Cat healer && cn.laowu.mod.CatMedicalHealing.casting(healer),Math.floorMod(cat.getId(),251)/251f,
+                        cn.laowu.mod.CatMedicalHealing.radius(cat),cn.laowu.mod.CatMedicalHealing.stationed(cat)) : null,
+                boosted ? new CatMusicEffects.Target(cat.getPosition(partial),cat.getBbWidth(),cat.getBbHeight(),
+                        Math.floorMod(cat.getId(),251)/251f) : null));
+    }
+    record Indicators(List<CatMedicalEffects.Target> healing, List<CatMusicEffects.Target> music,
+                              List<CatSupportAreas.Area> areas) {
+        boolean empty(){return healing.isEmpty() && music.isEmpty() && areas.isEmpty();}
+    }
+    private static Indicators indicators(float partial) {
+        var mc=Minecraft.getInstance();
+        return collectIndicators(mc.level==null?List.of():mc.level.entitiesForRendering(),
+                mc.gameRenderer.getMainCamera().getPosition(),partial);
+    }
+    static Indicators collectIndicators(Iterable<? extends net.minecraft.world.entity.Entity> entities, net.minecraft.world.phys.Vec3 camera, float partial) {
+        var healing=new ArrayList<CatMedicalEffects.Target>();
+        var music=new ArrayList<CatMusicEffects.Target>();
+        var areas=new ArrayList<CatSupportAreas.Area>();
+        for(var entity:entities){
+            if(!(entity instanceof net.minecraft.world.entity.LivingEntity living) || !living.isAlive() || living.isInvisible()
+                    || living.distanceToSqr(camera)>96*96)continue;
+            float seed=Math.floorMod(living.getId(),251)/251F;
+            if(healing.size()<LIMIT && cn.laowu.mod.CatMedicalHealing.glowing(living))
+                healing.add(new CatMedicalEffects.Target(living.getPosition(partial),living.getBbWidth(),living.getBbHeight(),
+                        living instanceof Cat cat && cn.laowu.mod.CatMedicalHealing.casting(cat),seed,
+                        cn.laowu.mod.CatMedicalHealing.radius(living),cn.laowu.mod.CatMedicalHealing.stationed(living)));
+            if(living instanceof Cat cat){
+                if(music.size()<LIMIT && cn.laowu.mod.CatMusicSupport.glowing(cat))
+                    music.add(new CatMusicEffects.Target(cat.getPosition(partial),cat.getBbWidth(),cat.getBbHeight(),seed));
+                if(areas.size()<LIMIT && cn.laowu.mod.CatMusicSupport.performing(cat))
+                    areas.add(new CatSupportAreas.Area(cat.getPosition(partial),cn.laowu.mod.CatMusicSupport.visualRadius(cat),false,seed));
+            }
+        }
+        return new Indicators(healing,music,areas);
     }
     static void render(RenderLevelStageEvent event){
         accepting=false;
         Minecraft mc=Minecraft.getInstance();long now=ticks();
-        if(shader==null||maskShader==null||mc.level==null||CAPTURES.isEmpty()){
+        if(mc.level==null){clearMeshes();releaseTargets();return;}
+        Indicators indicators=indicators(event.getPartialTick());
+        if(mc.level==null || CAPTURES.isEmpty() && indicators.empty()){
             clearMeshes();if(now-lastDraw>40)releaseTargets();return;
         }
         boolean scissor=GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
@@ -103,48 +157,52 @@ public final class CatPerformanceOutline {
         try(State ignored=new State();PerformanceSceneSnapshot.Target target=new PerformanceSceneSnapshot.Target()){
             if(!SCENE.capture())return;
             lastDraw=now;
-            int[] viewport=new int[4];GL11.glGetIntegerv(GL11.GL_VIEWPORT,viewport);
-            float downscale=Math.min(.5f,960f/viewport[2]);
-            int width=Math.max(1,Math.round(viewport[2]*downscale)),height=Math.max(1,Math.round(viewport[3]*downscale));
-            GL11.glDisable(GL11.GL_SCISSOR_TEST);
-            try(PerformanceSceneSnapshot.Target original=new PerformanceSceneSnapshot.Target()){
-                if(mask==null||mask.width!=width||mask.height!=height){
-                    if(mask!=null)mask.destroyBuffers();
-                    mask=new PerformanceTarget(width,height,true,Minecraft.ON_OSX);mask.setFilterMode(GL11.GL_LINEAR);
-                }
-                mask.bindWrite(true);RenderSystem.clearColor(0,0,0,0);RenderSystem.clearDepth(1);
-                RenderSystem.depthMask(true);RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT,Minecraft.ON_OSX);
-                // Rasterize a solid silhouette against its own depth. Comparing half-resolution
-                // face fragments to full-resolution world depth punched moire holes into the mask.
-                RenderSystem.enableDepthTest();RenderSystem.depthFunc(GL11.GL_LEQUAL);
-                RenderSystem.disableCull();RenderSystem.disableBlend();RenderSystem.setShader(()->maskShader);
-                for(Capture capture:CAPTURES.values()){
-                    maskShader.safeGetUniform("CaptureView").set(capture.view);
-                    maskShader.safeGetUniform("CaptureProjection").set(capture.projection);
-                    // Strength, distance-adjusted width and breathing phase.
-                    maskShader.safeGetUniform("OutlineData").set(capture.strength,capture.width/2,
-                            capture.seed);
-                    for(var iterator=capture.parts.iterator();iterator.hasNext();){
-                        Part part=iterator.next();iterator.remove();
-                        maskShader.setSampler("SkinTexture",mc.getTextureManager().getTexture(part.texture).getId());
-                        // drawWithShader consumes and closes the mesh. Remove it from cleanup first.
-                        BufferBuilder.RenderedBuffer mesh=part.mesh;
-                        BufferUploader.drawWithShader(mesh);
+            if(shader!=null && maskShader!=null && !CAPTURES.isEmpty()){
+                int[] viewport=new int[4];GL11.glGetIntegerv(GL11.GL_VIEWPORT,viewport);
+                float downscale=Math.min(.5f,960f/viewport[2]);
+                int width=Math.max(1,Math.round(viewport[2]*downscale)),height=Math.max(1,Math.round(viewport[3]*downscale));
+                GL11.glDisable(GL11.GL_SCISSOR_TEST);
+                try(PerformanceSceneSnapshot.Target original=new PerformanceSceneSnapshot.Target()){
+                    if(mask==null||mask.width!=width||mask.height!=height){
+                        if(mask!=null)mask.destroyBuffers();
+                        mask=new PerformanceTarget(width,height,true,Minecraft.ON_OSX);mask.setFilterMode(GL11.GL_LINEAR);
+                    }
+                    mask.bindWrite(true);RenderSystem.clearColor(0,0,0,0);RenderSystem.clearDepth(1);
+                    RenderSystem.depthMask(true);RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT,Minecraft.ON_OSX);
+                    // Rasterize a solid silhouette against its own depth. Comparing half-resolution
+                    // face fragments to full-resolution world depth punched moire holes into the mask.
+                    RenderSystem.enableDepthTest();RenderSystem.depthFunc(GL11.GL_LEQUAL);
+                    RenderSystem.disableCull();RenderSystem.disableBlend();RenderSystem.setShader(()->maskShader);
+                    for(Capture capture:CAPTURES.values()){
+                        maskShader.safeGetUniform("CaptureView").set(capture.view);
+                        maskShader.safeGetUniform("CaptureProjection").set(capture.projection);
+                        // Strength, distance-adjusted width and breathing phase.
+                        maskShader.safeGetUniform("OutlineData").set(capture.strength,capture.width/2,
+                                (capture.healing!=null && capture.music!=null) ? .99F : (capture.healing!=null?.55F:0)+capture.seed*.4F);
+                        for(var iterator=capture.parts.iterator();iterator.hasNext();){
+                            Part part=iterator.next();iterator.remove();
+                            maskShader.setSampler("SkinTexture",mc.getTextureManager().getTexture(part.texture).getId());
+                            // drawWithShader consumes and closes the mesh. Remove it from cleanup first.
+                            BufferBuilder.RenderedBuffer mesh=part.mesh;
+                            BufferUploader.drawWithShader(mesh);
+                        }
                     }
                 }
+                shader.setSampler("Silhouette",mask.getColorTextureId());shader.setSampler("SilhouetteDepth",mask.getDepthTextureId());
+                shader.setSampler("SceneDepth",SCENE.depth());
+                shader.safeGetUniform("MaskSize").set((float)width,(float)height);
+                shader.safeGetUniform("Time").set((now%24000+event.getPartialTick())*.05f);
+                RenderSystem.setShader(()->shader);RenderSystem.disableDepthTest();RenderSystem.depthMask(false);
+                RenderSystem.disableCull();RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
+                BufferBuilder b=Tesselator.getInstance().getBuilder();
+                b.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
+                b.vertex(-1,-1,0).uv(0,0).color(-1).endVertex();b.vertex(1,-1,0).uv(1,0).color(-1).endVertex();
+                b.vertex(1,1,0).uv(1,1).color(-1).endVertex();b.vertex(-1,1,0).uv(0,1).color(-1).endVertex();
+                BufferUploader.drawWithShader(b.end());
             }
-            shader.setSampler("Silhouette",mask.getColorTextureId());shader.setSampler("SilhouetteDepth",mask.getDepthTextureId());
-            shader.setSampler("SceneDepth",SCENE.depth());
-            shader.safeGetUniform("MaskSize").set((float)width,(float)height);
-            shader.safeGetUniform("Time").set((now%24000+event.getPartialTick())*.05f);
-            RenderSystem.setShader(()->shader);RenderSystem.disableDepthTest();RenderSystem.depthMask(false);
-            RenderSystem.disableCull();RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
-            BufferBuilder b=Tesselator.getInstance().getBuilder();
-            b.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
-            b.vertex(-1,-1,0).uv(0,0).color(-1).endVertex();b.vertex(1,-1,0).uv(1,0).color(-1).endVertex();
-            b.vertex(1,1,0).uv(1,1).color(-1).endVertex();b.vertex(-1,1,0).uv(0,1).color(-1).endVertex();
-            BufferUploader.drawWithShader(b.end());
+            CatMedicalEffects.draw(event,worldView,worldProjection,indicators.healing);
+            CatMusicEffects.draw(event,worldView,worldProjection,indicators.music,indicators.areas);
         }finally{
             clearMeshes();RenderSystem.clearColor(clear[0],clear[1],clear[2],clear[3]);RenderSystem.clearDepth(clearDepth);
             if(scissor)GL11.glEnable(GL11.GL_SCISSOR_TEST);else GL11.glDisable(GL11.GL_SCISSOR_TEST);

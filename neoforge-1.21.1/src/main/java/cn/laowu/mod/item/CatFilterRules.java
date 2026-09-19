@@ -4,7 +4,8 @@ import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.genetics.CatAttributeEffects;
 import cn.laowu.mod.genetics.CatAttributeProfile;
 import cn.laowu.mod.genetics.CatStat;
-import cn.laowu.mod.genetics.CatTrait;
+import cn.laowu.mod.genetics.CatTraitType;
+import cn.laowu.mod.genetics.CatTraitRegistry;
 import cn.laowu.mod.genetics.CatTraitProfile;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -55,16 +56,17 @@ public final class CatFilterRules {
     private final int[] currentMax;
     private final int[] potentialMin;
     private final int[] potentialMax;
-    private final List<CatTrait> requiredTraits;
+    private final List<CatTraitType> requiredTraits;
     private final GrowthFilter growth;
     private final OwnershipFilter ownership;
     private final CareerFilter career;
     private final String catName;
     private final CatFilterLogic logic;
+    private final boolean baseCurrent;
 
     private CatFilterRules(int[] currentMin, int[] currentMax,
                            int[] potentialMin, int[] potentialMax,
-                           List<CatTrait> requiredTraits,
+                           List<? extends CatTraitType> requiredTraits,
                            GrowthFilter growth, OwnershipFilter ownership,
                            CareerFilter career, String catName) {
         this(currentMin, currentMax, potentialMin, potentialMax, requiredTraits,
@@ -73,9 +75,19 @@ public final class CatFilterRules {
 
     private CatFilterRules(int[] currentMin, int[] currentMax,
                            int[] potentialMin, int[] potentialMax,
-                           List<CatTrait> requiredTraits,
+                           List<? extends CatTraitType> requiredTraits,
                            GrowthFilter growth, OwnershipFilter ownership,
                            CareerFilter career, String catName, CatFilterLogic logic) {
+        this(currentMin, currentMax, potentialMin, potentialMax, requiredTraits,
+                growth, ownership, career, catName, logic, false);
+    }
+
+    private CatFilterRules(int[] currentMin, int[] currentMax,
+                           int[] potentialMin, int[] potentialMax,
+                           List<? extends CatTraitType> requiredTraits,
+                           GrowthFilter growth, OwnershipFilter ownership,
+                           CareerFilter career, String catName, CatFilterLogic logic, boolean baseCurrent) {
+        this.baseCurrent = baseCurrent;
         this.currentMin = currentMin;
         this.currentMax = currentMax;
         this.potentialMin = potentialMin;
@@ -115,12 +127,12 @@ public final class CatFilterRules {
                 CareerFilter.byId(filter.getString(CAREER_TAG)),
                 filter.getString(CAT_NAME_TAG), filter.getInt(VERSION_TAG) >= DATA_VERSION
                         ? new CatFilterLogic(filter.getInt("CurrentEnabled"), filter.getInt("LimitEnabled"),
-                                filter.getInt("LogicFlags")) : null);
+                                filter.getInt("LogicFlags")) : null, filter.getBoolean("BaseCurrent"));
     }
 
     public static CatFilterRules fromValues(int[] currentMin, int[] currentMax,
                                             int[] potentialMin, int[] potentialMax,
-                                            List<CatTrait> requiredTraits) {
+                                            List<? extends CatTraitType> requiredTraits) {
         return fromValues(currentMin, currentMax, potentialMin, potentialMax,
                 requiredTraits, GrowthFilter.ANY, OwnershipFilter.ANY,
                 CareerFilter.ANY, "");
@@ -128,7 +140,7 @@ public final class CatFilterRules {
 
     public static CatFilterRules fromValues(int[] currentMin, int[] currentMax,
                                             int[] potentialMin, int[] potentialMax,
-                                            List<CatTrait> requiredTraits,
+                                            List<? extends CatTraitType> requiredTraits,
                                             GrowthFilter growth,
                                             OwnershipFilter ownership,
                                             CareerFilter career,
@@ -147,6 +159,7 @@ public final class CatFilterRules {
     public void write(ItemStack stack) {
         CompoundTag filter = new CompoundTag();
         filter.putInt(VERSION_TAG, DATA_VERSION);
+        if (baseCurrent) filter.putBoolean("BaseCurrent", true);
         filter.putInt("CurrentEnabled", logic.currentMask());
         filter.putInt("LimitEnabled", logic.limitMask());
         filter.putInt("LogicFlags", logic.flags());
@@ -175,7 +188,7 @@ public final class CatFilterRules {
         return (page == POTENTIAL_PAGE ? potentialMax : currentMax)[stat.ordinal()];
     }
 
-    public List<CatTrait> requiredTraits() { return requiredTraits; }
+    public List<CatTraitType> requiredTraits() { return requiredTraits; }
     public GrowthFilter growth() { return growth; }
     public OwnershipFilter ownership() { return ownership; }
     public CareerFilter career() { return career; }
@@ -198,12 +211,19 @@ public final class CatFilterRules {
             if (value >= min(POTENTIAL_PAGE, stat) && value <= max(POTENTIAL_PAGE, stat)) passed++;
         }
         return logic.matches(count, passed, requiredTraits.size(),
-                (int) requiredTraits.stream().filter(traits::has).count());
+                (int) requiredTraits.stream().filter(t -> traits.rawLevel(t) > 0).count());
     }
 
     public CatFilterRules withLogic(CatFilterLogic selected) {
         return new CatFilterRules(currentMin, currentMax, potentialMin, potentialMax,
-                requiredTraits, growth, ownership, career, catName, selected);
+                requiredTraits, growth, ownership, career, catName, selected, baseCurrent);
+    }
+
+    /** Imported NOW cards use base genes; ordinary/manual filters retain effective-current semantics. */
+    public boolean baseCurrent() { return baseCurrent; }
+    public CatFilterRules withBaseCurrent(boolean selected) {
+        return new CatFilterRules(currentMin, currentMax, potentialMin, potentialMax,
+                requiredTraits, growth, ownership, career, catName, logic, selected);
     }
 
     public boolean matches(CatAttributeProfile profile, CatTraitProfile traits,
@@ -215,12 +235,13 @@ public final class CatFilterRules {
             for (int page = CURRENT_PAGE; page <= POTENTIAL_PAGE; page++) {
                 if (!enabled(page, stat)) continue;
                 int value = page == POTENTIAL_PAGE ? profile.potential(stat)
+                        : baseCurrent ? profile.current(stat)
                         : CatAttributeEffects.effectiveValue(profile, resolved, stat, night, day);
                 count++;
                 if (value >= min(page, stat) && value <= max(page, stat)) passed++;
             }
         }
-        int traitsPassed = (int) requiredTraits.stream().filter(resolved::has).count();
+        int traitsPassed = (int) requiredTraits.stream().filter(t -> resolved.rawLevel(t) > 0).count();
         return logic.matches(count, passed, requiredTraits.size(), traitsPassed);
     }
 
@@ -279,8 +300,8 @@ public final class CatFilterRules {
             }
         }
         CatTraitProfile safeTraits = traits == null ? CatTraitProfile.EMPTY : traits;
-        for (CatTrait trait : requiredTraits) {
-            if (safeTraits.has(trait) != logic.option(CatFilterLogic.TRAIT_INVERT)) score += 1_000_000L;
+        for (CatTraitType trait : requiredTraits) {
+            if ((safeTraits.rawLevel(trait) > 0) != logic.option(CatFilterLogic.TRAIT_INVERT)) score += 1_000_000L;
         }
         // New Boolean modes prioritize a matching group expression over partial scores.
         // Current attributes still do not rank breeding genetics, as in older filters.
@@ -292,7 +313,7 @@ public final class CatFilterRules {
                 int value = profile.potential(stat);
                 if (value >= min(POTENTIAL_PAGE, stat) && value <= max(POTENTIAL_PAGE, stat)) passed++;
             }
-            int traitCount = (int) requiredTraits.stream().filter(safeTraits::has).count();
+            int traitCount = (int) requiredTraits.stream().filter(t -> safeTraits.rawLevel(t) > 0).count();
             if (logic.matches(count, passed, requiredTraits.size(), traitCount)) score += 100_000_000L;
         }
         return OptionalLong.of(score);
@@ -312,30 +333,29 @@ public final class CatFilterRules {
         }
     }
 
-    private static List<CatTrait> readTraits(CompoundTag filter) {
-        List<CatTrait> result = new ArrayList<>(CatTraitProfile.MAX_TRAITS);
+    private static List<CatTraitType> readTraits(CompoundTag filter) {
+        List<CatTraitType> result = new ArrayList<>(CatTraitProfile.MAX_TRAITS);
         if (filter.contains(REQUIRED_TRAITS_TAG, Tag.TAG_LIST)) {
             ListTag traits = filter.getList(REQUIRED_TRAITS_TAG, Tag.TAG_STRING);
-            for (int index = 0;
-                 index < traits.size() && result.size() < CatTraitProfile.MAX_TRAITS;
-                 index++) {
-                CatTrait.byId(ResourceLocation.tryParse(traits.getString(index)))
-                        .filter(trait -> !result.contains(trait))
-                        .ifPresent(result::add);
-            }
-        } else if (filter.contains(REQUIRED_TRAIT_TAG, Tag.TAG_STRING)) {
-            CatTrait.byId(ResourceLocation.tryParse(filter.getString(REQUIRED_TRAIT_TAG)))
-                    .ifPresent(result::add);
-        }
+            for (int index = 0; index < traits.size() && result.size() < CatTraitProfile.MAX_TRAITS; index++)
+                readTrait(result, traits.getString(index));
+        } else if (filter.contains(REQUIRED_TRAIT_TAG, Tag.TAG_STRING))
+            readTrait(result, filter.getString(REQUIRED_TRAIT_TAG));
         return result;
     }
 
-    private static List<CatTrait> sanitizeTraits(List<CatTrait> traits) {
+    private static void readTrait(List<CatTraitType> result, String name) {
+        var id = ResourceLocation.tryParse(name);
+        if (id != null && name.length() <= 128 && result.stream().noneMatch(t -> t.id().equals(id)))
+            result.add(CatTraitRegistry.resolve(id, net.neoforged.fml.util.thread.EffectiveSide.get().isClient()));
+    }
+
+    private static List<CatTraitType> sanitizeTraits(List<? extends CatTraitType> traits) {
         if (traits == null || traits.isEmpty()) return List.of();
-        EnumSet<CatTrait> unique = EnumSet.noneOf(CatTrait.class);
-        List<CatTrait> result = new ArrayList<>(CatTraitProfile.MAX_TRAITS);
-        for (CatTrait trait : traits) {
-            if (trait != null && unique.add(trait)) result.add(trait);
+        java.util.Set<ResourceLocation> unique = new java.util.HashSet<>();
+        List<CatTraitType> result = new ArrayList<>(CatTraitProfile.MAX_TRAITS);
+        for (CatTraitType trait : traits) {
+            if (trait != null && unique.add(trait.id())) result.add(trait);
             if (result.size() >= CatTraitProfile.MAX_TRAITS) break;
         }
         return List.copyOf(result);
@@ -383,7 +403,13 @@ public final class CatFilterRules {
         FIRE("fire", CatOutfitType.FIRE),
         HONEY("honey", CatOutfitType.HONEY),
         TRANSPORT("transport", CatOutfitType.TRANSPORT),
-        DYNAMITE("dynamite", CatOutfitType.DYNAMITE);
+        DYNAMITE("dynamite", CatOutfitType.DYNAMITE),
+        ENGINEERING("engineering", CatOutfitType.ENGINEERING),
+        MEDICAL("medical", CatOutfitType.MEDICAL),
+        MUSIC("music", CatOutfitType.MUSIC),
+        AGENT("agent", CatOutfitType.AGENT),
+        DIVING("diving", CatOutfitType.DIVING),
+        COCKROACH("cockroach", CatOutfitType.COCKROACH);
 
         private final String id;
         private final CatOutfitType outfit;

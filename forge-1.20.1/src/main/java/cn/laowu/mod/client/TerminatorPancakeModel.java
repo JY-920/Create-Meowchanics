@@ -112,8 +112,8 @@ public final class TerminatorPancakeModel {
         // same global affine compression as the flattened body. Keeping the
         // body's +5.05 pose-space displacement here prevents specialist gear
         // from being left below the pancake.
-        float genericPivotY = outfit == CatOutfitType.FLIGHT
-                || outfit == CatOutfitType.TRANSPORT ? 24.0F : 14.5F;
+        float genericPivotY = outfit == CatOutfitType.DIVING ? 17.5F : outfit == CatOutfitType.FLIGHT
+                || outfit == CatOutfitType.TRANSPORT ? 24.0F : outfit.hasImportedModel() ? 18.6F : 14.5F;
         float genericOffsetY = -5.05F
                 + (genericPivotY - 12.0F) * (1.0F - PANCAKE_BODY_COMPRESSION);
         return Map.of(

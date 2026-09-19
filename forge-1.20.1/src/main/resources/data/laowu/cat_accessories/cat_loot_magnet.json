@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_loot_magnet",
+  "effects": {
+    "loot_magnet_radius": 3
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "sdkVersion": "1.0.0",
+  "build": "accessories.37",
+  "time": "2026-09-17 23:01:51",
+  "zip": {
+    "Zip": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\releases\\cat-accessory-kubejs-sdk-1.0.0.zip",
+    "Sha256": "3FCBBDD7CF998703B27A67469CB6E017BA3601DC2BAD1E46C07F413B614E9F26",
+    "Bytes": 46739,
+    "Files": 26,
+    "Extracted": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\build\\sdk\\check-dae74777\\cat-accessory-kubejs-sdk-1.0.0",
+    "Validated": true
+  },
+  "apiVersion": 3,
+  "schemaVersion": 1,
+  "tests": {
+    "sdkBundle": {
+      "assertions": 287,
+      "files": 25,
+      "zipEntries": 26,
+      "unpackVerified": true
+    },
+    "sourceGroups": 26,
+    "compatibilityCases": 8,
+    "frozenSignatures": 84,
+    "forge": {
+      "examplesAndDemo": {
+        "passed": 75,
+        "total": 77,
+        "allAccessoryCasesPassed": true,
+        "failed": [
+          "smartArtillery: redeployment after retreat timeout",
+          "radiusHostilesAndWalls: fixture tracking wait timeout"
+        ]
+      },
+      "noKubeJS": {
+        "passed": 76,
+        "total": 77,
+        "kubeCasesSkipped": true,
+        "failed": [
+          "smartArtillery: initial deployment timeout"
+        ]
+      },
+      "ordinaryBuildPassed": true
+    },
+    "neoforge": {
+      "examplesAndDemo": {
+        "passed": 77,
+        "total": 77
+      },
+      "noKubeJS": {
+        "passed": 77,
+        "total": 77,
+        "kubeCasesSkipped": true
+      },
+      "ordinaryBuildPassed": true
+    }
+  },
+  "archive": {
+    "count": 76,
+    "stamp": "20260917-225716-sdk37",
+    "manifest": "build-output-archive.accessories37.json"
+  },
+  "runtimeJars": [
+    {
+      "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.1.4-dev.accessories.37-forge-1.20.1.jar",
+      "Sha256": "DE952EA5D82A54C74EA26CD3FA4373CA80017B19E928EA504BA8B069CBBC6FF3"
+    },
+    {
+      "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.1.4-dev.accessories.37-neoforge-1.21.1.jar",
+      "Sha256": "03F6B63F56320F38751AFAD93E8C3FE11C0E55FDFDE7DFCAAECB163FA5701DFA"
+    }
+  ],
+  "deployment": {
+    "performed": false,
+    "reason": "Minecraft client remains running; do not replace a running instance",
+    "gameProcesses": [
+      {
+        "ProcessId": 36928,
+        "Name": "javaw.exe"
+      }
+    ],
+    "installed": [
+      {
+        "Instance": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发",
+        "Active": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.1.4-dev.accessories.36-forge-1.20.1.jar",
+          "Sha256": "3B75508858FBD8D44CB31AB89007C19515333F249A5C08A8C31A3ED02FCDAD9C"
+        }
+      },
+      {
+        "Instance": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/local-multiplayer-server",
+        "Active": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\local-multiplayer-server\\mods\\create-meowchanics-2.1.4-dev.accessories.36-forge-1.20.1.jar",
+          "Sha256": "3B75508858FBD8D44CB31AB89007C19515333F249A5C08A8C31A3ED02FCDAD9C"
+        }
+      },
+      {
+        "Instance": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发",
+        "Active": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.1.4-dev.accessories.36-neoforge-1.21.1.jar",
+          "Sha256": "0D11FB191280D5567D861ACCDD909896C388A0BB272799DBA8118BD5D8320763"
+        }
+      },
+      {
+        "Instance": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/local-multiplayer-server",
+        "Active": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\local-multiplayer-server\\mods\\create-meowchanics-2.1.4-dev.accessories.36-neoforge-1.21.1.jar",
+          "Sha256": "0D11FB191280D5567D861ACCDD909896C388A0BB272799DBA8118BD5D8320763"
+        }
+      }
+    ],
+    "serversRemainOff": true
+  },
+  "userKubejsModified": false,
+  "userWorldsOrConfigsModified": false
+}

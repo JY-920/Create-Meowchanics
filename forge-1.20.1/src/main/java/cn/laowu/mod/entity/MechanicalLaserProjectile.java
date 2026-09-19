@@ -23,7 +23,7 @@ import net.minecraftforge.network.NetworkHooks;
 import org.joml.Vector3f;
 
 /** A fast, gravity-free laser fired by a mechanical career cat. */
-public final class MechanicalLaserProjectile extends ThrowableItemProjectile {
+public final class MechanicalLaserProjectile extends ThrowableItemProjectile implements cn.laowu.mod.api.CatAccessoryProjectile {
     public static final double MAX_TRAVEL_DISTANCE = 16.5D;
     private static final String DAMAGE_TAG = "LaoWuMechanicalLaserDamage";
     private static final String DISTANCE_TAG = "LaoWuMechanicalLaserDistance";
@@ -31,6 +31,10 @@ public final class MechanicalLaserProjectile extends ThrowableItemProjectile {
             new Vector3f(1.0F, 0.16F, 0.56F), 0.8F);
 
     private float attackDamage = 2.0F;
+    @Override public float getAccessoryDamage() { return attackDamage; }
+    @Override public void setAccessoryDamage(double amount) {
+        attackDamage = (float) cn.laowu.mod.accessory.CatAccessoryScriptRules.damage(amount);
+    }
     private double travelledDistance;
 
     public MechanicalLaserProjectile(

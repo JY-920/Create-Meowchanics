@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_blast_fuse",
+  "required_outfit": "dynamite",
+  "effects": {
+    "health": -20,
+    "self_destruct_multiplier": 10
+  }
+}

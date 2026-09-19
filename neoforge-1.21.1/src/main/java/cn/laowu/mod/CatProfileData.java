@@ -125,13 +125,16 @@ public final class CatProfileData {
         cat.getNavigation().stop();
     }
 
-    public static void dropOnDeath(Cat cat) {
+    public static void dropOnDeath(Cat cat) { dropOnDeath(cat,true); }
+    public static void dropOnDeath(Cat cat,boolean preserveInPancake) {
         OPEN_CONTAINERS.remove(cat.getUUID());
         ACTIVE_VIEWERS.remove(cat.getUUID());
         cat.getPersistentData().remove(VIEW_LOCK_TAG);
         cat.getPersistentData().remove(PREVIOUS_NO_AI_TAG);
         if (cat.level().isClientSide
                 || !cat.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) return;
+        // Tamed cats (with or without a career) carry their inventory in the pancake, never twice.
+        if (preserveInPancake && (cat.isTame() || CatClothesData.getOutfit(cat) != CatOutfitType.NONE)) return;
         CatProfileContainer inventory = new CatProfileContainer(cat);
         Containers.dropContents(cat.level(), cat, inventory);
         cat.getPersistentData().remove(ITEMS_TAG);

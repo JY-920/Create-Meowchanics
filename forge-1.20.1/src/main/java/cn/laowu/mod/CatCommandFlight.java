@@ -21,7 +21,9 @@ public final class CatCommandFlight {
         // The pilot's dive goal already supplies its own flight controller.
         boolean pilotAttack = CatClothesData.getOutfit(cat) == CatOutfitType.FLIGHT
                 && attackOrder;
-        boolean active = sky && !pilotAttack;
+        boolean artilleryAttack = CatClothesData.getOutfit(cat) == CatOutfitType.ENGINEERING
+                && CatEngineeringCombat.validTarget(cat, cat.getTarget());
+        boolean active = sky && !pilotAttack && !artilleryAttack;
         if (active && !(cat.getMoveControl() instanceof CommandMoveControl)) {
             PathNavigation previousNavigation = cat.getNavigation();
             MoveControl previousControl = cat.getMoveControl();
@@ -45,6 +47,10 @@ public final class CatCommandFlight {
             cat.setXxa(0);
             cat.setYya(0);
             cat.setZza(0);
+            cat.fallDistance = 0;
+        }
+        if (artilleryAttack) {
+            cat.setNoGravity(false);
             cat.fallDistance = 0;
         }
     }

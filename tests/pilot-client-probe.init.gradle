@@ -1,0 +1,26 @@
+// Isolated client-only mixin / Create animation smoke test; never opens a world.
+allprojects {
+    afterEvaluate { p ->
+        def neo=p.extensions.findByName('neoForge')!=null
+        def probe=p.sourceSets.create('pilotClientProbe') {
+            java.srcDir(p.file('../tests/client/'+(neo?'neo':'forge')))
+            compileClasspath+=p.sourceSets.main.output+p.sourceSets.main.compileClasspath
+            runtimeClasspath+=output+p.sourceSets.main.runtimeClasspath
+        }
+        def runDir=p.layout.buildDirectory.dir('pilot-client-probe').get().asFile
+        if(neo) {
+            p.neoForge.mods.named('laowu') { sourceSet(probe) }
+            p.neoForge.runs.named('client') { gameDirectory=runDir }
+        } else {
+            p.dependencies.add('runtimeOnly','io.github.llamalad7:mixinextras-forge:0.4.1') { transitive=false }
+            p.minecraft.runs.named('client') {
+               workingDirectory runDir
+                args '--mixin', 'laowu.mixins.json'
+                property 'mixin.env.remapRefMap','true'
+                property 'mixin.env.refMapRemappingFile',p.file('build/createSrgToMcp/output.srg').absolutePath
+                mods.named('laowu') { source(probe) }
+            }
+        }
+        p.tasks.matching { it.name=='runClient' }.configureEach { dependsOn p.tasks.named('pilotClientProbeClasses') }
+    }
+}

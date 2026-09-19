@@ -1,0 +1,34 @@
+{
+  "Version": "2.2.1",
+  "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\releases\\create-meowchanics-2.2.1-dual-loader.zip",
+  "Sha256": "5698B1A18D16287C867A373B50D3E6DA57805F0A45E5F506030971B804BBAD8A",
+  "Bytes": 13619029,
+  "Entries": [
+    "forge-1.20.1/create-meowchanics-2.2.1-forge-1.20.1.jar",
+    "neoforge-1.21.1/create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+    "CHANGELOG.zh-CN.md",
+    "checksums.json",
+    "README.md"
+  ],
+  "EmbeddedJarHashesVerified": true,
+  "Files": [
+    {
+      "File": "forge-1.20.1/create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "Sha256": "5D4BDCFA79106248FCC819098B8F9E1480E629723388CD7550A682625C0B1697",
+      "Bytes": 7026163,
+      "Version": "2.2.1",
+      "ModId": "laowu",
+      "NoLyricsOrProbeClasses": true
+    },
+    {
+      "File": "neoforge-1.21.1/create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "Sha256": "47C9C467574685F1892B85AB3E9E74E857D51B9F3F785217DAE6FD627D2C6B08",
+      "Bytes": 7027589,
+      "Version": "2.2.1",
+      "ModId": "laowu",
+      "NoLyricsOrProbeClasses": true
+    }
+  ],
+  "Changelog": "releases/2.2.1/CHANGELOG.zh-CN.md",
+  "DeploymentRecord": "docs/deployment-2.2.1.json"
+}

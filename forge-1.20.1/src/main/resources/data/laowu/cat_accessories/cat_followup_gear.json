@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_followup_gear",
+  "effects": {
+    "attack": -20,
+    "extra_strike_chance": 25
+  },
+  "required_outfit": "terminator"
+}

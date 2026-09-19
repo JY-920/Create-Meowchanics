@@ -15,8 +15,8 @@ public final class CatPerformanceLayer extends RenderLayer<Cat, CatModel<Cat>> {
     public void render(PoseStack poses, MultiBufferSource buffers, int light, Cat cat,
                        float limbSwing, float limbSwingAmount, float partialTick, float age,
                        float headYaw, float headPitch) {
-        if (getParentModel() instanceof HissingCatModel model && model.isPlayingPerformance()) {
-            CatPerformanceOutline.capture(cat, model, poses, getTextureLocation(cat));
+        if (getParentModel() instanceof HissingCatModel model && (cn.laowu.mod.CatMusicSupport.glowing(cat) || cn.laowu.mod.CatMedicalHealing.glowing(cat))) {
+            CatPerformanceOutline.capture(cat, model, poses, getTextureLocation(cat), partialTick);
         }
     }
 }

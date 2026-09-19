@@ -27,10 +27,11 @@ public final class CatCombatControl {
     }
 
     private static boolean canAct(Cat cat) {
-        return cat.isAlive() && cat.isTame() && !cat.isNoAi() && !cat.isPassenger()
+        return cat.isAlive() && cat.isTame() && !cat.isNoAi() && CatEngineeringCombat.canReceiveOrders(cat)
                 && !CatPoseData.isPancake(cat) && !CatProfileData.isBeingViewed(cat)
                 && !cat.isOrderedToSit() && !cat.isInSittingPose()
-                && CatClothesData.getOutfit(cat) != CatOutfitType.TRANSPORT
+                && !CatClothesData.getOutfit(cat).isSupport()
+                && !CatClothesData.getOutfit(cat).isPreviewOnly()
                 && !DynamiteCatLastStand.isActive(cat);
     }
 
@@ -74,6 +75,11 @@ public final class CatCombatControl {
     }
 
     private static double range(Cat cat) {
+        // Half-range artillery staging lies outside the ordinary 16-block scan.
+        // Keep the explicit long-fur sight drawback, but do not drop normal engineer targets there.
+        if (CatClothesData.getOutfit(cat) == CatOutfitType.ENGINEERING
+                && cn.laowu.mod.genetics.CatTraitData.ensure(cat).level(cn.laowu.mod.genetics.CatTrait.LONG_FUR) == 0)
+            return CatEngineeringCombat.RANGE;
         return Math.max(1, Math.min(16, cat.getAttributeValue(Attributes.FOLLOW_RANGE)));
     }
 

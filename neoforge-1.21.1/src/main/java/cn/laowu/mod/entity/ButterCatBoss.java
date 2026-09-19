@@ -315,6 +315,10 @@ public final class ButterCatBoss extends Monster {
         for (int roll = 0; roll < drops; roll++) {
             spawnAtLocation(new ItemStack(randomSuperReward()));
         }
+        // Independent trophy roll, preserving the original 1-3 training rewards.
+        if (random.nextFloat() < 0.25F) {
+            spawnAtLocation(new ItemStack(cn.laowu.mod.accessory.CatAccessoryItems.butterReward()));
+        }
     }
 
     private Item randomSuperReward() {

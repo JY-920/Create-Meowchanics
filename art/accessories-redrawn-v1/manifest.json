@@ -1,0 +1,102 @@
+{
+  "source": "User-provided redrawn sprites, 2026-09-13",
+  "canvas": "16x16 PNG; original bytes, no resizing or recoloring",
+  "items": [
+    {
+      "id": "cat_taunt_bell",
+      "source": "铃铛.png",
+      "name": "铃铛",
+      "sha256": "58b6c4c0b4c91c01e3aeaa45f203812f073fab6db1419c20c77140bb429c56c9"
+    },
+    {
+      "id": "cat_silent_bell",
+      "source": "羊毛坐垫.png",
+      "name": "羊毛毡",
+      "sha256": "dc618d43899f0724de493abf96565796c3278f54068b3c0e51cf15e11fbe252e"
+    },
+    {
+      "id": "cat_stability_anchor",
+      "source": "船锚.png",
+      "name": "船锚",
+      "sha256": "3cba36355873549dcde2bf5f482801d5b28246a2047d74fa9d4ad71ee8a376e8"
+    },
+    {
+      "id": "cat_fire_charm",
+      "source": "隔热.png",
+      "name": "隔热垫",
+      "sha256": "1652f6ef2c29bcc640a3c7f70f4d6d14898e8cef56f447cdae2d7d38286c970e"
+    },
+    {
+      "id": "cat_impact_core",
+      "source": "弹簧.png",
+      "name": "弹簧",
+      "sha256": "fbf73a3a78f3baf59a86ddd1df44b35125162ad991c9d267e121c241552d2729"
+    },
+    {
+      "id": "cat_followup_gear",
+      "source": "齿轮.png",
+      "name": "齿轮",
+      "sha256": "5d8d2c1421ef0fe7f48f62ab20d0a9414539f9c9a6c9de3588f41d6cf14e2413"
+    },
+    {
+      "id": "cat_loot_magnet",
+      "source": "磁铁.png",
+      "name": "磁铁",
+      "sha256": "9f7e8f5a4fe0202dfc0573c16f634f0e9b25dcf9a12974f91a8a0089d49077d2"
+    },
+    {
+      "id": "cat_ace_feather",
+      "source": "羽毛.png",
+      "name": "羽毛",
+      "sha256": "fae7873a27f6e9da737ab6f796eaaacc9998df92939508437e17140cb436bae6"
+    },
+    {
+      "id": "cat_blast_fuse",
+      "source": "自爆按钮.png",
+      "name": "自爆按钮",
+      "sha256": "0178f4c8a1e10f6c86a3659271099034ce4936946b399ced65cf489f29c60046"
+    },
+    {
+      "id": "cat_health_badge",
+      "source": "生命.png",
+      "name": "生命挂饰",
+      "sha256": "47dfd84a2acc317bf6ea81b3dd91b5573803abf6c4f705a889b6e19de6735fad"
+    },
+    {
+      "id": "cat_attack_badge",
+      "source": "力量.png",
+      "name": "力量挂饰",
+      "sha256": "7c383cee88c5bbbe560347204e030fe52833512e6f3b4f6b7640c23ca14eec0d"
+    },
+    {
+      "id": "cat_speed_badge",
+      "source": "迅捷.png",
+      "name": "迅捷挂饰",
+      "sha256": "9957ae774fea66c1aac36130ec198d2bab717e57c930013c112e508098e9da21"
+    },
+    {
+      "id": "cat_stamina_badge",
+      "source": "耐力.png",
+      "name": "耐力挂饰",
+      "sha256": "69f67a1d288cc00229a7268e2864e5e12e261155dc2a2809dfb38b605d649495"
+    },
+    {
+      "id": "cat_intelligence_badge",
+      "source": "智力.png",
+      "name": "智力挂饰",
+      "sha256": "b810db1b3c14a0c363e1c73b304bb7eae365ad19863be45c0dbcf06f29c05f42"
+    },
+    {
+      "id": "cat_luck_badge",
+      "source": "幸运.png",
+      "name": "幸运挂饰",
+      "sha256": "81b85fc1be1eb9221ff7d4b731fad39585a300a6e45c8a9a2c08919a96ea033f"
+    },
+    {
+      "id": "cat_butter_cube",
+      "source": "黄油.png",
+      "name": "黄油块",
+      "sha256": "0307d3605784a7ef9ffc999884b279906ef887169279c303951659546c9fc65d"
+    }
+  ]
+}

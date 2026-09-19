@@ -23,8 +23,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 
-/** A fishing cat's visible rod shot, always knocking its target away. */
-public final class FishingRodProjectile extends ThrowableItemProjectile {
+/** A fishing cat's visible rod shot, pushing targets away or reeling them in with its exclusive accessory. */
+public final class FishingRodProjectile extends ThrowableItemProjectile implements cn.laowu.mod.api.CatAccessoryProjectile {
     private static final String DAMAGE_TAG = "LaoWuFishingRodDamage";
     private static final int MAX_LIFETIME = 60;
     private static final EntityDataAccessor<Integer> CAT_OWNER_ID =
@@ -32,6 +32,10 @@ public final class FishingRodProjectile extends ThrowableItemProjectile {
                     EntityDataSerializers.INT);
 
     private float attackDamage = 2.0F;
+    @Override public float getAccessoryDamage() { return attackDamage; }
+    @Override public void setAccessoryDamage(double amount) {
+        attackDamage = (float) cn.laowu.mod.accessory.CatAccessoryScriptRules.damage(amount);
+    }
 
     public FishingRodProjectile(EntityType<? extends FishingRodProjectile> type, Level level) {
         super(type, level);
@@ -102,11 +106,14 @@ public final class FishingRodProjectile extends ThrowableItemProjectile {
         if (target.hurt(level.damageSources().thrown(this, cat), attackDamage)) {
             Vec3 direction = target.position().subtract(cat.position());
             Vec3 horizontal = new Vec3(direction.x, 0.0D, direction.z);
-            if (horizontal.lengthSqr() > 1.0E-5D) {
-                Vec3 impulse = horizontal.normalize().scale(0.45D);
+            if(cn.laowu.mod.accessory.CatAccessories.value(cat,"fishing_pull")>0)horizontal=horizontal.scale(-1);
+            double knockback = 1.0D - net.minecraft.util.Mth.clamp(target.getAttributeValue(
+                    net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE), 0.0D, 1.0D);
+            if (horizontal.lengthSqr() > 1.0E-5D && knockback > 0.0D) {
+                Vec3 impulse = horizontal.normalize().scale(0.45D * knockback);
                 target.setDeltaMovement(target.getDeltaMovement().scale(0.35D)
-                        .add(impulse.x, 0.16D, impulse.z));
-                target.hasImpulse = true;
+                        .add(impulse.x, 0.16D * knockback, impulse.z));
+                target.hasImpulse = true; target.hurtMarked = true;
             }
         }
 

@@ -1,0 +1,8 @@
+{
+  "blend": {"func":"add","srcrgb":"1","dstrgb":"1-srcalpha","srcalpha":"1","dstalpha":"1-srcalpha"},
+  "vertex":"laowu:medical_cross",
+  "fragment":"laowu:medical_cross",
+  "attributes":["Position","UV0","Color"],
+  "samplers":[],
+  "uniforms":[]
+}

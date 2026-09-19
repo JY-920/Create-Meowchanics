@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_chew_bone",
+  "effects": {
+    "damage_combo": 4
+  }
+}

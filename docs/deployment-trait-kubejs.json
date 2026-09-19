@@ -1,0 +1,262 @@
+{
+  "Time": "2026-09-18 16:40:10",
+  "Version": "2.2.0",
+  "Stamp": "20260918-164009-2.2.0-trait-kubejs",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "83A719E9CAB831D2BEF1FBCB0208026584FD9135C1D04E93B62C60273B9D6A88"
+      },
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "A808277CE8CB5688389B3D50459E651095D7A996E4B804D99FF589BFAE4DAC33"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260918-164009-2.2.0-trait-kubejs\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "D6233C0A35E8233ACD8427D221F7B9ACCC4152D2B2F0E6BEA744E6086D7D88F5"
+      },
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.0",
+        "Sha256": "398A82A1440C27D9A564161BF5CE98BC84B82E70B77208EC5595EA583140842D"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260918-164009-2.2.0-trait-kubejs\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "UserWorldsConfigsScriptsChanged": false,
+  "ServersUpdated": false,
+  "PublicReleaseZipUpdated": false,
+  "OldAccessorySdkZipUpdated": false,
+  "NewTraitSdkCreated": true,
+  "Builds": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "Sha256": "83A719E9CAB831D2BEF1FBCB0208026584FD9135C1D04E93B62C60273B9D6A88",
+      "Bytes": 7012099,
+      "Baseline": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\build\\trait-kube-baseline-20260918-152116\\forge-1.20.1\\create-meowchanics-2.2.0-forge-1.20.1.jar",
+      "Added": [
+        "cn/laowu/mod/api/CatTraitApi.class",
+        "cn/laowu/mod/api/CatTraitContext.class",
+        "cn/laowu/mod/api/CatTraitHandle.class",
+        "cn/laowu/mod/compat/kubejs/CatTraitsKubePlugin.class",
+        "cn/laowu/mod/compat/kubejs/CatTraitsKubePlugin$TraitEvent.class",
+        "cn/laowu/mod/genetics/CatTraitHooks.class",
+        "cn/laowu/mod/genetics/CatTraitHooks$Seen.class",
+        "cn/laowu/mod/genetics/CatTraitRegistry.class",
+        "cn/laowu/mod/genetics/CatTraitScriptState.class",
+        "cn/laowu/mod/genetics/CatTraitType.class",
+        "cn/laowu/mod/genetics/ScriptedCatTrait.class",
+        "cn/laowu/mod/genetics/ScriptedCatTraitDefinition.class"
+      ],
+      "Changed": [
+        "assets/laowu/lang/en_us.json",
+        "assets/laowu/lang/zh_cn.json",
+        "cn/laowu/mod/accessory/CatAccessoryEvents.class",
+        "cn/laowu/mod/CatFilterMenu.class",
+        "cn/laowu/mod/CatTraitEditorMenu.class",
+        "cn/laowu/mod/CatTraitEditorMenu$1.class",
+        "cn/laowu/mod/client/CatFilterScreen.class",
+        "cn/laowu/mod/client/CatScannerItemRenderer.class",
+        "cn/laowu/mod/client/CatScannerTextureManager.class",
+        "cn/laowu/mod/client/CatScannerTextureManager$Layers.class",
+        "cn/laowu/mod/client/CatTraitCardRenderer.class",
+        "cn/laowu/mod/client/CatTraitEditorScreen.class",
+        "cn/laowu/mod/client/CatTraitEditorScreen$1.class",
+        "cn/laowu/mod/client/ClientInputEvents.class",
+        "cn/laowu/mod/client/ClientPacketHandler.class",
+        "cn/laowu/mod/client/WorldSettingsScreen.class",
+        "cn/laowu/mod/client/WorldSettingsScreen$1.class",
+        "cn/laowu/mod/CommonEvents.class",
+        "cn/laowu/mod/genetics/CatAttributeEffects.class",
+        "cn/laowu/mod/genetics/CatAttributeEffects$TraitContext.class",
+        "cn/laowu/mod/genetics/CatTrait.class",
+        "cn/laowu/mod/genetics/CatTraitData.class",
+        "cn/laowu/mod/genetics/CatTraitInstance.class",
+        "cn/laowu/mod/genetics/CatTraitProfile.class",
+        "cn/laowu/mod/item/CatFilterDescription.class",
+        "cn/laowu/mod/item/CatFilterRules.class",
+        "cn/laowu/mod/item/CatTraitFishItem.class",
+        "cn/laowu/mod/item/TraitDebugWandItem.class",
+        "cn/laowu/mod/network/ModNetwork.class",
+        "cn/laowu/mod/ServerConfig.class",
+        "kubejs.plugins.txt"
+      ],
+      "Removed": [],
+      "NativeArtilleryMedicalAndPublicAccessoryCoreUnchanged": true,
+      "AccessoryEventAdapterExtended": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "Sha256": "D6233C0A35E8233ACD8427D221F7B9ACCC4152D2B2F0E6BEA744E6086D7D88F5",
+      "Bytes": 7013626,
+      "Baseline": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\build\\trait-kube-baseline-20260918-152116\\neoforge-1.21.1\\create-meowchanics-2.2.0-neoforge-1.21.1.jar",
+      "Added": [
+        "cn/laowu/mod/api/CatTraitApi.class",
+        "cn/laowu/mod/api/CatTraitContext.class",
+        "cn/laowu/mod/api/CatTraitHandle.class",
+        "cn/laowu/mod/compat/kubejs/CatTraitsKubePlugin.class",
+        "cn/laowu/mod/compat/kubejs/CatTraitsKubePlugin$TraitEvent.class",
+        "cn/laowu/mod/genetics/CatTraitHooks.class",
+        "cn/laowu/mod/genetics/CatTraitHooks$Seen.class",
+        "cn/laowu/mod/genetics/CatTraitRegistry.class",
+        "cn/laowu/mod/genetics/CatTraitScriptState.class",
+        "cn/laowu/mod/genetics/CatTraitType.class",
+        "cn/laowu/mod/genetics/ScriptedCatTrait.class",
+        "cn/laowu/mod/genetics/ScriptedCatTraitDefinition.class"
+      ],
+      "Changed": [
+        "assets/laowu/lang/en_us.json",
+        "assets/laowu/lang/zh_cn.json",
+        "cn/laowu/mod/accessory/CatAccessoryEvents.class",
+        "cn/laowu/mod/CatFilterMenu.class",
+        "cn/laowu/mod/CatTraitEditorMenu.class",
+        "cn/laowu/mod/CatTraitEditorMenu$1.class",
+        "cn/laowu/mod/client/CatFilterScreen.class",
+        "cn/laowu/mod/client/CatScannerItemRenderer.class",
+        "cn/laowu/mod/client/CatScannerTextureManager.class",
+        "cn/laowu/mod/client/CatScannerTextureManager$Layers.class",
+        "cn/laowu/mod/client/CatTraitCardRenderer.class",
+        "cn/laowu/mod/client/CatTraitEditorScreen.class",
+        "cn/laowu/mod/client/CatTraitEditorScreen$1.class",
+        "cn/laowu/mod/client/ClientInputEvents.class",
+        "cn/laowu/mod/client/ClientPacketHandler.class",
+        "cn/laowu/mod/client/WorldSettingsScreen.class",
+        "cn/laowu/mod/client/WorldSettingsScreen$1.class",
+        "cn/laowu/mod/CommonEvents.class",
+        "cn/laowu/mod/genetics/CatAttributeEffects.class",
+        "cn/laowu/mod/genetics/CatAttributeEffects$TraitContext.class",
+        "cn/laowu/mod/genetics/CatTrait.class",
+        "cn/laowu/mod/genetics/CatTraitData.class",
+        "cn/laowu/mod/genetics/CatTraitInstance.class",
+        "cn/laowu/mod/genetics/CatTraitProfile.class",
+        "cn/laowu/mod/item/CatFilterDescription.class",
+        "cn/laowu/mod/item/CatFilterRules.class",
+        "cn/laowu/mod/item/CatTraitFishItem.class",
+        "cn/laowu/mod/item/TraitDebugWandItem.class",
+        "cn/laowu/mod/network/ModNetwork.class",
+        "cn/laowu/mod/ServerConfig.class",
+        "kubejs.plugins.txt"
+      ],
+      "Removed": [],
+      "NativeArtilleryMedicalAndPublicAccessoryCoreUnchanged": true,
+      "AccessoryEventAdapterExtended": true
+    }
+  ],
+  "SDK": {
+    "Path": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/Create-Meowchanics-develop/releases/cat-traits-kubejs-sdk-1.0.0.zip",
+    "Sha256": "DB8B13CBD284D8C7C27F4E0ED1013AE518B8A081D8705B1659FD1B78C10F6061",
+    "Bytes": 14317,
+    "Files": 5
+  },
+  "Validation": {
+    "NormalBuildsPassed": true,
+    "BuildLogs": {
+      "forge": "forge-1.20.1/build/trait-release-build-offline.log",
+      "neoforge": "neoforge-1.21.1/build/trait-release-build.log"
+    },
+    "ForgeFinalBuildOffline": "Final normal build used cached dependencies with --offline after Maven Central DNS resolution failed. No verification task was skipped.",
+    "FullRealKubeJS36SdkAndTraits": {
+      "forge": {
+        "Passed": 105,
+        "Total": 105,
+        "ScriptErrors": 0,
+        "TraitScenarios": 7,
+        "Log": "forge-1.20.1/build/trait-kube-full4.log"
+      },
+      "neoforge": {
+        "Passed": 105,
+        "Total": 105,
+        "ScriptErrors": 0,
+        "TraitScenarios": 7,
+        "Log": "neoforge-1.21.1/build/trait-kube-full4.log"
+      }
+    },
+    "RunnerTotalCaveat": "The pre-existing opt-in ProtoChunk promotion probe reports SKIP/success when not enabled, and is included in the 105 totals; all seven trait scenarios actually ran.",
+    "NativeWithoutKubeJS": {
+      "forge": {
+        "CoreExecuted": 1,
+        "ScriptOnlySkipped": 6,
+        "Log": "forge-1.20.1/build/trait-native1.log"
+      },
+      "neoforge": {
+        "CoreExecuted": 1,
+        "ScriptOnlySkipped": 6,
+        "Log": "neoforge-1.21.1/build/trait-native1.log"
+      }
+    },
+    "CustomTraitChecksPerLoader": 311,
+    "DeathConfigChecksPerLoader": 74,
+    "ConfigLog": "build/trait-config-release.log",
+    "SourceGroupsPassed": 29,
+    "TraitWiringAndShippedScriptChecks": 97,
+    "AccessoryDefinitionChecksPerLoader": 23252,
+    "MixinPackageChecks": 284,
+    "OldAccessorySdkChecks": 287,
+    "OldAccessorySdkZipUnchangedSha256": "3FCBBDD7CF998703B27A67469CB6E017BA3601DC2BAD1E46C07F413B614E9F26",
+    "ApiV3AndTraitApiV1ContractsPassed": true,
+    "ReleaseIsolationPassed": true,
+    "PackageLogs": [
+      "build/trait-release-package-final.log",
+      "build/trait-release-mixins-final.log"
+    ],
+    "TraitSdkFiveFilesAndManifestHashesVerified": true,
+    "EarlierRuns": [
+      {
+        "Loader": "forge",
+        "Log": "forge-1.20.1/build/trait-kube-full1.log",
+        "Failed": [
+          "autoArtillery32",
+          "loadedCatPreservesDataAndRecoversViewLock"
+        ]
+      },
+      {
+        "Loader": "neoforge",
+        "Log": "neoforge-1.21.1/build/trait-kube-full1.log",
+        "Failed": [
+          "loadedCatPreservesDataAndRecoversViewLock"
+        ]
+      },
+      {
+        "Loader": "forge",
+        "Log": "forge-1.20.1/build/trait-kube-full2.log",
+        "Failed": [
+          "autoArtillery32",
+          "medicalTriage"
+        ]
+      },
+      {
+        "Loader": "forge",
+        "Log": "forge-1.20.1/build/trait-kube-full3.log",
+        "Failed": [
+          "smartArtillery"
+        ]
+      }
+    ],
+    "EarlierScriptErrors": "Runs before full4 logged a trait afterHurt state-write error on a dead cat even when the test assertion passed. Fixed by dispatching only the read-only death event for dead cats, added an explicit negative assertion, and verified zero script errors in both final logs.",
+    "NativeTimingCaveat": "Artillery/medical timing cases varied across Forge runs. Latest full4 passed, but this change is not claimed to fix native artillery or medical behavior; relevant native mechanic class bytes are unchanged from the pre-task jars.",
+    "OldSnapshotCompatibilityFix": "Do not add an empty ScriptBonuses field to native trait synchronization. The original no-reroll assertion was retained.",
+    "Gui": "Both client implementations compile; ID roster roundtrip and server editing/filter data tested. No manual GUI/visual client test was run.",
+    "PancakeRestore": "Calls the existing production restoreCat routine; fan activation detection was not re-tested."
+  }
+}

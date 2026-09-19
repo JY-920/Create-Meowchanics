@@ -1,0 +1,49 @@
+// SDK/docs/test fixtures stay outside the runtime JAR. .bbmodel IS a runtime asset here.
+def excluded=['kubejs/**','docs/**','examples/**','tests/**','test/**','screenshots/**','saves/**','logs/**',
+              '**/.cache/**','**/.DS_Store','**/Thumbs.db','**/*.log','**/*.tmp','**/*.bak',
+              'cn/laowu/mod/test/**','cn/laowu/mod/tests/**','cn/laowu/mod/**/*Probe*.class','cn/laowu/mod/**/*Regression*.class']
+sourceSets.main.resources { excluded.each { exclude it } }
+tasks.named('jar',Jar) {
+    excluded.each { exclude it }
+    preserveFileTimestamps=false
+    reproducibleFileOrder=true
+}
+def invalid={ String path ->
+    path==~ /(?i)(kubejs|docs|examples|tests?|screenshots|saves|logs)\/.*/ ||
+    path.contains('/.cache/') ||
+    path==~ /(?i).*\.(log|tmp|bak|js|ps1|zip|java)$/ ||
+    path==~ /cn\/laowu\/mod\/(tests?\/.*|.*(?:Probe|Regression).*\.class)/
+}
+def verify=tasks.register('verifyReleaseIsolation') {
+    notCompatibleWithConfigurationCache('Checks the final physical JAR after loader remapping')
+    dependsOn tasks.named('jar')
+    def archive=tasks.named('jar',Jar).flatMap { it.archiveFile }
+    inputs.file(archive)
+    doLast {
+        ['kubejs/server_scripts/bad.js','cn/laowu/mod/client/BadProbe.class','docs/readme.md','assets/laowu/test.tmp'].each {
+            if(!invalid(it))throw new GradleException('Release isolation self-test missed '+it)
+        }
+        ['kubejs.plugins.txt','kubejs.classfilter.txt','cn/laowu/mod/api/CatAccessoryApi.class',
+         'assets/laowu/models/entity/cat_pipa.bbmodel','data/laowu/cat_accessories/cat_cork_vest.json'].each {
+            if(invalid(it))throw new GradleException('Release isolation would remove required runtime '+it)
+        }
+        def zip=new java.util.zip.ZipFile(archive.get().asFile)
+        try {
+            def bad=zip.entries().findAll { invalid(it.name) }.collect { it.name }
+            if(!bad.isEmpty())throw new GradleException('Non-runtime content in release JAR: '+bad)
+            ['kubejs.plugins.txt','kubejs.classfilter.txt','cn/laowu/mod/api/CatAccessoryApi.class',
+             'cn/laowu/mod/compat/kubejs/CatAccessoriesKubePlugin.class',
+             'cn/laowu/mod/api/CatTraitApi.class',
+             'cn/laowu/mod/compat/kubejs/CatTraitsKubePlugin.class'].each {
+                if(zip.getEntry(it)==null)throw new GradleException('Required optional integration missing: '+it)
+            }
+        } finally { zip.close() }
+        logger.lifecycle('PASS: runtime JAR excludes SDK, scripts, tests, caches and temporary files')
+    }
+}
+tasks.named('check') { dependsOn verify }
+tasks.named('assemble') { dependsOn verify }
+tasks.withType(org.gradle.api.publish.maven.tasks.AbstractPublishToMaven).configureEach { dependsOn verify }
+
+// Existing resource inspector also opens physical outputs through the project API.
+tasks.named('verifyCatAnimationResources') { notCompatibleWithConfigurationCache('Validates physical runtime animation assets') }

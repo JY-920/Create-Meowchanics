@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_medic_smoke_canister",
+  "required_outfit": "agent",
+  "effects": {
+    "attack": -10,
+    "healing_smoke": 1
+  }
+}

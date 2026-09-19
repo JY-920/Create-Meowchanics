@@ -20,12 +20,14 @@ for (const loader of ['forge-1.20.1', 'neoforge-1.21.1']) {
     verify(preferences.includes('getMainHandItem') && preferences.includes('getOffhandItem'), loader + ' held laser validation');
     verify(preferences.includes('server.overworld().getDataStorage()'), loader + ' shared world data, not dimension or item state');
     const combat = code('CatCombatControl');
-    for (const guard of ['!cat.isPassenger()', '!CatPoseData.isPancake(cat)', '!cat.isOrderedToSit()',
-            '!cat.isInSittingPose()', '!CatProfileData.isBeingViewed(cat)', 'CatOutfitType.TRANSPORT',
+    for (const guard of ['CatEngineeringCombat.canReceiveOrders(cat)', '!CatPoseData.isPancake(cat)', '!cat.isOrderedToSit()',
+            '!cat.isInSittingPose()', '!CatProfileData.isBeingViewed(cat)', '!CatClothesData.getOutfit(cat).isSupport()', '!CatClothesData.getOutfit(cat).isPreviewOnly()',
             '!CatLaserCommands.hasOrder(cat)', 'CatTeamRules.canHarm(cat, target)', 'target instanceof Enemy',
             'neutral.isAngryAt(cat)', 'cat.hasLineOfSight(target)', 'cat.tickCount + 20', 'MAX_OWNER_DISTANCE_SQR'])
         verify(combat.includes(guard), loader + ' combat guard ' + guard);
     verify(combat.includes('!nowDefending(cat, selected)'), loader + ' keeps defence / explicit target when disabling auto mode');
+    verify(code('CatEngineeringCombat').includes('return !cat.isPassenger() || deployed(cat);'),
+        loader + ' mounted artillery may receive orders; pilot/other vehicle passengers may not');
     verify(code('CommonEvents').includes('CatCombatControl.tick(cat)'), loader + ' server tick installed');
     const render = code('client/CatHealthBarRenderer');
     verify(render.includes('cat.getHealth(), cat.getMaxHealth()') && render.includes('cat.getPosition(partial)'), loader + ' real synced health / interpolated position');

@@ -46,6 +46,9 @@ public final class ClientModEvents {
             InputConstants.Type.KEYSYM,
             InputConstants.KEY_LALT,
             "key.categories.laowu");
+    public static final KeyMapping PILOT_DESCEND = new KeyMapping(
+            "key.laowu.pilot_descend", InputConstants.Type.KEYSYM, InputConstants.KEY_LCONTROL,
+            "key.categories.laowu");
     public static final KeyMapping HISSING_VOLUME = new KeyMapping(
             "key.laowu.hissing_volume",
             InputConstants.Type.KEYSYM,
@@ -58,6 +61,7 @@ public final class ClientModEvents {
         event.register(CAT_ARMOR_POUNCE);
         event.register(CAT_TOOL_EMPOWER);
         event.register(HISSING_VOLUME);
+        event.register(PILOT_DESCEND);
     }
 
     @SubscribeEvent
@@ -67,6 +71,8 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(LaoWuMod.CAT_HEALING_SMOKE.get(),CatHealingSmokeParticle.Provider::new);
+        event.registerSpriteSet(LaoWuMod.CAT_AGENT_SMOKE.get(),CatHealingSmokeParticle.SmokeProvider::new);
         event.registerSpriteSet(LaoWuMod.NOZZLE_FLUID_PUFF.get(),
                 NozzleFluidPuffParticle.Provider::new);
     }
@@ -92,6 +98,7 @@ public final class ClientModEvents {
             MenuScreens.register(LaoWuMod.CAT_PACKAGE_MENU.get(), CatPackageScreen::new);
             MenuScreens.register(LaoWuMod.BREEDING_BOX_MENU.get(), BreedingBoxScreen::new);
             MenuScreens.register(LaoWuMod.ADOPTION_BOX_MENU.get(), AdoptionBoxScreen::new);
+            MenuScreens.register(LaoWuMod.WISH_ADOPTION_BOX_MENU.get(), WishAdoptionBoxScreen::new);
             MenuScreens.register(LaoWuMod.CAT_ATTRIBUTE_EDITOR_MENU.get(),
                     CatAttributeEditorScreen::new);
             MenuScreens.register(LaoWuMod.CAT_TRAIT_EDITOR_MENU.get(),
@@ -131,6 +138,19 @@ public final class ClientModEvents {
     }
 
     @SubscribeEvent
+    public static void addMedicalPatientLayers(EntityRenderersEvent.AddLayers event) {
+        for (var type : net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE)
+            if (type != EntityType.CAT) addMedicalLayer(event.getEntityRenderer(type));
+        for (var skin : event.getSkins()) addMedicalLayer(event.getPlayerSkin(skin));
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static void addMedicalLayer(net.minecraft.client.renderer.entity.EntityRenderer<?> renderer) {
+        if (renderer instanceof net.minecraft.client.renderer.entity.LivingEntityRenderer living)
+            living.addLayer(new MedicalPatientLayer(living));
+    }
+
+    @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(EntityType.CAT, HissingCatRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_PANCAKE_PROJECTILE.get(),
@@ -139,6 +159,13 @@ public final class ClientModEvents {
                 FishingRodProjectileRenderer::new);
         event.registerEntityRenderer(LaoWuMod.MECHANICAL_LASER_PROJECTILE.get(),
                 MechanicalLaserProjectileRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.ENGINEERING_CANNON.get(), EngineeringCannonRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.CAT_FLIGHT_CARRIER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.CAT_DIVING_CARRIER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.CAT_HONEY_PATCH.get(),CatHoneyPatchRenderer::new);
+        // Retain the legacy saved entity, but never draw its old fire-charge item.
+        event.registerEntityRenderer(LaoWuMod.AGENT_SMOKE_BOMB.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.ENGINEERING_COGWHEEL_PROJECTILE.get(), EngineeringCogwheelRenderer::new);
         event.registerEntityRenderer(LaoWuMod.HONEY_MISSILE_PROJECTILE.get(),
                 HoneyMissileProjectileRenderer::new);
         event.registerEntityRenderer(LaoWuMod.DYNAMITE_PROJECTILE.get(),
@@ -155,6 +182,7 @@ public final class ClientModEvents {
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), BreedingBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
+        event.registerBlockEntityRenderer(LaoWuMod.WISH_ADOPTION_BOX_BE.get(), WishAdoptionBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_CARRIER_BE.get(), CatCarrierRenderer::new);
     }
 

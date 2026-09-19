@@ -76,6 +76,7 @@ public final class CatStatsGoggleOverlay {
         CatAttributeProfile profile;
         CatTraitProfile traits;
         Cat liveCat = target.cat();
+        if (liveCat == null) liveCat = CatAccessoryPreview.forStack(target.pancake());
         if (liveCat != null) {
             profile = CatAttributeData.read(liveCat).orElse(null);
             traits = CatTraitData.read(liveCat).orElse(CatTraitProfile.EMPTY);
@@ -221,7 +222,11 @@ public final class CatStatsGoggleOverlay {
         }
     }
 
-    private static void renderConnectedNumberLeft(GuiGraphics graphics, String text,
+    static void renderAttributeIcon(GuiGraphics graphics, CatStat stat, int x, int y) {
+        graphics.blit(ATTRIBUTE_ICONS, x, y, attributeIconIndex(stat) * 8, 0, 8, 8, 48, 8);
+    }
+
+    static void renderConnectedNumberLeft(GuiGraphics graphics, String text,
                                                    int x, int y) {
         for (int index = 0; index < text.length(); index++) {
             char character = text.charAt(index);

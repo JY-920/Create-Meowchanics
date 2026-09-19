@@ -1,0 +1,118 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "canvas": "16x16 RGBA PNG; nearest-neighbor export of AI draft",
+  "items": [
+    {
+      "id": "cat_taunt_bell",
+      "name": "铃铛",
+      "subject": "a small brass cat collar bell with an arch loop at the top and a dark horizontal slit, warm gold",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-d3bffae3-f0a8-4b35-a11d-1b142107b637.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft item sprite for a cat accessory.\nPrimary request: a small brass cat collar bell with an arch loop at the top and a dark horizontal slit, warm gold.\nPixel specification: design on an EXACT 16 by 16 logical pixel grid, nearest-neighbor enlarged to the output square. Every logical pixel is one flat square color. Single centered object occupying about 12 by 13 logical pixels, 1-2 pixels of clear margin. Maximum 12 colors, one-pixel dark outline, Minecraft inventory item style with readable silhouette and restrained upper-left highlight.\nBackground: genuine transparent alpha, not a checkerboard picture. No text, letters, borders, UI, shadows outside the sprite, gradients, antialiasing, extra items or 3D render. This is a draft for an artist to redraw, simplicity is critical."
+    },
+    {
+      "id": "cat_silent_bell",
+      "name": "羊毛毡",
+      "subject": "a folded piece of fluffy cream-white wool felt with light grey edge shading",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-575cad37-af03-4803-a47f-296cc2014c7c.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a folded piece of fluffy cream-white wool felt with light grey edge shading.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_stability_anchor",
+      "name": "船锚",
+      "subject": "a compact iron boat anchor, grey-blue metal, curved flukes and circular top eye",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-a7a4918e-84de-448d-a460-cc25459235dc.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a compact iron boat anchor, grey-blue metal, curved flukes and circular top eye.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_fire_charm",
+      "name": "隔热垫",
+      "subject": "a small terracotta-red quilted square heat-resistant pad with a dark brown border",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-3e2b86ce-a596-495a-bf96-edaa55774b7a.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a small terracotta-red quilted square heat-resistant pad with a dark brown border.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_impact_core",
+      "name": "弹簧",
+      "subject": "a simple silver steel coiled compression spring, diagonal to show the coils",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-a0b545d5-41fd-4c42-8172-ac3be9154684.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a simple silver steel coiled compression spring, diagonal to show the coils.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_followup_gear",
+      "name": "齿轮",
+      "subject": "a small brass cogwheel with six chunky teeth and a dark central round hole",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-987bfdac-9cd8-4125-8149-ce9447f9b03a.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a small brass cogwheel with six chunky teeth and a dark central round hole.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_loot_magnet",
+      "name": "磁铁",
+      "subject": "a red horseshoe magnet with two pale silver tips and a clear U-shaped silhouette",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-f29998a1-bcfc-4ed5-9840-b813e3083e33.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a red horseshoe magnet with two pale silver tips and a clear U-shaped silhouette.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_ace_feather",
+      "name": "羽毛",
+      "subject": "one pale ivory feather with a turquoise accent on the tip, diagonal silhouette",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-74a1ee4d-b08f-4091-891b-62696f135830.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: one pale ivory feather with a turquoise accent on the tip, diagonal silhouette.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_blast_fuse",
+      "name": "引线",
+      "subject": "one coiled tan fuse cord with a tiny orange spark at its exposed upper end",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-d0e01c42-5249-4d69-bd33-f80571d3c68c.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: one coiled tan fuse cord with a tiny orange spark at its exposed upper end.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_health_badge",
+      "name": "红绳",
+      "subject": "a red lucky knotted cord tied into one simple small bow with two short trailing ends",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-df355b25-f892-4b10-8625-d81043d8b52f.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a red lucky knotted cord tied into one simple small bow with two short trailing ends.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_attack_badge",
+      "name": "尖牙",
+      "subject": "a single curved ivory cat fang, dark root and bright sharp tip",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-32f610af-6a87-48e5-8d65-ffc64d6dfd94.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a single curved ivory cat fang, dark root and bright sharp tip.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_speed_badge",
+      "name": "风车",
+      "subject": "a small turquoise and cream four-vane pinwheel on a short wooden stick",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-5ef701e1-b187-475c-8574-015d78da34ac.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a small turquoise and cream four-vane pinwheel on a short wooden stick.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_stamina_badge",
+      "name": "鳞片",
+      "subject": "a single broad overlapping-shield-shaped dark teal scale, pale blue rim",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-66301fcf-716e-485d-ae6f-23aaa51e58aa.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a single broad overlapping-shield-shaped dark teal scale, pale blue rim.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_intelligence_badge",
+      "name": "眼镜",
+      "subject": "a pair of small round brass-rimmed spectacles with blue glass and visible bridge",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-db0874ec-7a75-49d3-9cc8-5b280a84f0ac.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a pair of small round brass-rimmed spectacles with blue glass and visible bridge.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_luck_badge",
+      "name": "四叶草",
+      "subject": "a bright green four-leaf clover on a small curved stem, four clearly separated heart-shaped leaves",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-f703a747-8e4c-43b4-b373-4725e01b455f.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a bright green four-leaf clover on a small curved stem, four clearly separated heart-shaped leaves.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    },
+    {
+      "id": "cat_butter_cube",
+      "name": "黄油块",
+      "subject": "a luminous-looking but flat-shaded pale golden cube of butter on one small folded gold foil corner, rare boss loot, one white shine pixel",
+      "source": "C:/Users/16611/.codex/generated_images/019ff0bf-aafa-77f2-a2a7-6e42cfc9cbfd/exec-5baefa89-115d-402e-85b5-d89298de3e6a.png",
+      "prompt": "Use case: stylized-concept. Asset type: Minecraft cat-accessory inventory sprite. Primary request: a luminous-looking but flat-shaded pale golden cube of butter on one small folded gold foil corner, rare boss loot, one white shine pixel.\nCreate ONE isolated simple chunky pixel-art object. EXACTLY 16x16 logical pixels for the entire canvas, enlarged with nearest-neighbor only. The object occupies about 12x12 of those pixels. 1 logical pixel dark outline, at most 10 flat colors, restrained top-left shading. All features must remain readable at 16x16. Match a coherent collection of Minecraft inventory trinkets. Transparent alpha background, no text, no frame, no checkerboard printed into the image, no extra items, no floor shadow, no smooth gradients, no antialiasing, no 3D rendering. This is an artist redraw draft, prioritize simple silhouettes over detail."
+    }
+  ]
+}
