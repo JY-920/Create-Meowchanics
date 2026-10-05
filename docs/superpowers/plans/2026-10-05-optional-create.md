@@ -53,7 +53,7 @@ Files: both ports' recipes/tags; Forge mods.toml; NeoForge template neoforge.mod
 
 - [x] Run dual-loader normal builds, API/schema/isolation checks and actual KubeJS compatibility regressions.
 - [x] Run both presence modes on each loader; report actual gaps instead of claiming optional support from metadata.
-- [ ] Commit develop changes and verify remote develop; preserve stable main.
+- [x] Commit develop changes and verify remote develop; preserve stable main.
 - [x] Deploy a completed build after checking clients, backing up and matching hashes. Do not deploy an unfinished optional conversion.
 
 ## Verification notes
@@ -66,3 +66,4 @@ Files: both ports' recipes/tags; Forge mods.toml; NeoForge template neoforge.mod
 - Review found scanner, industrial packet and transport gesture linkage holes; each was reproduced before its fix. Saved delivery motion releases gravity while retaining cargo data; the test includes native cat fall immunity and actual 220-block descent.
 - Standalone recipes are deferred, and removing Create from an existing industrial world is not a lossless migration. See docs/optional-create.md.
 - Local deployment completed at 2026-10-05 11:57:24 Asia/Shanghai. Both instances have one enabled laowu JAR, matching build SHA-256; previous packages are recoverable in mod-backups/create-meowchanics/20261005-115724-optional-create.1. See docs/deployment-optional-create.1.json.
+- Implementation commit 39b12d9afc0c039b4baff27b0e3e4e9d1bfa5a2f verified on remote develop. Stable remote main remains a4a56d174a936c01445a226f1055ffc50019d7fa; only main and develop branches remain.
