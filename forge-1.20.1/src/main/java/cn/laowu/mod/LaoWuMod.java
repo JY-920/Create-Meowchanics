@@ -895,6 +895,8 @@ public final class LaoWuMod {
         });
         context.registerConfig(ModConfig.Type.COMMON, GlobalConfig.SPEC, GlobalConfig.FILE_NAME);
         MinecraftForge.EVENT_BUS.register(CommonEvents.class);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
+            MinecraftForge.EVENT_BUS.register(cn.laowu.mod.compat.create.CreateProcessingEvents.class);
         MinecraftForge.EVENT_BUS.register(cn.laowu.mod.accessory.CatAccessoryEvents.class);
         MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerAboutToStartEvent event) -> ServerConfig.resetWorldState());
         MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppedEvent event) -> ServerConfig.resetWorldState());

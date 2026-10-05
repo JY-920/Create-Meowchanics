@@ -1,5 +1,6 @@
 {
   "required": true,
+  "plugin": "cn.laowu.mod.mixin.CreateOptionalMixinPlugin",
   "minVersion": "0.8",
   "refmap": "laowu-performance.refmap.json",
   "package": "cn.laowu.mod.mixin",

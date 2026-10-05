@@ -877,6 +877,8 @@ public final class LaoWuMod {
         });
         modContainer.registerConfig(ModConfig.Type.COMMON, GlobalConfig.SPEC, GlobalConfig.FILE_NAME);
         NeoForge.EVENT_BUS.register(CommonEvents.class);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
+            NeoForge.EVENT_BUS.register(cn.laowu.mod.compat.create.CreateProcessingEvents.class);
         NeoForge.EVENT_BUS.register(cn.laowu.mod.accessory.CatAccessoryEvents.class);
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerAboutToStartEvent event) -> ServerConfig.resetWorldState());
         NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent event) -> ServerConfig.resetWorldState());
