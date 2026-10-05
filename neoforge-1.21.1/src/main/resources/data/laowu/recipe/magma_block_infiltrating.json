@@ -16,5 +16,11 @@
     {
       "id": "minecraft:magma_block"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

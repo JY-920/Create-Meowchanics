@@ -7,7 +7,7 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']){
  const j=f=>read(port+'/src/main/java/cn/laowu/mod/'+f+'.java');
  const watch=j('CatAgentWatch');
  for(const token of ['SCAN_TICKS = 20, VISUAL_TICKS = 40','MAX_RADIUS = 128','Math.max(0, intelligence) * .64',
-   'CatStat.INTELLIGENCE','CatOutfitType.AGENT','findSeat(cat) != null','SeatEntity','CatSupportRules.canAssist',
+   'CatStat.INTELLIGENCE','CatOutfitType.AGENT','findSeat(cat) != null','CreateCareerHooks.isSeatPassenger(cat)','CatSupportRules.canAssist',
    'target instanceof Enemy','MobCategory.MONSTER','CatTeamRules.canHarm','radius * radius',
    'getEntitiesOfClass(Mob.class','watch.sources.removeIf','detected.put(target.getUUID(), target)',
    'send(target, null, 0)','VISUAL_TICKS','syncTo(LivingEntity target, ServerPlayer player)'])

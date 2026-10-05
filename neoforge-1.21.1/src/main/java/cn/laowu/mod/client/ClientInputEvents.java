@@ -13,6 +13,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @EventBusSubscriber(modid = LaoWuMod.MOD_ID, value = Dist.CLIENT)
 public final class ClientInputEvents {
     @SubscribeEvent
+    public static void standaloneSuitTooltip(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent event) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()
+                && event.getItemStack().getItem() instanceof cn.laowu.mod.item.TerminatorSuitItem suit)
+            CareerSuitTooltip.modify(event, suit, suit.outfit());
+    }
+    @SubscribeEvent
     public static void resetAccessories(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
         cn.laowu.mod.accessory.CatAccessoryRegistry.resetClient();
         cn.laowu.mod.genetics.CatTraitRegistry.resetClient();

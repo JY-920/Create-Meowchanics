@@ -1,7 +1,7 @@
 package cn.laowu.mod.item;
 
-import com.simibubi.create.foundation.item.TooltipHelper;
-import net.createmod.catnip.lang.FontHelper;
+import cn.laowu.mod.client.CatTooltipText;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +20,7 @@ public final class CatFurItem extends Item {
                                 List<Component> tooltip, TooltipFlag flag) {
         String description = Component.translatable(
                 "item.laowu.cat_fur.tooltip").getString();
-        tooltip.addAll(TooltipHelper.cutStringTextComponent(
-                description, FontHelper.Palette.STANDARD_CREATE));
+        tooltip.addAll(CatTooltipText.cutStringTextComponent(
+                description, CatTooltipText.Palette.STANDARD_CREATE));
     }
 }

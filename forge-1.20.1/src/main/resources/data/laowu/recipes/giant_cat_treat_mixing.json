@@ -1,11 +1,27 @@
 {
   "type": "create:mixing",
   "ingredients": [
-    { "item": "minecraft:poisonous_potato" },
-    { "tag": "laowu:giant_treat_mushrooms" },
-    { "fluid": "laowu:hissing_gas", "amount": 500 }
+    {
+      "item": "minecraft:poisonous_potato"
+    },
+    {
+      "tag": "laowu:giant_treat_mushrooms"
+    },
+    {
+      "fluid": "laowu:hissing_gas",
+      "amount": 500
+    }
   ],
   "results": [
-    { "item": "laowu:giant_cat_treat", "count": 1 }
+    {
+      "item": "laowu:giant_cat_treat",
+      "count": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

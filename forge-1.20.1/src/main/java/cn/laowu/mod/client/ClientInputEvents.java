@@ -13,6 +13,12 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = LaoWuMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class ClientInputEvents {
     @SubscribeEvent
+    public static void standaloneSuitTooltip(net.minecraftforge.event.entity.player.ItemTooltipEvent event) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()
+                && event.getItemStack().getItem() instanceof cn.laowu.mod.item.TerminatorSuitItem suit)
+            CareerSuitTooltip.modify(event, suit, suit.outfit());
+    }
+    @SubscribeEvent
     public static void resetAccessories(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
         cn.laowu.mod.accessory.CatAccessoryRegistry.resetClient();
         cn.laowu.mod.genetics.CatTraitRegistry.resetClient();

@@ -13,5 +13,11 @@
     {
       "id": "laowu:golden_speed_cat_can"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

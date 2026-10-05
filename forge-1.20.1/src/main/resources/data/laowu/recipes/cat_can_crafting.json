@@ -7,8 +7,20 @@
     " I "
   ],
   "key": {
-    "I": { "item": "create:iron_sheet" },
-    "F": { "tag": "minecraft:fishes" }
+    "I": {
+      "item": "create:iron_sheet"
+    },
+    "F": {
+      "tag": "minecraft:fishes"
+    }
   },
-  "result": { "item": "laowu:cat_can" }
+  "result": {
+    "item": "laowu:cat_can"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

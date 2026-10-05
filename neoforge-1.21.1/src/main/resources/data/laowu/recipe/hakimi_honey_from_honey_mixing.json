@@ -20,5 +20,11 @@
       "amount": 1000,
       "id": "laowu:liquid_cat"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

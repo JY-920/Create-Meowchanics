@@ -66,6 +66,7 @@ public record CatWorldTarget(@Nullable Cat cat, ItemStack pancake, long identity
                 obstructionDistanceSqr);
         if (dropped != null) return dropped;
 
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return null;
         if (!(minecraft.hitResult instanceof BlockHitResult blockHit)) return null;
         BlockPos hitPos = blockHit.getBlockPos();
         BlockEntity blockEntity = minecraft.level.getBlockEntity(hitPos);

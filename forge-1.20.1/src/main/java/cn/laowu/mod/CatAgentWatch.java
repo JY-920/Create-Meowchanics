@@ -30,7 +30,7 @@ public final class CatAgentWatch {
     public static boolean available(Cat cat) {
         return CatClothesData.getOutfit(cat) == CatOutfitType.AGENT && CatSupportRules.canAssist(cat)
                 && CareerCatBehavior.findSeat(cat) != null && !cat.isInWaterOrBubble() && !cat.isInLava()
-                && (!cat.isPassenger() || cat.getVehicle() instanceof com.simibubi.create.content.contraptions.actors.seat.SeatEntity)
+                && (!cat.isPassenger() || (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && cn.laowu.mod.compat.create.CreateCareerHooks.isSeatPassenger(cat)))
                 && radius(cat) > 0;
     }
     public static boolean hostile(Cat cat, Mob target) {

@@ -22,7 +22,8 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']){
   }
  }
  const events=java('CommonEvents');
- check((events.includes('if (!split && (cat.isTame() || outfit != CatOutfitType.NONE)')||events.includes('if ((cat.isTame() || outfit != CatOutfitType.NONE) && !split)'))&&events.includes('dropOnDeath(cat,!split)'),'Split never also creates a revivable third cat or copies contents, including the new tamed-cat path');
+ const death=events.slice(events.indexOf('public static void onCatDeath('),events.indexOf('public static void replaceCatStringDropsWithFur('));
+ check(death.includes('cat.isTame() || outfit != CatOutfitType.NONE')&&death.includes('!split && outcome != ServerConfig.DEATH_NONE')&&death.includes('dropOnDeath(cat,!split && outcome != ServerConfig.DEATH_NONE)'),'Split and disabled death outcome never create a third cat or copy contents');
  check(events.indexOf('CatHealingSmoke.flush(level)')<events.indexOf('CatMedicalHealing.flush(level)'),'Smoke joins strongest shared healing flush');
  const split=java('CatCockroachSplit');
  for(const key of ['parent.getHealth()>0','parent.getOwnerUUID()','genes.current(stat)/2','CatTraitProfile.EMPTY','children[0].discard()','setAge(-24000)'])

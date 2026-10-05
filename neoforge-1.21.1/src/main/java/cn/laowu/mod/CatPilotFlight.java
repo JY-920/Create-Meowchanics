@@ -15,7 +15,7 @@ public final class CatPilotFlight {
     public static final String USED = "LaoWuPilotFlightUsedTicks";
     public static boolean carried(Cat cat) { return cat.getVehicle() instanceof CatFlightCarrier; }
     public static boolean wrench(Player player) {
-        return AllItems.WRENCH.isIn(player.getMainHandItem()) || AllItems.WRENCH.isIn(player.getOffhandItem());
+        return CatMountTool.matches(player.getMainHandItem()) || CatMountTool.matches(player.getOffhandItem());
     }
     public static long duration(Cat cat) {
         return CatPilotFlightRules.durationTicks(ServerConfig.scale(CatStat.STAMINA,
@@ -37,7 +37,7 @@ public final class CatPilotFlight {
     }
     public static InteractionResult interact(Cat cat, Player player, InteractionHand hand) {
         if (CatClothesData.getOutfit(cat) != CatOutfitType.FLIGHT
-                || !AllItems.WRENCH.isIn(player.getItemInHand(hand)) || player.isShiftKeyDown()) return InteractionResult.PASS;
+                || !CatMountTool.matches(player.getItemInHand(hand)) || player.isShiftKeyDown()) return InteractionResult.PASS;
         if (!cat.isOwnedBy(player) || cat.isBaby()) return InteractionResult.FAIL;
         if (cat.level().isClientSide) return InteractionResult.SUCCESS;
         if (start(cat, player)) return InteractionResult.CONSUME;
@@ -53,7 +53,7 @@ public final class CatPilotFlight {
                 || CatPoseData.isPancake(cat) || CatProfileData.isBeingViewed(cat)
                 || CatClothesData.getOutfit(cat) != CatOutfitType.FLIGHT
                 || cat.isInWaterOrBubble() || cat.isInLava()
-                || com.simibubi.create.content.kinetics.chainConveyor.ServerChainConveyorHandler.hangingPlayers.containsKey(player.getUUID()))
+                || CatMountTool.isHanging(player))
             return false;
         return true;
     }

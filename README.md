@@ -3,6 +3,12 @@
 **机械动力：老吴学** is a playful Minecraft add-on that turns cats into an
 absurd Create-powered production, logistics, and combat system.
 
+On `develop`, the `optional-create.1` build also runs **without Create**:
+cat traits, outfits, accessories, bosses, mounts and the scanner remain available.
+Industrial machines, filters and Create jobs are enabled only when Create is installed.
+Standalone replacement recipes are not included yet.
+See [standalone compatibility notes](docs/optional-create.md) before testing an existing world.
+
 ## Changelog
 
 See the [2.2.1 Chinese changelog](docs/changelog-2.2.1.md) for music playback, trait scripting and configurable tamed-cat death outcomes. The [2.2.0 changelog](docs/changelog-2.2.0.md), [2.1.4 changelog](docs/changelog-2.1.4.md) and [2.1.3 feature changelog](docs/changelog-2.1.3.md) are retained for reference.

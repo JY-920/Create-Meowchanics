@@ -2,8 +2,22 @@
   "type": "create:mixing",
   "heatRequirement": "heated",
   "ingredients": [
-    { "item": "laowu:cat_can" },
-    { "item": "minecraft:beetroot" }
+    {
+      "item": "laowu:cat_can"
+    },
+    {
+      "item": "minecraft:beetroot"
+    }
   ],
-  "results": [{ "item": "laowu:health_cat_can" }]
+  "results": [
+    {
+      "item": "laowu:health_cat_can"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

@@ -66,7 +66,7 @@ public final class CatGiantMount {
                 && !cat.isNoAi() && !DynamiteCatLastStand.isActive(cat) && !cat.isPassenger() && !cat.isVehicle()
                 && !player.isPassenger() && player.isAlive() && !player.isSpectator()
                 && cat.getBoundingBox().inflate(5).contains(player.position()) && !CatProfileData.isBeingViewed(cat)
-                && !cat.isInLava() && !com.simibubi.create.content.kinetics.chainConveyor.ServerChainConveyorHandler.hangingPlayers.containsKey(player.getUUID());
+                && !cat.isInLava() && !CatMountTool.isHanging(player);
     }
     public static boolean hasSpace(Cat cat) {
         double half=width(cat)/2;

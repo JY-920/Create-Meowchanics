@@ -15,5 +15,11 @@
     {
       "item": "minecraft:tipped_arrow"
     }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

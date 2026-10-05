@@ -28,5 +28,11 @@
         "Potion": "laowu:powerful_hissing"
       }
     }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

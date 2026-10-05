@@ -12,5 +12,11 @@
     {
       "id": "laowu:pheromone_cat_food"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

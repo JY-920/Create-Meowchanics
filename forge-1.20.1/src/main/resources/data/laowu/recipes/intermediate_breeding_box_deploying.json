@@ -1,10 +1,22 @@
 {
   "type": "create:deploying",
   "ingredients": [
-    { "item": "laowu:basic_breeding_box" },
-    { "tag": "create:table_cloths" }
+    {
+      "item": "laowu:basic_breeding_box"
+    },
+    {
+      "tag": "create:table_cloths"
+    }
   ],
   "results": [
-    { "item": "laowu:intermediate_breeding_box" }
+    {
+      "item": "laowu:intermediate_breeding_box"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

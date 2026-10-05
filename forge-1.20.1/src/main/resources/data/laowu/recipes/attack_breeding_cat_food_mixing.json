@@ -2,8 +2,23 @@
   "type": "create:mixing",
   "heatRequirement": "heated",
   "ingredients": [
-    { "item": "laowu:breeding_cat_food" },
-    { "fluid": "laowu:hissing_gas", "amount": 250 }
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "fluid": "laowu:hissing_gas",
+      "amount": 250
+    }
   ],
-  "results": [{ "item": "laowu:attack_breeding_cat_food" }]
+  "results": [
+    {
+      "item": "laowu:attack_breeding_cat_food"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

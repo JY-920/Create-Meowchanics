@@ -35,5 +35,11 @@
       "id": "laowu:mutation_cat_food",
       "count": 8
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

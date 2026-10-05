@@ -7,8 +7,20 @@
     "CCC"
   ],
   "key": {
-    "C": { "item": "create:cardboard" },
-    "W": { "tag": "minecraft:wool" }
+    "C": {
+      "item": "create:cardboard"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    }
   },
-  "result": { "item": "laowu:basic_breeding_box" }
+  "result": {
+    "item": "laowu:basic_breeding_box"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

@@ -620,7 +620,7 @@ public final class CatBehaviorTraitEffects {
     }
 
     private static boolean isRunningBelt(Level level, BlockPos pos) {
-        return pos != null && level.isLoaded(pos)
+        return cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && pos != null && level.isLoaded(pos)
                 && level.getBlockState(pos).getBlock() instanceof BeltBlock
                 && level.getBlockEntity(pos) instanceof KineticBlockEntity kinetic
                 && kinetic.getSpeed() != 0.0F;

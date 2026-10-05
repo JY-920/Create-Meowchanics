@@ -176,6 +176,18 @@ configurations {
 }
 
 dependencies {
+    if (project.hasProperty('withoutCreate')) {
+        configurations.runtimeClasspath {
+            exclude group: 'com.simibubi.create'
+            exclude group: 'com.tterrag.registrate'
+            exclude group: 'net.createmod.ponder'
+            exclude group: 'dev.engine-room.flywheel'
+            if (!project.hasProperty('standaloneWithOptionalMods')) {
+                exclude group: 'mezz.jei'
+                exclude group: 'top.theillusivec4.curios'
+            }
+        }
+    }
     // Optional script bridge: compile only, never bundled or required for players.
     compileOnly("dev.latvian.mods:kubejs-neoforge:2101.7.2-build.377") { transitive = false }
     compileOnly("dev.latvian.mods:rhino:2101.2.7-build.81") { transitive = false }

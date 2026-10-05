@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Retextures native casing quads only; Create/Flywheel still draw the moving belt and items. */
-@EventBusSubscriber(modid=LaoWuMod.MOD_ID,value=Dist.CLIENT,bus=EventBusSubscriber.Bus.MOD)
 public final class CatBeltModel extends BakedModelWrapper<BakedModel> {
     private static final ModelProperty<Boolean> CAT=new ModelProperty<>();
     public CatBeltModel(BakedModel original){super(original);}

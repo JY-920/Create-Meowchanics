@@ -48,7 +48,7 @@ public final class CatBallItem extends Item {
         if (!(user instanceof Player player)) return;
 
         int usedTicks = getUseDuration(stack, user) - timeLeft;
-        float charge = PackageItem.getPackageVelocity(usedTicks);
+        float charge = net.minecraft.world.item.BowItem.getPowerForTime(usedTicks);
         if (charge < 0.1F || level.isClientSide) return;
 
         level.playSound(null, player.getX(), player.getY(), player.getZ(),

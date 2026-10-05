@@ -15,5 +15,11 @@
     {
       "id": "laowu:golden_attack_cat_can"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

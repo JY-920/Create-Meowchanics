@@ -7,7 +7,7 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']){
  const java=name=>read(port+'/src/main/java/cn/laowu/mod/'+name+'.java');
  const source=java('CommonEvents');
  const death=source.slice(source.indexOf('public static void onCatDeath('),source.indexOf('public static void replaceCatStringDropsWithFur('));
- for(const required of ['cat.isTame() || outfit != CatOutfitType.NONE','!split','RULE_DOMOBLOOT','CatPancakeItem.captureDeathDrop(cat)','CatProfileData.dropOnDeath(cat,!split)']){
+ for(const required of ['cat.isTame() || outfit != CatOutfitType.NONE','!split','RULE_DOMOBLOOT','CatPancakeItem.captureDeathDrop(cat)','CatProfileData.dropOnDeath(cat,!split && outcome != ServerConfig.DEATH_NONE)']){
   assert.ok(death.includes(required),port+': preserved death lifecycle '+required);checks++;
  }
  assert.ok(java('CatProfileData').includes('preserveInPancake && (cat.isTame() || CatClothesData.getOutfit(cat) != CatOutfitType.NONE)'),port+': inventory eligibility matches pancake eligibility');checks++;

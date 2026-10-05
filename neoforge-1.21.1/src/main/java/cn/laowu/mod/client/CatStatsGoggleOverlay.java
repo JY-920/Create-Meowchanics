@@ -292,6 +292,7 @@ public final class CatStatsGoggleOverlay {
     }
 
     static boolean isWearingCatGoggles(@Nullable Player player) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return false;
         return cn.laowu.mod.item.CatEngineerGogglesItem.isWornBy(player);
     }
 

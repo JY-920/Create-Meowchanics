@@ -10,7 +10,6 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 /** Client-local sphere outlines. No world data or server entity references are retained. */
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid="laowu",value=net.minecraftforge.api.distmarker.Dist.CLIENT)
 public final class CreatureTransmitterRange {
     private static final long DURATION=180_000L;
     private static ClientLevel world;

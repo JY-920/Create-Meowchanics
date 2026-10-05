@@ -21,10 +21,10 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']){
   check(work.includes('record Work(long position, int identity, long started)'),'weak work cache does not retain worlds');
   const career=java('CareerCatBehavior');
   check(career.indexOf('CatEngineeringBehavior.tick(cat)') < career.indexOf('if (outfit.isPreviewOnly())'),'work allowed without combat');
-  check(java('CommonEvents').includes('if (CatEngineeringBehavior.findCrank(cat) != null) return;'),'work takes priority over idle hissing');
+  check(java('CommonEvents').includes('CreateIntegration.isLoaded() && CatEngineeringBehavior.findCrank(cat) != null) return;'),'available Create work takes priority over idle hissing');
   const render=java('client/HissingCatRenderer'), model=java('client/HissingCatModel'), anim=java('client/CatEngineeringAnimation');
   check(render.includes('CatEngineeringAnimation.prepare(cat, bodyYaw, partialTick)'),'same render yaw for pose and crank');
-  check(render.includes('if (CatEngineeringAnimation.isPosing(cat)) return;'),'oiiai does not spin paws away');
+  check(render.includes('CreateIntegration.isLoaded() && CatEngineeringAnimation.isPosing(cat)) return;'),'oiiai does not spin paws away during available Create work');
   check(model.includes('CatEngineeringAnimation.apply(cat, head, body, leftHindLeg, rightHindLeg,'),'correct bone order');
   check(!model.includes('transforms.put("group3"'),'near-wall tool box is not suppressed');
   check(!model.includes('transforms.put("group2"'),'outer tool box is not suppressed');

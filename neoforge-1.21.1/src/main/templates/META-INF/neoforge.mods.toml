@@ -85,8 +85,8 @@ config="${mod_id}.mixins.json"
 
 [[dependencies.${mod_id}]]
     modId="create"
-    type="required"
-    reason="Create: Meowchanics extends Create's kinetic, fluid, logistics, and processing systems."
+    type="optional"
+    reason="Enables optional kinetic, fluid, logistics, and processing machines; cat gameplay works without Create."
     versionRange="[6.0.10,6.1.0)"
     ordering="AFTER"
     side="BOTH"

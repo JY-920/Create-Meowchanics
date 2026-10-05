@@ -12,5 +12,11 @@
   "result": {
     "id": "laowu:cat_depot",
     "count": 1
-  }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

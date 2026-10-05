@@ -198,7 +198,7 @@ public final class HissingCatModel extends CatModel<Cat> {
             liveHeadXRot = liveHeadYRot = 0;
             playingStreetDance = playingPipa = false;
         }
-        if (vanillaVisible && CatEngineeringAnimation.isPosing(cat)
+        if (vanillaVisible && cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && CatEngineeringAnimation.isPosing(cat)
                 && !cn.laowu.mod.CatEngineeringCombat.deployed(cat)) {
             CatEngineeringAnimation.apply(cat, head, body, leftHindLeg, rightHindLeg,
                     leftFrontLeg, rightFrontLeg, tail1, tail2);

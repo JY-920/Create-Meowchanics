@@ -1,9 +1,7 @@
 package cn.laowu.mod.compat.jei;
-
 import cn.laowu.mod.LaoWuMod;
-import cn.laowu.mod.item.CatPancakeItem;
-import com.simibubi.create.AllRecipeTypes;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
+import cn.laowu.mod.compat.create.CreateIntegration;
+import net.minecraft.resources.ResourceLocation;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
@@ -15,208 +13,35 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.recipe.RecipeType;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
-
-import java.util.List;
-
 @JeiPlugin
 public final class LaoWuJeiPlugin implements IModPlugin {
     @Override public ResourceLocation getPluginUid() { return LaoWuMod.id("jei_plugin"); }
-
-    @Override
-    public void registerItemSubtypes(ISubtypeRegistration registration) {
-        registration.registerSubtypeInterpreter(LaoWuMod.CAT_PANCAKE.get(),
-                new ISubtypeInterpreter<ItemStack>() {
-                    @Override
-                    public Object getSubtypeData(ItemStack stack, UidContext context) {
-                        return CatPancakeItem.getOutfit(stack).id();
-                    }
-
-                    @Override
-                    public String getLegacyStringSubtypeInfo(ItemStack stack, UidContext context) {
-                        return CatPancakeItem.getOutfit(stack).id();
-                    }
-                });
+    @Override public void registerItemSubtypes(ISubtypeRegistration argument) {
+        if (CreateIntegration.isLoaded()) new CreateJeiIntegration().registerItemSubtypes(argument);
+        else argument.registerSubtypeInterpreter(LaoWuMod.CAT_PANCAKE.get(), (stack,context) -> cn.laowu.mod.item.CatPancakeItem.getOutfit(stack).id());
     }
-
-    @Override
-    public void registerExtraIngredients(IExtraIngredientRegistration registration) {
-        registration.addExtraItemStacks(CatPancakeItem.jeiDisplayStacks());
+    @Override public void registerExtraIngredients(IExtraIngredientRegistration argument) {
+        if (CreateIntegration.isLoaded()) new CreateJeiIntegration().registerExtraIngredients(argument);
+        else argument.addExtraItemStacks(cn.laowu.mod.item.CatPancakeItem.jeiDisplayStacks());
     }
-
-    @Override
-    public void registerCategories(IRecipeCategoryRegistration registration) {
-        registration.addRecipeCategories(new InfiltratingJeiCategory());
+    @Override public void registerCategories(IRecipeCategoryRegistration argument) {
+        if (CreateIntegration.isLoaded()) new CreateJeiIntegration().registerCategories(argument);
     }
-
-    @Override
-    public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(mezz.jei.api.constants.RecipeTypes.CRAFTING, KimiArmorDyeJeiRecipes.examples());
-        var level = Minecraft.getInstance().level;
-        if (level != null) {
-            var recipes = level.getRecipeManager()
-                    .getAllRecipesFor(LaoWuMod.INFILTRATING_TYPE.get())
-                    .stream()
-                    .map(holder -> new RecipeHolder<com.simibubi.create.content.processing.basin.BasinRecipe>(
-                            holder.id(), holder.value()))
-                    .toList();
-            registration.addRecipes(InfiltratingJeiCategory.TYPE, recipes);
-        }
+    @Override public void registerRecipes(IRecipeRegistration argument) {
+        if (CreateIntegration.isLoaded()) new CreateJeiIntegration().registerRecipes(argument);
+        else argument.addRecipes(mezz.jei.api.constants.RecipeTypes.CRAFTING, KimiArmorDyeJeiRecipes.examples());
     }
-
-    @Override
-    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(LaoWuMod.INFILTRATION_TANK_ITEM.get(), InfiltratingJeiCategory.TYPE);
-        for(String category:new String[]{"pressing","packing","automatic_packing"})
-            registration.addRecipeCatalyst(cn.laowu.mod.create.CatMachineBlocks.CAT_PRESS_ITEM.get(),catMachineCategory(category));
-        for(String category:new String[]{"mixing","automatic_shapeless","automatic_brewing"})
-            registration.addRecipeCatalyst(cn.laowu.mod.create.CatMachineBlocks.CAT_MIXER_ITEM.get(),catMachineCategory(category));
-        for(String category:new String[]{"mixing","automatic_shapeless","automatic_brewing","packing","automatic_packing"})
-            registration.addRecipeCatalyst(cn.laowu.mod.create.CatMachineBlocks.HAJI_BASIN_ITEM.get(),catMachineCategory(category));
-        for(String category:new String[]{"pressing","deploying","spout_filling"})
-            registration.addRecipeCatalyst(cn.laowu.mod.create.CatDepotRegistration.CAT_DEPOT_ITEM.get(),catMachineCategory(category));
+    @Override public void registerRecipeCatalysts(IRecipeCatalystRegistration argument) {
+        if (CreateIntegration.isLoaded()) new CreateJeiIntegration().registerRecipeCatalysts(argument);
     }
-    public static RecipeType<?> catMachineCategory(String path){
-        return RecipeType.createRecipeHolderType(ResourceLocation.fromNamespaceAndPath("create",path));
+    @Override public void onRuntimeAvailable(IJeiRuntime argument) {
+        if (CreateIntegration.isLoaded()) new CreateJeiIntegration().onRuntimeAvailable(argument);
     }
-
-    /** Keep legacy datapack recipes functional while omitting them from the public recipe guide. */
-    @Override
-    public void onRuntimeAvailable(IJeiRuntime runtime) {
-        cn.laowu.mod.client.ClientWorldSettings.recipeRefresh = () -> updateVisibility(runtime);
-        hideLegacyBeltConnector(runtime);
-        updateVisibility(runtime);
-        hideNonOrangeCatPancakeRecipes(runtime);
-        ensureCatGrenadeAssemblyVisible(runtime);
+    @Override public void onRuntimeUnavailable() {
+        if (CreateIntegration.isLoaded()) new CreateJeiIntegration().onRuntimeUnavailable();
     }
-
-    private static void hideLegacyBeltConnector(IJeiRuntime runtime) {
-        var ingredients=runtime.getIngredientManager();
-        var legacy=ingredients.getAllItemStacks().stream()
-                .filter(stack -> stack.is(cn.laowu.mod.create.CatMachineBlocks.CAT_BELT_ITEM.get()))
-                .toList();
-        if(!legacy.isEmpty())
-            ingredients.removeIngredientsAtRuntime(mezz.jei.api.constants.VanillaTypes.ITEM_STACK,legacy);
-    }
-
-    /**
-     * Create normally imports every sequenced assembly recipe into JEI. Some
-     * JEI/Create combinations omit this one from the runtime lookup even
-     * though the deployers can execute it, so repair only that missing entry
-     * (or unhide it) without creating a duplicate page.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void ensureCatGrenadeAssemblyVisible(IJeiRuntime runtime) {
-        var level = Minecraft.getInstance().level;
-        if (level == null) return;
-
-        ResourceLocation categoryId = ResourceLocation.fromNamespaceAndPath(
-                "create", "sequenced_assembly");
-        ResourceLocation recipeId = LaoWuMod.id("cat_grenade_sequenced_assembly");
-        var jeiRecipes = runtime.getRecipeManager();
-        jeiRecipes.getRecipeType(categoryId).ifPresent(type -> {
-            List registered = jeiRecipes.createRecipeLookup((RecipeType) type)
-                    .includeHidden().get()
-                    .filter(candidate -> candidate instanceof RecipeHolder<?> holder
-                            && holder.id().equals(recipeId))
-                    .toList();
-            if (!registered.isEmpty()) {
-                jeiRecipes.unhideRecipes((RecipeType) type, registered);
-                return;
-            }
-
-            List missing = level.getRecipeManager()
-                    .getAllRecipesFor(AllRecipeTypes.SEQUENCED_ASSEMBLY.getType())
-                    .stream()
-                    .filter(holder -> holder.id().equals(recipeId))
-                    .toList();
-            if (!missing.isEmpty())
-                jeiRecipes.addRecipes((RecipeType) type, (List) missing);
-        });
-    }
-
-    /**
-     * Runtime recipes exist once per skin so processing can preserve the cat's
-     * appearance. JEI only needs the orange representative; hide every page
-     * whose input or output contains another skin.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void hideNonOrangeCatPancakeRecipes(IJeiRuntime runtime) {
-        var level = Minecraft.getInstance().level;
-        if (level == null) return;
-
-        var recipeManager = runtime.getRecipeManager();
-        for (var category : recipeManager.createRecipeCategoryLookup()
-                .includeHidden().get().toList()) {
-            RecipeType type = category.getRecipeType();
-            List hidden = recipeManager.createRecipeLookup(type)
-                    .includeHidden().get()
-                    .filter(candidate -> containsNonOrangePancake(
-                            candidate, level.registryAccess()))
-                    .toList();
-            if (!hidden.isEmpty()) recipeManager.hideRecipes(type, hidden);
-        }
-    }
-
-    private static boolean containsNonOrangePancake(
-            Object candidate, net.minecraft.core.HolderLookup.Provider registries) {
-        Recipe<?> recipe;
-        if (candidate instanceof RecipeHolder<?> holder) {
-            recipe = holder.value();
-        } else if (candidate instanceof Recipe<?> directRecipe) {
-            recipe = directRecipe;
-        } else {
-            return false;
-        }
-
-        for (var ingredient : recipe.getIngredients()) {
-            for (ItemStack stack : ingredient.getItems()) {
-                if (isNonOrangePancake(stack)) return true;
-            }
-        }
-        if (recipe instanceof ProcessingRecipe<?, ?> processing) {
-            for (var output : processing.getRollableResults()) {
-                if (isNonOrangePancake(output.getStack())) return true;
-            }
-        } else if (isNonOrangePancake(recipe.getResultItem(registries))) {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean isNonOrangePancake(ItemStack stack) {
-        return stack.is(LaoWuMod.CAT_PANCAKE.get())
-                && !CatPancakeItem.DEFAULT_VARIANT.equals(CatPancakeItem.variantId(stack));
-    }
-
-    @Override
-    public void onRuntimeUnavailable() {
-        cn.laowu.mod.client.ClientWorldSettings.recipeRefresh = () -> {};
-    }
-
-    private static void updateVisibility(IJeiRuntime runtime) {
-        setRecipeVisible(runtime, "mixing", "liquid_cat_mixing");
-        setRecipeVisible(runtime, "crushing", "cat_powder_crushing");
-        setRecipeVisible(runtime, "milling", "cat_powder_milling");
-        setRecipeVisible(runtime, "crushing", "cat_powder_milling");
-        setRecipeVisible(runtime, "sawing", "cat_strip_cutting");
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void setRecipeVisible(IJeiRuntime runtime, String category, String recipePath) {
-        var manager = runtime.getRecipeManager();
-        manager.getRecipeType(ResourceLocation.fromNamespaceAndPath("create", category)).ifPresent(type -> {
-            List recipes = manager.createRecipeLookup((RecipeType) type).includeHidden().get()
-                    .filter(candidate -> candidate instanceof RecipeHolder<?> holder
-                            && holder.id().equals(LaoWuMod.id(recipePath)))
-                    .toList();
-            if (recipes.isEmpty()) return;
-            if (cn.laowu.mod.ServerConfig.showHellRecipes()) manager.unhideRecipes((RecipeType) type, recipes);
-            else manager.hideRecipes((RecipeType) type, recipes);
-        });
+    public static RecipeType<?> catMachineCategory(String path) {
+        if (!CreateIntegration.isLoaded()) throw new IllegalStateException("Create machine categories are unavailable");
+        return CreateJeiIntegration.catMachineCategory(path);
     }
 }

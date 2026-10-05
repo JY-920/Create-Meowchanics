@@ -4,8 +4,8 @@ import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.genetics.CatTrait;
 import cn.laowu.mod.genetics.CatTraitData;
 import com.mojang.authlib.GameProfile;
-import com.simibubi.create.foundation.item.TooltipHelper;
-import net.createmod.catnip.lang.FontHelper;
+import cn.laowu.mod.client.CatTooltipText;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -121,9 +121,9 @@ public final class PheromoneCatFoodItem extends Item {
                 .orElseGet(() -> Component.translatable(
                         "item.laowu.pheromone_cat_food.tooltip.unbound")
                         .withStyle(ChatFormatting.GRAY)));
-        tooltip.addAll(TooltipHelper.cutStringTextComponent(
+        tooltip.addAll(CatTooltipText.cutStringTextComponent(
                 Component.translatable(
                         "item.laowu.pheromone_cat_food.tooltip.summary").getString(),
-                FontHelper.Palette.STANDARD_CREATE));
+                CatTooltipText.Palette.STANDARD_CREATE));
     }
 }

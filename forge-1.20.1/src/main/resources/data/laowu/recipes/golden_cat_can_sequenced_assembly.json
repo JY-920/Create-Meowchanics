@@ -1,31 +1,55 @@
 {
   "type": "create:sequenced_assembly",
-  "ingredient": { "item": "laowu:cat_can" },
+  "ingredient": {
+    "item": "laowu:cat_can"
+  },
   "loops": 1,
   "results": [
-    { "item": "laowu:golden_cat_can" }
+    {
+      "item": "laowu:golden_cat_can"
+    }
   ],
   "sequence": [
     {
       "type": "create:deploying",
       "ingredients": [
-        { "item": "laowu:cat_can" },
-        { "item": "create:golden_sheet" }
+        {
+          "item": "laowu:cat_can"
+        },
+        {
+          "item": "create:golden_sheet"
+        }
       ],
       "results": [
-        { "item": "laowu:cat_can" }
+        {
+          "item": "laowu:cat_can"
+        }
       ]
     },
     {
       "type": "create:deploying",
       "ingredients": [
-        { "item": "laowu:cat_can" },
-        { "item": "create:brass_nugget" }
+        {
+          "item": "laowu:cat_can"
+        },
+        {
+          "item": "create:brass_nugget"
+        }
       ],
       "results": [
-        { "item": "laowu:cat_can" }
+        {
+          "item": "laowu:cat_can"
+        }
       ]
     }
   ],
-  "transitionalItem": { "item": "laowu:cat_can" }
+  "transitionalItem": {
+    "item": "laowu:cat_can"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

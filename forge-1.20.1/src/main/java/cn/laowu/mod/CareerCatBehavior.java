@@ -146,10 +146,10 @@ public final class CareerCatBehavior {
         } else {
             applyAttackCoefficient(cat, outfit);
         }
-        CatEngineeringBehavior.tick(cat);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) CatEngineeringBehavior.tick(cat);
         CatMedicalWork.tick(cat);
         CatAgentWatch.tick(cat);
-        CatLaserWork.tick(cat);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) CatLaserWork.tick(cat);
         if (outfit.isPreviewOnly()) {
             // Preview outfits must not inherit an old career target or install career AI.
             if (cat.getTarget() != null) cat.setTarget(null);
@@ -184,7 +184,7 @@ public final class CareerCatBehavior {
 
     /** Called on equipment changes so health and armour update before the next entity tick. */
     public static void onOutfitChanged(Cat cat, boolean preserveMissingHealth) {
-        CatLaserWork.stop(cat);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) CatLaserWork.stop(cat);
         CatEngineeringCombat.release(cat);
         CatPilotFlight.release(cat);
         CatDivingMount.release(cat);
@@ -668,7 +668,7 @@ public final class CareerCatBehavior {
             }
             var fluidState = level.getFluidState(pos);
             if (fluidState.isEmpty()
-                    || !FluidHelper.convertToStill(fluidState.getType()).isSame(Fluids.WATER)) {
+                    || !(fluidState.getType().isSame(Fluids.WATER) || fluidState.getType().isSame(Fluids.FLOWING_WATER))) {
                 continue;
             }
             count++;
@@ -711,42 +711,12 @@ public final class CareerCatBehavior {
     }
 
     private static void tickFire(Cat cat) {
-        if (cat.tickCount % 10 != 0) return;
-        BlockPos seat = findSeat(cat);
-        if (seat == null) return;
-        var traits = CatTraitData.ensure(cat);
-        boolean sustainedSuperheat = traits.has(CatTrait.SUPERHEAT_GENE);
-        for (Direction direction : Direction.Plane.HORIZONTAL) {
-            if (!(cat.level().getBlockEntity(seat.relative(direction))
-                    instanceof BlazeBurnerBlockEntity burner) || burner.isCreative()) continue;
-            if (sustainedSuperheat) superheatBurner(burner);
-            else keepBurnerKindled(burner);
-        }
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) cn.laowu.mod.compat.create.CreateCareerHooks.tickFire(cat);
     }
 
-    private static void superheatBurner(BlazeBurnerBlockEntity burner) {
-        if (burner.getActiveFuel() == BlazeBurnerBlockEntity.FuelType.SPECIAL
-                && burner.getRemainingBurnTime() > 40) return;
-        boolean changedHeat = burner.getActiveFuel()
-                != BlazeBurnerBlockEntity.FuelType.SPECIAL;
-        BlazeBurnerBlockEntityAccessor accessor = (BlazeBurnerBlockEntityAccessor) burner;
-        accessor.laowu$setActiveFuel(BlazeBurnerBlockEntity.FuelType.SPECIAL);
-        accessor.laowu$setRemainingBurnTime(SUPERHEAT_DURATION);
-        burner.setChanged();
-        if (changedHeat) burner.updateBlockState();
-    }
 
-    private static void keepBurnerKindled(BlazeBurnerBlockEntity burner) {
-        if (burner.getActiveFuel() == BlazeBurnerBlockEntity.FuelType.SPECIAL
-                || burner.getRemainingBurnTime() > 20) return;
-        boolean wasActive = burner.getActiveFuel() != BlazeBurnerBlockEntity.FuelType.NONE
-                && burner.getRemainingBurnTime() > 0;
-        BlazeBurnerBlockEntityAccessor accessor = (BlazeBurnerBlockEntityAccessor) burner;
-        accessor.laowu$setActiveFuel(BlazeBurnerBlockEntity.FuelType.NORMAL);
-        accessor.laowu$setRemainingBurnTime(40);
-        burner.setChanged();
-        if (!wasActive) burner.updateBlockState();
-    }
+
+
 
     private static void tickHoney(ServerLevel level, Cat cat) {
         BlockPos seat = findSeat(cat);
@@ -993,22 +963,7 @@ public final class CareerCatBehavior {
     }
 
     public static BlockPos findSeat(Cat cat) {
-        // Riding across a Seat block is not occupying that workstation.
-        if (CatGiantMount.carried(cat)) return null;
-        if (cat.getVehicle() instanceof SeatEntity seatEntity) {
-            BlockPos pos = seatEntity.blockPosition();
-            if (cat.level().getBlockState(pos).getBlock() instanceof SeatBlock) {
-                return pos.immutable();
-            }
-        }
-        BlockPos[] candidates = {cat.blockPosition(), cat.blockPosition().below(), cat.getOnPos()};
-        for (BlockPos pos : candidates) {
-            if (cat.level().getBlockState(pos).getBlock() instanceof SeatBlock
-                    && (cat.isPassenger() || cat.isInSittingPose())) {
-                return pos.immutable();
-            }
-        }
-        return null;
+        return cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateCareerHooks.findSeat(cat) : null;
     }
 
     private record ContainerTarget(BlockPos pos, IItemHandler handler) {

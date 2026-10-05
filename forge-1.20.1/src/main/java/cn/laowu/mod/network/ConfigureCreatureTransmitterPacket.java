@@ -14,6 +14,7 @@ public record ConfigureCreatureTransmitterPacket(BlockPos pos,int radius,int low
     public static ConfigureCreatureTransmitterPacket decode(FriendlyByteBuf b){return new ConfigureCreatureTransmitterPacket(b.readBlockPos(),b.readInt(),b.readInt(),b.readInt(),b.readBoolean(),b.readBoolean(),b.readBoolean());}
     public static void handle(ConfigureCreatureTransmitterPacket p,Supplier<NetworkEvent.Context> s){var c=s.get();c.enqueueWork(()->p.apply(c.getSender()));c.setPacketHandled(true);}
     public void apply(net.minecraft.server.level.ServerPlayer player) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return;
         if(player==null||!player.isAlive()||player.isSpectator()||!player.mayBuild()
             ||player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos))>64
             ||!player.serverLevel().hasChunkAt(pos)||!player.level().mayInteract(player,pos))return;

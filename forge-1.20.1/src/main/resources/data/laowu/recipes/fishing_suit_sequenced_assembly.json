@@ -1,25 +1,55 @@
 {
   "type": "create:sequenced_assembly",
-  "ingredient": {"item": "laowu:cat_component"},
+  "ingredient": {
+    "item": "laowu:cat_component"
+  },
   "loops": 1,
-  "results": [{"item": "laowu:fishing_suit"}],
+  "results": [
+    {
+      "item": "laowu:fishing_suit"
+    }
+  ],
   "sequence": [
     {
       "type": "create:deploying",
       "ingredients": [
-        {"item": "laowu:incomplete_fishing_suit"},
-        {"item": "minecraft:hay_block"}
+        {
+          "item": "laowu:incomplete_fishing_suit"
+        },
+        {
+          "item": "minecraft:hay_block"
+        }
       ],
-      "results": [{"item": "laowu:incomplete_fishing_suit"}]
+      "results": [
+        {
+          "item": "laowu:incomplete_fishing_suit"
+        }
+      ]
     },
     {
       "type": "create:deploying",
       "ingredients": [
-        {"item": "laowu:incomplete_fishing_suit"},
-        {"item": "minecraft:fishing_rod"}
+        {
+          "item": "laowu:incomplete_fishing_suit"
+        },
+        {
+          "item": "minecraft:fishing_rod"
+        }
       ],
-      "results": [{"item": "laowu:incomplete_fishing_suit"}]
+      "results": [
+        {
+          "item": "laowu:incomplete_fishing_suit"
+        }
+      ]
     }
   ],
-  "transitionalItem": {"item": "laowu:incomplete_fishing_suit"}
+  "transitionalItem": {
+    "item": "laowu:incomplete_fishing_suit"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

@@ -25,6 +25,7 @@ allprojects {
             if (traitOnly) java.include('**/CatTraitScriptProbe.java')
             if (loadingOnly) java.include('**/CatLoadingProbe.java')
             if (p.hasProperty('createBoundaryProbeOnly')) java.include('**/CreateBoundaryProbe.java')
+            if (p.hasProperty('standaloneCatProbeOnly')) java.include('**/StandaloneCatProbe.java')
             if (smokeOnly) java.include('**/AgentSmokeAggroProbe.java')
             if (deathPancakeOnly) java.include('**/TamedDeathPancakeProbe.java')
             if (machinesOnly) java.include('**/CatMachinesProbe.java')

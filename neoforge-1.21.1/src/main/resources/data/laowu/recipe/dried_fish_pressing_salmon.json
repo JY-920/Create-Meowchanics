@@ -9,5 +9,11 @@
     {
       "id": "laowu:dried_fish"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

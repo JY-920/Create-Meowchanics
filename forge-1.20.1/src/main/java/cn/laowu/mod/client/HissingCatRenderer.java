@@ -84,9 +84,9 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
                                   float bodyYaw, float partialTick) {
         boolean carried = cn.laowu.mod.CatPilotFlight.carried(cat) || cn.laowu.mod.CatDivingMount.carried(cat);
         bodyYaw = carried ? CatPilotFlightClient.viewYaw(cat.getVehicle(), partialTick)
-                : CatEngineeringAnimation.prepare(cat, bodyYaw, partialTick);
+                : cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? CatEngineeringAnimation.prepare(cat, bodyYaw, partialTick) : bodyYaw;
         super.setupRotations(cat, pose, ageInTicks, bodyYaw, partialTick);
-        if (CatEngineeringAnimation.isPosing(cat)) return;
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && CatEngineeringAnimation.isPosing(cat)) return;
         if (carried) return;
         if (cn.laowu.mod.CatEngineeringCombat.deployed(cat)) return;
         if (CatTraitData.read(cat)

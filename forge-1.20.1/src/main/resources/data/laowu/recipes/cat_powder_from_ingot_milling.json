@@ -1,6 +1,21 @@
 {
   "type": "create:milling",
-  "ingredients": [{"item": "laowu:cat_ingot"}],
+  "ingredients": [
+    {
+      "item": "laowu:cat_ingot"
+    }
+  ],
   "processingTime": 100,
-  "results": [{"item": "laowu:cat_powder", "count": 2}]
+  "results": [
+    {
+      "item": "laowu:cat_powder",
+      "count": 2
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

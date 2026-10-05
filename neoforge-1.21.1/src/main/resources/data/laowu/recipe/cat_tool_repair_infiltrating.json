@@ -12,5 +12,11 @@
     }
   ],
   "processing_time": 100,
-  "results": []
+  "results": [],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

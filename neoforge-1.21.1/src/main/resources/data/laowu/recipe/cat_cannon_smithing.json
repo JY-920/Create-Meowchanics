@@ -11,5 +11,11 @@
   },
   "result": {
     "id": "laowu:cat_cannon"
-  }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

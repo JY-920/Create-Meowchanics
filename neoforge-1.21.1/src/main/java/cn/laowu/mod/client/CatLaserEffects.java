@@ -33,7 +33,7 @@ public final class CatLaserEffects {
         var buffers = mc.renderBuffers().bufferSource();
         pose.pushPose();
         pose.translate(-camera.x, -camera.y, -camera.z);
-        CatDeploymentRenderer.renderTarget(pose,buffers);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) CatDeploymentRenderer.renderTarget(pose,buffers);
 
         CatTeamPreview.render(pose, buffers, event.getCamera(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
         CatHealthBarRenderer.render(pose, buffers, event.getCamera(), event.getPartialTick().getGameTimeDeltaPartialTick(false));

@@ -1,11 +1,28 @@
 {
   "type": "create:mixing",
   "ingredients": [
-    { "item": "laowu:cat_fur" },
-    { "fluidTag": "forge:honey", "amount": 250 },
-    { "fluid": "minecraft:water", "amount": 750 }
+    {
+      "item": "laowu:cat_fur"
+    },
+    {
+      "fluidTag": "forge:honey",
+      "amount": 250
+    },
+    {
+      "fluid": "minecraft:water",
+      "amount": 750
+    }
   ],
   "results": [
-    { "fluid": "laowu:liquid_cat", "amount": 1000 }
+    {
+      "fluid": "laowu:liquid_cat",
+      "amount": 1000
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

@@ -27,31 +27,42 @@ Files: both ports' compat/create/CreateIntegration.java, CreateMixinPolicy.java,
 
 Files: both LaoWuMod.java entry points; compat/create startup/registration adapters; client/ClientModEvents.java and other annotated subscribers; machine registration classes.
 
-- [ ] Isolate industrial block/entity/menu/recipe and item factories; do not instantiate Create subclasses when absent.
-- [ ] Retain all existing registrations and IDs when present; hide unavailable industrial content from creative tabs when absent.
-- [ ] Move Create tooltips/stress, ponder, rendering and Curios Create renderer setup behind the integration boundary.
-- [ ] Run isolated no-Create client/server startup to locate any remaining linkage errors.
+- [x] Isolate industrial block/entity/menu/recipe and item factories; do not instantiate Create subclasses when absent.
+- [x] Retain all existing registrations and IDs when present; hide unavailable industrial content from creative tabs when absent.
+- [x] Move Create tooltips/stress, ponder, rendering and Curios Create renderer setup behind the integration boundary.
+- [x] Run isolated no-Create client/server startup to locate any remaining linkage errors.
 
 ## Task 3: Keep cat gameplay independent
 
 Files: CommonEvents.java, CareerCatBehavior.java, genetics/CatBehaviorTraitEffects.java, core cat item/entity classes, client/CatProfileScreen.java and core previews.
 
-- [ ] Guard Create-only jobs and interactions while retaining cat attributes, traits, accessories, bosses and combat.
-- [ ] Remove Create GUI/widget dependencies from retained core screens or provide independent implementations.
-- [ ] Verify cat spawn/load, profile editing, outfits, accessory effects and retained public APIs without Create.
+- [x] Guard Create-only jobs and interactions while retaining cat attributes, traits, accessories, bosses and combat.
+- [x] Remove Create GUI/widget dependencies from retained core screens or provide independent implementations.
+- [x] Verify cat spawn/load, profile editing, outfits, accessory effects and retained public APIs without Create.
 
 ## Task 4: Resource and dependency metadata
 
 Files: both ports' recipes/tags; Forge mods.toml; NeoForge template neoforge.mods.toml; build/runtime test configuration.
 
-- [ ] Gate Create recipe serializers, external ingredients, loot and required tag references when absent.
-- [ ] Add no alternate recipes; keep unavailable industrial paths unavailable.
-- [ ] Mark Create optional only after no-Create client/server and core gameplay checks pass.
-- [ ] Verify with Create installed that recipe outputs, IDs and data remain compatible.
+- [x] Gate Create recipe serializers, external ingredients, loot and required tag references when absent.
+- [x] Add no alternate recipes; keep unavailable industrial paths unavailable.
+- [x] Mark Create optional with actual no-Create client/server and gameplay validation, not metadata alone.
+- [x] Verify with Create installed that recipe outputs, IDs and data remain compatible.
 
 ## Task 5: Final compatibility verification and delivery
 
-- [ ] Run dual-loader normal builds, API/schema/isolation checks and relevant actual KubeJS compatibility regressions if behavior changes.
-- [ ] Run both presence modes on each loader; report actual gaps instead of claiming optional support from metadata.
+- [x] Run dual-loader normal builds, API/schema/isolation checks and actual KubeJS compatibility regressions.
+- [x] Run both presence modes on each loader; report actual gaps instead of claiming optional support from metadata.
 - [ ] Commit develop changes and verify remote develop; preserve stable main.
-- [ ] Deploy a completed build after checking clients, backing up and matching hashes. Do not deploy an unfinished optional conversion.
+- [x] Deploy a completed build after checking clients, backing up and matching hashes. Do not deploy an unfinished optional conversion.
+
+## Verification notes
+
+- Normal build on both loaders passed: accessory API v3, trait API v1, animation/resources, release isolation and 23,270 accessory definition/state checks.
+- Installed Create: 50 actual server tests per loader, including KubeJS accessories/traits, processing hook, crafting and support behavior. Existing real client/GPU visual probes passed on both loaders.
+- No Create: real clients passed with profile, all outfit previews, creative contents, every registered item tooltip, scanner looking at vanilla chest and independent rider pose. JEI/Curios combination passed too.
+- No Create: 14/14 actual server tests on each loader, including KubeJS trait examples, mount/capture/backpack behavior, engineering attacks, disabled industrial packets and saved logistics recovery. Final dual-loader clients also rendered the standalone engineering cannon.
+- Node regression suite: 73/73.
+- Review found scanner, industrial packet and transport gesture linkage holes; each was reproduced before its fix. Saved delivery motion releases gravity while retaining cargo data; the test includes native cat fall immunity and actual 220-block descent.
+- Standalone recipes are deferred, and removing Create from an existing industrial world is not a lossless migration. See docs/optional-create.md.
+- Local deployment completed at 2026-10-05 11:57:24 Asia/Shanghai. Both instances have one enabled laowu JAR, matching build SHA-256; previous packages are recoverable in mod-backups/create-meowchanics/20261005-115724-optional-create.1. See docs/deployment-optional-create.1.json.

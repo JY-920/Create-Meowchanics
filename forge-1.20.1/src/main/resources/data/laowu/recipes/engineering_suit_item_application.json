@@ -1,8 +1,13 @@
 {
   "type": "create:item_application",
   "ingredients": [
-    {"type": "laowu:cat_pancake", "outfit": "none"},
-    {"item": "laowu:engineering_suit"}
+    {
+      "type": "laowu:cat_pancake",
+      "outfit": "none"
+    },
+    {
+      "item": "laowu:engineering_suit"
+    }
   ],
   "results": [
     {
@@ -14,6 +19,12 @@
         "LaoWuHasClothes": true,
         "LaoWuCatOutfit": "engineering"
       }
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
     }
   ]
 }

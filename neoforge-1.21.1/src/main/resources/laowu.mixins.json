@@ -40,6 +40,7 @@
     "GiantCatRiderInventoryMixin",
     "CatBasinParticlesMixin",
     "PilotSkyhookPoseMixin",
+    "StandaloneCatRiderPoseMixin",
     "DivingCapeLayerMixin",
     "CatCreativeSearchMixin",
     "LaserHandFrameMixin",

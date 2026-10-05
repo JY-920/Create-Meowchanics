@@ -19,7 +19,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 
-@EventBusSubscriber(modid=LaoWuMod.MOD_ID, value=Dist.CLIENT, bus=EventBusSubscriber.Bus.MOD)
 public final class CatMachinesClient {
     private static final CTSpriteShiftEntry CASING = CTSpriteShifter.getCT(AllCTTypes.OMNIDIRECTIONAL,
             LaoWuMod.id("block/cat_casing"), LaoWuMod.id("block/cat_casing_connected"));

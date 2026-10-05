@@ -1,1 +1,21 @@
-{"type":"minecraft:smithing_transform","template":{"item":"laowu:cat_upgrade_smithing_template"},"base":{"item":"create:potato_cannon"},"addition":{"item":"laowu:cat_ingot"},"result":{"item":"laowu:cat_cannon"}}
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "laowu:cat_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "create:potato_cannon"
+  },
+  "addition": {
+    "item": "laowu:cat_ingot"
+  },
+  "result": {
+    "item": "laowu:cat_cannon"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

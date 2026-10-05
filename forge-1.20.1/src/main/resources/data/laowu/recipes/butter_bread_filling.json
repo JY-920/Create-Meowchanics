@@ -1,10 +1,23 @@
 {
   "type": "create:filling",
   "ingredients": [
-    { "item": "create:sweet_roll" },
-    { "fluid": "laowu:liquid_cat", "amount": 250 }
+    {
+      "item": "create:sweet_roll"
+    },
+    {
+      "fluid": "laowu:liquid_cat",
+      "amount": 250
+    }
   ],
   "results": [
-    { "item": "laowu:butter_bread" }
+    {
+      "item": "laowu:butter_bread"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

@@ -25,11 +25,11 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']) {
  check(render.includes('diving ? 2.25F')&&render.includes('diving ? 17.5F')&&render.includes('diving ? 1.25F'),port+' authored diving body pivot');
  check(java('client/TerminatorPancakeModel').includes('CatOutfitType.DIVING ? 17.5F'),port+' diving pancake pivot');
  const filters=java('item/CatFilterRules'),definition=java('client/CatOutfitModels');
- const tips=port.startsWith('forge')?registry:java('client/ClientModEvents');
+ const tips=port.startsWith('forge')?registry+java('compat/create/CreateStartup'):java('client/ClientModEvents')+java('compat/create/CreateClientEvents');
  for(const career of manifest.careers) {
   const id=career.id,symbol=id.toUpperCase();
   check(registry.includes('ITEMS.register("'+id+'_suit"')&&registry.includes('CatOutfitType.'+symbol),port+' usable '+id+' suit');
-  check(registry.includes('INCOMPLETE_'+symbol+'_SUIT = ITEMS.register('),port+' incomplete component registered '+id);
+  check(registry.includes('INCOMPLETE_'+symbol+'_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(')&&registry.includes('items_incomplete_'+id+'_suit'),port+' incomplete component conditionally registered '+id);
   check(registry.includes('output.accept('+symbol+'_SUIT.get())')&&!registry.includes('output.accept(INCOMPLETE_'+symbol+'_SUIT.get())'),port+' complete creative entry, hidden component '+id);
   check(tips.includes('registerCareerSuitDescription('+(port.startsWith('forge')?'':'LaoWuMod.')+symbol+'_SUIT.get())'),port+' tooltip integration '+id);
   check(filters.includes(symbol+'("'+id+'"'),port+' career filter '+id);

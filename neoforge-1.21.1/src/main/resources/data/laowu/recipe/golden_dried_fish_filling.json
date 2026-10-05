@@ -14,5 +14,11 @@
     {
       "id": "laowu:golden_dried_fish"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

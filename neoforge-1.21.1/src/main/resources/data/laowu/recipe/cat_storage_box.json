@@ -17,5 +17,11 @@
   "result": {
     "id": "laowu:cat_storage_box",
     "count": 1
-  }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

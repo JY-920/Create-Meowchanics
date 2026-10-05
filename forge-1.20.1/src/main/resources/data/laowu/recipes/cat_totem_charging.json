@@ -1,10 +1,25 @@
 {
   "type": "create:deploying",
   "ingredients": [
-    {"item": "laowu:cat_totem"},
-    {"item": "minecraft:totem_of_undying"}
+    {
+      "item": "laowu:cat_totem"
+    },
+    {
+      "item": "minecraft:totem_of_undying"
+    }
   ],
   "results": [
-    {"item": "laowu:cat_totem", "nbt": {"LaoWuTotemCharges": 1}}
+    {
+      "item": "laowu:cat_totem",
+      "nbt": {
+        "LaoWuTotemCharges": 1
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

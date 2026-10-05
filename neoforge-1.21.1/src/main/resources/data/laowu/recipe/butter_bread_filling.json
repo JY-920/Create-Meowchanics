@@ -14,5 +14,11 @@
     {
       "id": "laowu:butter_bread"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

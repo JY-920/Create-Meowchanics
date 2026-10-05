@@ -135,6 +135,18 @@ repositories {
 }
 
 dependencies {
+    if (project.hasProperty('withoutCreate')) {
+        configurations.runtimeClasspath {
+            exclude group: 'com.simibubi.create'
+            exclude group: 'com.tterrag.registrate'
+            exclude group: 'net.createmod.ponder'
+            exclude group: 'dev.engine-room.flywheel'
+            if (!project.hasProperty('standaloneWithOptionalMods')) {
+                exclude group: 'mezz.jei'
+                exclude group: 'top.theillusivec4.curios'
+            }
+        }
+    }
     // Optional script bridge: compile only, never bundled or required for players.
     compileOnly("dev.latvian.mods:kubejs-forge:2001.6.5-build.26") { transitive = false }
     compileOnly("dev.latvian.mods:rhino-forge:2001.2.2-build.17") { transitive = false }

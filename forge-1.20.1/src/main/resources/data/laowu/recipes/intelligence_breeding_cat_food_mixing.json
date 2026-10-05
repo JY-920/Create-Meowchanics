@@ -2,8 +2,22 @@
   "type": "create:mixing",
   "heatRequirement": "heated",
   "ingredients": [
-    { "item": "laowu:breeding_cat_food" },
-    { "item": "minecraft:egg" }
+    {
+      "item": "laowu:breeding_cat_food"
+    },
+    {
+      "item": "minecraft:egg"
+    }
   ],
-  "results": [{ "item": "laowu:intelligence_breeding_cat_food" }]
+  "results": [
+    {
+      "item": "laowu:intelligence_breeding_cat_food"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

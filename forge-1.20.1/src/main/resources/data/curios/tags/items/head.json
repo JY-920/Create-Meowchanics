@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "laowu:cat_engineer_goggles"
+    {
+      "id": "laowu:cat_engineer_goggles",
+      "required": false
+    }
   ]
 }

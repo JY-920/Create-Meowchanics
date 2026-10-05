@@ -17,5 +17,11 @@
         "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png"
       }
     }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

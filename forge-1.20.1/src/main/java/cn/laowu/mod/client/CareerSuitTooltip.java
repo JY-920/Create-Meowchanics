@@ -4,8 +4,8 @@ import cn.laowu.mod.CareerCatBehavior;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatSuitSetting;
 import cn.laowu.mod.CatSuitSettings;
-import com.simibubi.create.foundation.item.TooltipHelper;
-import net.createmod.catnip.lang.FontHelper;
+import cn.laowu.mod.client.CatTooltipText;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -17,8 +17,8 @@ import java.util.Locale;
 
 /** Client-only key handling and computed combat previews for career suits. */
 public final class CareerSuitTooltip {
-    private static final FontHelper.Palette PALETTE =
-            FontHelper.Palette.STANDARD_CREATE;
+    private static final CatTooltipText.Palette PALETTE =
+            CatTooltipText.Palette.STANDARD_CREATE;
 
     public static void modify(ItemTooltipEvent event, Item item,
                               CatOutfitType outfit) {
@@ -30,7 +30,7 @@ public final class CareerSuitTooltip {
                        boolean shiftDown, boolean controlDown) {
         int insertionIndex = Math.min(1, event.getToolTip().size());
         if (outfit.isPreviewOnly()) {
-            event.getToolTip().addAll(insertionIndex, TooltipHelper.cutStringTextComponent(
+            event.getToolTip().addAll(insertionIndex, CatTooltipText.cutStringTextComponent(
                     Component.translatable(item.getDescriptionId() + ".tooltip.summary").getString(), PALETTE));
             return;
         }
@@ -62,7 +62,7 @@ public final class CareerSuitTooltip {
                     detail = Component.translatable("item.laowu.career_suit.damage_detail",
                             detail.replace("_K", "_" + coefficient)).getString();
                 if (section == 3) detail = bonusDescription(settings);
-                List<Component> lines = TooltipHelper.cutStringTextComponent(
+                List<Component> lines = CatTooltipText.cutStringTextComponent(
                         detail, PALETTE.primary(), PALETTE.highlight(), 1);
                 event.getToolTip().addAll(insertionIndex, lines);
                 insertionIndex += lines.size();
@@ -71,7 +71,7 @@ public final class CareerSuitTooltip {
                             format(settings.value(CatSuitSetting.MIN_INTERVAL)),
                             format(settings.value(CatSuitSetting.INTERVAL_BASE)),
                             format(settings.value(CatSuitSetting.INTERVAL_PER_SPEED))).getString();
-                    var intervalLines = TooltipHelper.cutStringTextComponent(interval, PALETTE.primary(), PALETTE.highlight(), 1);
+                    var intervalLines = CatTooltipText.cutStringTextComponent(interval, PALETTE.primary(), PALETTE.highlight(), 1);
                     event.getToolTip().addAll(insertionIndex, intervalLines);
                     insertionIndex += intervalLines.size();
                 }
@@ -86,18 +86,18 @@ public final class CareerSuitTooltip {
         for (String section : List.of("combat", "work")) {
             String description = Component.translatable("item.laowu.career_suit." + section,
                     Component.translatable(item.getDescriptionId() + ".tooltip." + section)).getString();
-            var lines = TooltipHelper.cutStringTextComponent(description, PALETTE);
+            var lines = CatTooltipText.cutStringTextComponent(description, PALETTE);
             event.getToolTip().addAll(insertionIndex, lines);
             insertionIndex += lines.size();
         }
         event.getToolTip().add(insertionIndex++, Component.empty());
-        List<Component> ctrlHint = TooltipHelper.cutStringTextComponent(
+        List<Component> ctrlHint = CatTooltipText.cutStringTextComponent(
                 Component.translatable(
                         "item.laowu.career_suit.hold_ctrl").getString(), PALETTE);
         event.getToolTip().addAll(insertionIndex, ctrlHint);
         insertionIndex += ctrlHint.size();
         event.getToolTip().addAll(insertionIndex,
-                TooltipHelper.cutStringTextComponent(Component.translatable(
+                CatTooltipText.cutStringTextComponent(Component.translatable(
                         "item.laowu.career_suit.hold_shift").getString(), PALETTE));
     }
 
@@ -172,7 +172,7 @@ public final class CareerSuitTooltip {
                                 String key, String value) {
         String line = Component.translatable(
                 "item.laowu.career_suit.snapshot." + key, value).getString();
-        List<Component> wrapped = TooltipHelper.cutStringTextComponent(
+        List<Component> wrapped = CatTooltipText.cutStringTextComponent(
                 line, PALETTE.primary(), PALETTE.highlight(), 1);
         tooltip.addAll(index, wrapped);
         return index + wrapped.size();

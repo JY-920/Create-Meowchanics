@@ -13,5 +13,11 @@
     {
       "id": "laowu:intelligence_breeding_cat_food"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

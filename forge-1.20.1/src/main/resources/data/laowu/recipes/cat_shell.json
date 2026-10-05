@@ -6,8 +6,20 @@
     "C"
   ],
   "key": {
-    "C": { "item": "laowu:cat_sheet" },
-    "B": { "item": "create:brass_sheet" }
+    "C": {
+      "item": "laowu:cat_sheet"
+    },
+    "B": {
+      "item": "create:brass_sheet"
+    }
   },
-  "result": { "item": "laowu:cat_shell" }
+  "result": {
+    "item": "laowu:cat_shell"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

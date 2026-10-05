@@ -7,7 +7,17 @@
     "CCC"
   ],
   "key": {
-    "C": { "item": "create:cardboard" }
+    "C": {
+      "item": "create:cardboard"
+    }
   },
-  "result": { "id": "laowu:adoption_box" }
+  "result": {
+    "id": "laowu:adoption_box"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

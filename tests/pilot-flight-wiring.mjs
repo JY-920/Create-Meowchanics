@@ -10,10 +10,10 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']) {
  const java=name=>read(port+'/src/main/java/cn/laowu/mod/'+name+'.java');
  const flight=java('CatPilotFlight'),rules=java('CatPilotFlightRules'),carrier=java('entity/CatFlightCarrier');
  const pose=java('mixin/PilotSkyhookPoseMixin'),client=java('client/CatPilotFlightClient'),network=java('network/ModNetwork');
- check(flight.includes('AllItems.WRENCH.isIn')&&flight.includes('player.isShiftKeyDown()'),'real wrench and preserved sneak inventory');
+ check(flight.includes('CatMountTool.matches')&&java('compat/create/CreateMountHooks').includes('AllItems.WRENCH.isIn')&&flight.includes('player.isShiftKeyDown()'),'real wrench adapter and preserved sneak inventory');
  check(flight.includes('!cat.isOwnedBy(player)')&&flight.includes('cat.isBaby()')&&flight.includes('distanceToSqr(player) > 25'),'owner/adult/proximity authority');
  check(flight.includes('getBlockCollisions')&&flight.includes('getY() + 3.35'),'headroom guard covers calibrated passenger height');
- check(flight.includes('ServerChainConveyorHandler.hangingPlayers.containsKey'),'do not hijack an active real chain ride');
+ check(flight.includes('CatMountTool.isHanging')&&java('compat/create/CreateMountHooks').includes('ServerChainConveyorHandler.hangingPlayers.containsKey'),'do not hijack an active real chain ride');
  check(flight.includes('CatLaserCommands.cancel(cat)')&&flight.includes('cat.setTarget(null)'),'clear previous movement/combat orders');
  check(flight.includes('Math.max(0, used - 2)')&&flight.includes('cat.getTarget() != null'),'recover on idle ground, not in combat');
  check(!flight.slice(flight.indexOf('boolean start(')).includes('putInt(USED'),'remount never resets fuel');
@@ -59,7 +59,8 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']) {
   const summary=text['item.laowu.flight_suit.tooltip.behaviour2'];
   check(!/旧背包|新背包|legacy backpack|new backpack/i.test(summary),'requested tooltip omits legacy backpack migration; compatibility is still tested in game');
  }
- const common=[flight,rules,pose,client,harness].join('\n');
+ const common=[flight,rules,pose,client,harness].join('\n')
+  .replaceAll('getFrameTime()', 'getTimer().getGameTimeDeltaPartialTick(false)');
  if(shared)check(shared===common,'identical flight math/control/pose across ports');
  shared=common;
 }

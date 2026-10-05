@@ -28,6 +28,28 @@ public final class EngineeringCannonRenderer extends EntityRenderer<EngineeringC
                                  PoseStack pose, MultiBufferSource buffers, int light) {
         float yaw = Mth.rotLerp(partialTick, cannon.yRotO, cannon.getYRot());
         float pitch = Mth.lerp(partialTick, cannon.xRotO, cannon.getXRot());
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) {
+            // Standalone artillery keeps its gameplay without borrowing unavailable Create models.
+            pose.pushPose();
+            pose.mulPose(Axis.YP.rotationDegrees(-yaw));
+            pose.translate(-0.5, 0.045, -EngineeringCannon.SEAT_BACK - 0.45);
+            pose.scale(1, 0.08F, (float) (EngineeringCannon.SEAT_BACK + 0.95));
+            Minecraft.getInstance().getBlockRenderer().renderSingleBlock(
+                    net.minecraft.world.level.block.Blocks.IRON_BLOCK.defaultBlockState(),
+                    pose, buffers, light, OverlayTexture.NO_OVERLAY);
+            pose.popPose();
+            pose.pushPose();
+            pose.mulPose(Axis.YP.rotationDegrees(-yaw));
+            pose.mulPose(Axis.XP.rotationDegrees(pitch));
+            pose.scale(EngineeringCannon.MODEL_SCALE, EngineeringCannon.MODEL_SCALE, EngineeringCannon.MODEL_SCALE);
+            pose.translate(-0.5, 0, -0.5);
+            Minecraft.getInstance().getBlockRenderer().renderSingleBlock(
+                    net.minecraft.world.level.block.Blocks.DISPENSER.defaultBlockState(),
+                    pose, buffers, light, OverlayTexture.NO_OVERLAY);
+            pose.popPose();
+            super.render(cannon, entityYaw, partialTick, pose, buffers, light);
+            return;
+        }
         var state = AllBlocks.SCHEMATICANNON.getDefaultState();
         var blocks = Minecraft.getInstance().getBlockRenderer();
         // Extend the thin floating deck behind the gun instead of seating the cat on its barrel.

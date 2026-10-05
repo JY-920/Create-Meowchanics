@@ -12,7 +12,6 @@ import net.minecraft.world.phys.*;
 import java.util.List;
 
 /** Native Create hover visuals without adopting its ghost-item insertion semantics. */
-@net.neoforged.fml.common.EventBusSubscriber(modid="laowu", value=net.neoforged.api.distmarker.Dist.CLIENT)
 public final class CatAutoLaserFilterHighlight {
     private static Object previous;
     @net.neoforged.bus.api.SubscribeEvent

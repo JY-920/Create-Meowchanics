@@ -19,5 +19,11 @@
   "result": {
     "id": "laowu:cat_laser_pointer",
     "count": 1
-  }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

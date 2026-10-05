@@ -117,6 +117,7 @@ public final class CatTraitScriptProbe {
             h.assertTrue(menu.clickMenuButton(player,menu.action(type,true,true))&&CatTraitApi.level(cat,id)==3,"Editor custom maximum");
             menu.removed(player);
             var pancake=CatPancakeItem.capture(cat);
+            if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) {
             var filter=new ItemStack(LaoWuMod.CAT_FILTER.get());
             player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,filter);
             var filterMenu=new CatFilterMenu(72,player.getInventory(),filter);
@@ -128,6 +129,10 @@ public final class CatTraitScriptProbe {
             filterMenu.rules().write(filter);
             h.assertTrue(cn.laowu.mod.item.CatFilterRules.read(filter).requiredTraits().get(0).id().toString().equals(id),"Filter ID survives item storage");
             filterMenu.removed(player);
+            } else {
+                h.assertTrue(!net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(LaoWuMod.id("cat_filter")),
+                        "Standalone retains trait APIs/editor but has no industrial filter");
+            }
             h.assertTrue(CatTraitApi.pancakeLevel(pancake,id)==3,"Captured pancake trait");
             h.assertTrue(CatTraitApi.setPancakeLevel(pancake,id,2)&&CatTraitApi.pancakeLevel(pancake,id)==2,"Server pancake API");
             var current=CatTraitApi.trait(cat,id);

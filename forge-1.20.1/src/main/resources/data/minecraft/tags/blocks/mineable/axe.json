@@ -1,16 +1,49 @@
 {
   "replace": false,
   "values": [
-    "laowu:cat_editor",
-    "laowu:basic_breeding_box",
-    "laowu:intermediate_breeding_box",
-    "laowu:advanced_breeding_box",
-    "laowu:adoption_box",
-    "laowu:cat_mixer",
-    "laowu:cat_press",
-    "laowu:cat_depot",
-    "laowu:cat_casing",
-    "laowu:cat_deployment_platform",
-    "laowu:cat_ejecting_deployment_platform"
+    {
+      "id": "laowu:cat_editor",
+      "required": false
+    },
+    {
+      "id": "laowu:basic_breeding_box",
+      "required": false
+    },
+    {
+      "id": "laowu:intermediate_breeding_box",
+      "required": false
+    },
+    {
+      "id": "laowu:advanced_breeding_box",
+      "required": false
+    },
+    {
+      "id": "laowu:adoption_box",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_mixer",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_press",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_depot",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_casing",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_deployment_platform",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_ejecting_deployment_platform",
+      "required": false
+    }
   ]
 }

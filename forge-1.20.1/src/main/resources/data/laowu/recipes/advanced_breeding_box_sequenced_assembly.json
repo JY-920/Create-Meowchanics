@@ -1,31 +1,55 @@
 {
   "type": "create:sequenced_assembly",
-  "ingredient": { "item": "laowu:intermediate_breeding_box" },
+  "ingredient": {
+    "item": "laowu:intermediate_breeding_box"
+  },
   "loops": 1,
   "results": [
-    { "item": "laowu:advanced_breeding_box" }
+    {
+      "item": "laowu:advanced_breeding_box"
+    }
   ],
   "sequence": [
     {
       "type": "create:deploying",
       "ingredients": [
-        { "item": "laowu:intermediate_breeding_box" },
-        { "tag": "create:seats" }
+        {
+          "item": "laowu:intermediate_breeding_box"
+        },
+        {
+          "tag": "create:seats"
+        }
       ],
       "results": [
-        { "item": "laowu:intermediate_breeding_box" }
+        {
+          "item": "laowu:intermediate_breeding_box"
+        }
       ]
     },
     {
       "type": "create:deploying",
       "ingredients": [
-        { "item": "laowu:intermediate_breeding_box" },
-        { "item": "create:precision_mechanism" }
+        {
+          "item": "laowu:intermediate_breeding_box"
+        },
+        {
+          "item": "create:precision_mechanism"
+        }
       ],
       "results": [
-        { "item": "laowu:intermediate_breeding_box" }
+        {
+          "item": "laowu:intermediate_breeding_box"
+        }
       ]
     }
   ],
-  "transitionalItem": { "item": "laowu:intermediate_breeding_box" }
+  "transitionalItem": {
+    "item": "laowu:intermediate_breeding_box"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

@@ -1,8 +1,13 @@
 {
   "type": "create:item_application",
   "ingredients": [
-    {"type": "laowu:cat_pancake", "outfit": "cockroach"},
-    {"item": "minecraft:shears"}
+    {
+      "type": "laowu:cat_pancake",
+      "outfit": "cockroach"
+    },
+    {
+      "item": "minecraft:shears"
+    }
   ],
   "keepHeldItem": true,
   "results": [
@@ -13,6 +18,12 @@
         "LaoWuCatTexture": "minecraft:textures/entity/cat/red.png",
         "LaoWuTamedPancake": true
       }
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
     }
   ]
 }

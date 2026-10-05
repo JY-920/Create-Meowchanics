@@ -22,5 +22,11 @@
   "result": {
     "id": "laowu:cat_engine"
   },
-  "show_notification": true
+  "show_notification": true,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

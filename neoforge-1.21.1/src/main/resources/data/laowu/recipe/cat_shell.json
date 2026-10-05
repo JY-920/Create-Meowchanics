@@ -15,5 +15,11 @@
   },
   "result": {
     "id": "laowu:cat_shell"
-  }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

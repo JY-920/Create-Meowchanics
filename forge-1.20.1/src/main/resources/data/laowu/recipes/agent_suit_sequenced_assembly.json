@@ -45,5 +45,11 @@
   ],
   "transitionalItem": {
     "item": "laowu:incomplete_agent_suit"
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

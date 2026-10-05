@@ -107,6 +107,7 @@ public record SetCreatureFilterPacket(int containerId, CreatureFilterRules rules
         return new SetCreatureFilterPacket(menu, CreatureFilterRules.parseData(tag));
     }
     public void apply(ServerPlayer player) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return;
         if (player == null || !player.isAlive() || player.isSpectator()
                 || !(player.containerMenu instanceof CreatureFilterMenu menu)
                 || menu.containerId != containerId || !menu.stillValid(player)) return;

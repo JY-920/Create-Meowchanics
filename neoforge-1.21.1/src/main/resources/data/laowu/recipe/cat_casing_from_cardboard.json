@@ -1,5 +1,22 @@
 {
   "type": "create:item_application",
-  "ingredients": [{"item": "create:cardboard_block"}, {"item": "laowu:cat_ingot"}],
-  "results": [{"id": "laowu:cat_casing"}]
+  "ingredients": [
+    {
+      "item": "create:cardboard_block"
+    },
+    {
+      "item": "laowu:cat_ingot"
+    }
+  ],
+  "results": [
+    {
+      "id": "laowu:cat_casing"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

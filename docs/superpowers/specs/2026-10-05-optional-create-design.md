@@ -20,5 +20,4 @@ Stable snapshot a4a56d174a936c01445a226f1055ffc50019d7fa is verified on remote m
 
 ## Current milestone
 
-First compatibility milestone isolates mixin selection and stateful deployer events. This milestone is not an independently usable no-Create release. Subsequent work removes core registration, entity/job and client/UI loading dependencies, then guards resource loading and updates metadata only after full validation.
-
+The first milestone (554462b) isolated mixin selection and stateful deployer events. The next develop build, 2.2.2-dev.optional-create.1, now isolates industrial registration, startup, client subscribers and resource loading. Cat gameplay and retained screens run without Create; present-Create behavior is covered by actual client/server regressions. Alternate recipes remain deferred. Implementation and validation details are in docs/optional-create.md and the linked plan.

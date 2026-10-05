@@ -2,9 +2,20 @@
   "type": "create:mixing",
   "heatRequirement": "superheated",
   "ingredients": [
-    { "type": "laowu:cat_pancake" }
+    {
+      "type": "laowu:cat_pancake"
+    }
   ],
   "results": [
-    { "fluid": "laowu:liquid_cat", "amount": 250 }
+    {
+      "fluid": "laowu:liquid_cat",
+      "amount": 250
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

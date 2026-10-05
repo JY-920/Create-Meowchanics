@@ -23,5 +23,11 @@
   "result": {
     "id": "laowu:wish_adoption_box",
     "count": 1
-  }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

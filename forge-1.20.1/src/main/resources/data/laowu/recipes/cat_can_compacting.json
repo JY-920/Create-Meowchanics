@@ -1,11 +1,25 @@
 {
   "type": "create:compacting",
   "ingredients": [
-    { "tag": "minecraft:fishes" },
-    { "item": "create:iron_sheet" },
-    { "item": "create:iron_sheet" }
+    {
+      "tag": "minecraft:fishes"
+    },
+    {
+      "item": "create:iron_sheet"
+    },
+    {
+      "item": "create:iron_sheet"
+    }
   ],
   "results": [
-    { "item": "laowu:cat_can" }
+    {
+      "item": "laowu:cat_can"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

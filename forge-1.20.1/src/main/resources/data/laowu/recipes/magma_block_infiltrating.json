@@ -15,5 +15,11 @@
     {
       "item": "minecraft:magma_block"
     }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

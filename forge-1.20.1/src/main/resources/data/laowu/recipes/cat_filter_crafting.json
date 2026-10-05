@@ -5,8 +5,20 @@
     "PWP"
   ],
   "key": {
-    "P": { "item": "laowu:cat_pellet" },
-    "W": { "tag": "minecraft:wool" }
+    "P": {
+      "item": "laowu:cat_pellet"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    }
   },
-  "result": { "item": "laowu:cat_filter" }
+  "result": {
+    "item": "laowu:cat_filter"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

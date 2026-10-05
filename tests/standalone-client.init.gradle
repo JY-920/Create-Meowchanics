@@ -1,0 +1,36 @@
+// Isolated no-Create client smoke test, copied fixture only; no user worlds or jars changed.
+allprojects {
+    afterEvaluate { p ->
+        def neo = p.extensions.findByName('neoForge') != null
+        def probe = p.sourceSets.create('standaloneClient') {
+            java.srcDir(p.file('../tests/standalone-client/' + (neo ? 'neo' : 'forge')))
+            compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+            runtimeClasspath += output + p.sourceSets.main.runtimeClasspath
+        }
+        def runDir = p.layout.buildDirectory.dir('standalone-cat-client').get().asFile
+        def fixture = p.tasks.register('prepareStandaloneClientWorld', Copy) {
+            onlyIf { !new File(runDir, 'saves/Standalone/level.dat').exists() }
+            from p.layout.buildDirectory.dir('accessory-gametest/no-kubejs-standalone-phase2/world')
+            into new File(runDir, 'saves/Standalone')
+            exclude 'session.lock'
+        }
+        if (neo) {
+            p.neoForge.mods.named('laowu') { sourceSet(probe) }
+            p.neoForge.runs.named('client') {
+                gameDirectory = runDir
+                programArgument '--quickPlaySingleplayer'
+                programArgument 'Standalone'
+            }
+        } else {
+            p.dependencies.add('runtimeOnly', 'io.github.llamalad7:mixinextras-forge:0.4.1') { transitive = false }
+            p.minecraft.runs.named('client') {
+                workingDirectory runDir
+                args '--quickPlaySingleplayer', 'Standalone', '--mixin', 'laowu.mixins.json'
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', p.file('build/createSrgToMcp/output.srg').absolutePath
+                mods.named('laowu') { source(probe) }
+            }
+        }
+        p.tasks.matching { it.name == 'runClient' }.configureEach { dependsOn p.tasks.named('standaloneClientClasses'), fixture }
+    }
+}

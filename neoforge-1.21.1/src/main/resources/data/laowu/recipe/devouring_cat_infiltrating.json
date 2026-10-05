@@ -16,5 +16,11 @@
     {
       "id": "laowu:devouring_cat"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

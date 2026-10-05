@@ -19,7 +19,7 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']){
  const names=JSON.parse(read(res+'assets/laowu/lang/zh_cn.json'));
  check(names['block.laowu.wish_adoption_box']==='心愿领养箱','Simple new block name');
  check(names['item.laowu.cat_rebirth_ootheca']==='爆珠奶茶','Cockroach accessory final name');
- const mod=java('LaoWuMod'),events=java('client/ClientModEvents');
+ const mod=java('LaoWuMod'),events=java('client/ClientModEvents')+java('compat/create/CreateClientEvents');
  for(const key of ['WISH_ADOPTION_BOX','WISH_ADOPTION_BOX_BE','WISH_ADOPTION_BOX_ITEM','WISH_ADOPTION_BOX_MENU'])
   check(mod.includes(key),'Registered '+key);
  check(events.includes('WishAdoptionBoxScreen::new')&&events.includes('WishAdoptionBoxRenderer::new'),'Actual client registrations');

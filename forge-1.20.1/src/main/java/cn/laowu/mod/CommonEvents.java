@@ -462,133 +462,19 @@ public final class CommonEvents {
 
     @SubscribeEvent
     public static void onHissingGasBucketInteract(PlayerInteractEvent.RightClickBlock event) {
-        // Intercept before the box opens its menu; other Create filter interactions are unchanged.
-        if (event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatFilterItem filter
-                && event.getLevel().getBlockEntity(event.getPos()) instanceof cn.laowu.mod.create.WishAdoptionBoxBlockEntity) {
-            event.setCancellationResult(filter.useOn(new net.minecraft.world.item.context.UseOnContext(
-                    event.getEntity(), event.getHand(), event.getHitVec())));
-            event.setCanceled(true);
-            return;
-        }
-        if (event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatStorageBoxItem box) {
-            var result = box.useOn(new net.minecraft.world.item.context.UseOnContext(
-                    event.getEntity(), event.getHand(), event.getHitVec()));
-            if (result.consumesAction()) {
-                event.setCancellationResult(result);
-                event.setCanceled(true);
-            }
-            return;
-        }
-        if (event.getEntity().isShiftKeyDown()
-                && !(event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatLaserPointerItem)
-                && event.getLevel().getBlockEntity(event.getPos()) instanceof cn.laowu.mod.create.CatCarrierBlockEntity box) {
-            event.setCancellationResult(box.interact(event.getEntity(), event.getHand()));
-            event.setCanceled(true);
-            return;
-        }
         if (event.getItemStack().getItem() instanceof cn.laowu.mod.item.CatLaserPointerItem pointer) {
             event.setCancellationResult(pointer.use(event.getLevel(), event.getEntity(), event.getHand()).getResult());
             event.setCanceled(true);
             return;
         }
-        var held = event.getItemStack();
-        boolean gasBucket = held.is(LaoWuMod.HISSING_GAS_BUCKET.get());
-        boolean emptyBucket = held.is(Items.BUCKET);
-        if (!gasBucket && !emptyBucket) return;
-
-        // Creative tanks use their own setContainedFluid exchange path. Their
-        // capability deliberately reports every fill as accepted without
-        // mutating, so our generic handler must not consume the click first.
-        if (event.getLevel().getBlockEntity(event.getPos()) instanceof
-                com.simibubi.create.content.fluids.tank.CreativeFluidTankBlockEntity) return;
-
-        // The collector is deliberately pipe-only even though its outward face
-        // exposes a fluid capability to Create's pipe network.
-        if (event.getLevel().getBlockEntity(event.getPos())
-                instanceof cn.laowu.mod.create.HissingCollectorBlockEntity) {
-            event.setCancellationResult(InteractionResult.FAIL);
-            event.setCanceled(true);
-            return;
-        }
-
-        IFluidHandler handler = FluidUtil.getFluidHandler(
-                event.getLevel(), event.getPos(), event.getFace()).orElse(null);
-        if (handler == null) return;
-
-        if (gasBucket) {
-            FluidStack gas = new FluidStack(LaoWuMod.HISSING_GAS.get(), 1000);
-            if (handler.fill(gas, IFluidHandler.FluidAction.SIMULATE) < 1000) return;
-        } else {
-            FluidStack drained = handler.drain(1000, IFluidHandler.FluidAction.SIMULATE);
-            if (drained.getAmount() < 1000
-                    || !drained.getFluid().isSame(LaoWuMod.HISSING_GAS.get())) return;
-        }
-
-        if (gasBucket && !event.getLevel().isClientSide) {
-            FluidStack gas = new FluidStack(LaoWuMod.HISSING_GAS.get(), 1000);
-            if (handler.fill(gas, IFluidHandler.FluidAction.EXECUTE) != 1000) return;
-
-            var player = event.getEntity();
-            if (!player.getAbilities().instabuild) {
-                player.setItemInHand(event.getHand(), new net.minecraft.world.item.ItemStack(Items.BUCKET));
-            }
-            event.getLevel().playSound(null, event.getPos(), SoundEvents.BUCKET_EMPTY,
-                    SoundSource.BLOCKS, 1.0F, 1.15F);
-            event.setCancellationResult(InteractionResult.SUCCESS);
-            event.setCanceled(true);
-            return;
-        }
-
-        if (gasBucket && event.getLevel().isClientSide) {
-            event.setCancellationResult(InteractionResult.SUCCESS);
-            event.setCanceled(true);
-            return;
-        }
-
-        if (FluidUtil.interactWithFluidHandler(event.getEntity(), event.getHand(), handler)) {
-            event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
-            event.setCanceled(true);
-        }
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
+            cn.laowu.mod.compat.create.CreateCommonEvents.onHissingGasBucketInteract(event);
     }
 
     @SubscribeEvent
     public static void onCatGrenadeImpact(ProjectileImpactEvent event) {
-        if (!(event.getProjectile() instanceof PotatoProjectileEntity projectile)
-                || !projectile.getItem().is(LaoWuMod.CAT_GRENADE.get())
-                || !(projectile.level() instanceof ServerLevel serverLevel)) return;
-        if (projectile.getPersistentData().getBoolean(CAT_GRENADE_EXPLODED_TAG)) return;
-        projectile.getPersistentData().putBoolean(CAT_GRENADE_EXPLODED_TAG, true);
-
-        Vec3 impact = event.getRayTraceResult().getLocation();
-        Entity owner = projectile.getOwner();
-        Entity directHit = event.getRayTraceResult() instanceof EntityHitResult entityHit
-                ? entityHit.getEntity() : null;
-        AABB searchArea = new AABB(impact, impact).inflate(CAT_GRENADE_RADIUS);
-        for (LivingEntity target : serverLevel.getEntitiesOfClass(LivingEntity.class, searchArea,
-                target -> target.isAlive() && target != owner && target != directHit)) {
-            AABB box = target.getBoundingBox();
-            double nearestX = Math.max(box.minX, Math.min(impact.x, box.maxX));
-            double nearestY = Math.max(box.minY, Math.min(impact.y, box.maxY));
-            double nearestZ = Math.max(box.minZ, Math.min(impact.z, box.maxZ));
-            if (impact.distanceToSqr(nearestX, nearestY, nearestZ)
-                    > CAT_GRENADE_RADIUS * CAT_GRENADE_RADIUS) continue;
-
-            target.hurt(serverLevel.damageSources().explosion(projectile, owner), CAT_GRENADE_DAMAGE);
-            Vec3 push = target.position().subtract(impact);
-            if (push.lengthSqr() > 1.0E-6D) {
-                push = push.normalize().scale(0.65D);
-                target.push(push.x, 0.22D, push.z);
-            }
-        }
-
-        serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
-                impact.x, impact.y + 0.1D, impact.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        serverLevel.sendParticles(ParticleTypes.POOF,
-                impact.x, impact.y + 0.1D, impact.z, 55,
-                CAT_GRENADE_RADIUS * 0.42D, CAT_GRENADE_RADIUS * 0.25D,
-                CAT_GRENADE_RADIUS * 0.42D, 0.08D);
-        serverLevel.playSound(null, impact.x, impact.y, impact.z,
-                SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.35F, 0.85F);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
+            cn.laowu.mod.compat.create.CreateCommonEvents.onCatGrenadeImpact(event);
     }
 
     @SubscribeEvent
@@ -605,28 +491,8 @@ public final class CommonEvents {
     /** Create's Cat Cannon keeps the complete pancake stack in its projectile. */
     @SubscribeEvent
     public static void explodeHighFuelCannonPancake(ProjectileImpactEvent event) {
-        if (!(event.getProjectile() instanceof PotatoProjectileEntity projectile)
-                || !projectile.getItem().is(LaoWuMod.CAT_PANCAKE.get())
-                || cn.laowu.mod.genetics.CatTraitData.read(projectile.getItem())
-                .filter(profile -> profile.has(CatTrait.HIGH_EXPLOSIVE_FUEL)).isEmpty()
-                || !(projectile.level() instanceof ServerLevel level)) return;
-        String explodedTag = "LaoWuHighFuelPancakeExploded";
-        if (projectile.getPersistentData().getBoolean(explodedTag)) return;
-        projectile.getPersistentData().putBoolean(explodedTag, true);
-        Vec3 impact = event.getRayTraceResult().getLocation();
-        Entity owner = projectile.getOwner();
-        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class,
-                new AABB(impact, impact).inflate(3.5D),
-                target -> target.isAlive() && target != owner)) {
-            target.hurt(level.damageSources().explosion(projectile, owner), 20.0F);
-            target.setSecondsOnFire(6);
-        }
-        level.sendParticles(ParticleTypes.EXPLOSION, impact.x, impact.y, impact.z,
-                8, 1.3D, 0.8D, 1.3D, 0.04D);
-        level.sendParticles(ParticleTypes.FLAME, impact.x, impact.y, impact.z,
-                45, 1.7D, 1.0D, 1.7D, 0.06D);
-        level.playSound(null, impact.x, impact.y, impact.z,
-                SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.6F, 0.7F);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
+            cn.laowu.mod.compat.create.CreateCommonEvents.explodeHighFuelCannonPancake(event);
     }
 
     @SubscribeEvent
@@ -634,7 +500,7 @@ public final class CommonEvents {
         if (!(event.getEntity() instanceof Cat cat) || cat.level().isClientSide) return;
 
         if (event.getSource().is(DamageTypes.FALLING_ANVIL)
-                || event.getSource().is(AllDamageTypes.ROLLER)) {
+                || event.getSource().is(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", "roller")))) {
             event.setCanceled(true);
             CatPancakeBehavior.flatten(cat);
             return;
@@ -683,7 +549,7 @@ public final class CommonEvents {
             CatDivingMount.recover(cat);
             CatMusicRecords.tick(cat);
             // Keep public accessory/trait hooks and passive maintenance above live while airborne.
-            if(cn.laowu.mod.create.CatDeploymentFlight.tick(cat))return;
+            if(cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && cn.laowu.mod.create.CatDeploymentFlight.tick(cat))return;
             if (CatGiantMount.carried(cat)) {
                 cat.setTarget(null);
                 // The collar only owns locomotion. Career attributes, jobs and support AI remain live.
@@ -710,7 +576,7 @@ public final class CommonEvents {
             if (CatEngineeringCombat.deployed(cat)) return;
             if (CatLaserCommands.hasOrder(cat)) return;
             if (CatPancakeBehavior.tickPancake(cat)) return;
-            if (CatEngineeringBehavior.findCrank(cat) != null) return;
+            if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && CatEngineeringBehavior.findCrank(cat) != null) return;
             if (CatLogisticsBehavior.tick(cat)) {
                 HissingGasProduction.tick(cat);
                 return;
@@ -1133,6 +999,15 @@ public final class CommonEvents {
             event.setCanceled(true);
             if (event.getLevel().isClientSide) return;
             if (profilePlayer instanceof ServerPlayer serverPlayer) {
+                if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) {
+                    var inventory = CatChestData.openContainer(cat);
+                    serverPlayer.openMenu(new SimpleMenuProvider(
+                            (containerId, playerInventory, ignored) ->
+                                    ChestMenu.threeRows(containerId, playerInventory, inventory),
+                            Component.translatable("container.laowu.cat_chest")));
+                    cat.playSound(SoundEvents.CHEST_OPEN, 0.6F, 1.2F);
+                    return;
+                }
                 NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
                                 (containerId, playerInventory, ignored) ->
                                         new CatPackageMenu(containerId,

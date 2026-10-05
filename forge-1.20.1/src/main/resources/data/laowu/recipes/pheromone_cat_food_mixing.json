@@ -12,5 +12,11 @@
     {
       "item": "laowu:pheromone_cat_food"
     }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

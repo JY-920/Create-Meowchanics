@@ -1,0 +1,30 @@
+{
+  "internalVersion": "2.2.2-dev.optional-create.1",
+  "deployedAt": "2026-10-05T11:57:24+08:00",
+  "branch": "develop",
+  "stableMain": "a4a56d174a936c01445a226f1055ffc50019d7fa",
+  "publicRelease": false,
+  "clientCheck": "No user Minecraft client running; remaining own isolated GameTest server was not modified or terminated.",
+  "forge": {
+    "installedJar": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mods/create-meowchanics-2.2.2-dev.optional-create.1-forge-1.20.1.jar",
+    "backupJar": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mod-backups/create-meowchanics/20261005-115724-optional-create.1/create-meowchanics-2.2.2-forge-1.20.1.jar",
+    "sha256": "2CBB2BE1A5AA9CBF63D66F549B34D9B9597DA3C6A25C5DF51B7707BBDB75F0EE",
+    "enabledLaowuCount": 1
+  },
+  "neoforge": {
+    "installedJar": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mods/create-meowchanics-2.2.2-dev.optional-create.1-neoforge-1.21.1.jar",
+    "backupJar": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mod-backups/create-meowchanics/20261005-115724-optional-create.1/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+    "sha256": "9C7377FA29D506FB8701F6BA5F2E1D9E596252B053032F212DD1BA5951B998DB",
+    "enabledLaowuCount": 1
+  },
+  "verification": {
+    "normalBuilds": "Both loaders passed normal build including API/schema/resource/release isolation checks.",
+    "withCreateServer": "50/50 actual GameTests per loader, with KubeJS compatibility probes.",
+    "withoutCreateServer": "14/14 actual GameTests per loader, with KubeJS trait examples and standalone gameplay probes.",
+    "clients": "Both loaders passed real client probes with Create; without Create, core profile/outfits/items/tooltips/scanner/rider/cannon renders passed, including JEI and Curios combination.",
+    "node": "73/73 tests passed.",
+    "review": "Independent read-only review completed with no remaining actionable findings in inspected scope."
+  },
+  "unchanged": ["user worlds", "user configs", "user kubejs scripts", "other installed mods"],
+  "limitations": ["Standalone acquisition recipes deferred", "Removing Create from existing industrial worlds is not a lossless migration"]
+}

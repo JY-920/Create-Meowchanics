@@ -23,5 +23,11 @@
   ],
   "result": {
     "item": "laowu:infiltration_tank"
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

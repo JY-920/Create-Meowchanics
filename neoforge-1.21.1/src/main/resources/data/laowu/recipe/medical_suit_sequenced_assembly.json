@@ -45,5 +45,11 @@
   ],
   "transitional_item": {
     "id": "laowu:incomplete_medical_suit"
-  }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

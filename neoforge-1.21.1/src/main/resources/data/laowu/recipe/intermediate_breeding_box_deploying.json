@@ -12,5 +12,11 @@
     {
       "id": "laowu:intermediate_breeding_box"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

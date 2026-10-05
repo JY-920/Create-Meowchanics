@@ -22,5 +22,11 @@
   "result": {
     "id": "laowu:cat_carrier",
     "count": 1
-  }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

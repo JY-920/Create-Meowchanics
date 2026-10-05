@@ -14,5 +14,11 @@
     {
       "id": "laowu:hissing_gas_bucket"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

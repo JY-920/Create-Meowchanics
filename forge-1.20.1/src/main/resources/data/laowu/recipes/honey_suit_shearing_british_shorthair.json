@@ -20,5 +20,11 @@
         "LaoWuTamedPancake": true
       }
     }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

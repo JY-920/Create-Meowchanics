@@ -1,10 +1,23 @@
 {
   "type": "create:mixing",
   "ingredients": [
-    { "item": "create:dough" },
-    { "fluid": "laowu:hissing_gas", "amount": 250 }
+    {
+      "item": "create:dough"
+    },
+    {
+      "fluid": "laowu:hissing_gas",
+      "amount": 250
+    }
   ],
   "results": [
-    { "item": "laowu:cat_dough" }
+    {
+      "item": "laowu:cat_dough"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

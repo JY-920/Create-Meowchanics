@@ -1,23 +1,74 @@
 {
   "replace": false,
   "values": [
-    "laowu:creature_transmitter",
-    "laowu:cat_editor",
-    "laowu:cat_auto_laser",
-    "laowu:cat_casing",
-    "laowu:cat_encased_shaft",
-    "laowu:cat_encased_cogwheel",
-    "laowu:cat_encased_large_cogwheel",
-    "laowu:haji_basin",
-    "laowu:cat_depot",
-    "laowu:cat_engine",
-    "laowu:infiltration_tank",
-    "laowu:hissing_collector",
-    "laowu:devouring_cat",
+    {
+      "id": "laowu:creature_transmitter",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_editor",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_auto_laser",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_casing",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_encased_shaft",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_encased_cogwheel",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_encased_large_cogwheel",
+      "required": false
+    },
+    {
+      "id": "laowu:haji_basin",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_depot",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_engine",
+      "required": false
+    },
+    {
+      "id": "laowu:infiltration_tank",
+      "required": false
+    },
+    {
+      "id": "laowu:hissing_collector",
+      "required": false
+    },
+    {
+      "id": "laowu:devouring_cat",
+      "required": false
+    },
     "laowu:cat_block",
-    "laowu:cat_press",
-    "laowu:cat_mixer",
-    "laowu:cat_deployment_platform",
-    "laowu:cat_ejecting_deployment_platform"
+    {
+      "id": "laowu:cat_press",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_mixer",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_deployment_platform",
+      "required": false
+    },
+    {
+      "id": "laowu:cat_ejecting_deployment_platform",
+      "required": false
+    }
   ]
 }

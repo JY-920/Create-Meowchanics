@@ -2,8 +2,22 @@
   "type": "create:mixing",
   "heatRequirement": "heated",
   "ingredients": [
-    { "item": "laowu:cat_can" },
-    { "item": "minecraft:egg" }
+    {
+      "item": "laowu:cat_can"
+    },
+    {
+      "item": "minecraft:egg"
+    }
   ],
-  "results": [{ "item": "laowu:intelligence_cat_can" }]
+  "results": [
+    {
+      "item": "laowu:intelligence_cat_can"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

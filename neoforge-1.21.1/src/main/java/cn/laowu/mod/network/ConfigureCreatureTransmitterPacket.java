@@ -19,6 +19,7 @@ public record ConfigureCreatureTransmitterPacket(BlockPos pos,int radius,int low
     public static void handle(ConfigureCreatureTransmitterPacket p,IPayloadContext c){if(c.player() instanceof net.minecraft.server.level.ServerPlayer player)p.apply(player);}
     @Override public Type<? extends CustomPacketPayload> type(){return TYPE;}
     public void apply(net.minecraft.server.level.ServerPlayer player) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return;
         if(player==null||!player.isAlive()||player.isSpectator()||!player.mayBuild()
             ||player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos))>64
             ||!player.serverLevel().hasChunkAt(pos)||!player.level().mayInteract(player,pos))return;

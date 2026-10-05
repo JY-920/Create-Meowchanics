@@ -528,6 +528,7 @@ public final class CatPancakeItem extends Item {
     }
 
     private static boolean insideActiveCreateAirCurrent(ItemEntity entity) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return false;
         Level level = entity.level();
         BlockPos center = entity.blockPosition();
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();

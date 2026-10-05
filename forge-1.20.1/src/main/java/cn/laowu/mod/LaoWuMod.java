@@ -176,93 +176,65 @@ public final class LaoWuMod {
     public static final RegistryObject<net.minecraft.core.particles.SimpleParticleType> CAT_AGENT_SMOKE =
             PARTICLE_TYPES.register("cat_agent_smoke", () -> new net.minecraft.core.particles.SimpleParticleType(false));
     public static final RegistryObject<ParticleType<NozzleFluidPuffData>> NOZZLE_FLUID_PUFF =
-            PARTICLE_TYPES.register("nozzle_fluid_puff", () ->
-                    new ParticleType<>(false, NozzleFluidPuffData.DESERIALIZER) {
-                        @Override
-                        public Codec<NozzleFluidPuffData> codec() {
-                            return NozzleFluidPuffData.CODEC;
-                        }
-                    });
+            cn.laowu.mod.compat.create.CreateIntegration.register(PARTICLE_TYPES, "nozzle_fluid_puff", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::particle_types_nozzle_fluid_puff : null);
 
     public static final RegistryObject<Block> CAT_BLOCK = BLOCKS.register("cat_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIAMOND_BLOCK)));
 
-    public static final RegistryObject<Block> CAT_ENGINE = BLOCKS.register("cat_engine",
-            () -> new CatEngineBlock(BlockBehaviour.Properties.of()
-                    .noOcclusion().strength(3.0F, 6.0F).requiresCorrectToolForDrops()));
+    public static final RegistryObject<Block> CAT_ENGINE = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "cat_engine",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_cat_engine : null);
     public static final RegistryObject<BlockEntityType<CatEngineBlockEntity>> CAT_ENGINE_BE =
-            BLOCK_ENTITIES.register("cat_engine", () -> BlockEntityType.Builder
-                    .of(CatEngineBlockEntity::new, CAT_ENGINE.get()).build(null));
-    public static final RegistryObject<Block> INFILTRATION_TANK = BLOCKS.register("infiltration_tank",
-            () -> new InfiltrationTankBlock(BlockBehaviour.Properties.of()
-                    .noOcclusion().strength(3.0F, 6.0F).requiresCorrectToolForDrops()));
+            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "cat_engine", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_cat_engine : null);
+    public static final RegistryObject<Block> INFILTRATION_TANK = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "infiltration_tank",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_infiltration_tank : null);
     public static final RegistryObject<BlockEntityType<InfiltrationTankBlockEntity>> INFILTRATION_TANK_BE =
-            BLOCK_ENTITIES.register("infiltration_tank", () -> BlockEntityType.Builder
-                    .of(InfiltrationTankBlockEntity::new, INFILTRATION_TANK.get()).build(null));
-    public static final RegistryObject<Block> HISSING_COLLECTOR = BLOCKS.register("hissing_collector",
-            () -> new HissingCollectorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                    .noOcclusion().strength(1.5F, 6.0F)));
+            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "infiltration_tank", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_infiltration_tank : null);
+    public static final RegistryObject<Block> HISSING_COLLECTOR = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "hissing_collector",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_hissing_collector : null);
     public static final RegistryObject<BlockEntityType<HissingCollectorBlockEntity>> HISSING_COLLECTOR_BE =
-            BLOCK_ENTITIES.register("hissing_collector", () -> BlockEntityType.Builder
-                    .of(HissingCollectorBlockEntity::new, HISSING_COLLECTOR.get()).build(null));
-    public static final RegistryObject<Block> DEVOURING_CAT = BLOCKS.register("devouring_cat",
-            () -> new DevouringCatBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                    .noOcclusion().strength(3.0F, 6.0F)));
+            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "hissing_collector", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_hissing_collector : null);
+    public static final RegistryObject<Block> DEVOURING_CAT = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "devouring_cat",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_devouring_cat : null);
     public static final RegistryObject<BlockEntityType<DevouringCatBlockEntity>> DEVOURING_CAT_BE =
-            BLOCK_ENTITIES.register("devouring_cat", () -> BlockEntityType.Builder
-                    .of(DevouringCatBlockEntity::new, DEVOURING_CAT.get()).build(null));
-    public static final RegistryObject<Block> BASIC_BREEDING_BOX = BLOCKS.register(
-            "basic_breeding_box", () -> new BreedingBoxBlock(BreedingBoxTier.BASIC,
-                    BlockBehaviour.Properties.copy(Blocks.BARREL).noOcclusion().strength(0.8F)));
-    public static final RegistryObject<Block> INTERMEDIATE_BREEDING_BOX = BLOCKS.register(
-            "intermediate_breeding_box", () -> new BreedingBoxBlock(BreedingBoxTier.INTERMEDIATE,
-                    BlockBehaviour.Properties.copy(Blocks.BARREL).noOcclusion().strength(1.2F)));
-    public static final RegistryObject<Block> ADVANCED_BREEDING_BOX = BLOCKS.register(
-            "advanced_breeding_box", () -> new BreedingBoxBlock(BreedingBoxTier.ADVANCED,
-                    BlockBehaviour.Properties.copy(Blocks.BARREL).noOcclusion().strength(1.6F)));
+            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "devouring_cat", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_devouring_cat : null);
+    public static final RegistryObject<Block> BASIC_BREEDING_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "basic_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_basic_breeding_box : null);
+    public static final RegistryObject<Block> INTERMEDIATE_BREEDING_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "intermediate_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_intermediate_breeding_box : null);
+    public static final RegistryObject<Block> ADVANCED_BREEDING_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "advanced_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_advanced_breeding_box : null);
     public static final RegistryObject<BlockEntityType<BreedingBoxBlockEntity>> BREEDING_BOX_BE =
-            BLOCK_ENTITIES.register("breeding_box", () -> BlockEntityType.Builder
-                    .of(BreedingBoxBlockEntity::new, BASIC_BREEDING_BOX.get(),
-                            INTERMEDIATE_BREEDING_BOX.get(), ADVANCED_BREEDING_BOX.get())
-                    .build(null));
-    public static final RegistryObject<Block> CAT_CARRIER = BLOCKS.register("cat_carrier",
-            () -> new cn.laowu.mod.create.CatCarrierBlock(BlockBehaviour.Properties.of().strength(2.0F).noOcclusion()));
+            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_breeding_box : null);
+    public static final RegistryObject<Block> CAT_CARRIER = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "cat_carrier",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_cat_carrier : null);
     public static final RegistryObject<BlockEntityType<cn.laowu.mod.create.CatCarrierBlockEntity>> CAT_CARRIER_BE =
-            BLOCK_ENTITIES.register("cat_carrier", () -> BlockEntityType.Builder
-                    .of(cn.laowu.mod.create.CatCarrierBlockEntity::new, CAT_CARRIER.get()).build(null));
-    public static final RegistryObject<Item> CAT_CARRIER_ITEM = ITEMS.register("cat_carrier",
-            () -> new cn.laowu.mod.item.CatCarrierBlockItem(CAT_CARRIER.get(), new Item.Properties()));
-    public static final RegistryObject<Block> CAT_EDITOR = BLOCKS.register("cat_editor", () -> new cn.laowu.mod.create.CatEditorBlock(BlockBehaviour.Properties.of().strength(2F).noOcclusion()));
-    public static final RegistryObject<Item> CAT_EDITOR_ITEM = ITEMS.register("cat_editor", () -> new BlockItem(CAT_EDITOR.get(), new Item.Properties()));
+            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "cat_carrier", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_cat_carrier : null);
+    public static final RegistryObject<Item> CAT_CARRIER_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_carrier",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_carrier : null);
+    public static final RegistryObject<Block> CAT_EDITOR = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "cat_editor", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_cat_editor : null);
+    public static final RegistryObject<Item> CAT_EDITOR_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_editor", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_editor : null);
     public static final RegistryObject<Item> CAT_TRAIT_TOKEN = ITEMS.register("cat_trait_token", () -> new cn.laowu.mod.item.CatTraitTokenItem(new Item.Properties()));
-    public static final RegistryObject<MenuType<CatEditorMenu>> CAT_EDITOR_MENU = MENUS.register("cat_editor", () -> IForgeMenuType.create(CatEditorMenu::new));
-    public static final RegistryObject<Block> CAT_DEPLOYMENT_PLATFORM = BLOCKS.register("cat_deployment_platform",
-            () -> new cn.laowu.mod.create.CatDeploymentBlock(BlockBehaviour.Properties.of().strength(2F).noOcclusion(), false));
-    public static final RegistryObject<Block> CAT_EJECTING_DEPLOYMENT_PLATFORM = BLOCKS.register("cat_ejecting_deployment_platform",
-            () -> new cn.laowu.mod.create.CatDeploymentBlock(BlockBehaviour.Properties.of().strength(2F).noOcclusion(), true));
-    public static final RegistryObject<BlockEntityType<cn.laowu.mod.create.CatDeploymentBlockEntity>> CAT_DEPLOYMENT_BE = BLOCK_ENTITIES.register("cat_deployment_platform",
-            () -> BlockEntityType.Builder.of(cn.laowu.mod.create.CatDeploymentBlockEntity::new, CAT_DEPLOYMENT_PLATFORM.get(), CAT_EJECTING_DEPLOYMENT_PLATFORM.get()).build(null));
-    public static final RegistryObject<Item> CAT_DEPLOYMENT_PLATFORM_ITEM = ITEMS.register("cat_deployment_platform",
-            () -> new cn.laowu.mod.item.CatDeploymentBlockItem(CAT_DEPLOYMENT_PLATFORM.get(), new Item.Properties()));
-    public static final RegistryObject<Item> CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM = ITEMS.register("cat_ejecting_deployment_platform",
-            () -> new cn.laowu.mod.item.CatDeploymentBlockItem(CAT_EJECTING_DEPLOYMENT_PLATFORM.get(), new Item.Properties()));
+    public static final RegistryObject<MenuType<CatEditorMenu>> CAT_EDITOR_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "cat_editor", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_cat_editor : null);
+    public static final RegistryObject<Block> CAT_DEPLOYMENT_PLATFORM = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "cat_deployment_platform",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_cat_deployment_platform : null);
+    public static final RegistryObject<Block> CAT_EJECTING_DEPLOYMENT_PLATFORM = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "cat_ejecting_deployment_platform",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_cat_ejecting_deployment_platform : null);
+    public static final RegistryObject<BlockEntityType<cn.laowu.mod.create.CatDeploymentBlockEntity>> CAT_DEPLOYMENT_BE = cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "cat_deployment_platform",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_cat_deployment_platform : null);
+    public static final RegistryObject<Item> CAT_DEPLOYMENT_PLATFORM_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_deployment_platform",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_deployment_platform : null);
+    public static final RegistryObject<Item> CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_ejecting_deployment_platform",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_ejecting_deployment_platform : null);
     public static final RegistryObject<Item> CAT_LASER_POINTER = ITEMS.register("cat_laser_pointer",
             () -> new cn.laowu.mod.item.CatLaserPointerItem(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> CAT_STORAGE_BOX = ITEMS.register("cat_storage_box",
-            () -> new cn.laowu.mod.item.CatStorageBoxItem(new Item.Properties()));
+    public static final RegistryObject<Item> CAT_STORAGE_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_storage_box",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_storage_box : null);
 
-    public static final RegistryObject<Block> ADOPTION_BOX = BLOCKS.register("adoption_box",
-            () -> new AdoptionBoxBlock(BlockBehaviour.Properties.copy(Blocks.BARREL)
-                    .noOcclusion().strength(0.8F)));
+    public static final RegistryObject<Block> ADOPTION_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "adoption_box",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_adoption_box : null);
     public static final RegistryObject<BlockEntityType<AdoptionBoxBlockEntity>> ADOPTION_BOX_BE =
-            BLOCK_ENTITIES.register("adoption_box", () -> BlockEntityType.Builder
-                    .of(AdoptionBoxBlockEntity::new, ADOPTION_BOX.get()).build(null));
-    public static final RegistryObject<Block> WISH_ADOPTION_BOX = BLOCKS.register("wish_adoption_box",
-            () -> new WishAdoptionBoxBlock(BlockBehaviour.Properties.copy(Blocks.BARREL)
-                    .noOcclusion().strength(0.8F)));
+            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "adoption_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_adoption_box : null);
+    public static final RegistryObject<Block> WISH_ADOPTION_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "wish_adoption_box",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_wish_adoption_box : null);
     public static final RegistryObject<BlockEntityType<WishAdoptionBoxBlockEntity>> WISH_ADOPTION_BOX_BE =
-            BLOCK_ENTITIES.register("wish_adoption_box", () -> BlockEntityType.Builder
-                    .of(WishAdoptionBoxBlockEntity::new, WISH_ADOPTION_BOX.get()).build(null));
+            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "wish_adoption_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_wish_adoption_box : null);
     public static final RegistryObject<EntityType<cn.laowu.mod.entity.GiantCatBoss>> GIANT_CAT_BOSS =
             ENTITY_TYPES.register("giant_cat_boss", () -> EntityType.Builder
                     .<cn.laowu.mod.entity.GiantCatBoss>of(cn.laowu.mod.entity.GiantCatBoss::new, MobCategory.MONSTER)
@@ -292,10 +264,10 @@ public final class LaoWuMod {
             () -> new MaterialDebugWandItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> CAT_SCANNER = ITEMS.register("cat_scanner",
             () -> new CatScannerItem(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> CREATURE_FILTER = ITEMS.register("creature_filter",
-            () -> new CreatureFilterItem(new Item.Properties()));
-    public static final RegistryObject<Item> CAT_FILTER = ITEMS.register("cat_filter",
-            () -> new CatFilterItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> CREATURE_FILTER = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "creature_filter",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_creature_filter : null);
+    public static final RegistryObject<Item> CAT_FILTER = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_filter",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_filter : null);
     public static final RegistryObject<Item> BUTTER_BREAD = ITEMS.register("butter_bread",
             () -> new ButterBreadItem(new Item.Properties()));
     public static final RegistryObject<Item> BUTTER_CAT_SPAWN_EGG = ITEMS.register(
@@ -342,38 +314,24 @@ public final class LaoWuMod {
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> CAT_COMPONENT = ITEMS.register("cat_component",
             () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_CAT_COMPONENT = ITEMS.register(
-            "incomplete_cat_component", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_TERMINATOR_SUIT = ITEMS.register(
-            "incomplete_terminator_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_FISHING_SUIT = ITEMS.register(
-            "incomplete_fishing_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_FLIGHT_SUIT = ITEMS.register(
-            "incomplete_flight_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_TRANSPORT_SUIT = ITEMS.register(
-            "incomplete_transport_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_FIRE_SUIT = ITEMS.register(
-            "incomplete_fire_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_HONEY_SUIT = ITEMS.register(
-            "incomplete_honey_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_DYNAMITE_SUIT = ITEMS.register(
-            "incomplete_dynamite_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_ENGINEERING_SUIT = ITEMS.register(
-            "incomplete_engineering_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_MEDICAL_SUIT = ITEMS.register(
-            "incomplete_medical_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_MUSIC_SUIT = ITEMS.register(
-            "incomplete_music_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_AGENT_SUIT = ITEMS.register(
-            "incomplete_agent_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_DIVING_SUIT = ITEMS.register(
-            "incomplete_diving_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_COCKROACH_SUIT = ITEMS.register(
-            "incomplete_cockroach_suit", () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
+    public static final RegistryObject<Item> INCOMPLETE_CAT_COMPONENT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_cat_component", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_cat_component : null);
+    public static final RegistryObject<Item> INCOMPLETE_TERMINATOR_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_terminator_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_terminator_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_FISHING_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_fishing_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_fishing_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_FLIGHT_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_flight_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_flight_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_TRANSPORT_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_transport_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_transport_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_FIRE_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_fire_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_fire_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_HONEY_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_honey_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_honey_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_DYNAMITE_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_dynamite_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_dynamite_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_ENGINEERING_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_engineering_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_engineering_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_MEDICAL_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_medical_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_medical_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_MUSIC_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_music_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_music_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_AGENT_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_agent_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_agent_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_DIVING_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_diving_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_diving_suit : null);
+    public static final RegistryObject<Item> INCOMPLETE_COCKROACH_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_cockroach_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_cockroach_suit : null);
     public static final RegistryObject<Item> CAT_TOTEM = ITEMS.register("cat_totem",
             () -> new CatTotemItem(new Item.Properties()));
-    public static final RegistryObject<Item> CAT_ENGINEER_GOGGLES = ITEMS.register("cat_engineer_goggles",
-            () -> new CatEngineerGogglesItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> CAT_ENGINEER_GOGGLES = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_engineer_goggles",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_engineer_goggles : null);
     public static final RegistryObject<Item> CAT_BLOCK_ITEM = ITEMS.register("cat_block",
             () -> new BlockItem(CAT_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> CAT_UPGRADE_SMITHING_TEMPLATE = ITEMS.register(
@@ -413,8 +371,8 @@ public final class LaoWuMod {
     public static final RegistryObject<Item> CAT_HOE = ITEMS.register("cat_hoe",
             () -> new CatHoeItem(Tiers.DIAMOND, -3, 0.0F,
                     new Item.Properties().durability(Items.DIAMOND_HOE.getMaxDamage())));
-    public static final RegistryObject<Item> CAT_CANNON = ITEMS.register("cat_cannon",
-            () -> new CatCannonItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> CAT_CANNON = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_cannon",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_cannon : null);
     public static final RegistryObject<Item> CAT_BALL = ITEMS.register("cat_ball",
             () -> new CatBallItem(new Item.Properties()));
     public static final RegistryObject<Item> CAT_STRIP = ITEMS.register("cat_strip",
@@ -508,8 +466,8 @@ public final class LaoWuMod {
             () -> new CatGrenadeItem(new Item.Properties()));
     public static final RegistryObject<Item> CAT_SHELL = ITEMS.register("cat_shell",
             () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> INCOMPLETE_CAT_GRENADE = ITEMS.register("incomplete_cat_grenade",
-            () -> new com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem(new Item.Properties()));
+    public static final RegistryObject<Item> INCOMPLETE_CAT_GRENADE = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_cat_grenade",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_cat_grenade : null);
     public static final RegistryObject<Item> CAT_POWDER = ITEMS.register("cat_powder",
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> CAT_DOUGH = ITEMS.register("cat_dough",
@@ -538,27 +496,21 @@ public final class LaoWuMod {
     public static final RegistryObject<Potion> POWERFUL_HISSING_POTION = POTIONS.register("powerful_hissing",
             () -> new Potion("hissing",
                     new MobEffectInstance(HISSING_ATTACK.get(), 20 * 60 * 3, 2)));
-    public static final RegistryObject<Item> CAT_ENGINE_ITEM = ITEMS.register("cat_engine",
-            () -> new CatEngineBlockItem(CAT_ENGINE.get(), new Item.Properties()));
-    public static final RegistryObject<Item> INFILTRATION_TANK_ITEM = ITEMS.register("infiltration_tank",
-            () -> new BlockItem(INFILTRATION_TANK.get(), new Item.Properties()));
-    public static final RegistryObject<Item> HISSING_COLLECTOR_ITEM = ITEMS.register("hissing_collector",
-            () -> new BlockItem(HISSING_COLLECTOR.get(), new Item.Properties()));
-    public static final RegistryObject<Item> DEVOURING_CAT_ITEM = ITEMS.register("devouring_cat",
-            () -> new DevouringCatBlockItem(DEVOURING_CAT.get(), new Item.Properties()));
-    public static final RegistryObject<Item> BASIC_BREEDING_BOX_ITEM = ITEMS.register(
-            "basic_breeding_box", () -> new BreedingBoxBlockItem(
-                    BASIC_BREEDING_BOX.get(), new Item.Properties()));
-    public static final RegistryObject<Item> INTERMEDIATE_BREEDING_BOX_ITEM = ITEMS.register(
-            "intermediate_breeding_box", () -> new BreedingBoxBlockItem(
-                    INTERMEDIATE_BREEDING_BOX.get(), new Item.Properties()));
-    public static final RegistryObject<Item> ADVANCED_BREEDING_BOX_ITEM = ITEMS.register(
-            "advanced_breeding_box", () -> new BreedingBoxBlockItem(
-                    ADVANCED_BREEDING_BOX.get(), new Item.Properties()));
-    public static final RegistryObject<Item> ADOPTION_BOX_ITEM = ITEMS.register("adoption_box",
-            () -> new AdoptionBoxBlockItem(ADOPTION_BOX.get(), new Item.Properties()));
-    public static final RegistryObject<Item> WISH_ADOPTION_BOX_ITEM = ITEMS.register("wish_adoption_box",
-            () -> new WishAdoptionBoxBlockItem(WISH_ADOPTION_BOX.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CAT_ENGINE_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_engine",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_engine : null);
+    public static final RegistryObject<Item> INFILTRATION_TANK_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "infiltration_tank",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_infiltration_tank : null);
+    public static final RegistryObject<Item> HISSING_COLLECTOR_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "hissing_collector",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_hissing_collector : null);
+    public static final RegistryObject<Item> DEVOURING_CAT_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "devouring_cat",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_devouring_cat : null);
+    public static final RegistryObject<Item> BASIC_BREEDING_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "basic_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_basic_breeding_box : null);
+    public static final RegistryObject<Item> INTERMEDIATE_BREEDING_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "intermediate_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_intermediate_breeding_box : null);
+    public static final RegistryObject<Item> ADVANCED_BREEDING_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "advanced_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_advanced_breeding_box : null);
+    public static final RegistryObject<Item> ADOPTION_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "adoption_box",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_adoption_box : null);
+    public static final RegistryObject<Item> WISH_ADOPTION_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "wish_adoption_box",
+            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_wish_adoption_box : null);
     public static final RegistryObject<FluidType> HISSING_GAS_TYPE = FLUID_TYPES.register(
             "hissing_gas", HissingGasFluidType::new);
     public static final RegistryObject<FlowingFluid> HISSING_GAS = FLUIDS.register(
@@ -584,63 +536,63 @@ public final class LaoWuMod {
     public static final RegistryObject<CreativeModeTab> LAOWU_TAB = CREATIVE_TABS.register("laowu",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.laowu"))
-                    .icon(() -> CAT_ENGINE_ITEM.get().getDefaultInstance())
+                    .icon(() -> (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? CAT_ENGINE_ITEM.get() : CAT_PANCAKE.get()).getDefaultInstance())
                     .displayItems((parameters, output) -> {
-                        output.accept(CAT_ENGINE_ITEM.get());
-                        output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_CASING_ITEM.get());
-                        output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_AUTO_LASER_ITEM.get());
-                        output.accept(cn.laowu.mod.create.CreatureTransmitterRegistration.ITEM.get());
-                        output.accept(cn.laowu.mod.create.CatMachineBlocks.HAJI_BASIN_ITEM.get());
-                        output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_PRESS_ITEM.get());
-                        output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_MIXER_ITEM.get());
-                        output.accept(cn.laowu.mod.create.CatDepotRegistration.CAT_DEPOT_ITEM.get());
-                        output.accept(INFILTRATION_TANK_ITEM.get());
-                        output.accept(HISSING_COLLECTOR_ITEM.get());
-                        output.accept(DEVOURING_CAT_ITEM.get());
-                        output.accept(ADOPTION_BOX_ITEM.get());
-                        output.accept(WISH_ADOPTION_BOX_ITEM.get());
-                        output.accept(CAT_CARRIER_ITEM.get());
-                        output.accept(CAT_EDITOR_ITEM.get());
-                        output.accept(CAT_DEPLOYMENT_PLATFORM_ITEM.get());
-                        output.accept(CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM.get());
-                        output.accept(CAT_BLOCK_ITEM.get());
-                        output.accept(CAT_INGOT.get());
-                        output.accept(CAT_SHEET.get());
-                        output.accept(CAT_FUR.get());
-                        output.accept(CAT_SPRING.get());
-                        output.accept(CAT_GEAR.get());
-                        output.accept(CAT_PELLET.get());
-                        output.accept(CAT_COMPONENT.get());
-                        output.accept(CAT_UPGRADE_SMITHING_TEMPLATE.get());
+                        if (CAT_ENGINE_ITEM.isPresent()) output.accept(CAT_ENGINE_ITEM.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_CASING_ITEM.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_AUTO_LASER_ITEM.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CreatureTransmitterRegistration.ITEM.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatMachineBlocks.HAJI_BASIN_ITEM.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_PRESS_ITEM.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_MIXER_ITEM.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatDepotRegistration.CAT_DEPOT_ITEM.get());
+                        if (INFILTRATION_TANK_ITEM.isPresent()) output.accept(INFILTRATION_TANK_ITEM.get());
+                        if (HISSING_COLLECTOR_ITEM.isPresent()) output.accept(HISSING_COLLECTOR_ITEM.get());
+                        if (DEVOURING_CAT_ITEM.isPresent()) output.accept(DEVOURING_CAT_ITEM.get());
+                        if (ADOPTION_BOX_ITEM.isPresent()) output.accept(ADOPTION_BOX_ITEM.get());
+                        if (WISH_ADOPTION_BOX_ITEM.isPresent()) output.accept(WISH_ADOPTION_BOX_ITEM.get());
+                        if (CAT_CARRIER_ITEM.isPresent()) output.accept(CAT_CARRIER_ITEM.get());
+                        if (CAT_EDITOR_ITEM.isPresent()) output.accept(CAT_EDITOR_ITEM.get());
+                        if (CAT_DEPLOYMENT_PLATFORM_ITEM.isPresent()) output.accept(CAT_DEPLOYMENT_PLATFORM_ITEM.get());
+                        if (CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM.isPresent()) output.accept(CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM.get());
+                        if (CAT_BLOCK_ITEM.isPresent()) output.accept(CAT_BLOCK_ITEM.get());
+                        if (CAT_INGOT.isPresent()) output.accept(CAT_INGOT.get());
+                        if (CAT_SHEET.isPresent()) output.accept(CAT_SHEET.get());
+                        if (CAT_FUR.isPresent()) output.accept(CAT_FUR.get());
+                        if (CAT_SPRING.isPresent()) output.accept(CAT_SPRING.get());
+                        if (CAT_GEAR.isPresent()) output.accept(CAT_GEAR.get());
+                        if (CAT_PELLET.isPresent()) output.accept(CAT_PELLET.get());
+                        if (CAT_COMPONENT.isPresent()) output.accept(CAT_COMPONENT.get());
+                        if (CAT_UPGRADE_SMITHING_TEMPLATE.isPresent()) output.accept(CAT_UPGRADE_SMITHING_TEMPLATE.get());
                         output.accept(CatTotemItem.emptyStack(CAT_TOTEM.get()));
-                        output.accept(CAT_HELMET.get());
-                        output.accept(CAT_CHESTPLATE.get());
-                        output.accept(CAT_LEGGINGS.get());
-                        output.accept(CAT_BOOTS.get());
-                        output.accept(CAT_SWORD.get());
-                        output.accept(CAT_PICKAXE.get());
-                        output.accept(CAT_AXE.get());
-                        output.accept(CAT_SHOVEL.get());
-                        output.accept(CAT_HOE.get());
-                        output.accept(CAT_CANNON.get());
-                        output.accept(CAT_BALL.get());
-                        output.accept(CAT_STRIP.get());
-                        output.accept(CAT_POUCH.get());
-                        output.accept(CAT_BOX.get());
-                        output.accept(CAT_FOOD.get());
-                        output.accept(PHEROMONE_CAT_FOOD.get());
-                        output.accept(CAT_POWDER.get());
-                        output.accept(CAT_DOUGH.get());
+                        if (CAT_HELMET.isPresent()) output.accept(CAT_HELMET.get());
+                        if (CAT_CHESTPLATE.isPresent()) output.accept(CAT_CHESTPLATE.get());
+                        if (CAT_LEGGINGS.isPresent()) output.accept(CAT_LEGGINGS.get());
+                        if (CAT_BOOTS.isPresent()) output.accept(CAT_BOOTS.get());
+                        if (CAT_SWORD.isPresent()) output.accept(CAT_SWORD.get());
+                        if (CAT_PICKAXE.isPresent()) output.accept(CAT_PICKAXE.get());
+                        if (CAT_AXE.isPresent()) output.accept(CAT_AXE.get());
+                        if (CAT_SHOVEL.isPresent()) output.accept(CAT_SHOVEL.get());
+                        if (CAT_HOE.isPresent()) output.accept(CAT_HOE.get());
+                        if (CAT_CANNON.isPresent()) output.accept(CAT_CANNON.get());
+                        if (CAT_BALL.isPresent()) output.accept(CAT_BALL.get());
+                        if (CAT_STRIP.isPresent()) output.accept(CAT_STRIP.get());
+                        if (CAT_POUCH.isPresent()) output.accept(CAT_POUCH.get());
+                        if (CAT_BOX.isPresent()) output.accept(CAT_BOX.get());
+                        if (CAT_FOOD.isPresent()) output.accept(CAT_FOOD.get());
+                        if (PHEROMONE_CAT_FOOD.isPresent()) output.accept(PHEROMONE_CAT_FOOD.get());
+                        if (CAT_POWDER.isPresent()) output.accept(CAT_POWDER.get());
+                        if (CAT_DOUGH.isPresent()) output.accept(CAT_DOUGH.get());
                         output.accept(CatPancakeItem.defaultDisplayStack());
-                        output.accept(BUTTER_BREAD.get());
-                        output.accept(GIANT_CAT_TREAT.get());
-                        output.accept(BUTTER_CAT_SPAWN_EGG.get());
-                        output.accept(AllItems.CARDBOARD_SWORD.get());
-                        output.accept(AllBlocks.SEATS.get(DyeColor.RED).get());
-                        output.accept(CAT_GRENADE.get());
-                        output.accept(CAT_SHELL.get());
-                        output.accept(HISSING_GAS_BUCKET.get());
-                        output.accept(LIQUID_CAT_BUCKET.get());
+                        if (BUTTER_BREAD.isPresent()) output.accept(BUTTER_BREAD.get());
+                        if (GIANT_CAT_TREAT.isPresent()) output.accept(GIANT_CAT_TREAT.get());
+                        if (BUTTER_CAT_SPAWN_EGG.isPresent()) output.accept(BUTTER_CAT_SPAWN_EGG.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(AllItems.CARDBOARD_SWORD.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(AllBlocks.SEATS.get(DyeColor.RED).get());
+                        if (CAT_GRENADE.isPresent()) output.accept(CAT_GRENADE.get());
+                        if (CAT_SHELL.isPresent()) output.accept(CAT_SHELL.get());
+                        if (HISSING_GAS_BUCKET.isPresent()) output.accept(HISSING_GAS_BUCKET.get());
+                        if (LIQUID_CAT_BUCKET.isPresent()) output.accept(LIQUID_CAT_BUCKET.get());
                         output.accept(PotionUtils.setPotion(
                                 new ItemStack(Items.POTION), HISSING_POTION.get()));
                         output.accept(PotionUtils.setPotion(
@@ -653,68 +605,68 @@ public final class LaoWuMod {
             CREATIVE_TABS.register("cat_progression",
                     () -> CreativeModeTab.builder()
                             .title(Component.translatable("itemGroup.laowu.cat_progression"))
-                            .icon(() -> ADVANCED_BREEDING_BOX_ITEM.get().getDefaultInstance())
+                            .icon(() -> (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? ADVANCED_BREEDING_BOX_ITEM.get() : CAT_FOOD.get()).getDefaultInstance())
                             .displayItems((parameters, output) -> {
-                                output.accept(BASIC_BREEDING_BOX_ITEM.get());
-                                output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
-                               output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
-                                output.accept(CAT_LASER_POINTER.get());
-                                output.accept(CAT_STORAGE_BOX.get());
+                                if (BASIC_BREEDING_BOX_ITEM.isPresent()) output.accept(BASIC_BREEDING_BOX_ITEM.get());
+                                if (INTERMEDIATE_BREEDING_BOX_ITEM.isPresent()) output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
+                               if (ADVANCED_BREEDING_BOX_ITEM.isPresent()) output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                                if (CAT_LASER_POINTER.isPresent()) output.accept(CAT_LASER_POINTER.get());
+                                if (CAT_STORAGE_BOX.isPresent()) output.accept(CAT_STORAGE_BOX.get());
 
-                                output.accept(BREEDING_CAT_FOOD.get());
-                                output.accept(MUTATION_CAT_FOOD.get());
-                                output.accept(ATTACK_BREEDING_CAT_FOOD.get());
-                                output.accept(HEALTH_BREEDING_CAT_FOOD.get());
-                                output.accept(SPEED_BREEDING_CAT_FOOD.get());
-                                output.accept(STAMINA_BREEDING_CAT_FOOD.get());
-                                output.accept(INTELLIGENCE_BREEDING_CAT_FOOD.get());
-                                output.accept(LUCK_BREEDING_CAT_FOOD.get());
+                                if (BREEDING_CAT_FOOD.isPresent()) output.accept(BREEDING_CAT_FOOD.get());
+                                if (MUTATION_CAT_FOOD.isPresent()) output.accept(MUTATION_CAT_FOOD.get());
+                                if (ATTACK_BREEDING_CAT_FOOD.isPresent()) output.accept(ATTACK_BREEDING_CAT_FOOD.get());
+                                if (HEALTH_BREEDING_CAT_FOOD.isPresent()) output.accept(HEALTH_BREEDING_CAT_FOOD.get());
+                                if (SPEED_BREEDING_CAT_FOOD.isPresent()) output.accept(SPEED_BREEDING_CAT_FOOD.get());
+                                if (STAMINA_BREEDING_CAT_FOOD.isPresent()) output.accept(STAMINA_BREEDING_CAT_FOOD.get());
+                                if (INTELLIGENCE_BREEDING_CAT_FOOD.isPresent()) output.accept(INTELLIGENCE_BREEDING_CAT_FOOD.get());
+                                if (LUCK_BREEDING_CAT_FOOD.isPresent()) output.accept(LUCK_BREEDING_CAT_FOOD.get());
 
-                                output.accept(CAT_CAN.get());
-                                output.accept(GOLDEN_CAT_CAN.get());
-                                output.accept(ATTACK_CAT_CAN.get());
-                                output.accept(HEALTH_CAT_CAN.get());
-                                output.accept(SPEED_CAT_CAN.get());
-                                output.accept(STAMINA_CAT_CAN.get());
-                                output.accept(INTELLIGENCE_CAT_CAN.get());
-                                output.accept(LUCK_CAT_CAN.get());
-                                output.accept(GOLDEN_ATTACK_CAT_CAN.get());
-                                output.accept(GOLDEN_HEALTH_CAT_CAN.get());
-                                output.accept(GOLDEN_SPEED_CAT_CAN.get());
-                                output.accept(GOLDEN_STAMINA_CAT_CAN.get());
-                                output.accept(GOLDEN_INTELLIGENCE_CAT_CAN.get());
-                                output.accept(GOLDEN_LUCK_CAT_CAN.get());
-                                output.accept(SUPER_ATTACK_CAT_CAN.get());
-                                output.accept(SUPER_HEALTH_CAT_CAN.get());
-                                output.accept(SUPER_SPEED_CAT_CAN.get());
-                                output.accept(SUPER_STAMINA_CAT_CAN.get());
-                                output.accept(SUPER_INTELLIGENCE_CAT_CAN.get());
-                                output.accept(SUPER_LUCK_CAT_CAN.get());
-                                output.accept(DRIED_FISH.get());
-                                output.accept(GOLDEN_DRIED_FISH.get());
-                                output.accept(SUPER_DRIED_FISH.get());
+                                if (CAT_CAN.isPresent()) output.accept(CAT_CAN.get());
+                                if (GOLDEN_CAT_CAN.isPresent()) output.accept(GOLDEN_CAT_CAN.get());
+                                if (ATTACK_CAT_CAN.isPresent()) output.accept(ATTACK_CAT_CAN.get());
+                                if (HEALTH_CAT_CAN.isPresent()) output.accept(HEALTH_CAT_CAN.get());
+                                if (SPEED_CAT_CAN.isPresent()) output.accept(SPEED_CAT_CAN.get());
+                                if (STAMINA_CAT_CAN.isPresent()) output.accept(STAMINA_CAT_CAN.get());
+                                if (INTELLIGENCE_CAT_CAN.isPresent()) output.accept(INTELLIGENCE_CAT_CAN.get());
+                                if (LUCK_CAT_CAN.isPresent()) output.accept(LUCK_CAT_CAN.get());
+                                if (GOLDEN_ATTACK_CAT_CAN.isPresent()) output.accept(GOLDEN_ATTACK_CAT_CAN.get());
+                                if (GOLDEN_HEALTH_CAT_CAN.isPresent()) output.accept(GOLDEN_HEALTH_CAT_CAN.get());
+                                if (GOLDEN_SPEED_CAT_CAN.isPresent()) output.accept(GOLDEN_SPEED_CAT_CAN.get());
+                                if (GOLDEN_STAMINA_CAT_CAN.isPresent()) output.accept(GOLDEN_STAMINA_CAT_CAN.get());
+                                if (GOLDEN_INTELLIGENCE_CAT_CAN.isPresent()) output.accept(GOLDEN_INTELLIGENCE_CAT_CAN.get());
+                                if (GOLDEN_LUCK_CAT_CAN.isPresent()) output.accept(GOLDEN_LUCK_CAT_CAN.get());
+                                if (SUPER_ATTACK_CAT_CAN.isPresent()) output.accept(SUPER_ATTACK_CAT_CAN.get());
+                                if (SUPER_HEALTH_CAT_CAN.isPresent()) output.accept(SUPER_HEALTH_CAT_CAN.get());
+                                if (SUPER_SPEED_CAT_CAN.isPresent()) output.accept(SUPER_SPEED_CAT_CAN.get());
+                                if (SUPER_STAMINA_CAT_CAN.isPresent()) output.accept(SUPER_STAMINA_CAT_CAN.get());
+                                if (SUPER_INTELLIGENCE_CAT_CAN.isPresent()) output.accept(SUPER_INTELLIGENCE_CAT_CAN.get());
+                                if (SUPER_LUCK_CAT_CAN.isPresent()) output.accept(SUPER_LUCK_CAT_CAN.get());
+                                if (DRIED_FISH.isPresent()) output.accept(DRIED_FISH.get());
+                                if (GOLDEN_DRIED_FISH.isPresent()) output.accept(GOLDEN_DRIED_FISH.get());
+                                if (SUPER_DRIED_FISH.isPresent()) output.accept(SUPER_DRIED_FISH.get());
 
-                                output.accept(CAT_SCANNER.get());
-                                output.accept(CAT_FILTER.get());
-                                output.accept(CREATURE_FILTER.get());
-                                output.accept(CAT_ENGINEER_GOGGLES.get());
-                                output.accept(FUSION_DEBUG_WAND.get());
-                                output.accept(ATTRIBUTE_DEBUG_WAND.get());
-                                output.accept(TRAIT_DEBUG_WAND.get());
-                                output.accept(MATERIAL_DEBUG_WAND.get());
-                                output.accept(TERMINATOR_SUIT.get());
-                                output.accept(FISHING_SUIT.get());
-                                output.accept(FLIGHT_SUIT.get());
-                                output.accept(FIRE_SUIT.get());
-                                output.accept(HONEY_SUIT.get());
-                                output.accept(TRANSPORT_SUIT.get());
-                                output.accept(DYNAMITE_SUIT.get());
-                                output.accept(ENGINEERING_SUIT.get());
-                                output.accept(MEDICAL_SUIT.get());
-                                output.accept(MUSIC_SUIT.get());
-                                output.accept(AGENT_SUIT.get());
-                                output.accept(DIVING_SUIT.get());
-                                output.accept(COCKROACH_SUIT.get());
+                                if (CAT_SCANNER.isPresent()) output.accept(CAT_SCANNER.get());
+                                if (CAT_FILTER.isPresent()) output.accept(CAT_FILTER.get());
+                                if (CREATURE_FILTER.isPresent()) output.accept(CREATURE_FILTER.get());
+                                if (CAT_ENGINEER_GOGGLES.isPresent()) output.accept(CAT_ENGINEER_GOGGLES.get());
+                                if (FUSION_DEBUG_WAND.isPresent()) output.accept(FUSION_DEBUG_WAND.get());
+                                if (ATTRIBUTE_DEBUG_WAND.isPresent()) output.accept(ATTRIBUTE_DEBUG_WAND.get());
+                                if (TRAIT_DEBUG_WAND.isPresent()) output.accept(TRAIT_DEBUG_WAND.get());
+                                if (MATERIAL_DEBUG_WAND.isPresent()) output.accept(MATERIAL_DEBUG_WAND.get());
+                                if (TERMINATOR_SUIT.isPresent()) output.accept(TERMINATOR_SUIT.get());
+                                if (FISHING_SUIT.isPresent()) output.accept(FISHING_SUIT.get());
+                                if (FLIGHT_SUIT.isPresent()) output.accept(FLIGHT_SUIT.get());
+                                if (FIRE_SUIT.isPresent()) output.accept(FIRE_SUIT.get());
+                                if (HONEY_SUIT.isPresent()) output.accept(HONEY_SUIT.get());
+                                if (TRANSPORT_SUIT.isPresent()) output.accept(TRANSPORT_SUIT.get());
+                                if (DYNAMITE_SUIT.isPresent()) output.accept(DYNAMITE_SUIT.get());
+                                if (ENGINEERING_SUIT.isPresent()) output.accept(ENGINEERING_SUIT.get());
+                                if (MEDICAL_SUIT.isPresent()) output.accept(MEDICAL_SUIT.get());
+                                if (MUSIC_SUIT.isPresent()) output.accept(MUSIC_SUIT.get());
+                                if (AGENT_SUIT.isPresent()) output.accept(AGENT_SUIT.get());
+                                if (DIVING_SUIT.isPresent()) output.accept(DIVING_SUIT.get());
+                                if (COCKROACH_SUIT.isPresent()) output.accept(COCKROACH_SUIT.get());
                             })
                             .build());
     public static final RegistryObject<CreativeModeTab> CAT_ACCESSORIES_TAB =
@@ -723,14 +675,10 @@ public final class LaoWuMod {
                     .icon(cn.laowu.mod.accessory.CatAccessoryItems::tabIcon)
                     .displayItems((parameters, output) -> cn.laowu.mod.accessory.CatAccessoryItems.display(output))
                     .build());
-    public static final RegistryObject<MenuType<CatPackageMenu>> CAT_PACKAGE_MENU = MENUS.register(
-            "cat_package", () -> IForgeMenuType.create(CatPackageMenu::new));
-    public static final RegistryObject<MenuType<BreedingBoxMenu>> BREEDING_BOX_MENU = MENUS.register(
-            "breeding_box", () -> IForgeMenuType.create(BreedingBoxMenu::new));
-    public static final RegistryObject<MenuType<AdoptionBoxMenu>> ADOPTION_BOX_MENU = MENUS.register(
-            "adoption_box", () -> IForgeMenuType.create(AdoptionBoxMenu::new));
-    public static final RegistryObject<MenuType<WishAdoptionBoxMenu>> WISH_ADOPTION_BOX_MENU = MENUS.register(
-            "wish_adoption_box", () -> IForgeMenuType.create(WishAdoptionBoxMenu::new));
+    public static final RegistryObject<MenuType<CatPackageMenu>> CAT_PACKAGE_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "cat_package", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_cat_package : null);
+    public static final RegistryObject<MenuType<BreedingBoxMenu>> BREEDING_BOX_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_breeding_box : null);
+    public static final RegistryObject<MenuType<AdoptionBoxMenu>> ADOPTION_BOX_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "adoption_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_adoption_box : null);
+    public static final RegistryObject<MenuType<WishAdoptionBoxMenu>> WISH_ADOPTION_BOX_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "wish_adoption_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_wish_adoption_box : null);
     public static final RegistryObject<MenuType<CatAttributeEditorMenu>> CAT_ATTRIBUTE_EDITOR_MENU =
             MENUS.register("cat_attribute_editor",
                     () -> IForgeMenuType.create(CatAttributeEditorMenu::new));
@@ -743,9 +691,9 @@ public final class LaoWuMod {
     public static final RegistryObject<MenuType<CatProfileMenu>> CAT_PROFILE_MENU =
             MENUS.register("cat_profile", () -> IForgeMenuType.create(CatProfileMenu::new));
     public static final RegistryObject<MenuType<CreatureFilterMenu>> CREATURE_FILTER_MENU =
-            MENUS.register("creature_filter", () -> IForgeMenuType.create(CreatureFilterMenu::new));
+            cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "creature_filter", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_creature_filter : null);
     public static final RegistryObject<MenuType<CatFilterMenu>> CAT_FILTER_MENU =
-            MENUS.register("cat_filter", () -> IForgeMenuType.create(CatFilterMenu::new));
+            cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "cat_filter", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_cat_filter : null);
     public static final RegistryObject<EntityType<CatPancakeProjectile>> CAT_PANCAKE_PROJECTILE =
             ENTITY_TYPES.register("cat_pancake_projectile", () -> EntityType.Builder
                     .<CatPancakeProjectile>of(CatPancakeProjectile::new, MobCategory.MISC)
@@ -834,22 +782,18 @@ public final class LaoWuMod {
                     .updateInterval(1)
                     .build("cat_ball"));
     public static final RegistryObject<RecipeType<InfiltratingRecipe>> INFILTRATING_TYPE =
-            RECIPE_TYPES.register("infiltrating", () -> new RecipeType<>() {
-                @Override public String toString() { return MOD_ID + ":infiltrating"; }
-            });
+            cn.laowu.mod.compat.create.CreateIntegration.register(RECIPE_TYPES, "infiltrating", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::recipe_types_infiltrating : null);
     public static final RegistryObject<RecipeSerializer<InfiltratingRecipe>> INFILTRATING_SERIALIZER =
-            RECIPE_SERIALIZERS.register("infiltrating",
-                    () -> new ProcessingRecipeSerializer<>(InfiltratingRecipe::new));
+            cn.laowu.mod.compat.create.CreateIntegration.register(RECIPE_SERIALIZERS, "infiltrating",
+                    cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::recipe_serializers_infiltrating : null);
     public static final RegistryObject<RecipeSerializer<RandomBabyCatPancakeFillingRecipe>>
             RANDOM_BABY_CAT_PANCAKE_FILLING_SERIALIZER =
-            RECIPE_SERIALIZERS.register("random_baby_cat_pancake_filling",
-                    () -> new ProcessingRecipeSerializer<>(
-                            RandomBabyCatPancakeFillingRecipe::new));
+            cn.laowu.mod.compat.create.CreateIntegration.register(RECIPE_SERIALIZERS, "random_baby_cat_pancake_filling",
+                    cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::recipe_serializers_random_baby_cat_pancake_filling : null);
     public static final RegistryObject<RecipeSerializer<PheromoneCatFoodMixingRecipe>>
             PHEROMONE_CAT_FOOD_MIXING_SERIALIZER =
-            RECIPE_SERIALIZERS.register("pheromone_cat_food_mixing",
-                    () -> new ProcessingRecipeSerializer<>(
-                            PheromoneCatFoodMixingRecipe::new));
+            cn.laowu.mod.compat.create.CreateIntegration.register(RECIPE_SERIALIZERS, "pheromone_cat_food_mixing",
+                    cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::recipe_serializers_pheromone_cat_food_mixing : null);
 
     public static final RegistryObject<RecipeSerializer<cn.laowu.mod.recipe.KimiArmorDyeRecipe>>
             KIMI_ARMOR_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("kimi_armor_dye",
@@ -873,7 +817,10 @@ public final class LaoWuMod {
         IEventBus modBus = context.getModEventBus();
         cn.laowu.mod.accessory.CatAccessoryItems.register((name, factory) -> ITEMS.register(name, factory));
         ITEMS.register(modBus);
-        cn.laowu.mod.create.CatMachineBlocks.register(modBus);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
+            cn.laowu.mod.create.CatMachineBlocks.register(modBus);
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && net.minecraftforge.fml.loading.FMLEnvironment.dist == net.minecraftforge.api.distmarker.Dist.CLIENT)
+            cn.laowu.mod.compat.create.CreateClientEvents.register(modBus);
         BLOCKS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         MENUS.register(modBus);
@@ -926,95 +873,8 @@ public final class LaoWuMod {
                                     return 1.55F;
                                 }
                             });
-                    // Register this as an ordinary Create kinetic source:
-                    // 64 SU/RPM * 96 RPM = 6144 SU total capacity.
-                    BlockStressValues.CAPACITIES.register(CAT_ENGINE.get(),
-                            () -> (double) CatEngineBlockEntity.STRESS_CAPACITY_PER_RPM);
-                    BlockStressValues.setGeneratorSpeed((int) CatEngineBlockEntity.GENERATED_RPM)
-                            .accept(CAT_ENGINE.get());
-                    // Create supplies the standard RPM and stress-capacity lines.
-                    TooltipModifier.REGISTRY.register(CAT_ENGINE_ITEM.get(),
-                            createAlwaysVisibleDescription(CAT_ENGINE_ITEM.get())
-                                    .andThen(new KineticStats(CAT_ENGINE.get())));
-                    registerAlwaysVisibleDescription(INFILTRATION_TANK_ITEM.get());
-                    registerAlwaysVisibleDescription(HISSING_COLLECTOR_ITEM.get());
-                    registerAlwaysVisibleDescription(DEVOURING_CAT_ITEM.get());
-                    registerAlwaysVisibleDescription(BASIC_BREEDING_BOX_ITEM.get());
-                    registerAlwaysVisibleDescription(INTERMEDIATE_BREEDING_BOX_ITEM.get());
-                    registerAlwaysVisibleDescription(ADVANCED_BREEDING_BOX_ITEM.get());
-                    registerAlwaysVisibleDescription(ADOPTION_BOX_ITEM.get());
-                    registerAlwaysVisibleDescription(WISH_ADOPTION_BOX_ITEM.get());
-                    registerAlwaysVisibleDescription(CAT_CARRIER_ITEM.get());
-                    registerAlwaysVisibleDescription(CAT_EDITOR_ITEM.get());
-                    registerAlwaysVisibleDescription(CAT_DEPLOYMENT_PLATFORM_ITEM.get());
-                    registerAlwaysVisibleDescription(CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM.get());
-                    registerAlwaysVisibleDescription(CAT_LASER_POINTER.get());
-                    registerAlwaysVisibleDescription(CAT_STORAGE_BOX.get());
-                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatMachineBlocks.CAT_AUTO_LASER_ITEM.get());
-                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatMachineBlocks.HAJI_BASIN_ITEM.get());
-                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatDepotRegistration.CAT_DEPOT_ITEM.get());
-                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatMachineBlocks.CAT_MIXER_ITEM.get());
-                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatMachineBlocks.CAT_PRESS_ITEM.get());
-                    registerDescription(CAT_CANNON.get());
-                    registerDescription(CAT_BALL.get());
-                    registerDescription(CAT_STRIP.get());
-                    registerAlwaysVisibleDescription(CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(CAT_CAN.get());
-                    registerAlwaysVisibleDescription(GOLDEN_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(ATTACK_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(HEALTH_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(SPEED_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(STAMINA_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(INTELLIGENCE_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(LUCK_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(GOLDEN_ATTACK_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(GOLDEN_HEALTH_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(GOLDEN_SPEED_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(GOLDEN_STAMINA_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(GOLDEN_INTELLIGENCE_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(GOLDEN_LUCK_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(SUPER_ATTACK_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(SUPER_HEALTH_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(SUPER_SPEED_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(SUPER_STAMINA_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(SUPER_INTELLIGENCE_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(SUPER_LUCK_CAT_CAN.get());
-                    registerAlwaysVisibleDescription(DRIED_FISH.get());
-                    registerAlwaysVisibleDescription(GOLDEN_DRIED_FISH.get());
-                    registerAlwaysVisibleDescription(SUPER_DRIED_FISH.get());
-                    registerAlwaysVisibleDescription(BREEDING_CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(MUTATION_CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(ATTACK_BREEDING_CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(HEALTH_BREEDING_CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(SPEED_BREEDING_CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(STAMINA_BREEDING_CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(INTELLIGENCE_BREEDING_CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(LUCK_BREEDING_CAT_FOOD.get());
-                    registerAlwaysVisibleDescription(CAT_SCANNER.get());
-                    registerDescription(CAT_ENGINEER_GOGGLES.get());
-                    registerCareerSuitDescription(TERMINATOR_SUIT.get());
-                    registerCareerSuitDescription(FISHING_SUIT.get());
-                    registerCareerSuitDescription(FLIGHT_SUIT.get());
-                    registerCareerSuitDescription(FIRE_SUIT.get());
-                    registerCareerSuitDescription(HONEY_SUIT.get());
-                    registerCareerSuitDescription(TRANSPORT_SUIT.get());
-                    registerCareerSuitDescription(DYNAMITE_SUIT.get());
-                    registerCareerSuitDescription(ENGINEERING_SUIT.get());
-                    registerCareerSuitDescription(MEDICAL_SUIT.get());
-                    registerCareerSuitDescription(MUSIC_SUIT.get());
-                    registerCareerSuitDescription(AGENT_SUIT.get());
-                    registerCareerSuitDescription(DIVING_SUIT.get());
-                    registerCareerSuitDescription(COCKROACH_SUIT.get());
-                    GogglesItem.addIsWearingPredicate(CatEngineerGogglesItem::isWornBy);
-                    registerDescription(CAT_HELMET.get());
-                    registerDescription(CAT_CHESTPLATE.get());
-                    registerDescription(CAT_LEGGINGS.get());
-                    registerDescription(CAT_BOOTS.get());
-                    registerDescription(CAT_SWORD.get());
-                    registerDescription(CAT_PICKAXE.get());
-                    registerDescription(CAT_AXE.get());
-                    registerDescription(CAT_SHOVEL.get());
-                    registerDescription(CAT_HOE.get());
+                    if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
+                        cn.laowu.mod.compat.create.CreateStartup.initialize();
                 }));
     }
 
@@ -1022,40 +882,10 @@ public final class LaoWuMod {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    private static TooltipModifier createDescription(Item item) {
-        return new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE);
-    }
-
-    private static void registerDescription(Item item) {
-        TooltipModifier.REGISTRY.register(item, createDescription(item));
-    }
-
-    /** A Create-formatted summary without the usual hold-Shift gate. */
-    private static TooltipModifier createAlwaysVisibleDescription(Item item) {
-        return event -> {
-            String summary = Component.translatable(
-                    item.getDescriptionId() + ".tooltip.summary").getString();
-            event.getToolTip().addAll(Math.min(1, event.getToolTip().size()),
-                    TooltipHelper.cutStringTextComponent(
-                            summary, FontHelper.Palette.STANDARD_CREATE));
-        };
-    }
-
-    private static void registerAlwaysVisibleDescription(Item item) {
-        TooltipModifier.REGISTRY.register(item, createAlwaysVisibleDescription(item));
-    }
-
     private static RegistryObject<Item> registerAttributeCan(
             String name, CatStat stat, CatAttributeCanItem.Tier tier) {
         return ITEMS.register(name,
                 () -> new CatAttributeCanItem(new Item.Properties(), stat, tier));
-    }
-
-    /** Career suits use Ctrl for formulas and Shift for computed 50/100 previews. */
-    private static void registerCareerSuitDescription(Item item) {
-        if (!(item instanceof TerminatorSuitItem suit)) return;
-        TooltipModifier.REGISTRY.register(item,
-                event -> CareerSuitTooltip.modify(event, item, suit.outfit()));
     }
 
     private static ForgeFlowingFluid.Properties hissingGasProperties() {

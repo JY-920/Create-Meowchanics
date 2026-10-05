@@ -20,5 +20,11 @@
   "result": {
     "item": "laowu:cat_mixer",
     "count": 1
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

@@ -1,1 +1,9 @@
-{"replace":false,"values":["laowu:cat_casing"]}
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "laowu:cat_casing",
+      "required": false
+    }
+  ]
+}

@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "laowu:infiltration_tank"
+    {
+      "id": "laowu:infiltration_tank",
+      "required": false
+    }
   ]
 }

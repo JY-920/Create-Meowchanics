@@ -11,5 +11,11 @@
       "count": 2,
       "id": "laowu:cat_powder"
     }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
   ]
 }

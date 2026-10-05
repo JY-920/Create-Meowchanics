@@ -2,8 +2,23 @@
   "type": "create:mixing",
   "heatRequirement": "heated",
   "ingredients": [
-    { "item": "laowu:golden_cat_can" },
-    { "fluidTag": "forge:milk", "amount": 250 }
+    {
+      "item": "laowu:golden_cat_can"
+    },
+    {
+      "fluidTag": "forge:milk",
+      "amount": 250
+    }
   ],
-  "results": [{ "item": "laowu:golden_stamina_cat_can" }]
+  "results": [
+    {
+      "item": "laowu:golden_stamina_cat_can"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
 }

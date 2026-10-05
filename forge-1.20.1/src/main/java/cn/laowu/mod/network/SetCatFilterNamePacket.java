@@ -23,6 +23,7 @@ public record SetCatFilterNamePacket(int containerId, String name) {
                               Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
+            if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return;
             var player = context.getSender();
             if (player == null
                     || !(player.containerMenu instanceof CatFilterMenu menu)

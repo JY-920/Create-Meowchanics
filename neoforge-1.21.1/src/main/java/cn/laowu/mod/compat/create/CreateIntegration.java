@@ -10,5 +10,29 @@ public final class CreateIntegration {
     }
 
     private CreateIntegration() {}
-}
 
+    public static <T extends net.minecraft.world.level.block.Block> net.neoforged.neoforge.registries.DeferredBlock<T>
+    registerBlock(net.neoforged.neoforge.registries.DeferredRegister.Blocks registry,
+                  String name, java.util.function.Supplier<? extends T> factory) {
+        if (isLoaded()) return registry.register(name, factory);
+        return net.neoforged.neoforge.registries.DeferredBlock.createBlock(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("laowu", name));
+    }
+
+    public static <T extends net.minecraft.world.item.Item> net.neoforged.neoforge.registries.DeferredItem<T>
+    registerItem(net.neoforged.neoforge.registries.DeferredRegister.Items registry,
+                 String name, java.util.function.Supplier<? extends T> factory) {
+        if (isLoaded()) return registry.register(name, factory);
+        return net.neoforged.neoforge.registries.DeferredItem.createItem(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("laowu", name));
+    }
+
+    public static <R, T extends R> net.neoforged.neoforge.registries.DeferredHolder<R, T>
+    register(net.neoforged.neoforge.registries.DeferredRegister<R> registry, String name,
+             java.util.function.Supplier<? extends T> factory) {
+        if (isLoaded()) return registry.register(name, factory);
+        return net.neoforged.neoforge.registries.DeferredHolder.create(
+                registry.getRegistryKey(),
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("laowu", name));
+    }
+}

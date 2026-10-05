@@ -32,13 +32,29 @@ public final class EngineeringCogwheelProjectile extends ThrowableItemProjectile
         super(LaoWuMod.ENGINEERING_COGWHEEL_PROJECTILE.get(), cat, level);
         setAccessoryDamage(damage);
     }
-    @Override protected Item getDefaultItem() { return AllBlocks.COGWHEEL.asItem(); }
+    @Override protected Item getDefaultItem() {
+        return cn.laowu.mod.compat.create.CreateIntegration.isLoaded()
+                ? AllBlocks.COGWHEEL.asItem() : net.minecraft.world.item.Items.IRON_NUGGET;
+    }
     public CatArtilleryMunition munition() {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) {
+            if (getItem().is(net.minecraft.world.item.Items.IRON_INGOT)) return CatArtilleryMunition.LARGE_COG;
+            if (getItem().is(net.minecraft.world.item.Items.STICK)) return CatArtilleryMunition.SHAFT;
+            return CatArtilleryMunition.SMALL_COG;
+        }
         if (getItem().is(AllBlocks.LARGE_COGWHEEL.asItem())) return CatArtilleryMunition.LARGE_COG;
         if (getItem().is(AllBlocks.SHAFT.asItem())) return CatArtilleryMunition.SHAFT;
         return CatArtilleryMunition.SMALL_COG;
     }
     public void setMunition(CatArtilleryMunition type) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) {
+            setItem(new net.minecraft.world.item.ItemStack(switch (type) {
+                case LARGE_COG -> net.minecraft.world.item.Items.IRON_INGOT;
+                case SHAFT -> net.minecraft.world.item.Items.STICK;
+                case SMALL_COG -> net.minecraft.world.item.Items.IRON_NUGGET;
+            }));
+            return;
+        }
         setItem(switch (type) {
             case LARGE_COG -> AllBlocks.LARGE_COGWHEEL.asStack();
             case SHAFT -> AllBlocks.SHAFT.asStack();

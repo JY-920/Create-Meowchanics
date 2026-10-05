@@ -6,6 +6,7 @@
   "package": "cn.laowu.mod.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "OptionalCreateLootMixin",
     "CatBasinOperatorMixin",
     "CatBasinFilterMixin",
     "CatBasinOrientationMixin",
@@ -39,6 +40,7 @@
     "GiantCatRiderInventoryMixin",
     "CatBasinParticlesMixin",
     "PilotSkyhookPoseMixin",
+    "StandaloneCatRiderPoseMixin",
     "DivingCapeLayerMixin",
     "PerformanceBlendModeAccessor",
     "CatCreativeSearchMixin",

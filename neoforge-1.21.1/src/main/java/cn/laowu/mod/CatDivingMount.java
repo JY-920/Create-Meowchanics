@@ -27,7 +27,7 @@ public final class CatDivingMount {
     }
     public static InteractionResult interact(Cat cat, Player player, InteractionHand hand) {
         if (CatClothesData.getOutfit(cat) != CatOutfitType.DIVING
-                || !AllItems.WRENCH.isIn(player.getItemInHand(hand)) || player.isShiftKeyDown()) return InteractionResult.PASS;
+                || !CatMountTool.matches(player.getItemInHand(hand)) || player.isShiftKeyDown()) return InteractionResult.PASS;
         if (!cat.isOwnedBy(player) || cat.isBaby()) return InteractionResult.FAIL;
         if (cat.level().isClientSide) return InteractionResult.SUCCESS;
         if (start(cat, player)) return InteractionResult.CONSUME;
@@ -42,7 +42,7 @@ public final class CatDivingMount {
                 && CatPilotFlight.wrench(player) && cat.distanceToSqr(player) <= 25
                 && !CatPoseData.isPancake(cat) && !CatProfileData.isBeingViewed(cat)
                 && CatClothesData.getOutfit(cat) == CatOutfitType.DIVING && !cat.isInLava()
-                && !com.simibubi.create.content.kinetics.chainConveyor.ServerChainConveyorHandler.hangingPlayers.containsKey(player.getUUID());
+                && !CatMountTool.isHanging(player);
     }
     public static boolean hasSpace(Cat cat) {
         return !cat.level().getBlockCollisions(cat, new AABB(cat.getX()-.425, cat.getY()+.02, cat.getZ()-.425,

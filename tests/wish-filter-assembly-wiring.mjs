@@ -19,7 +19,7 @@ const images=new Map();
 for(const port of ['forge-1.20.1','neoforge-1.21.1']){
  const java=n=>read(port+'/src/main/java/cn/laowu/mod/'+n+'.java');
  const res=port+'/src/main/resources/',dir=port.startsWith('forge')?'recipes':'recipe';
- const neo=dir==='recipe',registry=java('LaoWuMod');
+ const neo=dir==='recipe',registry=java('LaoWuMod')+java('compat/create/CreateFactories');
  const names=[...java('CatOutfitType').matchAll(/^\s+[A-Z]+\("([a-z]+)"\)/gm)].map(m=>m[1]).filter(n=>n!=='none').map(n=>n+'_suit');
  names.push('cat_component','cat_grenade');
  check(names.length===15,'13 careers + two component recipes');
@@ -54,7 +54,7 @@ for(const port of ['forge-1.20.1','neoforge-1.21.1']){
  check(filter.indexOf('if (level.isClientSide)')<filter.indexOf('rules.write(stack)'),'Server is sole data writer');
  check(filter.includes('List.of()')&&filter.includes('withBaseCurrent(!offer.maximum())'),'Fresh predicates, exact raw NOW semantics');
  check(filter.includes('offer.maximum() ? 0 : mask, offer.maximum() ? mask : 0, 0'),'Clears other page and logic flags');
- check(java('CommonEvents').includes('filter.useOn(')&&java('CommonEvents').includes('event.setCanceled(true)'),'Block event intercepts before opening GUI');
+ check(java('CommonEvents').includes('CreateCommonEvents.onHissingGasBucketInteract(event)')&&java('compat/create/CreateCommonEvents').includes('filter.useOn(')&&java('compat/create/CreateCommonEvents').includes('event.setCanceled(true)'),'Conditional block event intercepts before opening GUI');
  check(rules.includes('filter.getBoolean("BaseCurrent")')&&rules.includes('filter.putBoolean("BaseCurrent", true)'),'Saved imported mode');
  check(rules.includes('baseCurrent ? profile.current(stat)')&&rules.includes('CatAttributeEffects.effectiveValue'),'Imported base vs ordinary effective values');
  check(menu.includes('BASE_CURRENT_INDEX')&&menu.includes('.withBaseCurrent(baseCurrent())'),'Synced menu preserves imported semantics');

@@ -140,7 +140,7 @@ public final class CatProfileScreen extends AbstractContainerScreen<CatProfileMe
                 INVENTORY_SOURCE_X, INVENTORY_SOURCE_Y,
                 CAT_INVENTORY_WIDTH, CAT_INVENTORY_HEIGHT,
                 ATLAS_SIZE, ATLAS_SIZE);
-        AllGuiTextures.PLAYER_INVENTORY.render(graphics,
+        CatClientTextures.renderPlayerInventory(graphics,
                 leftPos + CatProfileMenu.PLAYER_PANEL_X,
                 topPos + CatProfileMenu.PLAYER_PANEL_Y);
 

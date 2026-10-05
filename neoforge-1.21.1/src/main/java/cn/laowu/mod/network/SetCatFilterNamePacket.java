@@ -29,6 +29,7 @@ public record SetCatFilterNamePacket(int containerId, String name)
     }
 
     public static void handle(SetCatFilterNamePacket packet, IPayloadContext context) {
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return;
         if (!(context.player() instanceof ServerPlayer player)
                 || !(player.containerMenu instanceof CatFilterMenu menu)
                 || menu.containerId != packet.containerId) return;

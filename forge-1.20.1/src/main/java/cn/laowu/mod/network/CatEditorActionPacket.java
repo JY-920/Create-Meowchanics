@@ -31,7 +31,8 @@ public record CatEditorActionPacket(int containerId, int actionId) {
         if (player == null || player.isSpectator()) return;
         var menu = player.containerMenu;
         if (menu.containerId != containerId
-                || !(menu instanceof CatTraitEditorMenu || menu instanceof CatAttributeEditorMenu || menu instanceof CatEditorMenu)
+                || !(menu instanceof CatTraitEditorMenu || menu instanceof CatAttributeEditorMenu
+                    || cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && menu instanceof CatEditorMenu)
                 || !menu.stillValid(player)) return;
         player.resetLastActionTime();
         menu.clickMenuButton(player, actionId);
