@@ -37,5 +37,7 @@ Thumbs.db
 *.tmp
 
 # Local packaged releases / source snapshots are not source control inputs.
+**/build-sesame/
+**/.gradle-sesame/
 /releases/
 /forge-1.20.1.zip

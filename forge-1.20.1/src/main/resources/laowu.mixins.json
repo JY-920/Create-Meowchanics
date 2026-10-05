@@ -5,6 +5,12 @@
   "package": "cn.laowu.mod.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "CatBasinOperatorMixin",
+    "CatBasinFilterMixin",
+    "CatBasinOrientationMixin",
+    "CatDepotProcessingMixin",
+    "CatBeltStyleMixin",
+    "CatBeltCasingMixin",
     "CatHandCrankPowerMixin",
     "CatOwnerTeleportDistanceMixin",
     "CatNavigationMixin",
@@ -26,7 +32,13 @@
     "RollerMovementBehaviourMixin"
   ],
   "client": [
+    "GiantCatRiderOffsetMixin",
+    "GiantCatRiderCameraMixin",
+    "GiantCatRiderFacingMixin",
+    "GiantCatRiderInventoryMixin",
+    "CatBasinParticlesMixin",
     "PilotSkyhookPoseMixin",
+    "DivingCapeLayerMixin",
     "PerformanceBlendModeAccessor",
     "CatCreativeSearchMixin",
     "LaserHandFrameMixin",

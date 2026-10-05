@@ -47,6 +47,7 @@ public final class ClientInputEvents {
         syncSpawnPreference(minecraft);
         CatLaserWheelScreen.inputTick();
         CatPilotFlightClient.tick(minecraft);
+        CatGiantMountClient.tick(minecraft);
         while (ClientModEvents.OPEN_HELD_ITEM_TRANSFORM.consumeClick()) {
             if (minecraft.player != null && minecraft.screen == null) {
                 ItemStack held = minecraft.player.getMainHandItem();

@@ -1,0 +1,77 @@
+{
+  "Time": "2026-10-04 16:21:17",
+  "Version": "2.2.2",
+  "Stamp": "20261004-162117-2.2.2-cat-editor-polish",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "88B735208A430F3B60D1AA84B4E25143AC3BEE73784E9A9DE554D62AC9911FB2"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261004-162117-2.2.2-cat-editor-polish\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "99AAC6F7DE6AEE398DD669956F8642BDC1C608B9E33D4A298DD278DFC74D8E55"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "D73B2212AA04C3D351A50A5BCFFEA50DEB09F660B66A570415093BB78BAB34BC"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261004-162117-2.2.2-cat-editor-polish\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "F92728DC6B40AE183856296CD43B09CBFA73815184C70D21FCA2788B941F9C33"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Task": "cat-editor-polish-and-risk",
+  "Changes": [
+    "Complete disabled arrow UVs at (471,234) and (503,234)",
+    "Hide trait controls until initial data epoch; refresh on the first synchronized render; omit prototype controls from background",
+    "Match noticeboard RGB245/219/179, preserve NOW/MAX row79, adjust value spacing and alignment",
+    "Mouse-driven pitch/yaw preview in both ports; add six pixels of region-name padding",
+    "GOOD: mutually exclusive 50% base loss10-50,50%none; EXCELLENT:50%base loss10-50,10%cap loss10-20,40%none; retain current<=cap invariant"
+  ],
+  "Verification": {
+    "Red": [
+      "outputs-editor-polish-client-red.log: initial wrong button reproduced",
+      "outputs-editor-polish-server-red.log: old risk boundaries fail new requirements"
+    ],
+    "Client": [
+      "outputs-editor-polish-forge-final.log",
+      "outputs-editor-polish-neo-final.log"
+    ],
+    "Server": {
+      "Forge": "outputs-editor-polish-forge-server.log:23/23",
+      "NeoForge": "outputs-editor-polish-neo-server.log:24/24",
+      "KubeJS": "3/3 real scripts loaded,0 errors/0 warnings; trait examples executed"
+    },
+    "Build": [
+      "outputs-editor-polish-forge-build.log",
+      "outputs-editor-polish-neo-build.log"
+    ],
+    "Assets": [
+      "tests/cat-editor-assets.mjs",
+      "tests/cat-editor-v2-assets.mjs"
+    ],
+    "Review": "Read-only review found header clear boundary; fixed y+11 and added GPU original-pixel header assertion; final both-port client probes passed"
+  }
+}

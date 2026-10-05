@@ -1,0 +1,11 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    { "item": "minecraft:poisonous_potato" },
+    { "tag": "laowu:giant_treat_mushrooms" },
+    { "type": "neoforge:single", "fluid": "laowu:hissing_gas", "amount": 500 }
+  ],
+  "results": [
+    { "id": "laowu:giant_cat_treat", "count": 1 }
+  ]
+}

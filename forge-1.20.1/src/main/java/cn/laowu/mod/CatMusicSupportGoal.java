@@ -65,9 +65,10 @@ public final class CatMusicSupportGoal extends Goal {
         boolean aerial = !anchor.onGround() || anchor.isPassenger() && !CatEngineeringCombat.deployed(anchor);
         // Approach the selected cluster closely, but never demand that a ground musician walk into the sky.
         double reach = CatMusicSupport.performing(cat) || aerial ? radius : Math.min(3, radius);
-        if (distance(cat, anchor) > reach * reach || !cat.hasLineOfSight(anchor) || !cat.onGround()) {
+        if (distance(cat, anchor) > reach * reach || !cat.hasLineOfSight(anchor)
+                || !(CatGiantMount.carried(cat) ? cat.getVehicle().onGround() : cat.onGround())) {
             CatMusicSupport.stop(cat);
-            if (--pathDelay <= 0) {
+            if (--pathDelay <= 0 && !CatGiantMount.carried(cat)) {
                 pathDelay = 8;
                 if (aerial) cat.getNavigation().moveTo(anchor.getX(), cat.getY(), anchor.getZ(), 1.15);
                 else cat.getNavigation().moveTo(anchor, 1.15);

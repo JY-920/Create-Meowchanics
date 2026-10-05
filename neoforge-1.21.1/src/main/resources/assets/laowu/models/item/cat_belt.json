@@ -1,0 +1,7 @@
+{
+  "parent": "create:block/belt_casing/horizontal_end",
+  "textures": {
+    "3": "laowu:block/cat_belt_casing",
+    "particle": "laowu:block/cat_casing"
+  }
+}

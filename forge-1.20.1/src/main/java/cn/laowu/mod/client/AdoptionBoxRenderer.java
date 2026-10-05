@@ -35,5 +35,6 @@ public final class AdoptionBoxRenderer implements BlockEntityRenderer<AdoptionBo
                 light, overlay, RuntimeBlockbenchModel.GroupSelection.ALL,
                 RuntimeBlockbenchModel.HeadMotion.NONE);
         pose.popPose();
+        AdoptionPancakeRenderer.render(box.inputDisplays(), facing, pose, buffers, light, overlay);
     }
 }

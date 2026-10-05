@@ -18,7 +18,22 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String VERSION = "43";
+    public static void configureCreatureTransmitter(BlockPos pos,int radius,int lower,int upper,boolean inverted,boolean analog) {
+        CHANNEL.sendToServer(new ConfigureCreatureTransmitterPacket(pos,radius,lower,upper,inverted,analog,false));
+    }
+    public static void removeCreatureTransmitterFilter(BlockPos pos) {
+        CHANNEL.sendToServer(ConfigureCreatureTransmitterPacket.removeFilter(pos));
+    }
+    public static void configureCreatureTransmitter(BlockPos pos,int radius,int lower,int upper,boolean inverted) {
+        CHANNEL.sendToServer(new ConfigureCreatureTransmitterPacket(pos,radius,lower,upper,inverted));
+    }
+    public static void setCreatureFilter(int containerId, cn.laowu.mod.item.CreatureFilterRules rules) {
+        CHANNEL.sendToServer(new SetCreatureFilterPacket(containerId, rules));
+    }
+    public static void setCreatureFilter(int containerId, int mask, boolean blacklist, java.util.List<net.minecraft.resources.ResourceLocation> ids) {
+        CHANNEL.sendToServer(new SetCreatureFilterPacket(containerId, mask, blacklist, ids));
+    }
+    private static final String VERSION = "50";
 
     public static void sendCatEditorAction(int containerId, int actionId) {
         CHANNEL.sendToServer(new CatEditorActionPacket(containerId, actionId));
@@ -53,6 +68,9 @@ public final class ModNetwork {
 
     public static void pilotFlightInput(float forward, float side, float yaw, float pitch, boolean up, boolean down) {
         CHANNEL.sendToServer(new PilotFlightInputPacket(forward, side, yaw, pitch, up, down));
+    }
+    public static void giantCatInput(float forward, float side, float yaw, boolean jump, boolean sprint) {
+        CHANNEL.sendToServer(new GiantCatInputPacket(forward, side, yaw, jump, sprint));
     }
 
     public static void sendAccessoryDefinitions(net.minecraft.server.level.ServerPlayer player) {
@@ -97,6 +115,15 @@ public final class ModNetwork {
             () -> VERSION, VERSION::equals, VERSION::equals);
 
     public static void register() {
+        CHANNEL.registerMessage(34, ConfigureCreatureTransmitterPacket.class, ConfigureCreatureTransmitterPacket::encode,
+                ConfigureCreatureTransmitterPacket::decode, ConfigureCreatureTransmitterPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(33, SetCreatureFilterPacket.class, SetCreatureFilterPacket::encode,
+                SetCreatureFilterPacket::decode, SetCreatureFilterPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(32, GiantCatInputPacket.class, GiantCatInputPacket::encode,
+                GiantCatInputPacket::decode, GiantCatInputPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(31, AgentWatchPacket.class, AgentWatchPacket::encode, AgentWatchPacket::decode, AgentWatchPacket::handle,
                 java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(30, AgentMeleePacket.class, AgentMeleePacket::encode, AgentMeleePacket::decode, AgentMeleePacket::handle,

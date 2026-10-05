@@ -17,6 +17,11 @@ public final class PilotClientProbe {
             // Wait for resource loading to finish before closing its texture manager.
             if(verified&&mc.getOverlay()==null&&mc.screen!=null) {
                 verified=false;
+                try {
+                    cn.laowu.mod.client.RidePresentationProbe.verify(mc);
+                    cn.laowu.mod.client.DivingCapeProbe.verify(mc);
+                }
+                catch(Exception failure) { throw new IllegalStateException("Ride presentation probe",failure); }
                 verifyWrenchContact(mc);
                 cn.laowu.mod.client.MedicalVisualProbe.verify(mc);
                 cn.laowu.mod.client.SpecialistVisualProbe.verify(mc);

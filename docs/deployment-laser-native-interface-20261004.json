@@ -1,0 +1,38 @@
+{
+  "Time": "2026-10-04 16:37:56",
+  "Version": "2.2.2",
+  "Stamp": "20261004-163755-2.2.2-laser-native-interface",
+  "Changes": [
+    "Remove inward upper cavity cap covering moving lids; cull opposite coplanar faces while retaining original correct normals",
+    "Use native Create SHAFT_HALF without scaling or axial offset; outer end flush and inner end at block center",
+    "Inset the complete 12x12 interface panel by 0.95px with a 2px border, matching Create encased shaft"
+  ],
+  "Verification": [
+    "Asset regression red before fix, three machine asset suites pass",
+    "Dual actual six-way client surface-normal/culling, shaft bounds, moving beam, item contexts and GPU snapshot checks pass",
+    "Dual normal build with tests, API v3, trait API v1, release isolation and 23270 accessory checks passes",
+    "Independent read-only review no remaining actionable issue"
+  ],
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/Create-Meowchanics-develop/forge-1.20.1/build/libs/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mods/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Sha256": "CAA63128C4C167A17748553177C3F8DF0D96094FEF4D233C43E9E918BBD35591",
+      "PreviousSha256": "88B735208A430F3B60D1AA84B4E25143AC3BEE73784E9A9DE554D62AC9911FB2",
+      "Backup": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mod-backups/create-meowchanics/20261004-163755-2.2.2-laser-native-interface/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/Create-Meowchanics-develop/neoforge-1.21.1/build/libs/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mods/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Sha256": "3EE470632844ADF303CFFC6D653E1BD2B8044F6A7DA38680CE455F2836B2DE7A",
+      "PreviousSha256": "D73B2212AA04C3D351A50A5BCFFEA50DEB09F660B66A570415093BB78BAB34BC",
+      "Backup": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mod-backups/create-meowchanics/20261004-163755-2.2.2-laser-native-interface/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ]
+}

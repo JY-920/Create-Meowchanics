@@ -27,6 +27,7 @@ final class CarrierCatPreview {
             else {
                 cat.setVariant(net.minecraft.core.registries.BuiltInRegistries.CAT_VARIANT.get(CatPancakeItem.variantId(stack)));
             }
+            cn.laowu.mod.genetics.CatMaterialRegistry.excludeCopycatVariant(cat);
             CatGenomeData.read(stack).ifPresent(g -> CatGenomeData.set(cat, g));
             CatTraitData.read(stack).ifPresent(t -> CatTraitData.set(cat, t));
             cat.getPersistentData().putBoolean(CatClothesData.EQUIPPED_TAG, CatPancakeItem.getOutfit(stack) != CatOutfitType.NONE);

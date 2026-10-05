@@ -1,0 +1,71 @@
+{
+  "Time": "2026-10-04 15:47:23",
+  "Version": "2.2.2",
+  "Stamp": "20261004-154722-2.2.2-cat-editor-authored-layout",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "99AAC6F7DE6AEE398DD669956F8642BDC1C608B9E33D4A298DD278DFC74D8E55"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261004-154722-2.2.2-cat-editor-authored-layout\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "DAC9C67224229BE95B48C7F3D49C67C3BFC023D5B3AE1CDE8A18C2587ED4366B"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "F92728DC6B40AE183856296CD43B09CBFA73815184C70D21FCA2788B941F9C33"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261004-154722-2.2.2-cat-editor-authored-layout\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "43718FD51CF196133FE1279CE958E67CBFE86A1EB62E214537B3DD3C787764FE"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Task": "cat-editor-authored-layout",
+  "Changes": [
+    "Preserve complete authored page rectangles, brick footer, noticeboard header, and tab artwork",
+    "Move region names into reserved left label areas; preserve selector and action-button borders",
+    "Align item slots and inventory with artwork; uniform viewport scaling and matching pointer inputs",
+    "Remove duplicate NeoForge background and scale deferred widget tooltips consistently"
+  ],
+  "Verification": {
+    "Red": [
+      "outputs-editor-layout-red.log: authored slot assertion",
+      "outputs-editor-layout-neo-ghost-red.log: duplicate background assertion",
+      "outputs-editor-tooltip-red.log: deferred tooltip pixel comparison"
+    ],
+    "Green": [
+      "outputs-editor-layout-forge-verified.log",
+      "outputs-editor-layout-neo-verified.log",
+      "outputs-editor-layout-forge-build-verified.log",
+      "outputs-editor-layout-neo-build-verified.log"
+    ],
+    "AssetTests": [
+      "tests/cat-editor-assets.mjs",
+      "tests/cat-editor-v2-assets.mjs"
+    ],
+    "Checks": "GPU source-pixel comparisons, original footer/header/tab/button bounds, actual screen renders, scaled keyboard tooltip pixel equality, small viewport tab input, four rarity masks, preview isolation; 23270 accessory checks per port, API v3/trait v1/release isolation",
+    "Review": "Independent read-only review; tooltip scaling finding resolved and re-reviewed"
+  }
+}

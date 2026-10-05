@@ -182,7 +182,9 @@ public final class HissingCatModel extends CatModel<Cat> {
         cockroachAge=transition.age();
         cockroachMode=transition.mode();
         if(vanillaVisible && !healing && !music) {
-            CatPoseTransitions.apply(transition.ride(),()->CatRideAnimation.apply(ageInTicks,head,body,leftHindLeg,rightHindLeg,
+            if(cn.laowu.mod.CatClothesData.getOutfit(cat)==CatOutfitType.FLIGHT)
+                CatRideAnimation.pilot(ageInTicks,transition.ride(),tail1,tail2);
+            else CatPoseTransitions.apply(transition.ride(),()->CatRideAnimation.apply(ageInTicks,head,body,leftHindLeg,rightHindLeg,
                     leftFrontLeg,rightFrontLeg,tail1,tail2),head,body,leftHindLeg,rightHindLeg,leftFrontLeg,rightFrontLeg,tail1,tail2);
             CatPoseTransitions.apply(transition.dash(),()->CatCockroachAnimation.dash(cockroachAge,leftHindLeg,rightHindLeg,
                     leftFrontLeg,rightFrontLeg),leftHindLeg,rightHindLeg,leftFrontLeg,rightFrontLeg);

@@ -1,0 +1,59 @@
+package cn.laowu.mod.item;
+
+import cn.laowu.mod.LaoWuMod;
+import cn.laowu.mod.entity.GiantCatBoss;
+import cn.laowu.mod.genetics.CatGenomeData;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.gameevent.GameEvent;
+
+import java.util.List;
+
+/** Converts an untamed vanilla cat only after its giant boss replacement was accepted. */
+public final class GiantCatTreatItem extends Item {
+    public GiantCatTreatItem(Properties properties) { super(properties); }
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player,
+                                                  LivingEntity target, InteractionHand hand) {
+        if (!(target instanceof Cat cat) || cat.isTame() || !cat.isAlive() || cat.isRemoved()
+                || stack.isEmpty() || player.isSpectator()) return InteractionResult.PASS;
+        if (player.level().isClientSide) return InteractionResult.SUCCESS;
+        if (!(player.level() instanceof ServerLevel server)) return InteractionResult.FAIL;
+        GiantCatBoss boss = LaoWuMod.GIANT_CAT_BOSS.get().create(server);
+        if (boss == null) return InteractionResult.FAIL;
+
+        boss.moveTo(cat.getX(), cat.getY(), cat.getZ(), cat.getYRot(), cat.getXRot());
+        boss.setYHeadRot(cat.getYHeadRot());
+        boss.yBodyRot = cat.yBodyRot;
+        boss.setPersistenceRequired();
+        boss.setInheritedGenome(CatGenomeData.getOrFallback(cat));
+        if (cat.hasCustomName()) {
+            boss.setCustomName(cat.getCustomName());
+            boss.setCustomNameVisible(cat.isCustomNameVisible());
+        }
+        boss.beginSummoning();
+        if (!server.addFreshEntity(boss)) return InteractionResult.FAIL;
+        server.gameEvent(player, GameEvent.ENTITY_PLACE, boss.position());
+        cat.discard();
+        if (!player.getAbilities().instabuild) stack.shrink(1);
+        player.awardStat(Stats.ITEM_USED.get(this));
+        return InteractionResult.CONSUME;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.translatable("item.laowu.giant_cat_treat.tooltip").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.laowu.boss_cat_treat.tooltip.warning").withStyle(ChatFormatting.RED));
+    }
+}

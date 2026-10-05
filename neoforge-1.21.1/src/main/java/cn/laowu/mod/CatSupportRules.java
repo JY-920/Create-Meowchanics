@@ -33,7 +33,8 @@ public final class CatSupportRules {
         return Double.isFinite(intelligence) ? Math.max(0, intelligence) : 0;
     }
     public static boolean canWork(Cat cat) {
-        return canAssist(cat) && !cat.isPassenger() && !CareerCatBehavior.isCombatResting(cat);
+        return canAssist(cat) && (!cat.isPassenger() || CatGiantMount.carried(cat))
+                && !CareerCatBehavior.isCombatResting(cat);
     }
     /** Stationed medics intentionally retain their sit command and Create Seat passenger state. */
     public static boolean canAssist(Cat cat) {

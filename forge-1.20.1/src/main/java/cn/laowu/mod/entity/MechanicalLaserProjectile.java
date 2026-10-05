@@ -36,6 +36,22 @@ public final class MechanicalLaserProjectile extends ThrowableItemProjectile imp
         attackDamage = (float) cn.laowu.mod.accessory.CatAccessoryScriptRules.damage(amount);
     }
     private double travelledDistance;
+    private double maxTravelDistance=MAX_TRAVEL_DISTANCE;
+    private int maxLifetimeTicks=20;
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> WORK_FLIGHT=
+        net.minecraft.network.syncher.SynchedEntityData.defineId(MechanicalLaserProjectile.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
+    @Override protected void defineSynchedData() {
+        super.defineSynchedData();entityData.define(WORK_FLIGHT,false);
+    }
+    public double getMaxTravelDistance() {return maxTravelDistance;}
+    public int getMaxLifetimeTicks() {return maxLifetimeTicks;}
+    public void setWorkFlightLimits(double distance,int lifetimeTicks) {
+        if(level().isClientSide)return;
+        if(Double.isFinite(distance)&&distance>=MAX_TRAVEL_DISTANCE&&lifetimeTicks>0) {
+            maxTravelDistance=distance;maxLifetimeTicks=lifetimeTicks;
+            entityData.set(WORK_FLIGHT,distance>MAX_TRAVEL_DISTANCE);
+        }
+    }
 
     public MechanicalLaserProjectile(
             EntityType<? extends MechanicalLaserProjectile> type, Level level) {
@@ -61,12 +77,16 @@ public final class MechanicalLaserProjectile extends ThrowableItemProjectile imp
     @Override
     public void tick() {
         Vec3 before = position();
+        Vec3 velocity=getDeltaMovement();
         super.tick();
+        // Work lasers retain the post-accessory velocity in air and water. Ordinary
+        // shots keep vanilla drag. Sync the distinction so client trails also agree.
+        if(entityData.get(WORK_FLIGHT)&&!isRemoved())setDeltaMovement(velocity);
         travelledDistance += before.distanceTo(position());
 
         if (level().isClientSide) {
             level().addParticle(LASER_DUST, getX(), getY(), getZ(), 0.0D, 0.0D, 0.0D);
-        } else if (travelledDistance >= MAX_TRAVEL_DISTANCE || tickCount > 20) {
+        } else if (travelledDistance >= maxTravelDistance || tickCount > maxLifetimeTicks) {
             discard();
         }
     }
@@ -118,16 +138,22 @@ public final class MechanicalLaserProjectile extends ThrowableItemProjectile imp
         super.addAdditionalSaveData(tag);
         tag.putFloat(DAMAGE_TAG, attackDamage);
         tag.putDouble(DISTANCE_TAG, travelledDistance);
+        tag.putDouble("LaoWuMechanicalLaserMaxDistance",maxTravelDistance);
+        tag.putInt("LaoWuMechanicalLaserMaxLifetime",maxLifetimeTicks);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
+        maxTravelDistance=MAX_TRAVEL_DISTANCE;maxLifetimeTicks=20;
+        entityData.set(WORK_FLIGHT,false);
+        setWorkFlightLimits(tag.getDouble("LaoWuMechanicalLaserMaxDistance"),tag.getInt("LaoWuMechanicalLaserMaxLifetime"));
         if (tag.contains(DAMAGE_TAG)) {
             attackDamage = Math.max(0.0F, tag.getFloat(DAMAGE_TAG));
         }
         if (tag.contains(DISTANCE_TAG)) {
-            travelledDistance = Math.max(0.0D, tag.getDouble(DISTANCE_TAG));
+            double saved=tag.getDouble(DISTANCE_TAG);
+            travelledDistance = Double.isFinite(saved)?Math.max(0.0D,saved):0;
         }
     }
 

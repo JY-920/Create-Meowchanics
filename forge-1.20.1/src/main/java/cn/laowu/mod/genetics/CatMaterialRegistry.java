@@ -29,7 +29,39 @@ public final class CatMaterialRegistry {
     public static final ResourceLocation WOOD = LaoWuMod.id("material/wood");
     private static final String BLOCK_PREFIX = "block/";
 
-    private static final List<ResourceLocation> CUSTOM_MATERIALS = List.of(OBSIDIAN, WOOD);
+    private static final ResourceLocation COPYCAT = ResourceLocation.tryParse("copycats:copy_cat");
+    private static final ResourceLocation COPYCAT_TEXTURE =
+            ResourceLocation.tryParse("copycats:textures/entity/cat/copy_cat.png");
+
+    public static boolean isAllowedTexture(ResourceLocation texture) {
+        return texture != null && !COPYCAT_TEXTURE.equals(texture);
+    }
+    // Keep legacy texture readers for existing obsidian/wood cats, but never offer the presets.
+
+    /** The Copycats disguise is not a coat supported by our genetics/creation pools. */
+    public static boolean isAllowedVariant(ResourceLocation material) {
+        return material != null && !COPYCAT.equals(material);
+    }
+    public static boolean isSelectableMaterial(ResourceLocation material) {
+        return isAllowedVariant(material) && !OBSIDIAN.equals(material) && !WOOD.equals(material);
+    }
+    public static List<ResourceLocation> catVariants() {
+        return BuiltInRegistries.CAT_VARIANT.keySet().stream()
+                .filter(CatMaterialRegistry::isAllowedVariant)
+                .sorted(Comparator.comparing(ResourceLocation::toString)).toList();
+    }
+    /** Repair only the unsupported disguise; retain every other locus and all pet data. */
+    public static CatGenome sanitizeGenome(CatGenome genome) {
+        for (CatRegion region : CatRegion.values())
+            if (COPYCAT.equals(genome.material(region)))
+                genome = genome.withMaterial(region, CatVariant.RED.location());
+        return genome;
+    }
+    public static void excludeCopycatVariant(net.minecraft.world.entity.animal.Cat cat) {
+        if (COPYCAT.equals(BuiltInRegistries.CAT_VARIANT.getKey(cat.getVariant())))
+            cat.setVariant(BuiltInRegistries.CAT_VARIANT.get(CatVariant.RED));
+    }
+
     private static volatile List<Block> allMappedBlocks;
     private static volatile List<ResourceLocation> coreMaterials;
     private static volatile List<ResourceLocation> allMutationMaterials;
@@ -77,10 +109,10 @@ public final class CatMaterialRegistry {
         // selected/mutated block material is retained when it is already on
         // this cat, while the random breeding pool remains registry-wide.
         Set<ResourceLocation> result = new LinkedHashSet<>(coreMaterials());
-        if (selected != null) result.add(selected);
+        if (isSelectableMaterial(selected)) result.add(selected);
         if (genome != null) {
             for (CatRegion region : CatRegion.values()) {
-                result.add(genome.material(region));
+                if (isSelectableMaterial(genome.material(region))) result.add(genome.material(region));
             }
         }
         return List.copyOf(result);
@@ -93,10 +125,7 @@ public final class CatMaterialRegistry {
             materials = coreMaterials;
             if (materials == null) {
                 Set<ResourceLocation> result = new LinkedHashSet<>();
-                BuiltInRegistries.CAT_VARIANT.keySet().stream()
-                        .sorted(Comparator.comparing(ResourceLocation::toString))
-                        .forEach(result::add);
-                result.addAll(CUSTOM_MATERIALS);
+                result.addAll(catVariants());
                 materials = List.copyOf(result);
                 coreMaterials = materials;
             }

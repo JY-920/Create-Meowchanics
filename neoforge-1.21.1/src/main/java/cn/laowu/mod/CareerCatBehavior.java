@@ -150,6 +150,7 @@ public final class CareerCatBehavior {
         CatEngineeringBehavior.tick(cat);
         CatMedicalWork.tick(cat);
         CatAgentWatch.tick(cat);
+        CatLaserWork.tick(cat);
         if (outfit.isPreviewOnly()) {
             // Preview outfits must not inherit an old career target or install career AI.
             if (cat.getTarget() != null) cat.setTarget(null);
@@ -158,7 +159,7 @@ public final class CareerCatBehavior {
         if (outfit == CatOutfitType.NONE || CatPoseData.isPancake(cat)) return;
 
         ensureCareerCombat(cat);
-        if (outfit.isSupport()) {
+        if (outfit.isSupport() || CatGiantMount.carried(cat)) {
             // Logistics cats are pure support. Clear any stale target retained
             // from another outfit or a vanilla reaction without interrupting
             // their ordinary idle/follow navigation when no target exists.
@@ -166,6 +167,7 @@ public final class CareerCatBehavior {
                 cat.setTarget(null);
                 cat.getNavigation().stop();
             }
+            if (CatGiantMount.carried(cat)) cat.setLastHurtByMob(null);
         } else {
             tickCareerCombat(level, cat);
         }
@@ -183,6 +185,7 @@ public final class CareerCatBehavior {
 
     /** Called on equipment changes so health and armour update before the next entity tick. */
     public static void onOutfitChanged(Cat cat, boolean preserveMissingHealth) {
+        CatLaserWork.stop(cat);
         CatEngineeringCombat.release(cat);
         CatPilotFlight.release(cat);
         CatDivingMount.release(cat);
@@ -497,7 +500,7 @@ public final class CareerCatBehavior {
     private static boolean canFight(Cat cat) {
         CatOutfitType outfit = CatClothesData.getOutfit(cat);
         return cat.isTame() && cat.isAlive() && !CatPoseData.isPancake(cat)
-                && !DynamiteCatLastStand.isActive(cat)
+                && !DynamiteCatLastStand.isActive(cat) && !CatGiantMount.carried(cat)
                 && outfit != CatOutfitType.NONE && !outfit.isSupport()
                 && !outfit.isPreviewOnly() && !isResting(cat) && !CatPilotFlight.carried(cat) && !CatDivingMount.carried(cat);
     }
@@ -507,7 +510,7 @@ public final class CareerCatBehavior {
     }
 
     private static boolean canTarget(Cat cat, LivingEntity target) {
-        return target != null && target.isAlive() && target != cat.getOwner()
+        return !CatGiantMount.carried(cat) && target != null && target.isAlive() && target != cat.getOwner()
                 && !isForbiddenCareerTarget(target) && CatTeamRules.canHarm(cat, target);
     }
 
@@ -934,7 +937,7 @@ public final class CareerCatBehavior {
 
             double castRange = logisticsCastRange(intelligence);
             if (cat.distanceToSqr(recipient) > castRange * castRange || !cat.hasLineOfSight(recipient)) {
-                if (--nextPathRefresh <= 0) {
+                if (--nextPathRefresh <= 0 && !CatGiantMount.carried(cat)) {
                     nextPathRefresh = logisticsPathRefreshInterval(intelligence);
                     cat.getNavigation().moveTo(recipient,
                             logisticsMoveSpeed(intelligence));
@@ -992,6 +995,8 @@ public final class CareerCatBehavior {
     }
 
     public static BlockPos findSeat(Cat cat) {
+        // Riding across a Seat block is not occupying that workstation.
+        if (CatGiantMount.carried(cat)) return null;
         if (cat.getVehicle() instanceof SeatEntity seatEntity) {
             BlockPos pos = seatEntity.blockPosition();
             if (cat.level().getBlockState(pos).getBlock() instanceof SeatBlock) {

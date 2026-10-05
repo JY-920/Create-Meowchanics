@@ -1,0 +1,1097 @@
+{
+  "texels_per_block": 16,
+  "faces": [
+    {
+      "cube": "body_cube",
+      "face": "east",
+      "uv": [
+        2,
+        2,
+        26,
+        66
+      ],
+      "model_units": [
+        24,
+        64
+      ]
+    },
+    {
+      "cube": "body_cube",
+      "face": "west",
+      "uv": [
+        30,
+        2,
+        54,
+        66
+      ],
+      "model_units": [
+        24,
+        64
+      ]
+    },
+    {
+      "cube": "body_cube",
+      "face": "north",
+      "uv": [
+        58,
+        2,
+        74,
+        66
+      ],
+      "model_units": [
+        16,
+        64
+      ]
+    },
+    {
+      "cube": "body_cube",
+      "face": "south",
+      "uv": [
+        78,
+        2,
+        94,
+        66
+      ],
+      "model_units": [
+        16,
+        64
+      ]
+    },
+    {
+      "cube": "left_front_leg_cube",
+      "face": "north",
+      "uv": [
+        98,
+        2,
+        106,
+        42
+      ],
+      "model_units": [
+        8,
+        40
+      ]
+    },
+    {
+      "cube": "left_front_leg_cube",
+      "face": "east",
+      "uv": [
+        110,
+        2,
+        118,
+        42
+      ],
+      "model_units": [
+        8,
+        40
+      ]
+    },
+    {
+      "cube": "left_front_leg_cube",
+      "face": "south",
+      "uv": [
+        122,
+        2,
+        130,
+        42
+      ],
+      "model_units": [
+        8,
+        40
+      ]
+    },
+    {
+      "cube": "left_front_leg_cube",
+      "face": "west",
+      "uv": [
+        134,
+        2,
+        142,
+        42
+      ],
+      "model_units": [
+        8,
+        40
+      ]
+    },
+    {
+      "cube": "right_front_leg_cube",
+      "face": "north",
+      "uv": [
+        146,
+        2,
+        154,
+        42
+      ],
+      "model_units": [
+        8,
+        40
+      ]
+    },
+    {
+      "cube": "right_front_leg_cube",
+      "face": "east",
+      "uv": [
+        158,
+        2,
+        166,
+        42
+      ],
+      "model_units": [
+        8,
+        40
+      ]
+    },
+    {
+      "cube": "right_front_leg_cube",
+      "face": "south",
+      "uv": [
+        170,
+        2,
+        178,
+        42
+      ],
+      "model_units": [
+        8,
+        40
+      ]
+    },
+    {
+      "cube": "right_front_leg_cube",
+      "face": "west",
+      "uv": [
+        182,
+        2,
+        190,
+        42
+      ],
+      "model_units": [
+        8,
+        40
+      ]
+    },
+    {
+      "cube": "tail_base_cube",
+      "face": "north",
+      "uv": [
+        194,
+        2,
+        198,
+        34
+      ],
+      "model_units": [
+        4,
+        32
+      ]
+    },
+    {
+      "cube": "tail_base_cube",
+      "face": "east",
+      "uv": [
+        202,
+        2,
+        206,
+        34
+      ],
+      "model_units": [
+        4,
+        32
+      ]
+    },
+    {
+      "cube": "tail_base_cube",
+      "face": "south",
+      "uv": [
+        210,
+        2,
+        214,
+        34
+      ],
+      "model_units": [
+        4,
+        32
+      ]
+    },
+    {
+      "cube": "tail_base_cube",
+      "face": "west",
+      "uv": [
+        218,
+        2,
+        222,
+        34
+      ],
+      "model_units": [
+        4,
+        32
+      ]
+    },
+    {
+      "cube": "tail_tip_cube",
+      "face": "north",
+      "uv": [
+        226,
+        2,
+        230,
+        34
+      ],
+      "model_units": [
+        4,
+        32
+      ]
+    },
+    {
+      "cube": "tail_tip_cube",
+      "face": "east",
+      "uv": [
+        234,
+        2,
+        238,
+        34
+      ],
+      "model_units": [
+        4,
+        32
+      ]
+    },
+    {
+      "cube": "tail_tip_cube",
+      "face": "south",
+      "uv": [
+        242,
+        2,
+        246,
+        34
+      ],
+      "model_units": [
+        4,
+        32
+      ]
+    },
+    {
+      "cube": "tail_tip_cube",
+      "face": "west",
+      "uv": [
+        250,
+        2,
+        254,
+        34
+      ],
+      "model_units": [
+        4,
+        32
+      ]
+    },
+    {
+      "cube": "body_cube",
+      "face": "up",
+      "uv": [
+        2,
+        70,
+        18,
+        94
+      ],
+      "model_units": [
+        16,
+        24
+      ]
+    },
+    {
+      "cube": "body_cube",
+      "face": "down",
+      "uv": [
+        22,
+        70,
+        38,
+        94
+      ],
+      "model_units": [
+        16,
+        24
+      ]
+    },
+    {
+      "cube": "left_hind_leg_cube",
+      "face": "north",
+      "uv": [
+        42,
+        70,
+        50,
+        94
+      ],
+      "model_units": [
+        8,
+        24
+      ]
+    },
+    {
+      "cube": "left_hind_leg_cube",
+      "face": "east",
+      "uv": [
+        54,
+        70,
+        62,
+        94
+      ],
+      "model_units": [
+        8,
+        24
+      ]
+    },
+    {
+      "cube": "left_hind_leg_cube",
+      "face": "south",
+      "uv": [
+        66,
+        70,
+        74,
+        94
+      ],
+      "model_units": [
+        8,
+        24
+      ]
+    },
+    {
+      "cube": "left_hind_leg_cube",
+      "face": "west",
+      "uv": [
+        78,
+        70,
+        86,
+        94
+      ],
+      "model_units": [
+        8,
+        24
+      ]
+    },
+    {
+      "cube": "right_hind_leg_cube",
+      "face": "north",
+      "uv": [
+        90,
+        70,
+        98,
+        94
+      ],
+      "model_units": [
+        8,
+        24
+      ]
+    },
+    {
+      "cube": "right_hind_leg_cube",
+      "face": "east",
+      "uv": [
+        102,
+        70,
+        110,
+        94
+      ],
+      "model_units": [
+        8,
+        24
+      ]
+    },
+    {
+      "cube": "right_hind_leg_cube",
+      "face": "south",
+      "uv": [
+        114,
+        70,
+        122,
+        94
+      ],
+      "model_units": [
+        8,
+        24
+      ]
+    },
+    {
+      "cube": "right_hind_leg_cube",
+      "face": "west",
+      "uv": [
+        126,
+        70,
+        134,
+        94
+      ],
+      "model_units": [
+        8,
+        24
+      ]
+    },
+    {
+      "cube": "head_main",
+      "face": "up",
+      "uv": [
+        138,
+        70,
+        158,
+        90
+      ],
+      "model_units": [
+        20,
+        20
+      ]
+    },
+    {
+      "cube": "head_main",
+      "face": "down",
+      "uv": [
+        162,
+        70,
+        182,
+        90
+      ],
+      "model_units": [
+        20,
+        20
+      ]
+    },
+    {
+      "cube": "front_belly",
+      "face": "up",
+      "uv": [
+        186,
+        70,
+        196.4,
+        90
+      ],
+      "model_units": [
+        10.4,
+        20
+      ]
+    },
+    {
+      "cube": "front_belly",
+      "face": "down",
+      "uv": [
+        201,
+        70,
+        211.4,
+        90
+      ],
+      "model_units": [
+        10.4,
+        20
+      ]
+    },
+    {
+      "cube": "collar",
+      "face": "north",
+      "uv": [
+        216,
+        70,
+        236.4,
+        86.4
+      ],
+      "model_units": [
+        20.4,
+        16.4
+      ]
+    },
+    {
+      "cube": "collar",
+      "face": "south",
+      "uv": [
+        2,
+        98,
+        22.4,
+        114.4
+      ],
+      "model_units": [
+        20.4,
+        16.4
+      ]
+    },
+    {
+      "cube": "collar",
+      "face": "east",
+      "uv": [
+        27,
+        98,
+        29,
+        114.4
+      ],
+      "model_units": [
+        2,
+        16.4
+      ]
+    },
+    {
+      "cube": "collar",
+      "face": "west",
+      "uv": [
+        33,
+        98,
+        35,
+        114.4
+      ],
+      "model_units": [
+        2,
+        16.4
+      ]
+    },
+    {
+      "cube": "head_main",
+      "face": "north",
+      "uv": [
+        39,
+        98,
+        59,
+        114
+      ],
+      "model_units": [
+        20,
+        16
+      ]
+    },
+    {
+      "cube": "head_main",
+      "face": "east",
+      "uv": [
+        63,
+        98,
+        83,
+        114
+      ],
+      "model_units": [
+        20,
+        16
+      ]
+    },
+    {
+      "cube": "head_main",
+      "face": "south",
+      "uv": [
+        87,
+        98,
+        107,
+        114
+      ],
+      "model_units": [
+        20,
+        16
+      ]
+    },
+    {
+      "cube": "head_main",
+      "face": "west",
+      "uv": [
+        111,
+        98,
+        131,
+        114
+      ],
+      "model_units": [
+        20,
+        16
+      ]
+    },
+    {
+      "cube": "front_belly",
+      "face": "east",
+      "uv": [
+        135,
+        98,
+        155,
+        114
+      ],
+      "model_units": [
+        20,
+        16
+      ]
+    },
+    {
+      "cube": "front_belly",
+      "face": "west",
+      "uv": [
+        159,
+        98,
+        179,
+        114
+      ],
+      "model_units": [
+        20,
+        16
+      ]
+    },
+    {
+      "cube": "front_belly",
+      "face": "north",
+      "uv": [
+        183,
+        98,
+        193.4,
+        114
+      ],
+      "model_units": [
+        10.4,
+        16
+      ]
+    },
+    {
+      "cube": "front_belly",
+      "face": "south",
+      "uv": [
+        198,
+        98,
+        208.4,
+        114
+      ],
+      "model_units": [
+        10.4,
+        16
+      ]
+    },
+    {
+      "cube": "nose",
+      "face": "up",
+      "uv": [
+        213,
+        98,
+        225,
+        108
+      ],
+      "model_units": [
+        12,
+        10
+      ]
+    },
+    {
+      "cube": "nose",
+      "face": "down",
+      "uv": [
+        229,
+        98,
+        241,
+        108
+      ],
+      "model_units": [
+        12,
+        10
+      ]
+    },
+    {
+      "cube": "nose",
+      "face": "north",
+      "uv": [
+        2,
+        119,
+        14,
+        127
+      ],
+      "model_units": [
+        12,
+        8
+      ]
+    },
+    {
+      "cube": "nose",
+      "face": "south",
+      "uv": [
+        18,
+        119,
+        30,
+        127
+      ],
+      "model_units": [
+        12,
+        8
+      ]
+    },
+    {
+      "cube": "nose",
+      "face": "east",
+      "uv": [
+        34,
+        119,
+        44,
+        127
+      ],
+      "model_units": [
+        10,
+        8
+      ]
+    },
+    {
+      "cube": "nose",
+      "face": "west",
+      "uv": [
+        48,
+        119,
+        58,
+        127
+      ],
+      "model_units": [
+        10,
+        8
+      ]
+    },
+    {
+      "cube": "left_hind_leg_cube",
+      "face": "up",
+      "uv": [
+        62,
+        119,
+        70,
+        127
+      ],
+      "model_units": [
+        8,
+        8
+      ]
+    },
+    {
+      "cube": "left_hind_leg_cube",
+      "face": "down",
+      "uv": [
+        74,
+        119,
+        82,
+        127
+      ],
+      "model_units": [
+        8,
+        8
+      ]
+    },
+    {
+      "cube": "right_hind_leg_cube",
+      "face": "up",
+      "uv": [
+        86,
+        119,
+        94,
+        127
+      ],
+      "model_units": [
+        8,
+        8
+      ]
+    },
+    {
+      "cube": "right_hind_leg_cube",
+      "face": "down",
+      "uv": [
+        98,
+        119,
+        106,
+        127
+      ],
+      "model_units": [
+        8,
+        8
+      ]
+    },
+    {
+      "cube": "left_front_leg_cube",
+      "face": "up",
+      "uv": [
+        110,
+        119,
+        118,
+        127
+      ],
+      "model_units": [
+        8,
+        8
+      ]
+    },
+    {
+      "cube": "left_front_leg_cube",
+      "face": "down",
+      "uv": [
+        122,
+        119,
+        130,
+        127
+      ],
+      "model_units": [
+        8,
+        8
+      ]
+    },
+    {
+      "cube": "right_front_leg_cube",
+      "face": "up",
+      "uv": [
+        134,
+        119,
+        142,
+        127
+      ],
+      "model_units": [
+        8,
+        8
+      ]
+    },
+    {
+      "cube": "right_front_leg_cube",
+      "face": "down",
+      "uv": [
+        146,
+        119,
+        154,
+        127
+      ],
+      "model_units": [
+        8,
+        8
+      ]
+    },
+    {
+      "cube": "left_ear",
+      "face": "up",
+      "uv": [
+        158,
+        119,
+        162,
+        127
+      ],
+      "model_units": [
+        4,
+        8
+      ]
+    },
+    {
+      "cube": "left_ear",
+      "face": "down",
+      "uv": [
+        166,
+        119,
+        170,
+        127
+      ],
+      "model_units": [
+        4,
+        8
+      ]
+    },
+    {
+      "cube": "right_ear",
+      "face": "up",
+      "uv": [
+        174,
+        119,
+        178,
+        127
+      ],
+      "model_units": [
+        4,
+        8
+      ]
+    },
+    {
+      "cube": "right_ear",
+      "face": "down",
+      "uv": [
+        182,
+        119,
+        186,
+        127
+      ],
+      "model_units": [
+        4,
+        8
+      ]
+    },
+    {
+      "cube": "left_ear",
+      "face": "east",
+      "uv": [
+        190,
+        119,
+        198,
+        123
+      ],
+      "model_units": [
+        8,
+        4
+      ]
+    },
+    {
+      "cube": "left_ear",
+      "face": "west",
+      "uv": [
+        202,
+        119,
+        210,
+        123
+      ],
+      "model_units": [
+        8,
+        4
+      ]
+    },
+    {
+      "cube": "right_ear",
+      "face": "east",
+      "uv": [
+        214,
+        119,
+        222,
+        123
+      ],
+      "model_units": [
+        8,
+        4
+      ]
+    },
+    {
+      "cube": "right_ear",
+      "face": "west",
+      "uv": [
+        226,
+        119,
+        234,
+        123
+      ],
+      "model_units": [
+        8,
+        4
+      ]
+    },
+    {
+      "cube": "left_ear",
+      "face": "north",
+      "uv": [
+        238,
+        119,
+        242,
+        123
+      ],
+      "model_units": [
+        4,
+        4
+      ]
+    },
+    {
+      "cube": "left_ear",
+      "face": "south",
+      "uv": [
+        246,
+        119,
+        250,
+        123
+      ],
+      "model_units": [
+        4,
+        4
+      ]
+    },
+    {
+      "cube": "right_ear",
+      "face": "north",
+      "uv": [
+        2,
+        131,
+        6,
+        135
+      ],
+      "model_units": [
+        4,
+        4
+      ]
+    },
+    {
+      "cube": "right_ear",
+      "face": "south",
+      "uv": [
+        10,
+        131,
+        14,
+        135
+      ],
+      "model_units": [
+        4,
+        4
+      ]
+    },
+    {
+      "cube": "tail_base_cube",
+      "face": "up",
+      "uv": [
+        18,
+        131,
+        22,
+        135
+      ],
+      "model_units": [
+        4,
+        4
+      ]
+    },
+    {
+      "cube": "tail_base_cube",
+      "face": "down",
+      "uv": [
+        26,
+        131,
+        30,
+        135
+      ],
+      "model_units": [
+        4,
+        4
+      ]
+    },
+    {
+      "cube": "tail_tip_cube",
+      "face": "up",
+      "uv": [
+        34,
+        131,
+        38,
+        135
+      ],
+      "model_units": [
+        4,
+        4
+      ]
+    },
+    {
+      "cube": "tail_tip_cube",
+      "face": "down",
+      "uv": [
+        42,
+        131,
+        46,
+        135
+      ],
+      "model_units": [
+        4,
+        4
+      ]
+    },
+    {
+      "cube": "collar",
+      "face": "up",
+      "uv": [
+        50,
+        131,
+        70.4,
+        133
+      ],
+      "model_units": [
+        20.4,
+        2
+      ]
+    },
+    {
+      "cube": "collar",
+      "face": "down",
+      "uv": [
+        75,
+        131,
+        95.4,
+        133
+      ],
+      "model_units": [
+        20.4,
+        2
+      ]
+    }
+  ]
+}

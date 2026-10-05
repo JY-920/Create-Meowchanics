@@ -46,7 +46,7 @@ public final class CatPilotFlight {
         return InteractionResult.FAIL;
     }
     private static boolean eligible(Cat cat, Player player) {
-        if (!(cat.level() instanceof ServerLevel) || !cat.isTame() || !cat.isOwnedBy(player)
+        if (!(cat.level() instanceof ServerLevel) || CatGiantMount.active(cat) || !cat.isTame() || !cat.isOwnedBy(player)
                 || !cat.isAlive() || cat.isBaby() || cat.isNoAi() || cat.isPassenger() || cat.isVehicle()
                 || player.isPassenger() || player.isSpectator() || !player.isAlive()
                 || !wrench(player) || cat.distanceToSqr(player) > 25

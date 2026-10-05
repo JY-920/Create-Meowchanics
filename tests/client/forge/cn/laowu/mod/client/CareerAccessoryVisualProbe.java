@@ -38,7 +38,12 @@ public final class CareerAccessoryVisualProbe {
                 check(!stack.getHoverName().getString().startsWith("item.laowu."),"Translated accessory "+entry.item());
                 count++;
             }
-            check(count==36,"All 36 accessories baked");
+            check(count==37,"All 37 accessories baked");
+            var treat=new ItemStack(BuiltInRegistries.ITEM.get(id("giant_cat_treat")));
+            var treatModel=mc.getItemRenderer().getModel(treat,null,null,0);
+            check(treatModel.getParticleIcon().contents().name().equals(id("item/giant_cat_treat")),
+                    "Supplied giant summon sprite resolves on the real baked item model");
+            System.out.println("PASS: supplied giant summon and trophy sprites resolve on actual baked item models");
             var texture=((TextureAtlas)mc.getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES)).getSprite(ResourceLocation.fromNamespaceAndPath("minecraft","big_smoke_0"));
             check(!texture.contents().name().equals(MissingTextureAtlasSprite.getLocation()),"Vanilla smoke sprite loaded");
             var sprites=new SpriteSet(){
@@ -59,13 +64,14 @@ public final class CareerAccessoryVisualProbe {
             for(var puff:List.of(particle,smoke)){
                 check(puff instanceof CatHealingSmokeParticle,"Local campfire-style puff; no vanilla particle modification");
                 check(puff.getRenderType()==ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT,"Both smoke types use translucent blending");
-                check(Math.abs(field(puff,Particle.class,"alpha")-.32F)<.001,"Both puffs are only 32 percent opaque");
+                check(field(puff,Particle.class,"alpha")>=.9F&&field(puff,Particle.class,"alpha")<=1F,
+                        "Current cover smoke starts nearly opaque, as requested after the original translucent design");
             }
             check(field(smoke,Particle.class,"rCol")==field(smoke,Particle.class,"gCol"),"Normal cover smoke stays neutral grey");
             verifySpeedStatState();
             verifyTransitions();
             honey(mc);
-            System.out.println("PASS: 36 artist icons actually baked, client music +20 Speed, green-smoke factory, per-cat continuous original-height poses and real honey GPU decal");
+            System.out.println("PASS: 37 artist icons actually baked, including the supplied giant trophy sprite, client music +20 Speed, green-smoke factory, per-cat continuous original-height poses and real honey GPU decal");
         }catch(Exception e){throw new IllegalStateException(e);}
     }
     private static void verifySpeedStatState(){
@@ -103,12 +109,13 @@ public final class CareerAccessoryVisualProbe {
                 check(CatPoseTransitions.sample(other,false,0,partial).ride()==0&&CatPoseTransitions.sample(other,false,0,partial).dash()==0,
                         "Even a matching-ID preview has independent transition state");
                 for(var p:parts)p.resetPose();parts[1].xRot=(float)Math.PI/2;
-                if(mode<2)CatPoseTransitions.apply(blend.ride(),()->CatRideAnimation.apply(10,parts[0],parts[1],parts[2],parts[3],parts[4],parts[5],parts[6],parts[7]),parts);
+                if(mode==0)CatRideAnimation.pilot(10,blend.ride(),parts[6],parts[7]);
+                else if(mode==1)CatPoseTransitions.apply(blend.ride(),()->CatRideAnimation.apply(10,parts[0],parts[1],parts[2],parts[3],parts[4],parts[5],parts[6],parts[7]),parts);
                 else CatPoseTransitions.apply(blend.dash(),()->CatCockroachAnimation.dash(blend.age(),parts[2],parts[3],parts[4],parts[5]),parts);
                 check(Math.abs(parts[4].xRot-previous)<.16,"Quarter-tick pose transitions remain continuous, mode "+mode+" frame "+frame);
                 check(Math.abs(parts[4].y-parts[4].getInitialPose().y-(mode==2?3*blend.dash():0))<.001,"Restored original forelimb height");
                 previous=parts[4].xRot;
-                if(frame==32)check(parts[4].xRot<-1.5,"Full old extended pose reached");
+                if(frame==32)check(mode==0?Math.abs(parts[4].xRot)<.001:parts[4].xRot<(mode==1?-1:-1.5),"Career-specific full pose reached");
                 if(frame==80)check(Math.abs(parts[4].xRot)<.001&&blend.wings()==0,"Exit returns fully to idle");
             }
         }

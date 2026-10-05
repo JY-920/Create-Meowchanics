@@ -1,0 +1,22 @@
+{
+  "time": "2026-10-04 13:07:40",
+  "version": "2.2.2",
+  "stamp": "20261004-130739-2.2.2-cat-editor-v2",
+  "verified": true,
+  "results": [
+    {
+      "port": "forge-1.20.1",
+      "installed": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mods/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "sha256": "DAC9C67224229BE95B48C7F3D49C67C3BFC023D5B3AE1CDE8A18C2587ED4366B",
+      "activeLaowuCount": 1,
+      "backup": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mod-backups/create-meowchanics/20261004-130739-2.2.2-cat-editor-v2/create-meowchanics-2.2.2-forge-1.20.1.jar"
+    },
+    {
+      "port": "neoforge-1.21.1",
+      "installed": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mods/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "sha256": "43718FD51CF196133FE1279CE958E67CBFE86A1EB62E214537B3DD3C787764FE",
+      "activeLaowuCount": 1,
+      "backup": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mod-backups/create-meowchanics/20261004-130739-2.2.2-cat-editor-v2/create-meowchanics-2.2.2-neoforge-1.21.1.jar"
+    }
+  ]
+}

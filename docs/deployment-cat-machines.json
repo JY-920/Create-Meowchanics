@@ -1,0 +1,49 @@
+{
+  "Time": "2026-09-19 19:29:47",
+  "Version": "2.2.1",
+  "Stamp": "20260919-192947-2.2.1-cat-machines",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "B39832CAFFDE204E6C3DC8D2237A72A23461D18E512280B251FBC5448010E4FB"
+      },
+      "Bytes": 7061155,
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "499D003AA805570D8766905C430CA1396C8EA306848B45A68398EF1FE2788F26"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260919-192947-2.2.1-cat-machines\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Instance": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "FCB89BCE37219DD5EFDB85E0B68E98D98301A86D068A1E0D2E9651F9D73D3E74"
+      },
+      "Bytes": 7062585,
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "1A859AB09528071892B27305D59AFB22D93106A50674C98761239DDFF757E6C4"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260919-192947-2.2.1-cat-machines\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ]
+}

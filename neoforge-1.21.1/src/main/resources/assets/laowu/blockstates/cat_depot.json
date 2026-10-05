@@ -1,0 +1,29 @@
+{
+  "variants": {
+    "bottom=down": {
+      "model": "laowu:block/cat_depot"
+    },
+    "bottom=up": {
+      "model": "laowu:block/cat_depot",
+      "x": 180
+    },
+    "bottom=north": {
+      "model": "laowu:block/cat_depot",
+      "x": 270
+    },
+    "bottom=south": {
+      "model": "laowu:block/cat_depot",
+      "x": 90
+    },
+    "bottom=east": {
+      "model": "laowu:block/cat_depot",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=west": {
+      "model": "laowu:block/cat_depot",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

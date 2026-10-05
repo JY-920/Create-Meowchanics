@@ -1,0 +1,13 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+[[mods]]
+modId="laowu_boot_probe"
+version="1.0"
+displayName="Isolated release startup probe"
+[[dependencies.laowu_boot_probe]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="CLIENT"

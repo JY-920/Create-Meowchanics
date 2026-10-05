@@ -25,8 +25,7 @@ public final class RandomBabyCatPancakeFillingRecipe extends FillingRecipe {
 
     @Override
     public List<ItemStack> rollResults() {
-        List<ResourceLocation> variants = BuiltInRegistries.CAT_VARIANT.keySet()
-                .stream().toList();
+        List<ResourceLocation> variants = cn.laowu.mod.genetics.CatMaterialRegistry.catVariants();
         ResourceLocation chosen = variants.isEmpty()
                 ? CatPancakeItem.DEFAULT_VARIANT
                 : variants.get(ThreadLocalRandom.current().nextInt(variants.size()));

@@ -1,0 +1,190 @@
+{
+  "Time": "2026-10-03 09:50:02",
+  "Version": "2.2.2",
+  "Stamp": "20261003-095001-2.2.2-boss-pursuit",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "3546DCD8F856A14ACB2734EC129F7D275ECF7F1EA7144EAB6B88718BA5335AA0"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261003-095001-2.2.2-boss-pursuit\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "4799D1B6B81E35A54F3B0BEBD7801B448AE1854101856ECBDBF1B83A478C640B"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "D81AD314F511896308CF715B70C499197CEB4D80AD4C9504C87C5125FA7F1869"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261003-095001-2.2.2-boss-pursuit\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "B69CADE92AF741AE8BF4A35DC02FA42F2F871019031B1307610258E5FC0205C6"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "PublicChangelogBaseline": "2.2.1 (2026-09-19)",
+  "Verification": {
+    "ServerRegression": {
+      "Forge": {
+        "Required": 215,
+        "Passed": 215,
+        "ExitCode": 0,
+        "Log": "forge-1.20.1/build/boss-pursuit-222-final-terrain-verified.log"
+      },
+      "NeoForge": {
+        "Required": 215,
+        "Passed": 215,
+        "ExitCode": 0,
+        "Log": "neoforge-1.21.1/build/boss-pursuit-222-final-terrain.log"
+      },
+      "Includes": [
+        "actual KubeJS",
+        "36 native accessory replacement examples",
+        "new accessory registration SDK example",
+        "trait examples",
+        "5 new pursuit/terrain tests"
+      ]
+    },
+    "Client": {
+      "Forge": {
+        "ExitCode": 0,
+        "Log": "forge-1.20.1/build/boss-pursuit-222-final-client.log"
+      },
+      "NeoForge": {
+        "ExitCode": 0,
+        "Log": "neoforge-1.21.1/build/boss-pursuit-222-final-client.log"
+      },
+      "VerifiedMarkers": [
+        "GIANT BOSS CLIENT PURSUIT HEADING",
+        "GIANT REST MOUNT HEADING",
+        "GIANT RIDER BOB",
+        "100 GPU frames across nine boss phases",
+        "GIANT VISUAL CLIENT"
+      ]
+    },
+    "ProductionForgeBoot": {
+      "Passed": true,
+      "ExitCode": 0,
+      "ActualSrgClient": true,
+      "FullInstalledModSet": true,
+      "TitleScreenReached": true,
+      "CleanShutdown": true,
+      "Log": "forge-1.20.1/build/production-boot-boss-pursuit-222-final/logs/latest.log"
+    },
+    "NormalReleaseBuild": {
+      "Forge": {
+        "ExitCode": 0,
+        "Log": "forge-1.20.1/build/boss-pursuit-222-final-release.log"
+      },
+      "NeoForge": {
+        "ExitCode": 0,
+        "Log": "neoforge-1.21.1/build/boss-pursuit-222-final-release.log"
+      },
+      "Checks": [
+        "accessory API v3 / 36 saved IDs",
+        "trait API v1 / 82 saved IDs",
+        "private animation resources / GeckoLib scan",
+        "release isolation",
+        "23270 accessory definition/loadout/probability/state checks"
+      ],
+      "NoTestInitScript": true
+    },
+    "PureBossScripts": [
+      "node tests/giant-boss-combat.mjs: PASS both ports",
+      "node tests/giant-boss-animation.mjs: PASS both ports"
+    ],
+    "CodeReview": {
+      "Result": "Two terrain/movement P2 findings reproduced and fixed; final focused review found no new P0-P2 findings",
+      "Scope": "Both port pursuit controllers, hazard classification and pre-jump alignment"
+    },
+    "Caveats": [
+      "Ordinary step test uses the real MoveControl/JumpControl boundary; it does not exhaust all natural hill combinations.",
+      "Forge cached-dependency validation used --offline and the invocation-only -Dnet.minecraftforge.gradle.check.certs=false to bypass stalled external reachability preflight, not runtime/API/animation/isolation checks.",
+      "Full-rotation assertion uses unwrapped angular span, not sum of absolute small corrections; per-tick yaw/body yaw limits and actual bite assertions remain."
+    ]
+  },
+  "Package": {
+    "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\releases\\create-meowchanics-2.2.2-dual-loader.zip",
+    "Bytes": 14405698,
+    "Sha256": "A151274E1D7D5EB9C97A4B0DB0841F470941BB2C287B3ECBC5BACC7E71B77A82",
+    "Entries": [
+      "CHANGELOG.zh-CN.md",
+      "checksums.json",
+      "README.md",
+      "forge-1.20.1/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "neoforge-1.21.1/create-meowchanics-2.2.2-neoforge-1.21.1.jar"
+    ],
+    "JarContentVerified": true
+  },
+  "Artifacts": {
+    "Version": "2.2.2",
+    "Files": [
+      {
+        "File": "forge-1.20.1/create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "Sha256": "3546DCD8F856A14ACB2734EC129F7D275ECF7F1EA7144EAB6B88718BA5335AA0",
+        "Bytes": 7441813,
+        "Version": "2.2.2",
+        "ModId": "laowu",
+        "ReleaseIsolationVerified": true
+      },
+      {
+        "File": "neoforge-1.21.1/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "Sha256": "D81AD314F511896308CF715B70C499197CEB4D80AD4C9504C87C5125FA7F1869",
+        "Bytes": 7443334,
+        "Version": "2.2.2",
+        "ModId": "laowu",
+        "ReleaseIsolationVerified": true
+      }
+    ]
+  },
+  "RuntimeContentChangesComparedToImmediatelyPreviousInstalledBuild": [
+    {
+      "Port": "forge-1.20.1",
+      "RuntimeEntryChanges": [
+        "cn/laowu/mod/entity/GiantCatBoss.class",
+        "cn/laowu/mod/entity/GiantCatBoss$PursuitMoveControl.class",
+        "META-INF/MANIFEST.MF",
+        "META-INF/mods.toml"
+      ]
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "RuntimeEntryChanges": [
+        "cn/laowu/mod/entity/GiantCatBoss.class",
+        "cn/laowu/mod/entity/GiantCatBoss$PursuitMoveControl.class",
+        "META-INF/neoforge.mods.toml"
+      ]
+    }
+  ],
+  "Preserved": [
+    "Player saves",
+    "Configurations",
+    "Player KubeJS scripts",
+    "Other mods",
+    "Previous runtime jars in recoverable backup directories"
+  ],
+  "GitMutations": {
+    "Commit": false,
+    "Push": false
+  }
+}

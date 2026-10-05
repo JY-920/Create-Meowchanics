@@ -63,5 +63,6 @@ public final class ButterBreadItem extends Item {
                                 List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.laowu.butter_bread.tooltip")
                 .withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.laowu.boss_cat_treat.tooltip.warning").withStyle(ChatFormatting.RED));
     }
 }

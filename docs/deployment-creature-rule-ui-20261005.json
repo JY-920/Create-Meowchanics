@@ -1,0 +1,37 @@
+{
+  "time": "2026-10-05 00:47:52",
+  "version": "2.2.2",
+  "internalBuild": "20261005-004751-2.2.2-creature-rule-ui",
+  "verification": {
+    "serverGameTests": {
+      "forge": 20,
+      "neoforge": 20
+    },
+    "nativeFilterUIAndLiveNetwork": "both passed",
+    "transmitterUIAndPhysicalRemovalSync": "both passed",
+    "normalBuildAndApiIsolation": "both passed",
+    "accessoryChecksPerLoader": 23270,
+    "independentReview": "Important findings fixed and regression-tested",
+    "deferredMinor": "Clearing grouped rules may leave the previous name in the rule-search field until next selection/addition; actual rules are cleared."
+  },
+  "results": [
+    {
+      "loader": "forge-1.20.1",
+      "instance": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发",
+      "sha256": "2836B4C273F49B9DFE802AEB0FA330654045B6853B2085EC3203B13570A2CE4C",
+      "installed": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mods/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "backup": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mod-backups/create-meowchanics/20261005-004751-2.2.2-creature-rule-ui/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "activeLaowuCount": 1,
+      "hashVerified": true
+    },
+    {
+      "loader": "neoforge-1.21.1",
+      "instance": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发",
+      "sha256": "C77AC909CA33AB0B5A7496407D1C3EA74FB6916BA47BA6B004C589882343A9EB",
+      "installed": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mods/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "backup": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mod-backups/create-meowchanics/20261005-004751-2.2.2-creature-rule-ui/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "activeLaowuCount": 1,
+      "hashVerified": true
+    }
+  ]
+}

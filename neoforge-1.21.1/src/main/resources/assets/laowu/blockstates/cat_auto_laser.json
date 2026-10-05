@@ -1,0 +1,29 @@
+{
+  "variants": {
+    "bottom=down": {
+      "model": "laowu:block/cat_auto_laser"
+    },
+    "bottom=up": {
+      "model": "laowu:block/cat_auto_laser",
+      "x": 180
+    },
+    "bottom=north": {
+      "model": "laowu:block/cat_auto_laser",
+      "x": 270
+    },
+    "bottom=south": {
+      "model": "laowu:block/cat_auto_laser",
+      "x": 90
+    },
+    "bottom=east": {
+      "model": "laowu:block/cat_auto_laser",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=west": {
+      "model": "laowu:block/cat_auto_laser",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

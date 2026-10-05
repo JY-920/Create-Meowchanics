@@ -1,0 +1,45 @@
+{
+  "Time": "2026-10-03 21:45:53",
+  "Version": "2.2.2",
+  "Stamp": "20261003-214552-2.2.2-cat-deployment",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "E4029B952CF44BA1AD74598A45A2E7CA7035E4ABF6C18CD9A79B4BFF980EE802"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261003-214552-2.2.2-cat-deployment\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "F00221B2D99534ECEB7F0E075528DA430A963667C2D147CF6377634C85677821"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "72615E30D68C2E39DDBD3F5F99457ACABDD25E7A4CAF4FDBB10EC42002FEF757"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261003-214552-2.2.2-cat-deployment\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "C613BC3CA48618D767132707DC0E15C09B5991EFFAA1ECB0066CEFC48CAA7AF4"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ]
+}

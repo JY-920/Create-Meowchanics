@@ -1,0 +1,161 @@
+{
+  "version": "2.2.1",
+  "changes": [
+    "Cat mixer, press, depot and casing mineable with wooden axes and wooden pickaxes; cat basin wooden pickaxe only.",
+    "Client retains complete sub-tick jump click; server latches authenticated same-tick grounded press and commits three-tick anticipation even after release; no held auto-repeat or airborne buffering.",
+    "Forge SRG runtime mappings restored for CapeLayer render/pushPose and cat basin/depot vanilla call selectors; cape and six-direction machine logic retained."
+  ],
+  "tests": {
+    "initialRed": {
+      "forge": {
+        "required": 20,
+        "failed": [
+          "woodenaxeandpickaxeharvestcatmachines",
+          "shorttapcompletesjumpandholdneverautorepeats"
+        ]
+      },
+      "neo": {
+        "required": 20,
+        "failed": [
+          "woodenaxeandpickaxeharvestcatmachines",
+          "shorttapcompletesjumpandholdneverautorepeats"
+        ]
+      }
+    },
+    "firstGreen": {
+      "forge": "20/20",
+      "neo": "20/20"
+    },
+    "sameTickRed": {
+      "forge": "shorttapsurvivessameservertickpackets",
+      "neo": "shorttapsurvivessameservertickpackets"
+    },
+    "actualClientRed": {
+      "forge": "sub-tick tap stage 4 timeout",
+      "neo": "sub-tick tap stage 4 timeout"
+    },
+    "fullStable": {
+      "forge": {
+        "required": 197,
+        "passed": 197,
+        "log": "forge-1.20.1/build/harvest-jump-full-stable.log"
+      },
+      "neo": {
+        "required": 197,
+        "passed": 197,
+        "log": "neoforge-1.21.1/build/harvest-jump-full-stable.log"
+      }
+    },
+    "fixtureFindings": "Initial Forge full run passed 196/197. Engineering artillery target not yet tracked in cold multi-chunk fixture; original isolated probe passed 5/5. Added entity-ticking readiness gate preserving all original assertions, plus idempotent test-only success/failure cleanup. Full stable passed 197/197.",
+    "productionBootRed": "Actual launcher forgeclient/SRG with installed mod set reproduced DivingCapeLayerMixin InvalidInjectionException; forge-1.20.1/build/production-boot-red/crash-reports/crash-2026-10-02_19.24.56-client.txt",
+    "referenceMapper": "Actual Java Mixin ReferenceMapper default/searge: rider, cape, four machine selectors all passed; new machine cases observed RED then GREEN.",
+    "actualClientGreen": {
+      "forge": {
+        "log": "forge-1.20.1/build/giant-tap-client-fresh-green.log",
+        "marker": "PASS: GIANT REAL RIDING + BOB CLIENT",
+        "isolatedFixture": "forge-1.20.1/build/cat-sixway-client-harvest-jump-final"
+      },
+      "neo": {
+        "log": "neoforge-1.21.1/build/giant-tap-client-green.log",
+        "marker": "PASS: GIANT REAL RIDING + BOB CLIENT"
+      }
+    },
+    "fixtureCleanupFinal": {
+      "forge": "5/5 required passed",
+      "neo": "5/5 required passed"
+    },
+    "clientFixtureNote": "First Forge green run reached jump completion but later failed stage 8 after a stale hostile cat killed the player. Optional validated catMachinesRunId isolates a fresh copy without deleting old fixtures or user worlds. Fresh final run passed complete two-career riding sequence.",
+    "normalBuild": {
+      "forge": {
+        "exit": 0,
+        "log": "forge-1.20.1/build/harvest-jump-release-complete.log"
+      },
+      "neo": {
+        "exit": 0,
+        "log": "neoforge-1.21.1/build/harvest-jump-release-final.log"
+      },
+      "checks": [
+        "frozen accessory API v3 and 36 saved IDs",
+        "frozen trait API v1 and 82 native saved IDs",
+        "cat animation resource validation",
+        "release isolation",
+        "23270 accessory definition/loadout/probability/state assertions per port"
+      ]
+    },
+    "productionMachineMappingRed": "After cape fix, actual Forge/Create 6.0.8 boot exposed CatBasinOrientationMixin entityPosition injection 0/1; production Create bytecode confirmed four missing SRG call mappings. forge-1.20.1/build/production-boot-green/crash-reports/crash-2026-10-02_20.11.24-fml.txt",
+    "finalForgeFull": {
+      "required": 197,
+      "passed": 196,
+      "failed": "liveaiselectsspecialattackswithoutmeleeandhonorsrecoveries",
+      "failure": "old live-AI Boss test timed out",
+      "log": "forge-1.20.1/build/harvest-jump-boot-complete.log",
+      "isolatedRecheck": {
+        "required": 30,
+        "passed": 30,
+        "log": "forge-1.20.1/build/harvest-jump-boss-recheck.log"
+      },
+      "productionBossCodeUnchanged": true
+    },
+    "productionBootFinal": {
+      "exit": 0,
+      "launchTarget": "forgeclient",
+      "environment": "Actual Forge 47.4.22 SRG production launcher with installed Create 6.0.8 and complete installed mod set; 29 JARs including separate test probe",
+      "jarSha256": "43EB177B8932CF70945230431B3BB7595319B5079B679F71DC57E65487DB4AF4",
+      "marker": "PASS: FORGE PRODUCTION JAR BOOT - actual SRG client, full installed mod set, title screen, clean shutdown",
+      "log": "forge-1.20.1/build/production-boot-final/logs/latest.log",
+      "firstLaunchScreen": "AccessibilityOnboardingScreen",
+      "loadingErrorScreenAcknowledged": false,
+      "probeNeverDeployed": true
+    },
+    "bootHarnessNote": "Intermediate startup probes stalled on a nonfatal warning from their own missing pack.mcmeta. Added valid test-only pack metadata and state diagnostics. Final run reached title screen without any loading-error-screen acknowledgement. No real loading errors are bypassed."
+  },
+  "review": "Read-only independent review; authenticated same-tick edge and test forced-chunk cleanup findings addressed. No remaining blocking findings.",
+  "packageValidation": {
+    "forge": {
+      "sha256": "43EB177B8932CF70945230431B3BB7595319B5079B679F71DC57E65487DB4AF4",
+      "modId": "laowu",
+      "version": "2.2.1",
+      "forbiddenEntries": 0,
+      "capeDefaultAndSeargeMappings": true,
+      "harvestTagsVerified": true,
+      "machineMappingsCheckedAgainstInstalledCreateBytecode": true
+    },
+    "neo": {
+      "sha256": "90AF2AC99C89A9EC03170AB4593499F149006F8CC4BA676A53532E594F887F91",
+      "modId": "laowu",
+      "version": "2.2.1",
+      "forbiddenEntries": 0,
+      "harvestTagsVerified": true
+    }
+  },
+  "deployment": {
+    "time": "2026-10-02 20:36:21",
+    "stamp": "20261002-203620-2.2.1-harvest-jump-boot",
+    "targets": [
+      {
+        "Port": "forge-1.20.1",
+        "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261002-203620-2.2.1-harvest-jump-boot\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "SourceSha256": "43EB177B8932CF70945230431B3BB7595319B5079B679F71DC57E65487DB4AF4",
+        "InstalledSha256": "43EB177B8932CF70945230431B3BB7595319B5079B679F71DC57E65487DB4AF4",
+        "BackupSha256": "0235B9A59BFEEF40998BAD7002DC1BC6E12BAA473F197F4784DCF81225499C42",
+        "ActiveLaowuCount": 1,
+        "Verified": true
+      },
+      {
+        "Port": "neoforge-1.21.1",
+        "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "Installed": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261002-203620-2.2.1-harvest-jump-boot\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "SourceSha256": "90AF2AC99C89A9EC03170AB4593499F149006F8CC4BA676A53532E594F887F91",
+        "InstalledSha256": "90AF2AC99C89A9EC03170AB4593499F149006F8CC4BA676A53532E594F887F91",
+        "BackupSha256": "A8BE0F8426DB36541F08E0916E0123FD1084383F328E9D72853018B4B0022B62",
+        "ActiveLaowuCount": 1,
+        "Verified": true
+      }
+    ],
+    "clientsStopped": true,
+    "worldsConfigsOtherModsAndUserKubejsUnmodified": true
+  }
+}

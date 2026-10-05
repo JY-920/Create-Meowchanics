@@ -12,6 +12,19 @@ function Read-ZipEntryText($entry) {
     $reader = [IO.StreamReader]::new($entry.Open())
     try { $reader.ReadToEnd() } finally { $reader.Dispose() }
 }
+function Assert-SuppliedGiantSprite($zip, [string]$name, [string]$expectedHash) {
+    $entry=$zip.GetEntry("assets/laowu/textures/item/$name.png")
+    if (!$entry) { throw "Missing supplied giant item sprite: $name" }
+    $reader=[IO.BinaryReader]::new($entry.Open())
+    try { $bytes=$reader.ReadBytes([int]$entry.Length) } finally { $reader.Dispose() }
+    if ([Net.IPAddress]::NetworkToHostOrder([BitConverter]::ToInt32($bytes,16)) -ne 16 -or
+            [Net.IPAddress]::NetworkToHostOrder([BitConverter]::ToInt32($bytes,20)) -ne 16) {
+        throw "Supplied giant item sprite must remain 16x16: $name"
+    }
+    $sha=[Security.Cryptography.SHA256]::Create()
+    try { $hash=[BitConverter]::ToString($sha.ComputeHash($bytes)).Replace('-','') } finally { $sha.Dispose() }
+    if ($hash -ne $expectedHash) { throw "Packaged giant sprite differs from supplied pixels: $name" }
+}
 $vanilla = [IO.Compression.ZipFile]::OpenRead("$projectRoot/neoforge-1.21.1/build/moddev/artifacts/neoforge-21.1.219-client-extra-aka-minecraft-resources.jar")
 try {
     foreach ($loader in @('forge-1.20.1','neoforge-1.21.1')) {
@@ -62,6 +75,18 @@ try {
                     'client/CatPilotFlightClient', 'client/CatPilotHarnessLayer', 'mixin/PilotSkyhookPoseMixin', 'network/PilotFlightInputPacket')) {
                 if (!$zip.GetEntry("cn/laowu/mod/$class.class")) { throw "Missing class $class" }
             }
+            foreach($class in @('client/GiantCatRiderMotion','client/GiantCatVisualHeading',
+                    'mixin/GiantCatRiderOffsetMixin','mixin/GiantCatRiderCameraMixin',
+                    'mixin/GiantCatRiderFacingMixin','mixin/GiantCatRiderInventoryMixin')) {
+                if(!$zip.GetEntry("cn/laowu/mod/$class.class")){throw "Missing giant rider repair class $class"}
+            }
+            $riderMixins=Read-ZipEntryText $zip.GetEntry('laowu.mixins.json') | ConvertFrom-Json
+            foreach($name in @('GiantCatRiderOffsetMixin','GiantCatRiderCameraMixin','GiantCatRiderFacingMixin','GiantCatRiderInventoryMixin')) {
+                if($riderMixins.client -notcontains $name -or $riderMixins.mixins -contains $name){
+                    throw "Giant rider hook must be client-only: $name"
+                }
+            }
+            Write-Output "PASS: $loader giant rider repair classes and client-only hooks"
             $recipeDir = if ($loader.StartsWith('forge')) { 'recipes' } else { 'recipe' }
             $suits=@('terminator','fishing','flight','fire','honey','transport','dynamite','engineering','medical','music','agent','diving','cockroach')
             foreach($name in @($suits | ForEach-Object {$_+'_suit'})+@('cat_component','cat_grenade')){
@@ -180,7 +205,7 @@ try {
                 throw 'Runtime dependency or GameTest probe leaked into production jar'
             }
             $definitions = @($zip.Entries | Where-Object FullName -Match '^data/laowu/cat_accessories/[^/]+\.json$')
-            if ($definitions.Count -ne 36) { throw 'Expected 36 packaged accessories' }
+            if ($definitions.Count -ne 37) { throw 'Expected 36 frozen accessories plus giant collar' }
             $accessoryNames = (Read-ZipEntryText $zip.GetEntry('assets/laowu/lang/zh_cn.json')) | ConvertFrom-Json
             if ($accessoryNames.'itemGroup.laowu.cat_accessories' -ne '猫咪饰品') { throw 'Missing dedicated accessory tab title' }
             foreach ($entry in $definitions) {
@@ -189,7 +214,13 @@ try {
                 $model = (Read-ZipEntryText $zip.GetEntry("assets/laowu/models/item/$name.json")) | ConvertFrom-Json
                 $texture = $model.textures.layer0.Split(':')
                 $placeholder=@($careerArt | Where-Object { $_.id -eq $name -and !$_.source })
-                if($placeholder.Count -eq 1) {
+                if ($name -eq 'cat_giant_collar') {
+                    if ($model.parent -ne 'minecraft:item/generated' -or
+                            $model.textures.layer0 -ne 'laowu:item/cat_giant_collar') {
+                        throw 'Giant collar must resolve the supplied trophy sprite'
+                    }
+                    Assert-SuppliedGiantSprite $zip 'cat_giant_collar' '00B6844F305E5DE0FB57B449F614F363347BA9059A88ABDECA82BF02860982EF'
+                } elseif($placeholder.Count -eq 1) {
                     if($model.textures.layer0 -ne "minecraft:item/$($placeholder[0].icon)" -or
                             $accessoryNames."item.laowu.$name" -ne $placeholder[0].name -or
                             !$vanilla.GetEntry("assets/minecraft/textures/item/$($placeholder[0].icon).png")) {
@@ -224,7 +255,25 @@ try {
             $metadata = Read-ZipEntryText $zip.GetEntry($metadataPath)
             if ($metadata -match '(?i)kubejs|rhino|photon|ldlib') { throw 'Unexpected new required mod dependency' }
             $hash = (Get-FileHash -LiteralPath $jarPath -Algorithm SHA256).Hash
-            Write-Output "PASS: $loader package $version; 36 definitions/models, 36 original artist sprites, no accessory crafting recipes; 35 Wish rewards and one exclusive boss trophy, optional KubeJS API. SHA256 $hash"
+            $bossTag = if ($loader.StartsWith('forge')) { 'items' } else { 'item' }
+            $bossRewards = (Read-ZipEntryText $zip.GetEntry("data/laowu/tags/$bossTag/boss_accessories.json") | ConvertFrom-Json).values
+            if ($bossRewards.Count -ne 2 -or $bossRewards -notcontains 'laowu:cat_butter_cube' -or $bossRewards -notcontains 'laowu:cat_giant_collar') { throw 'Both boss trophies must be excluded from Wish offers' }
+            foreach ($requiredBossEntry in @('cn/laowu/mod/entity/GiantCatBoss.class','cn/laowu/mod/entity/GiantCatBossCombat.class','cn/laowu/mod/client/GiantCatBossRenderer.class','cn/laowu/mod/client/GiantCatBossAnimation.class','cn/laowu/mod/item/GiantCatTreatItem.class','assets/laowu/models/item/giant_cat_treat.json')) {
+                if (!$zip.GetEntry($requiredBossEntry)) { throw "Missing giant boss runtime content: $requiredBossEntry" }
+            }
+            $treatModel = Read-ZipEntryText $zip.GetEntry('assets/laowu/models/item/giant_cat_treat.json') | ConvertFrom-Json
+            if ($treatModel.textures.layer0 -ne 'laowu:item/giant_cat_treat') { throw 'Giant treat must resolve the supplied summon sprite' }
+            Assert-SuppliedGiantSprite $zip 'giant_cat_treat' '7C67FB447E1D68C4C601163A4BB0BC02DF93C7A079E0EBA445FFBB4E3C0DE6DD'
+            $recipeDir = if ($loader.StartsWith('forge')) { 'recipes' } else { 'recipe' }
+            $treatRecipe=Read-ZipEntryText $zip.GetEntry("data/laowu/$recipeDir/giant_cat_treat_mixing.json") | ConvertFrom-Json
+            if ($treatRecipe.type -ne 'create:mixing' -or
+                    $treatRecipe.ingredients[0].item -ne 'minecraft:poisonous_potato' -or
+                    $treatRecipe.ingredients[1].tag -ne 'laowu:giant_treat_mushrooms' -or
+                    $treatRecipe.ingredients[2].fluid -ne 'laowu:hissing_gas' -or
+                    $treatRecipe.ingredients[2].amount -ne 500) { throw 'Incorrect giant summon mixing ingredients' }
+            $treatResult=if($loader.StartsWith('forge')){$treatRecipe.results[0].item}else{$treatRecipe.results[0].id}
+            if ($treatResult -ne 'laowu:giant_cat_treat' -or $treatRecipe.results[0].count -ne 1) { throw 'Incorrect summon mixing output' }
+            Write-Output "PASS: $loader package $version; 37 definitions/models with supplied giant sprites, summon mixing recipe, no accessory crafting recipes; 35 Wish rewards and two exclusive boss trophies, optional KubeJS API. SHA256 $hash"
         } finally { $zip.Dispose() }
     }
 } finally { $vanilla.Dispose() }

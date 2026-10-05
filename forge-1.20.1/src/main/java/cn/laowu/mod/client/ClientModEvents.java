@@ -79,6 +79,8 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
+                CatTraitTokenItemRenderer.clearCache());
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager -> KimiArmorDyeTextures.clear());
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
                 NozzleFluidPuffParticle.clearColourCache());
@@ -90,6 +92,7 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
+        CatDeploymentRenderer.init();
         event.enqueueWork(() -> {
             for (var armor : java.util.List.of(LaoWuMod.CAT_HELMET.get(), LaoWuMod.CAT_CHESTPLATE.get(),
                     LaoWuMod.CAT_LEGGINGS.get(), LaoWuMod.CAT_BOOTS.get()))
@@ -106,7 +109,9 @@ public final class ClientModEvents {
             MenuScreens.register(LaoWuMod.CAT_MATERIAL_EDITOR_MENU.get(),
                     CatMaterialEditorScreen::new);
             MenuScreens.register(LaoWuMod.CAT_PROFILE_MENU.get(), CatProfileScreen::new);
+            MenuScreens.register(LaoWuMod.CAT_EDITOR_MENU.get(), CatEditorScreen::new);
             MenuScreens.register(LaoWuMod.CAT_FILTER_MENU.get(), CatFilterScreen::new);
+            MenuScreens.register(LaoWuMod.CREATURE_FILTER_MENU.get(), CreatureFilterScreen::new);
             // KineticBlockEntityRenderer deliberately leaves rotating parts to
             // Flywheel whenever visualization is available. Keep our animated
             // Blockbench body in the normal BER and let Create's native shaft
@@ -162,6 +167,7 @@ public final class ClientModEvents {
         event.registerEntityRenderer(LaoWuMod.ENGINEERING_CANNON.get(), EngineeringCannonRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_FLIGHT_CARRIER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_DIVING_CARRIER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.CAT_GIANT_CARRIER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_HONEY_PATCH.get(),CatHoneyPatchRenderer::new);
         // Retain the legacy saved entity, but never draw its old fire-charge item.
         event.registerEntityRenderer(LaoWuMod.AGENT_SMOKE_BOMB.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
@@ -177,6 +183,7 @@ public final class ClientModEvents {
         event.registerEntityRenderer(LaoWuMod.CAT_BALL_ENTITY.get(),
                 CatBallEntityRenderer::new);
         event.registerEntityRenderer(LaoWuMod.BUTTER_CAT.get(), ButterCatRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.GIANT_CAT_BOSS.get(), GiantCatBossRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_ENGINE_BE.get(), CatEngineRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.DEVOURING_CAT_BE.get(), DevouringCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
@@ -184,10 +191,14 @@ public final class ClientModEvents {
         event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.WISH_ADOPTION_BOX_BE.get(), WishAdoptionBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_CARRIER_BE.get(), CatCarrierRenderer::new);
+        event.registerBlockEntityRenderer(LaoWuMod.CAT_DEPLOYMENT_BE.get(), CatDeploymentRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        CatDeploymentRenderer.init();
+        event.register(LaoWuMod.id("block/cat_ejecting_deployment_platform_plate"));
+        event.register(LaoWuMod.id("block/cat_ejecting_deployment_platform_rod"));
         event.register(CAT_ENGINEER_GOGGLES_WORN_MODEL);
         event.register(CatScannerItemRenderer.INVENTORY_MODEL);
         event.register(CatScannerItemRenderer.HANDHELD_MODEL);

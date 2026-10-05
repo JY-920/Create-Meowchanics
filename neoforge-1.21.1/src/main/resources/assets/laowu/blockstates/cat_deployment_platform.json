@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "laowu:block/cat_deployment_platform"
+    },
+    "facing=east": {
+      "model": "laowu:block/cat_deployment_platform",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "laowu:block/cat_deployment_platform",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "laowu:block/cat_deployment_platform",
+      "y": 270
+    }
+  }
+}

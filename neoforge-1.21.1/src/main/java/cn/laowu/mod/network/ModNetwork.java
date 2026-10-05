@@ -13,7 +13,22 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String VERSION = "36";
+    public static void configureCreatureTransmitter(BlockPos pos,int radius,int lower,int upper,boolean inverted,boolean analog) {
+        PacketDistributor.sendToServer(new ConfigureCreatureTransmitterPacket(pos,radius,lower,upper,inverted,analog,false));
+    }
+    public static void removeCreatureTransmitterFilter(BlockPos pos) {
+        PacketDistributor.sendToServer(ConfigureCreatureTransmitterPacket.removeFilter(pos));
+    }
+    public static void configureCreatureTransmitter(BlockPos pos,int radius,int lower,int upper,boolean inverted) {
+        PacketDistributor.sendToServer(new ConfigureCreatureTransmitterPacket(pos,radius,lower,upper,inverted));
+    }
+    public static void setCreatureFilter(int containerId, cn.laowu.mod.item.CreatureFilterRules rules) {
+        PacketDistributor.sendToServer(new SetCreatureFilterPacket(containerId, rules));
+    }
+    public static void setCreatureFilter(int containerId, int mask, boolean blacklist, java.util.List<net.minecraft.resources.ResourceLocation> ids) {
+        PacketDistributor.sendToServer(new SetCreatureFilterPacket(containerId, mask, blacklist, ids));
+    }
+    private static final String VERSION = "43";
 
     public static void sendCatEditorAction(int containerId, int actionId) {
         PacketDistributor.sendToServer(new CatEditorActionPacket(containerId, actionId));
@@ -48,6 +63,9 @@ public final class ModNetwork {
 
     public static void pilotFlightInput(float forward, float side, float yaw, float pitch, boolean up, boolean down) {
         PacketDistributor.sendToServer(new PilotFlightInputPacket(forward, side, yaw, pitch, up, down));
+    }
+    public static void giantCatInput(float forward, float side, float yaw, boolean jump, boolean sprint) {
+        PacketDistributor.sendToServer(new GiantCatInputPacket(forward, side, yaw, jump, sprint));
     }
 
     public static void sendAccessoryDefinitions(net.minecraft.server.level.ServerPlayer player) {
@@ -94,6 +112,9 @@ public final class ModNetwork {
 
     private static void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(VERSION);
+        registrar.playToServer(ConfigureCreatureTransmitterPacket.TYPE, ConfigureCreatureTransmitterPacket.STREAM_CODEC, ConfigureCreatureTransmitterPacket::handle);
+        registrar.playToServer(SetCreatureFilterPacket.TYPE, SetCreatureFilterPacket.STREAM_CODEC, SetCreatureFilterPacket::handle);
+        registrar.playToServer(GiantCatInputPacket.TYPE, GiantCatInputPacket.STREAM_CODEC, GiantCatInputPacket::handle);
         registrar.playToClient(MusicSupportPacket.TYPE, MusicSupportPacket.STREAM_CODEC, MusicSupportPacket::handle);
         registrar.playToClient(MusicRecordPacket.TYPE, MusicRecordPacket.STREAM_CODEC, MusicRecordPacket::handle);
         registrar.playToClient(AgentWatchPacket.TYPE, AgentWatchPacket.STREAM_CODEC, AgentWatchPacket::handle);

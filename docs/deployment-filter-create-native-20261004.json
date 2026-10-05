@@ -1,0 +1,81 @@
+{
+  "Time": "2026-10-04 18:08:08",
+  "Version": "2.2.2",
+  "Stamp": "20261004-180807-2.2.2-filter-create-native",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "946A34A22F7A0D193CCB38B3260235EEB86662E4C8841F2BD6998FFF53B9A8FC"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261004-180807-2.2.2-filter-create-native\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "D8943BF3D0017117E04AA1441C3915E2F054C189130D613B8AB8F5736569BA91"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "8A63A9968087E55EED4CE36E396B565E5EB8C20B68A1EE9B055A7DBD1014C53C"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261004-180807-2.2.2-filter-create-native\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "15E16016E7BFF98C5800874AD058B32B58802A11BC140D451802D8098026F4EF"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Changes": [
+    "Use the unmodified Create SelectionScrollInput and native tooltip list; one text input searches entity IDs/names/categories; original panel and Add/Remove controls.",
+    "Remove reference item well with phase-correct native background strips; align inventory X=51,Y=107.",
+    "Flip only bone4 lid up/down V; preserve bone5, geometry, pivots, source PNG and shaft interface."
+  ],
+  "Verification": {
+    "clientLogs": [
+      "outputs-filter-create-final-forge.log",
+      "outputs-filter-create-final-neo.log"
+    ],
+    "buildLogs": [
+      "outputs-filter-create-final-forge-build.log",
+      "outputs-filter-create-final-neo-build.log"
+    ],
+    "clientChecks": [
+      "Native widget instance and tooltip",
+      "ID/localized name/category search",
+      "Unknown valid IDs retained; players and invalid IDs rejected",
+      "Wheel and keyboard selection, explicit Add/Remove, saved-list focus",
+      "No-results native feedback and whole input well focus",
+      "Reference-well GPU pixel checker-phase equality",
+      "320x240 inventory alignment",
+      "Six-way laser rendering, moving beam, item transforms and lighting"
+    ],
+    "assetTests": [
+      "tests/cat-auto-laser-surfaces.mjs",
+      "tests/cat-auto-laser-assets.mjs",
+      "tests/creature-filter-assets.mjs",
+      "tests/cat-machines-assets.mjs",
+      "tests/cat-sixway-assets.mjs"
+    ],
+    "apiV3": true,
+    "traitApiV1": true,
+    "releaseIsolation": true,
+    "accessoryChecksPerPort": 23270
+  }
+}

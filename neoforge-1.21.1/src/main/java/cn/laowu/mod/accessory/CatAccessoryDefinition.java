@@ -20,10 +20,10 @@ public record CatAccessoryDefinition(String id, String item, boolean enabled,
             "fishing_pull", "super_flame_multiplier", "honey_patch", "enhanced_potions",
             "engineering_special_ammo", "medical_guard", "music_movement_bonus", "music_speed_bonus",
             "healing_smoke", "diving_cleanse", "cockroach_split",
-            "damage_combo", "opening_damage", "critical_haste", "melee_reflect", "emergency_shield", "heavy_hit_cap", "rest_heal", "healing_received", "owner_attack_bonus", "sample_pickup");
+            "damage_combo", "opening_damage", "critical_haste", "melee_reflect", "emergency_shield", "heavy_hit_cap", "rest_heal", "healing_received", "owner_attack_bonus", "sample_pickup", "giant_mount");
     private static final Set<String> SWITCHES = Set.of("knockback_resistance", "fire_immune",
             "projectile_knockback", "fishing_pull", "honey_patch", "enhanced_potions",
-            "engineering_special_ammo", "healing_smoke", "diving_cleanse", "cockroach_split", "sample_pickup");
+            "engineering_special_ammo", "healing_smoke", "diving_cleanse", "cockroach_split", "sample_pickup", "giant_mount");
 
     /** Source-compatible constructor for older integrations. */
     public CatAccessoryDefinition(String id,String item,boolean enabled,String requiredOutfit,String exclusiveGroup,

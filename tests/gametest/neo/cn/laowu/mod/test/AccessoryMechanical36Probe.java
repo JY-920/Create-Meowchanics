@@ -80,6 +80,9 @@ public final class AccessoryMechanical36Probe {
     public static void actualDynamiteMultiplier(GameTestHelper h){
         var p=CareerSupportIntegrationProbe.floor(h).add(5,0,5);
         var c=cat(h,p,CatOutfitType.DYNAMITE);equip(c,"cat_blast_fuse");
+        // Luck zero still has a base 2% critical roll. Isolate the fuse's
+        // multiplier by making any critical add no Intelligence scaling.
+        CareerSupportIntegrationProbe.stat(c,CatStat.INTELLIGENCE,0);
         var e=enemy(h,p.add(2,0,0));float before=e.getHealth();
         double expected=ServerConfig.scaleDamage(c.getAttributeValue(Attributes.ATTACK_DAMAGE),10);
         try{

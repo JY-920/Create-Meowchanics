@@ -79,6 +79,8 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
+                CatTraitTokenItemRenderer.clearCache());
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager -> KimiArmorDyeTextures.clear());
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
                 NozzleFluidPuffParticle.clearColourCache());
@@ -97,12 +99,15 @@ public final class ClientModEvents {
         event.register(LaoWuMod.CAT_TRAIT_EDITOR_MENU.get(), CatTraitEditorScreen::new);
         event.register(LaoWuMod.CAT_ATTRIBUTE_EDITOR_MENU.get(), CatAttributeEditorScreen::new);
         event.register(LaoWuMod.CAT_MATERIAL_EDITOR_MENU.get(), CatMaterialEditorScreen::new);
+        event.register(LaoWuMod.CAT_EDITOR_MENU.get(), CatEditorScreen::new);
         event.register(LaoWuMod.CAT_PROFILE_MENU.get(), CatProfileScreen::new);
         event.register(LaoWuMod.CAT_FILTER_MENU.get(), CatFilterScreen::new);
+        event.register(LaoWuMod.CREATURE_FILTER_MENU.get(), CreatureFilterScreen::new);
     }
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
+        CatDeploymentRenderer.init();
         event.enqueueWork(() -> {
             for (var armor : java.util.List.of(LaoWuMod.CAT_HELMET.get(), LaoWuMod.CAT_CHESTPLATE.get(),
                     LaoWuMod.CAT_LEGGINGS.get(), LaoWuMod.CAT_BOOTS.get()))
@@ -176,6 +181,7 @@ public final class ClientModEvents {
         event.registerEntityRenderer(LaoWuMod.ENGINEERING_CANNON.get(), EngineeringCannonRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_FLIGHT_CARRIER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_DIVING_CARRIER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.CAT_GIANT_CARRIER.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_HONEY_PATCH.get(),CatHoneyPatchRenderer::new);
         // Retain the legacy saved entity, but never draw its old fire-charge item.
         event.registerEntityRenderer(LaoWuMod.AGENT_SMOKE_BOMB.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
@@ -191,6 +197,7 @@ public final class ClientModEvents {
         event.registerEntityRenderer(LaoWuMod.CAT_BALL_ENTITY.get(),
                 CatBallEntityRenderer::new);
         event.registerEntityRenderer(LaoWuMod.BUTTER_CAT.get(), ButterCatRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.GIANT_CAT_BOSS.get(), GiantCatBossRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_ENGINE_BE.get(), CatEngineRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.DEVOURING_CAT_BE.get(), DevouringCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
@@ -198,10 +205,14 @@ public final class ClientModEvents {
         event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.WISH_ADOPTION_BOX_BE.get(), WishAdoptionBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_CARRIER_BE.get(), CatCarrierRenderer::new);
+        event.registerBlockEntityRenderer(LaoWuMod.CAT_DEPLOYMENT_BE.get(), CatDeploymentRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        CatDeploymentRenderer.init();
+        event.register(ModelResourceLocation.standalone(LaoWuMod.id("block/cat_ejecting_deployment_platform_plate")));
+        event.register(ModelResourceLocation.standalone(LaoWuMod.id("block/cat_ejecting_deployment_platform_rod")));
         event.register(ModelResourceLocation.standalone(CAT_ENGINEER_GOGGLES_WORN_MODEL));
         event.register(ModelResourceLocation.standalone(
                 CatScannerItemRenderer.INVENTORY_MODEL));

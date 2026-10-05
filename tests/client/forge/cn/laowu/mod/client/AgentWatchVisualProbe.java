@@ -160,6 +160,8 @@ public final class AgentWatchVisualProbe {
         public long getGameTime(){return clock;}
         public Scoreboard getScoreboard(){return scoreboard;}
         public BlockState getBlockState(BlockPos pos){return Blocks.AIR.defaultBlockState();}
+        @Override public boolean hasChunksAt(BlockPos a,BlockPos b){return true;}
+        @Override public Iterable<net.minecraft.world.phys.shapes.VoxelShape> getBlockCollisions(Entity e,net.minecraft.world.phys.AABB box){return List.of();}
         public FluidState getFluidState(BlockPos pos){return Fluids.EMPTY.defaultFluidState();}
         public List<? extends Player> players(){return List.of();}
         public void sendBlockUpdated(BlockPos p,BlockState a,BlockState b,int flags){}

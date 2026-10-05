@@ -1,0 +1,168 @@
+{
+  "version": "2.2.1",
+  "scope": [
+    "Preserve requested display names: giant_cat_treat=神秘蘑菇, cat_giant_collar=蘑菇点心, haji_basin=猫工作盆. Registry IDs unchanged.",
+    "Mounted giant cats turn smoothly from the first get-up tick; unmounted side-rest heading remains locked.",
+    "Rotated basins collect loose items only through the actual interior; closed world-top walls no longer accept falling items.",
+    "Reverse assembly placement from the processor working face leaves one empty cell and aligns basin/depot. Obstructions, counts, creative mode and replaceable-cell clicks retain normal rules.",
+    "Ordinary depot right-click inserts held machine items; crouching bypasses the container and enables machine placement.",
+    "Wrench clicks outside the existing filter control on non-working faces rotate basin/depot without losing contents. Sneak-wrench dismantling is preserved."
+  ],
+  "verification": {
+    "pureJava": [
+      "tests/giant-facing.mjs: both ports PASS",
+      "tests/giant-rest-look.mjs: both ports PASS",
+      "tests/giant-cat-animation-sampler.mjs: both ports PASS"
+    ],
+    "client": {
+      "forge": {
+        "exit": 0,
+        "log": "forge-1.20.1/build/interaction-oct03-client.log"
+      },
+      "neo": {
+        "exit": 0,
+        "log": "neoforge-1.21.1/build/interaction-oct03-client.log"
+      },
+      "markers": [
+        "PASS: GIANT REST MOUNT HEADING",
+        "PASS: GIANT RIDER BOB",
+        "PASS: GIANT VISUAL CLIENT"
+      ]
+    },
+    "gameTests": {
+      "neo": {
+        "required": 210,
+        "passed": 210,
+        "exit": 0,
+        "log": "neoforge-1.21.1/build/interaction-oct03-full.log"
+      },
+      "forge": {
+        "required": 210,
+        "passed": 209,
+        "exit": 1,
+        "log": "forge-1.20.1/build/interaction-oct03-full.log",
+        "failed": [
+          "logisticsPacing"
+        ],
+        "taskRelatedRequired": 34,
+        "taskRelatedPassed": 34
+      },
+      "forgeSupportRecheck": {
+        "required": 5,
+        "passed": 5,
+        "exit": 0,
+        "log": "forge-1.20.1/build/interaction-oct03-support-recheck.log"
+      },
+      "knownUnrelatedFailure": {
+        "assertion": "logisticsPacing expected all five allies served by tick 185; full run observed six casts across four allies.",
+        "priorOccurrences": [
+          "forge-1.20.1/build/accessories37-sdk-final.log (2026-09-17)",
+          "forge-1.20.1/build/rider-nine-regression.log (2026-09-20)"
+        ],
+        "assessment": "Existing coverage assertion against priority-based, mobile AI, not a cooldown assertion. Independent support recheck passed. Exact per-target cause was not traced. Logistics runtime and test were not modified; production archive comparison confirms unchanged runtime code."
+      }
+    },
+    "releaseBuilds": {
+      "forge": {
+        "exit": 0,
+        "log": "forge-1.20.1/build/interaction-oct03-release.log"
+      },
+      "neo": {
+        "exit": 0,
+        "log": "neoforge-1.21.1/build/interaction-oct03-release.log"
+      },
+      "checks": [
+        "Accessory API v3",
+        "Trait API v1",
+        "Animation resources",
+        "Release isolation",
+        "23270 accessory assertions per port"
+      ]
+    },
+    "forgeProductionBoot": {
+      "exit": 0,
+      "fixture": "forge-1.20.1/build/production-boot-interaction-oct03-final",
+      "marker": "PASS: FORGE PRODUCTION JAR BOOT",
+      "description": "Actual SRG runtime with copied installed mod set; reached title screen and shut down cleanly."
+    },
+    "archiveComparison": {
+      "sameChangedEntriesOnBothPorts": [
+        "cn/laowu/mod/client/GiantCatFacing.class",
+        "cn/laowu/mod/create/CatDepotBlock.class",
+        "cn/laowu/mod/create/CatDepotRegistration.class",
+        "cn/laowu/mod/create/CatMachineBlocks.class",
+        "cn/laowu/mod/create/CatWorkSurfaceBlockItem.class",
+        "cn/laowu/mod/create/CatWorkSurfaceBlockItem$1.class",
+        "cn/laowu/mod/create/CatWorkSurfaceWrench.class",
+        "cn/laowu/mod/create/HajiBasinBlock.class"
+      ],
+      "allOtherArchiveEntriesByteIdenticalToPreviouslyInstalledPackage": true
+    }
+  },
+  "deployment": {
+    "Time": "2026-10-03 09:05:25",
+    "Version": "2.2.1",
+    "Stamp": "20261003-090525-2.2.1-interaction-oct03",
+    "Results": [
+      {
+        "Port": "forge-1.20.1",
+        "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "Installed": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+          "ModId": "laowu",
+          "Version": "2.2.1",
+          "Sha256": "4799D1B6B81E35A54F3B0BEBD7801B448AE1854101856ECBDBF1B83A478C640B"
+        },
+        "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261003-090525-2.2.1-interaction-oct03\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "Previous": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+          "ModId": "laowu",
+          "Version": "2.2.1",
+          "Sha256": "2219F193C2AC8F6AA1AAD58F8DA85F44C07F3C5C32625DD26E7E8199565F36DD"
+        },
+        "ActiveLaowuCount": 1,
+        "Verified": true
+      },
+      {
+        "Port": "neoforge-1.21.1",
+        "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "Installed": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+          "ModId": "laowu",
+          "Version": "2.2.1",
+          "Sha256": "B69CADE92AF741AE8BF4A35DC02FA42F2F871019031B1307610258E5FC0205C6"
+        },
+        "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261003-090525-2.2.1-interaction-oct03\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "Previous": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+          "ModId": "laowu",
+          "Version": "2.2.1",
+          "Sha256": "9EB2CB9E7370F6ABC92F6F00F3920F5D06BA99583AC11487EF9428AB27C6AE7F"
+        },
+        "ActiveLaowuCount": 1,
+        "Verified": true
+      }
+    ]
+  },
+  "postDeploymentChecks": [
+    {
+      "Port": "forge-1.20.1",
+      "InstalledSha256": "4799D1B6B81E35A54F3B0BEBD7801B448AE1854101856ECBDBF1B83A478C640B",
+      "BackupSha256": "2219F193C2AC8F6AA1AAD58F8DA85F44C07F3C5C32625DD26E7E8199565F36DD",
+      "NamesVerified": true,
+      "ReleaseIsolationVerified": true,
+      "BackupMatchesPrevious": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "InstalledSha256": "B69CADE92AF741AE8BF4A35DC02FA42F2F871019031B1307610258E5FC0205C6",
+      "BackupSha256": "9EB2CB9E7370F6ABC92F6F00F3920F5D06BA99583AC11487EF9428AB27C6AE7F",
+      "NamesVerified": true,
+      "ReleaseIsolationVerified": true,
+      "BackupMatchesPrevious": true
+    }
+  ],
+  "clientsStopped": true,
+  "worldsConfigsOtherModsAndUserKubejsUnmodified": true,
+  "commitPushOrPublicVersionBump": false
+}

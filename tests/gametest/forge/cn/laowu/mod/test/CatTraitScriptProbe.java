@@ -142,6 +142,9 @@ public final class CatTraitScriptProbe {
     public static void realCombatEvents(GameTestHelper h) {
         if(!scripts(h))return;
         var cat=cat(h);cat.addTag("trait_probe");cat.addTag("trait_probe_bonus");
+        // This probe asserts raw script damage, not random native critical scaling.
+        // Luck has a nonzero baseline even at zero; neutralize the multiplier instead.
+        CatAttributeData.set(cat,CatAttributeData.ensure(cat).withValues(CatStat.INTELLIGENCE,0,100));
         CatTraitApi.setLevel(cat,ATTACK,2);
         var enemy=EntityType.HUSK.create(h.getLevel());enemy.setNoAi(true);enemy.setNoGravity(true);
         enemy.setPos(cat.position().add(2,0,0));enemy.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);enemy.setHealth(1000);

@@ -13,7 +13,10 @@ for (const loader of ['forge-1.20.1','neoforge-1.21.1']) {
   const resources=loader+'/src/main/resources/';
   const defs=readdirSync(path.join(root,resources,'data/laowu/cat_accessories')).sort()
     .map(file=>[file,JSON.parse(read(resources+'data/laowu/cat_accessories/'+file))]);
-  check(defs.length===36,'36 definitions per loader, including thirteen career-exclusive effects');
+  check(defs.length===37,'37 definitions per loader, preserving thirteen career-exclusive effects');
+  const frozen=JSON.parse(read('compatibility/cat-accessory-api-v3.json')).stable_builtin_ids;
+  const originalIds=defs.map(([file])=>'laowu:'+file.replace('.json','')).filter(id=>id!=='laowu:cat_giant_collar');
+  check(JSON.stringify(originalIds)===JSON.stringify(frozen),'all original 36 item IDs remain frozen');
   const temporary=[...JSON.parse(read('art/career-accessories-v1/manifest.json')).items,...JSON.parse(read('art/general-accessories-v1/manifest.json')).items];
   if(reference) check(JSON.stringify(defs)===reference,'byte-equivalent effects across loaders');
   reference=JSON.stringify(defs);
@@ -29,7 +32,8 @@ for (const loader of ['forge-1.20.1','neoforge-1.21.1']) {
       }
       const model=JSON.parse(read(resources+'assets/laowu/models/item/'+file));
       const placeholder=temporary.find(entry=>entry.id===id&&!entry.source);
-      check(model.parent==='minecraft:item/generated' && model.textures.layer0===(placeholder?'minecraft:item/'+placeholder.icon:'laowu:item/'+id),'original or specified vanilla placeholder model');
+      const expectedTexture=placeholder?'minecraft:item/'+placeholder.icon:'laowu:item/'+id;
+      check(model.parent==='minecraft:item/generated' && model.textures.layer0===expectedTexture,'original or specified vanilla placeholder model');
       check(!existsSync(path.join(root,resources,'data/laowu',loader.startsWith('forge')?'recipes':'recipe','accessory',file)),id+' has no crafting recipe');
     }
   }

@@ -1,0 +1,379 @@
+{
+  "meta": {
+    "format_version": "5.0",
+    "model_format": "bedrock",
+    "box_uv": false
+  },
+  "name": "model",
+  "model_identifier": "",
+  "visible_box": [
+    2,
+    2.5,
+    0.75
+  ],
+  "variable_placeholders": "",
+  "multi_file_ruleset": "",
+  "variable_placeholder_buttons": [],
+  "bedrock_animation_mode": "entity",
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 64,
+    "height": 64
+  },
+  "elements": [
+    {
+      "name": "cube_outline",
+      "box_uv": false,
+      "render_order": "default",
+      "locked": false,
+      "export": true,
+      "scope": 0,
+      "allow_mirror_modeling": true,
+      "from": [
+        -1,
+        14,
+        0
+      ],
+      "to": [
+        -13,
+        4,
+        -1
+      ],
+      "autouv": 0,
+      "color": 8,
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "origin": [
+        -7,
+        4,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            32,
+            0,
+            44,
+            10
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            39,
+            36,
+            40,
+            46
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            32,
+            0,
+            44,
+            10
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            32,
+            40,
+            33,
+            50
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            39,
+            34,
+            51,
+            35
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            39,
+            35,
+            51,
+            36
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "1810c33a-f635-b0ed-5ec2-89f26422faf4"
+    },
+    {
+      "name": "cube_outline",
+      "box_uv": false,
+      "render_order": "default",
+      "locked": false,
+      "export": true,
+      "scope": 0,
+      "allow_mirror_modeling": true,
+      "from": [
+        13,
+        14,
+        0
+      ],
+      "to": [
+        1,
+        4,
+        -1
+      ],
+      "autouv": 0,
+      "color": 8,
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "origin": [
+        7,
+        4,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            32,
+            0,
+            44,
+            10
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            39,
+            36,
+            40,
+            46
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            32,
+            0,
+            44,
+            10
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            32,
+            40,
+            33,
+            50
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            39,
+            34,
+            51,
+            35
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            39,
+            35,
+            51,
+            36
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "87fa2f67-4de0-160f-f753-848267eeb256"
+    }
+  ],
+  "groups": [
+    {
+      "name": "bone",
+      "uuid": "da00ccbd-3f0b-abdc-c3e5-d57c3ae2a1b2",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "bedrock_binding": "",
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": true,
+      "primary_selected": false
+    },
+    {
+      "name": "bone2",
+      "uuid": "6d5ef6bd-96c8-5e26-aaf1-b5c247857cf6",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "bedrock_binding": "",
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": true,
+      "primary_selected": false
+    },
+    {
+      "name": "bone3",
+      "uuid": "68584c1a-b286-1c68-0491-4c517899c4a7",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        0,
+        -4,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "bedrock_binding": "",
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": true,
+      "primary_selected": false
+    },
+    {
+      "name": "bone4",
+      "uuid": "9c904e52-247b-6cc0-7511-0f0c98c9b798",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "bedrock_binding": "",
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": true,
+      "primary_selected": false
+    },
+    {
+      "name": "bone5",
+      "uuid": "58d2592e-c2ea-eb05-ba12-8b62b16136b8",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        0,
+        -5.83333,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "bedrock_binding": "",
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": true,
+      "primary_selected": false
+    }
+  ],
+  "outliner": [
+    {
+      "uuid": "9c904e52-247b-6cc0-7511-0f0c98c9b798",
+      "isOpen": true,
+      "children": [
+        "1810c33a-f635-b0ed-5ec2-89f26422faf4",
+        "87fa2f67-4de0-160f-f753-848267eeb256"
+      ]
+    }
+  ],
+  "textures": [],
+  "animations": [],
+  "history": []
+}

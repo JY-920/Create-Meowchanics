@@ -1,0 +1,154 @@
+{
+  "variants": {
+    "bottom=down,shaft_axis=x,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_x"
+    },
+    "bottom=down,shaft_axis=x,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_x"
+    },
+    "bottom=down,shaft_axis=y,shaft_open=false": {
+      "model": "laowu:block/cat_mixer"
+    },
+    "bottom=down,shaft_axis=y,shaft_open=true": {
+      "model": "laowu:block/cat_mixer"
+    },
+    "bottom=down,shaft_axis=z,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_z"
+    },
+    "bottom=down,shaft_axis=z,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_z"
+    },
+    "bottom=up,shaft_axis=x,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 180
+    },
+    "bottom=up,shaft_axis=x,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 180
+    },
+    "bottom=up,shaft_axis=y,shaft_open=false": {
+      "model": "laowu:block/cat_mixer",
+      "x": 180
+    },
+    "bottom=up,shaft_axis=y,shaft_open=true": {
+      "model": "laowu:block/cat_mixer",
+      "x": 180
+    },
+    "bottom=up,shaft_axis=z,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 180
+    },
+    "bottom=up,shaft_axis=z,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 180
+    },
+    "bottom=north,shaft_axis=x,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 270
+    },
+    "bottom=north,shaft_axis=x,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 270
+    },
+    "bottom=north,shaft_axis=y,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 270
+    },
+    "bottom=north,shaft_axis=y,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 270
+    },
+    "bottom=north,shaft_axis=z,shaft_open=false": {
+      "model": "laowu:block/cat_mixer",
+      "x": 270
+    },
+    "bottom=north,shaft_axis=z,shaft_open=true": {
+      "model": "laowu:block/cat_mixer",
+      "x": 270
+    },
+    "bottom=south,shaft_axis=x,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 90
+    },
+    "bottom=south,shaft_axis=x,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 90
+    },
+    "bottom=south,shaft_axis=y,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 90
+    },
+    "bottom=south,shaft_axis=y,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 90
+    },
+    "bottom=south,shaft_axis=z,shaft_open=false": {
+      "model": "laowu:block/cat_mixer",
+      "x": 90
+    },
+    "bottom=south,shaft_axis=z,shaft_open=true": {
+      "model": "laowu:block/cat_mixer",
+      "x": 90
+    },
+    "bottom=east,shaft_axis=x,shaft_open=false": {
+      "model": "laowu:block/cat_mixer",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=east,shaft_axis=x,shaft_open=true": {
+      "model": "laowu:block/cat_mixer",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=east,shaft_axis=y,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=east,shaft_axis=y,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=east,shaft_axis=z,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=east,shaft_axis=z,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=west,shaft_axis=x,shaft_open=false": {
+      "model": "laowu:block/cat_mixer",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=west,shaft_axis=x,shaft_open=true": {
+      "model": "laowu:block/cat_mixer",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=west,shaft_axis=y,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=west,shaft_axis=y,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_z",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=west,shaft_axis=z,shaft_open=false": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=west,shaft_axis=z,shaft_open=true": {
+      "model": "laowu:block/cat_mixer_open_x",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

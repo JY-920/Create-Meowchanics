@@ -36,7 +36,7 @@ public final class CatDivingMount {
         return InteractionResult.FAIL;
     }
     private static boolean eligible(Cat cat, Player player) {
-        return cat.level() instanceof ServerLevel && cat.isAlive() && cat.isTame() && cat.isOwnedBy(player)
+        return cat.level() instanceof ServerLevel && !CatGiantMount.active(cat) && cat.isAlive() && cat.isTame() && cat.isOwnedBy(player)
                 && !cat.isBaby() && !cat.isNoAi() && !cat.isPassenger() && !cat.isVehicle()
                 && !player.isPassenger() && player.isAlive() && !player.isSpectator()
                 && CatPilotFlight.wrench(player) && cat.distanceToSqr(player) <= 25

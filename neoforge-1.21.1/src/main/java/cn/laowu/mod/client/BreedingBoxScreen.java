@@ -412,6 +412,7 @@ public final class BreedingBoxScreen extends AbstractContainerScreen<BreedingBox
                     () -> BuiltInRegistries.CAT_VARIANT.getHolderOrThrow(CatVariant.RED));
             cat.setVariant(variant);
         }
+        cn.laowu.mod.genetics.CatMaterialRegistry.excludeCopycatVariant(cat);
         CatGenomeData.read(stack).ifPresent(genome -> CatGenomeData.set(cat, genome));
         CatTraitData.read(stack).ifPresent(profile -> CatTraitData.set(cat, profile));
         CatOutfitType outfit = CatPancakeItem.getOutfit(stack);

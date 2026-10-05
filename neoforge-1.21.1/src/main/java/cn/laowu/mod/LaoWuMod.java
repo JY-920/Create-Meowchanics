@@ -2,6 +2,7 @@ package cn.laowu.mod;
 
 import cn.laowu.mod.item.CatPancakeItem;
 import cn.laowu.mod.item.CatFilterItem;
+import cn.laowu.mod.item.CreatureFilterItem;
 import cn.laowu.mod.item.CatCannonItem;
 import cn.laowu.mod.item.CatSmithingTemplateItem;
 import cn.laowu.mod.item.CatToolTier;
@@ -241,6 +242,20 @@ public final class LaoWuMod {
                     .of(cn.laowu.mod.create.CatCarrierBlockEntity::new, CAT_CARRIER.get()).build(null));
     public static final DeferredItem<cn.laowu.mod.item.CatCarrierBlockItem> CAT_CARRIER_ITEM = ITEMS.register("cat_carrier",
             () -> new cn.laowu.mod.item.CatCarrierBlockItem(CAT_CARRIER.get(), new Item.Properties()));
+    public static final DeferredBlock<cn.laowu.mod.create.CatEditorBlock> CAT_EDITOR = BLOCKS.register("cat_editor", () -> new cn.laowu.mod.create.CatEditorBlock(BlockBehaviour.Properties.of().strength(2F).noOcclusion()));
+    public static final DeferredItem<Item> CAT_EDITOR_ITEM = ITEMS.register("cat_editor", () -> new BlockItem(CAT_EDITOR.get(), new Item.Properties()));
+    public static final DeferredItem<Item> CAT_TRAIT_TOKEN = ITEMS.register("cat_trait_token", () -> new cn.laowu.mod.item.CatTraitTokenItem(new Item.Properties()));
+    public static final DeferredHolder<MenuType<?>, MenuType<CatEditorMenu>> CAT_EDITOR_MENU = MENUS.register("cat_editor", () -> IMenuTypeExtension.create(CatEditorMenu::new));
+    public static final DeferredBlock<cn.laowu.mod.create.CatDeploymentBlock> CAT_DEPLOYMENT_PLATFORM = BLOCKS.register("cat_deployment_platform",
+            () -> new cn.laowu.mod.create.CatDeploymentBlock(BlockBehaviour.Properties.of().strength(2F).noOcclusion(), false));
+    public static final DeferredBlock<cn.laowu.mod.create.CatDeploymentBlock> CAT_EJECTING_DEPLOYMENT_PLATFORM = BLOCKS.register("cat_ejecting_deployment_platform",
+            () -> new cn.laowu.mod.create.CatDeploymentBlock(BlockBehaviour.Properties.of().strength(2F).noOcclusion(), true));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<cn.laowu.mod.create.CatDeploymentBlockEntity>> CAT_DEPLOYMENT_BE = BLOCK_ENTITIES.register("cat_deployment_platform",
+            () -> BlockEntityType.Builder.of(cn.laowu.mod.create.CatDeploymentBlockEntity::new, CAT_DEPLOYMENT_PLATFORM.get(), CAT_EJECTING_DEPLOYMENT_PLATFORM.get()).build(null));
+    public static final DeferredItem<cn.laowu.mod.item.CatDeploymentBlockItem> CAT_DEPLOYMENT_PLATFORM_ITEM = ITEMS.register("cat_deployment_platform",
+            () -> new cn.laowu.mod.item.CatDeploymentBlockItem(CAT_DEPLOYMENT_PLATFORM.get(), new Item.Properties()));
+    public static final DeferredItem<cn.laowu.mod.item.CatDeploymentBlockItem> CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM = ITEMS.register("cat_ejecting_deployment_platform",
+            () -> new cn.laowu.mod.item.CatDeploymentBlockItem(CAT_EJECTING_DEPLOYMENT_PLATFORM.get(), new Item.Properties()));
     public static final DeferredItem<cn.laowu.mod.item.CatLaserPointerItem> CAT_LASER_POINTER = ITEMS.register("cat_laser_pointer",
             () -> new cn.laowu.mod.item.CatLaserPointerItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<cn.laowu.mod.item.CatStorageBoxItem> CAT_STORAGE_BOX = ITEMS.register("cat_storage_box",
@@ -258,6 +273,12 @@ public final class LaoWuMod {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WishAdoptionBoxBlockEntity>> WISH_ADOPTION_BOX_BE =
             BLOCK_ENTITIES.register("wish_adoption_box", () -> BlockEntityType.Builder
                     .of(WishAdoptionBoxBlockEntity::new, WISH_ADOPTION_BOX.get()).build(null));
+    public static final DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.GiantCatBoss>> GIANT_CAT_BOSS =
+            ENTITY_TYPES.register("giant_cat_boss", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.GiantCatBoss>of(cn.laowu.mod.entity.GiantCatBoss::new, MobCategory.MONSTER)
+                    .sized(2.0F, 3.0F).clientTrackingRange(16).updateInterval(1).build("giant_cat_boss"));
+    public static final DeferredItem<cn.laowu.mod.item.GiantCatTreatItem> GIANT_CAT_TREAT =
+            ITEMS.register("giant_cat_treat", () -> new cn.laowu.mod.item.GiantCatTreatItem(new Item.Properties()));
     public static final DeferredHolder<EntityType<?>, EntityType<ButterCatBoss>> BUTTER_CAT =
             ENTITY_TYPES.register("butter_cat", () -> EntityType.Builder
                     .<ButterCatBoss>of(ButterCatBoss::new, MobCategory.MONSTER)
@@ -268,6 +289,8 @@ public final class LaoWuMod {
                     .build("butter_cat"));
     public static final DeferredItem<CatPancakeItem> CAT_PANCAKE = ITEMS.register("cat_pancake",
             () -> new CatPancakeItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<CreatureFilterItem> CREATURE_FILTER = ITEMS.register("creature_filter",
+            () -> new CreatureFilterItem(new Item.Properties()));
     public static final DeferredItem<CatFilterItem> CAT_FILTER = ITEMS.register("cat_filter",
             () -> new CatFilterItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<cn.laowu.mod.item.FusionDebugWandItem> FUSION_DEBUG_WAND =
@@ -561,12 +584,22 @@ public final class LaoWuMod {
                     .icon(() -> CAT_ENGINE_ITEM.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         output.accept(CAT_ENGINE_ITEM.get());
+                        output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_CASING_ITEM.get());
+                        output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_AUTO_LASER_ITEM.get());
+                        output.accept(cn.laowu.mod.create.CreatureTransmitterRegistration.ITEM.get());
+                        output.accept(cn.laowu.mod.create.CatMachineBlocks.HAJI_BASIN_ITEM.get());
+                        output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_PRESS_ITEM.get());
+                        output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_MIXER_ITEM.get());
+                        output.accept(cn.laowu.mod.create.CatDepotRegistration.CAT_DEPOT_ITEM.get());
                         output.accept(INFILTRATION_TANK_ITEM.get());
                         output.accept(HISSING_COLLECTOR_ITEM.get());
                         output.accept(DEVOURING_CAT_ITEM.get());
                         output.accept(ADOPTION_BOX_ITEM.get());
                         output.accept(WISH_ADOPTION_BOX_ITEM.get());
                         output.accept(CAT_CARRIER_ITEM.get());
+                        output.accept(CAT_EDITOR_ITEM.get());
+                        output.accept(CAT_DEPLOYMENT_PLATFORM_ITEM.get());
+                        output.accept(CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM.get());
                         output.accept(CAT_BLOCK_ITEM.get());
                         output.accept(CAT_INGOT.get());
                         output.accept(CAT_SHEET.get());
@@ -594,6 +627,7 @@ public final class LaoWuMod {
                         output.accept(CAT_DOUGH.get());
                         output.accept(CatPancakeItem.defaultDisplayStack());
                         output.accept(BUTTER_BREAD.get());
+                        output.accept(GIANT_CAT_TREAT.get());
                         output.accept(BUTTER_CAT_SPAWN_EGG.get());
                         output.accept(AllItems.CARDBOARD_SWORD.get());
                         output.accept(AllBlocks.SEATS.get(DyeColor.RED).get());
@@ -666,6 +700,7 @@ public final class LaoWuMod {
                         output.accept(SUPER_DRIED_FISH.get());
                         output.accept(CAT_SCANNER.get());
                         output.accept(CAT_FILTER.get());
+                        output.accept(CREATURE_FILTER.get());
                         output.accept(CAT_ENGINEER_GOGGLES.get());
                         output.accept(FUSION_DEBUG_WAND.get());
                         output.accept(ATTRIBUTE_DEBUG_WAND.get());
@@ -696,6 +731,8 @@ public final class LaoWuMod {
     public static final DeferredHolder<MenuType<?>, MenuType<CatProfileMenu>> CAT_PROFILE_MENU =
             MENUS.register("cat_profile",
                     () -> IMenuTypeExtension.create(CatProfileMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<CreatureFilterMenu>> CREATURE_FILTER_MENU =
+            MENUS.register("creature_filter", () -> IMenuTypeExtension.create(CreatureFilterMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<CatFilterMenu>> CAT_FILTER_MENU =
             MENUS.register("cat_filter", () -> IMenuTypeExtension.create(CatFilterMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<CatMaterialEditorMenu>> CAT_MATERIAL_EDITOR_MENU =
@@ -711,6 +748,10 @@ public final class LaoWuMod {
             ENTITY_TYPES.register("cat_flight_carrier", () -> EntityType.Builder
                     .<cn.laowu.mod.entity.CatFlightCarrier>of(cn.laowu.mod.entity.CatFlightCarrier::new, MobCategory.MISC)
                     .sized(0.85F, 3.3F).clientTrackingRange(10).updateInterval(1).build("cat_flight_carrier"));
+    public static final net.neoforged.neoforge.registries.DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.CatGiantCarrier>> CAT_GIANT_CARRIER =
+            ENTITY_TYPES.register("cat_giant_carrier", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.CatGiantCarrier>of(cn.laowu.mod.entity.CatGiantCarrier::new, MobCategory.MISC)
+                    .sized(CatGiantMount.WIDTH, cn.laowu.mod.entity.CatGiantCarrier.RIDE_HEIGHT).clientTrackingRange(12).updateInterval(1).build("cat_giant_carrier"));
     public static final net.neoforged.neoforge.registries.DeferredHolder<EntityType<?>, EntityType<cn.laowu.mod.entity.CatDivingCarrier>> CAT_DIVING_CARRIER =
             ENTITY_TYPES.register("cat_diving_carrier", () -> EntityType.Builder
                     .<cn.laowu.mod.entity.CatDivingCarrier>of(cn.laowu.mod.entity.CatDivingCarrier::new, MobCategory.MISC)
@@ -811,6 +852,7 @@ public final class LaoWuMod {
     public LaoWuMod(IEventBus modBus, ModContainer modContainer) {
         cn.laowu.mod.accessory.CatAccessoryItems.register((name, factory) -> ITEMS.register(name, factory));
         ITEMS.register(modBus);
+        cn.laowu.mod.create.CatMachineBlocks.register(modBus);
         BLOCKS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         MENUS.register(modBus);
@@ -860,8 +902,16 @@ public final class LaoWuMod {
                     registerAlwaysVisibleDescription(ADOPTION_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(WISH_ADOPTION_BOX_ITEM.get());
                     registerAlwaysVisibleDescription(CAT_CARRIER_ITEM.get());
+                    registerAlwaysVisibleDescription(CAT_EDITOR_ITEM.get());
+                    registerAlwaysVisibleDescription(CAT_DEPLOYMENT_PLATFORM_ITEM.get());
+                    registerAlwaysVisibleDescription(CAT_EJECTING_DEPLOYMENT_PLATFORM_ITEM.get());
                     registerAlwaysVisibleDescription(CAT_LASER_POINTER.get());
                     registerAlwaysVisibleDescription(CAT_STORAGE_BOX.get());
+                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatMachineBlocks.CAT_AUTO_LASER_ITEM.get());
+                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatMachineBlocks.HAJI_BASIN_ITEM.get());
+                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatDepotRegistration.CAT_DEPOT_ITEM.get());
+                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatMachineBlocks.CAT_MIXER_ITEM.get());
+                    registerAlwaysVisibleDescription(cn.laowu.mod.create.CatMachineBlocks.CAT_PRESS_ITEM.get());
                     registerDescription(CAT_CANNON.get());
                     registerDescription(CAT_BALL.get());
                     registerDescription(CAT_STRIP.get());
@@ -920,6 +970,8 @@ public final class LaoWuMod {
     }
 
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, CAT_DEPLOYMENT_BE.get(), cn.laowu.mod.create.CatDeploymentBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CAT_DEPLOYMENT_BE.get(), cn.laowu.mod.create.CatDeploymentBlockEntity::getItemHandler);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, CAT_CARRIER_BE.get(),
                 cn.laowu.mod.create.CatCarrierBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, CAT_ENGINE_BE.get(),

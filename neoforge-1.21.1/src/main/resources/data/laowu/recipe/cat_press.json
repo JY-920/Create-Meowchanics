@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "S",
+    "C",
+    "I"
+  ],
+  "key": {
+    "S": {
+      "item": "create:shaft"
+    },
+    "C": {
+      "item": "laowu:cat_casing"
+    },
+    "I": {
+      "tag": "c:storage_blocks/iron"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_press",
+    "count": 1
+  }
+}

@@ -1,6 +1,7 @@
 package cn.laowu.mod.network;
 
 import cn.laowu.mod.CatAttributeEditorMenu;
+import cn.laowu.mod.CatEditorMenu;
 import cn.laowu.mod.CatTraitEditorMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +31,7 @@ public record CatEditorActionPacket(int containerId, int actionId) {
         if (player == null || player.isSpectator()) return;
         var menu = player.containerMenu;
         if (menu.containerId != containerId
-                || !(menu instanceof CatTraitEditorMenu || menu instanceof CatAttributeEditorMenu)
+                || !(menu instanceof CatTraitEditorMenu || menu instanceof CatAttributeEditorMenu || menu instanceof CatEditorMenu)
                 || !menu.stillValid(player)) return;
         player.resetLastActionTime();
         menu.clickMenuButton(player, actionId);

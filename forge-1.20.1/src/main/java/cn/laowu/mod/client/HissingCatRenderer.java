@@ -13,8 +13,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.animal.Cat;
 
 public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
+    private final GiantCatRenderer giant;
     public HissingCatRenderer(EntityRendererProvider.Context context) {
         super(context, new HissingCatModel(context.bakeLayer(HissingCatModel.LAYER)), 0.4F);
+        giant = new GiantCatRenderer(context);
         addLayer(new HissingCatGeometryLayer(this));
         addLayer(new PancakeCatGeometryLayer(this));
         addLayer(new CatClothesLayer(this));
@@ -29,6 +31,18 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
     @Override
     public ResourceLocation getTextureLocation(Cat cat) {
         return CatGenomeTextureManager.resolve(cat);
+    }
+
+    @Override
+    public void render(Cat cat,float yaw,float partialTick,PoseStack pose,
+                       net.minecraft.client.renderer.MultiBufferSource buffers,int light) {
+        if (cn.laowu.mod.CatGiantMount.active(cat)) {
+            shadowRadius=1.1F*cn.laowu.mod.CatGiantMount.sizeFactor(cat);
+            giant.render(cat,yaw,partialTick,pose,buffers,light);
+        } else {
+            shadowRadius=0.4F;
+            super.render(cat,yaw,partialTick,pose,buffers,light);
+        }
     }
 
     @Override

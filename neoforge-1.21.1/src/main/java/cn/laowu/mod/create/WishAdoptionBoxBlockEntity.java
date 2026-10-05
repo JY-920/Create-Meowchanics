@@ -33,6 +33,7 @@ public final class WishAdoptionBoxBlockEntity extends BlockEntity implements Men
     public static final int INPUT_COUNT = 9, OUTPUT_START = 9, OUTPUT_COUNT = 9, SLOT_COUNT = 18;
     private WishAdoptionOffer offer;
     private boolean locked, internalChange, pending = true;
+    private List<ItemStack> inputDisplays = List.of();
     private final ItemStackHandler inventory = new ItemStackHandler(SLOT_COUNT) {
         @Override protected int getStackLimit(int slot, @NotNull ItemStack stack) {
             return slot < INPUT_COUNT ? 1 : super.getStackLimit(slot, stack);
@@ -43,7 +44,7 @@ public final class WishAdoptionBoxBlockEntity extends BlockEntity implements Men
         @Override protected void onContentsChanged(int slot) {
             if (internalChange) return;
             pending = true;
-            setChanged();
+            sync();
         }
     };
 
@@ -54,6 +55,8 @@ public final class WishAdoptionBoxBlockEntity extends BlockEntity implements Men
     public WishAdoptionOffer offer() { return offer; }
     public boolean locked() { return locked; }
     public ItemStack rewardPreview() { return offer == null ? ItemStack.EMPTY : offer.rewardStack(); }
+    public ItemStack inputDisplay() { return AdoptionPancakeDisplay.first(inputDisplays); }
+    public List<ItemStack> inputDisplays() { return inputDisplays; }
 
     public void ensureOffer() {
         if (level == null || level.isClientSide) return;
@@ -162,6 +165,7 @@ public final class WishAdoptionBoxBlockEntity extends BlockEntity implements Men
     }
     @Override public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
+        inputDisplays = AdoptionPancakeDisplay.readAll(tag);
         internalChange = true;
         try {
             if (tag.contains("Inventory")) inventory.deserializeNBT(registries, tag.getCompound("Inventory"));
@@ -171,9 +175,10 @@ public final class WishAdoptionBoxBlockEntity extends BlockEntity implements Men
         } finally { internalChange = false; }
     }
     @Override public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        // World rendering needs only the card, not 18 potentially large cat inventories.
+        // Only card metadata and at most nine input appearances reach nearby clients.
         CompoundTag tag = new CompoundTag();
         writeOffer(tag);
+        AdoptionPancakeDisplay.write(tag, inventory, INPUT_COUNT);
         return tag;
     }
     @Override public ClientboundBlockEntityDataPacket getUpdatePacket() {

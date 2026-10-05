@@ -1,0 +1,74 @@
+// Isolated client model/renderer probe; never enters production jars or user worlds.
+allprojects {
+    afterEvaluate { p ->
+        def neo=p.extensions.findByName('neoForge')!=null
+        // The recipe probe needs a loaded world and the six-way client route.
+        def sixway=p.hasProperty('catSixWayClient') || p.hasProperty('catMachineRecipeClient') || p.hasProperty('catAutoLaserWorldClient') || p.hasProperty('catDeploymentClient') || p.hasProperty('catEditorClient') || p.hasProperty('creatureTransmitterClient')
+        def userPack=p.hasProperty('giantUserPack')
+        def renderPack=p.hasProperty('giantRenderPack')
+        def fixtureId=p.findProperty('catMachinesRunId')?.toString()
+        if(fixtureId && !(fixtureId ==~ /[a-zA-Z0-9_-]+/))throw new GradleException('Invalid client fixture ID')
+        def probe=p.sourceSets.create('catMachinesClient') {
+            java.srcDir(p.file('../tests/machines/'+(neo?'neo':'forge')))
+            compileClasspath+=p.sourceSets.main.output+p.sourceSets.main.compileClasspath
+            runtimeClasspath+=output+p.sourceSets.main.runtimeClasspath
+        }
+        def runBase=renderPack?'giant-rider-renderpack-client':userPack?'giant-rider-userpack-client':sixway?'cat-sixway-client':'cat-machines-client'
+        def runDir=p.layout.buildDirectory.dir(runBase+(fixtureId?'-'+fixtureId:'')).get().asFile
+        def fixture=p.tasks.register('prepareSixWayClientWorld',Copy){
+            onlyIf { sixway && !new File(runDir,'saves/Sixway/level.dat').exists() }
+            from p.layout.buildDirectory.dir('accessory-gametest/no-kubejs-sixway-processing-green/world')
+            into new File(runDir,'saves/Sixway')
+            exclude 'session.lock'
+        }
+        def packMods=p.tasks.register('prepareGiantUserPack',Copy) {
+            onlyIf { userPack || renderPack }
+            // Read-only copies into an isolated test directory. Main mods supplied by
+            // the dev classpath must not also be loaded from copied production jars.
+            from 'D:/PCL2/PCL/.minecraft/versions/'+(neo?'1.21.1-NeoForge模组开发':'1.20.1-Forge模组开发')+'/mods'
+            include '*.jar'
+            exclude '*meowchanics*','*create-1.21.1*','*create-1.20.1*','*jei-1.*','curios-*'
+            if(renderPack) {
+                // Optional render compatibility subset: the copied new aeronautics/VFX
+                // require a newer NeoForge than this dev toolchain; copied KubeJS also
+                // requires a newer JEI. The actual scripts have their own server suite.
+                exclude '*aeronautics*','sable-*','jujutsu-vfx-*','kubejs-*','better-advanced-tooltips-*'
+            }
+            into new File(runDir,'mods')
+        }
+        if(neo) {
+            p.neoForge.mods.named('laowu') { sourceSet(probe) }
+            p.neoForge.runs.named('client') {
+                gameDirectory=runDir
+                if(p.hasProperty('creatureTransmitterClient')) { systemProperty 'laowu.creature_transmitter_probe','true' }
+                if(p.hasProperty('catAutoLaserClient') || p.hasProperty('catAutoLaserWorldClient')) { systemProperty 'laowu.auto_laser_probe','true' }
+                if(p.hasProperty('catAutoLaserWorldClient')) { systemProperty 'laowu.auto_laser_world_probe','true' }
+                if(p.hasProperty('catMachineRecipeClient')) { systemProperty 'laowu.machine_recipe_probe','true' }
+                if(p.hasProperty('catDeploymentClient')) { systemProperty 'laowu.deployment_probe','true' }
+                if(p.hasProperty('catEditorClient')) { systemProperty 'laowu.cat_editor_probe','true' }
+               if(p.hasProperty('giantVisualOnly')) { systemProperty 'laowu.giant_visual_probe','true' }
+                if(p.hasProperty('giantRidingOnly')) { systemProperty 'laowu.giant_riding_probe','true' }
+                if(sixway){systemProperty 'laowu.sixway_probe','true';programArgument '--quickPlaySingleplayer';programArgument 'Sixway'}
+            }
+        } else {
+            p.dependencies.add('runtimeOnly','io.github.llamalad7:mixinextras-forge:0.4.1') { transitive=false }
+            p.minecraft.runs.named('client') {
+                workingDirectory runDir
+                if(p.hasProperty('creatureTransmitterClient')) { property 'laowu.creature_transmitter_probe','true' }
+                if(p.hasProperty('catAutoLaserClient') || p.hasProperty('catAutoLaserWorldClient')) { property 'laowu.auto_laser_probe','true' }
+                if(p.hasProperty('catAutoLaserWorldClient')) { property 'laowu.auto_laser_world_probe','true' }
+                if(p.hasProperty('catMachineRecipeClient')) { property 'laowu.machine_recipe_probe','true' }
+                if(p.hasProperty('catDeploymentClient')) { property 'laowu.deployment_probe','true' }
+                if(p.hasProperty('catEditorClient')) { property 'laowu.cat_editor_probe','true' }
+               if(p.hasProperty('giantVisualOnly')) { property 'laowu.giant_visual_probe','true' }
+                if(p.hasProperty('giantRidingOnly')) { property 'laowu.giant_riding_probe','true' }
+                if(sixway){property 'laowu.sixway_probe','true';args '--quickPlaySingleplayer','Sixway'}
+                args '--mixin','laowu.mixins.json'
+                property 'mixin.env.remapRefMap','true'
+                property 'mixin.env.refMapRemappingFile',p.file('build/createSrgToMcp/output.srg').absolutePath
+                mods.named('laowu') { source(probe) }
+            }
+        }
+        p.tasks.matching { it.name == 'runClient' }.configureEach { dependsOn p.tasks.named('catMachinesClientClasses'),fixture,packMods }
+    }
+}

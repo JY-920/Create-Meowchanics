@@ -1,0 +1,62 @@
+{
+  "Time": "2026-10-04 00:34:36",
+  "Version": "2.2.2",
+  "Stamp": "20261004-003435-2.2.2-creature-filter",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "4DED3BA693C126A0A75374EDD96D29F0FD29C7D6EF3DC6DCDF641EDB076FDBC0"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261004-003435-2.2.2-creature-filter\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "5CA4AD9B7DFD1A1F74E0E6330BF0DF55039C59CC5522962423BBB3E18AD8B28B"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "5B43D92358F78A2BE6CFD8E5284DBEED1CAF5769922B60C1D201096243E4ED2B"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261004-003435-2.2.2-creature-filter\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "E98317DBBC48409DD6727E097D8621DD19F8FA81C6CA610B8128FB7B07752215"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Verification": {
+    "serverTests": {
+      "forge": "18/18",
+      "neoforge": "18/18"
+    },
+    "clientTests": "Both ports: six-way installed-filter geometry; moving beam 80 ticks x four partial frames; wall clipping; UUID/clear/stop; GUI interaction at 600x400 and 320x240",
+    "build": "Both normal offline builds passed, API compatibility, release isolation, 23270 accessory checks",
+    "logs": [
+      "outputs-forge-creature-final.log",
+      "outputs-neo-creature-final.log",
+      "outputs-forge-creature-compact-final2.log",
+      "outputs-neo-creature-compact-final.log",
+      "outputs-forge-creature-build.log",
+      "outputs-neo-creature-build.log"
+    ],
+    "assets": "Original filter PNG preserved; bottom coplanar hole regression passed"
+  }
+}

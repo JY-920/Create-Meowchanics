@@ -10,6 +10,7 @@ public final class ModEntityEvents {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(LaoWuMod.BUTTER_CAT.get(), ButterCatBoss.createAttributes().build());
+        event.put(LaoWuMod.GIANT_CAT_BOSS.get(), cn.laowu.mod.entity.GiantCatBoss.createAttributes().build());
     }
 
     private ModEntityEvents() { }

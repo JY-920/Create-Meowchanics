@@ -71,9 +71,16 @@ public final class SpecialistVisualProbe {
                             throw new AssertionError("Clinic must retain the cushion's seated torso angle");
                     }
                     if((outfit==CatOutfitType.DIVING||outfit==CatOutfitType.FLIGHT)&&poseIndex==1) {
-                        CatRideAnimation.apply(40,head,body,lh,rh,lf,rf,tail,tip);
-                        if(lf.xRot>-1.5||rf.xRot>-1.5||lh.xRot<1.5||rh.xRot<1.5)
-                            throw new AssertionError("Streamlined limbs do not extend in opposite directions");
+                        if(outfit==CatOutfitType.FLIGHT) {
+                            root.getAllParts().forEach(net.minecraft.client.model.geom.ModelPart::resetPose);
+                            body.xRot=(float)Math.PI/2;
+                            CatRideAnimation.pilot(40,tail,tip);
+                            if(Math.abs(lf.xRot)+Math.abs(rf.xRot)+Math.abs(lh.xRot)+Math.abs(rh.xRot)>.001)
+                                throw new AssertionError("Pilot must retain ordinary limbs");
+                        } else {
+                            CatRideAnimation.apply(40,head,body,lh,rh,lf,rf,tail,tip);
+                            checkDiverClearance(lf,rf);
+                        }
                     }
                     if(outfit==CatOutfitType.COCKROACH){
                         int mode=poseIndex==0?1:2;
@@ -90,13 +97,15 @@ public final class SpecialistVisualProbe {
                     }
                     if(outfit==CatOutfitType.AGENT&&poseIndex==1)
                         CatAgentAttackAnimation.apply(agentMove,.36F,head,body,lh,rh,lf,rf,tail,tip);
-                    if(poseIndex==1&&(outfit==CatOutfitType.DIVING||outfit==CatOutfitType.FLIGHT||outfit==CatOutfitType.COCKROACH))
+                    if(poseIndex==1&&(outfit==CatOutfitType.FLIGHT||outfit==CatOutfitType.COCKROACH))
                         checkOriginalAnchors(head,lf,rf,outfit==CatOutfitType.COCKROACH?3:0);
                     if(outfit==CatOutfitType.AGENT||outfit==CatOutfitType.DIVING||outfit==CatOutfitType.COCKROACH)
                         verifyPivot(model,body,outfit);
-                    var pose=new PoseStack();pose.translate(poseIndex==0?-2:2,1.3,0);
-                    pose.scale(1.8F,-1.8F,-1.8F);
-                    pose.mulPose(new Quaternionf().rotationX(-.2F).rotateY(.65F));
+                    var pose=new PoseStack();pose.translate(poseIndex==0?-2:outfit==CatOutfitType.DIVING?1.35:2,1.3,0);
+                    float size=outfit==CatOutfitType.DIVING?1.35F:1.8F;
+                    pose.scale(size,-size,-size);
+                    // Show the pilot's raised tail from behind; the front camera hides it behind the pack.
+                    pose.mulPose(new Quaternionf().rotationX(-.2F).rotateY(outfit==CatOutfitType.FLIGHT&&poseIndex==1?2.4F:.65F));
                     var buffers=mc.renderBuffers().bufferSource();
                     model.renderToBuffer(pose,buffers.getBuffer(RenderType.entityCutoutNoCull(skin)),
                             LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,1,1,1,1);
@@ -109,11 +118,9 @@ public final class SpecialistVisualProbe {
                                 net.minecraft.client.model.geom.builders.LayerDefinition.create(
                                 net.minecraft.client.model.HumanoidModel.createMesh(net.minecraft.client.model.geom.builders.CubeDeformation.NONE,0),64,64).bakeRoot());
                         player.young=false;
-                        player.leftArm.xRot=player.rightArm.xRot=-(float)Math.PI/5;
-                        player.leftLeg.xRot=player.rightLeg.xRot=-1.4137167F;
-                        player.rightLeg.yRot=(float)Math.PI/10;player.leftLeg.yRot=-(float)Math.PI/10;
-                        player.rightLeg.zRot=.07853982F;player.leftLeg.zRot=-.07853982F;
-                        pose.pushPose();pose.translate(0,-cn.laowu.mod.entity.CatDivingCarrier.RIDER_HEIGHT,0);
+                        CatDivingRiderPose.apply(player,40,1);
+                        pose.pushPose();pose.translate(0,-cn.laowu.mod.entity.CatDivingCarrier.RIDER_HEIGHT,
+                                cn.laowu.mod.entity.CatDivingCarrier.RIDER_BACK);
                         player.renderToBuffer(pose,buffers.getBuffer(RenderType.entityCutoutNoCull(
                                 ResourceLocation.fromNamespaceAndPath("minecraft","textures/entity/player/wide/steve.png"))),
                                 LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,1,1,1,1);
@@ -135,7 +142,7 @@ public final class SpecialistVisualProbe {
             }
             verifyAnimationFrames(mc);
             verifySuitTooltips();
-            System.out.println("PASS: "+count+" real GPU career renders: clinic anchored pose, split wings/dash, pilot/diver ride limbs, original body pivots");
+            System.out.println("PASS: "+count+" real GPU career renders: clinic, wings/dash, normal pilot limbs, diver two-hand grip, body pivots");
         } catch(Exception e) {throw new IllegalStateException("Specialist visual probe failed",e);}
         finally {
             if(output!=null)output.destroyBuffers();
@@ -211,7 +218,7 @@ public final class SpecialistVisualProbe {
         }
         for(int frame=0;frame<400;frame++){
             CatRideAnimation.apply(frame,head,body,lh,rh,lf,rf,tail,tip);
-            checkOriginalAnchors(head,lf,rf);
+            checkDiverClearance(lf,rf);
         }
         for(int move=0;move<3;move++)for(int frame=0;frame<=100;frame++){
             root.getAllParts().forEach(net.minecraft.client.model.geom.ModelPart::resetPose);
@@ -226,7 +233,12 @@ public final class SpecialistVisualProbe {
             if((frame==0||frame==100)&&(Math.abs(body.y-12)>.001||Math.abs(body.xRot-(float)Math.PI/2)>.001))
                 throw new AssertionError("Attack must blend back to locomotion");
         }
-        System.out.println("PASS: 400 original-height breathing frames; 303 finite agent frames and idle recovery");
+        System.out.println("PASS: 400 separated-forepaw breathing frames; 303 finite agent frames and idle recovery");
+    }
+    private static void checkDiverClearance(net.minecraft.client.model.geom.ModelPart left,net.minecraft.client.model.geom.ModelPart right){
+        for(var leg:List.of(left,right))
+            if(Math.abs(leg.x)>3||Math.abs(leg.x)<2.5||Math.abs(leg.y-leg.getInitialPose().y)>.001||leg.xRot< -1.4||leg.xRot> -1)
+                throw new AssertionError("Diver forepaws need lateral head clearance without lowered shoulders");
     }
     private static void verifyPivot(HissingCatModel model,net.minecraft.client.model.geom.ModelPart body,CatOutfitType outfit) {
         var pivot=outfit==CatOutfitType.DIVING?new Vector3f(2.25F,17.5F,1.25F):new Vector3f(0,18.6F,-9.5F);

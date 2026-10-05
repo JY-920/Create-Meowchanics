@@ -1,8 +1,21 @@
 {
   "replace": false,
   "values": [
+    "laowu:creature_transmitter",
+    "laowu:cat_editor",
+    "laowu:cat_auto_laser",
+    "laowu:cat_casing",
+    "laowu:cat_encased_shaft",
+    "laowu:cat_encased_cogwheel",
+    "laowu:cat_encased_large_cogwheel",
+    "laowu:haji_basin",
+    "laowu:cat_depot",
     "laowu:cat_engine",
     "laowu:devouring_cat",
-    "laowu:cat_block"
+    "laowu:cat_block",
+    "laowu:cat_press",
+    "laowu:cat_mixer",
+    "laowu:cat_deployment_platform",
+    "laowu:cat_ejecting_deployment_platform"
   ]
 }

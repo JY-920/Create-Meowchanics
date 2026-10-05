@@ -108,7 +108,10 @@ public final class GuardDurabilityProbe {
         h.runAfterDelay(300,()->{
             vest.setHealth(vest.getMaxHealth()*.5F);cap.setHealth(cap.getMaxHealth());
             hit(foe,vest,vest.getMaxHealth()*.2F);hit(foe,cap,cap.getMaxHealth()*.8F);
-            h.assertTrue(worn(vest).getDamageValue()==2&&worn(cap).getDamageValue()==2,"Both ready exactly at tick 300");
+            h.assertTrue(worn(vest).getDamageValue()==2&&worn(cap).getDamageValue()==2,
+                    "Both ready exactly at tick 300; time="+h.getLevel().getGameTime()
+                    +" vest="+worn(vest).getDamageValue()+" cap="+worn(cap).getDamageValue()
+                    +" vestState="+data(vest)+" capState="+data(cap));
             vest.discard();cap.discard();foe.discard();
             System.out.println("PASS: both guard cooldowns expire at exactly 300 server ticks");h.succeed();
         });

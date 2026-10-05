@@ -1,0 +1,14 @@
+{
+  "version": "5.2.0",
+  "cubes": 13,
+  "bones": 9,
+  "animations": 8,
+  "textures": [
+    {
+      "name": "giant_tabby_boss.png",
+      "width": 256,
+      "height": 256,
+      "error": 0
+    }
+  ]
+}

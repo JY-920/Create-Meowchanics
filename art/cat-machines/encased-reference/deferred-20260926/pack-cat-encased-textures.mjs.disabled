@@ -1,0 +1,47 @@
+// Build-resolution conversion / connected-atlas packing of the generated art.
+// Art is generated separately; this step preserves Create's exact alpha stencil
+// and CT tile order. It must not redraw the artist's original casing PNGs.
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const {PNG}=createRequire(import.meta.url)('C:/Users/16611/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/pngjs');
+const art=path.join(root,'art/cat-machines/encased-reference');
+const read=name=>PNG.sync.read(readFileSync(path.join(art,name+'.png')));
+const port=read('cat-port-generated-source'),cog=read('cat-cog-generated-source');
+const stencil=read('andesite_encased_cogwheel_side_connected');
+const pixel=(p,x,y)=>[...p.data.subarray((y*p.width+x)*4,(y*p.width+x)*4+4)];
+const put=(p,x,y,c)=>p.data.set(c,(y*p.width+x)*4);
+const opening=new PNG({width:16,height:16});
+for(let y=0;y<16;y++)for(let x=0;x<16;x++)put(opening,x,y,pixel(port,
+  Math.floor((x+.5)*port.width/16),Math.floor((y+.5)*port.height/16)));
+// First tile's opaque upper/lower strips and side posts, sampled once to the
+// native 16px grid. Do not retain the generative preview's transparent margins.
+const base=new PNG({width:16,height:16});
+for(let y=0;y<16;y++)for(let x=0;x<16;x++) {
+  const alpha=stencil.data[(y*32+x)*4+3];
+  if(!alpha){put(base,x,y,[0,0,0,0]);continue;}
+  const sx=y>=6&&y<10?({0:80,1:116,14:574,15:601}[x]):Math.floor(88+(x+.5)*524/16);
+  const sy=Math.floor(y<6?89+(y+.5)*180/6:y>=10?378+(y-10+.5)*232/6:272+(y-6+.5)*103/4);
+  const rgba=pixel(cog,sx,sy);
+  assert(rgba[3]>200,`Source crop samples outside generated strip at ${x},${y}`);
+  put(base,x,y,[...rgba.slice(0,3),255]);
+}
+const connected=new PNG({width:32,height:32});
+for(let ty=0;ty<2;ty++)for(let tx=0;tx<2;tx++)for(let y=0;y<16;y++)for(let x=0;x<16;x++) {
+  const px=tx*16+x,py=ty*16+y;
+  if(!stencil.data[(py*32+px)*4+3]){put(connected,px,py,[0,0,0,0]);continue;}
+  // Native CT tiles: neither, left, right, both side borders connected.
+  const sx=tx&&x<2?x+2:ty&&x>=14?x-2:x;
+  put(connected,px,py,pixel(base,sx,y));
+}
+for(const loader of ['forge-1.20.1','neoforge-1.21.1'])for(const [name,png] of [
+  ['cat_casing_shaft_opening',opening],['cat_encased_cogwheel_side',base],['cat_encased_cogwheel_side_connected',connected]
+]) {
+  const dest=path.join(root,loader,'src/main/resources/assets/laowu/textures/block',name+'.png');
+  const bytes=PNG.sync.write(png);
+  if(process.argv.includes('--write'))writeFileSync(dest,bytes);else assert.deepEqual(readFileSync(dest),bytes,dest);
+}
+console.log('PASS: generated art converted to native-resolution socket and exact connected-slot atlas');

@@ -64,9 +64,16 @@ public final class CatAttributeEffects {
     private static int effectiveValue(CatAttributeProfile attributes,
                                       CatTraitProfile traits, CatStat stat,
                                       TraitContext context, int accessoryBonus) {
+        if(attributes==null)return -1;
+        return (int)Math.max(0,Math.min(999,unboundedValue(attributes,traits,stat,context,accessoryBonus)));
+    }
+
+    private static long unboundedValue(CatAttributeProfile attributes,
+                                      CatTraitProfile traits, CatStat stat,
+                                      TraitContext context, long accessoryBonus) {
         if (attributes == null) return -1;
         CatTraitProfile resolved = traits == null ? CatTraitProfile.EMPTY : traits;
-        int value = attributes.current(stat);
+        long value = attributes.current(stat);
         value += ServerConfig.careerStatBonus(context.outfit(), stat);
         for (CatTraitInstance instance : resolved.traits()) {
             value += instance.trait().appearanceAttributeBonus(stat, instance.level());
@@ -186,7 +193,17 @@ public final class CatAttributeEffects {
                 value += CatTrait.NIGHT_OWL.nightSpeedBonus(nightLevel);
             }
         }
-        return Mth.clamp(value + accessoryBonus, 0, 999);
+        return Math.max(0,value + accessoryBonus);
+    }
+
+    /** Size-only view: preserve ordinary gameplay's 999 clamp and genetic ceilings. */
+    public static long giantHealth(Cat cat) {
+        var attributes=CatAttributeData.read(cat).orElse(null);
+        if(attributes==null)return 100;
+        return unboundedValue(attributes,CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY),
+                CatStat.HEALTH,context(cat),(long)cn.laowu.mod.accessory.CatAccessories.statBonus(cat,CatStat.HEALTH)
+                        + cn.laowu.mod.CatCockroachSwarm.statBonus(cat,CatStat.HEALTH)
+                        + CatTraitScriptState.bonus(cat,CatStat.HEALTH));
     }
 
     public static int effectiveValue(Cat cat, CatStat stat) {

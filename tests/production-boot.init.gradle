@@ -1,0 +1,17 @@
+// Build a separate, SRG-remapped probe mod; no changes to main source sets or jars.
+allprojects {
+    afterEvaluate { p ->
+        def probe=p.sourceSets.create('releaseBootProbe') {
+            java.srcDir(p.file('../tests/production/forge'))
+            resources.srcDir(p.file('../tests/production/resources'))
+            compileClasspath+=p.sourceSets.main.compileClasspath
+        }
+        p.tasks.register('releaseBootProbeJar',Jar) {
+            dependsOn p.tasks.named('releaseBootProbeClasses')
+            from probe.output
+            archiveFileName='laowu-release-boot-probe-forge.jar'
+            destinationDirectory=p.layout.buildDirectory.dir('release-boot-probe')
+        }
+        p.reobf { releaseBootProbeJar {} }
+    }
+}

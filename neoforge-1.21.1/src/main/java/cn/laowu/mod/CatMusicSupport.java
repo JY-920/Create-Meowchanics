@@ -28,7 +28,7 @@ public final class CatMusicSupport {
         State state = STATES.get(cat);
         return state != null && state.performingUntil > now(cat) && cat.isAlive() && !cat.isRemoved()
                 && CatClothesData.getOutfit(cat) == CatOutfitType.MUSIC && !CatPoseData.isPancake(cat)
-                && (cat.level().isClientSide || !cat.isPassenger() && !cat.isOrderedToSit());
+                && (cat.level().isClientSide || (!cat.isPassenger() || CatGiantMount.carried(cat)) && !cat.isOrderedToSit());
     }
     public static float visualRadius(Cat cat) { State state = STATES.get(cat); return performing(cat) ? state.radius : 0; }
     public static int pose(Cat cat) { State state = STATES.get(cat); return performing(cat) ? state.pose : -1; }

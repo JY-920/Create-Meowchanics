@@ -1,0 +1,98 @@
+{
+  "Time": "2026-10-04 19:17:56",
+  "Version": "2.2.2",
+  "Stamp": "20261004-191756-2.2.2-filter-native-semantics-slot",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "8FF8FDAA76E38640CB38848A37FD74B9ED6A12EC838C610DE6FC50A1A6400AB9"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261004-191756-2.2.2-filter-native-semantics-slot\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "946A34A22F7A0D193CCB38B3260235EEB86662E4C8841F2BD6998FFF53B9A8FC"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "073FF2FDB1DBACA4B2CE14AF19E714197AFD328AC344F722631ACA318285E1DF"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261004-191756-2.2.2-filter-native-semantics-slot\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "8A63A9968087E55EED4CE36E396B565E5EB8C20B68A1EE9B055A7DBD1014C53C"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Verification": {
+    "ServerGameTests": {
+      "Forge": 23,
+      "NeoForge": 23,
+      "Logs": [
+        "outputs-filter-native-server-forge-final.log",
+        "outputs-filter-native-server-neo-final.log"
+      ]
+    },
+    "Clients": {
+      "Forge": "PASS",
+      "NeoForge": "PASS",
+      "Checks": [
+        "Native SelectionScrollInput; selection text retains independent search query",
+        "Positive/inverted add and OR/AND/NOR; NAME_TAG summary; native panel pixel-seam check",
+        "Mouse add preserves input focus; compact inventory",
+        "Actual integrated-server packet lifecycle: UI remains open 80 ticks, draft unchanged held stack, save on close and reopen",
+        "Six-way authored Y=3/16 slot bounds, native white hover plate and outside cleanup",
+        "Native-size installed icon vertices, actual GPU slot snapshot",
+        "Existing laser lighting, item contexts and moving beam regressions"
+      ],
+      "Logs": [
+        "outputs-filter-v2-client-forge-final.log",
+        "outputs-filter-v2-client-neo-final.log"
+      ]
+    },
+    "Builds": {
+      "Forge": "PASS",
+      "NeoForge": "PASS",
+      "Checks": [
+        "verifyCatAccessoryApiV3",
+        "verifyCatTraitApiV1",
+        "verifyReleaseIsolation",
+        "23270 accessory checks per loader"
+      ],
+      "Logs": [
+        "outputs-filter-native-build-forge-final.log",
+        "outputs-filter-native-build-neo-final.log"
+      ]
+    },
+    "RedGreen": [
+      "outputs-filter-v2-rules-red.log",
+      "outputs-filter-semantics-ui-red.log",
+      "outputs-filter-slot-bounds-red.log",
+      "outputs-filter-reset-red.log",
+      "outputs-filter-v2-focus-red.log"
+    ],
+    "VisualEvidence": [
+      "forge-1.20.1/build/cat-sixway-client-filter-v2-native-green/cat-auto-laser-filter-slot.png",
+      "neoforge-1.21.1/build/cat-sixway-client-filter-v2-native-green/creature-filter-native-selector.png"
+    ],
+    "Review": "Two P2 findings fixed: reset removes legacy category gate; restore focus after parent click dispatch. Narrow read-only followup approved."
+  }
+}

@@ -29,6 +29,7 @@ public final class CatAccessoryPreview {
         CompoundTag root = cn.laowu.mod.item.ItemCustomData.copy(stack);
         if (root != null && root.contains(CatPancakeItem.CAT_DATA_TAG))
             cat.load(root.getCompound(CatPancakeItem.CAT_DATA_TAG).copy());
+        cn.laowu.mod.genetics.CatMaterialRegistry.excludeCopycatVariant(cat);
         CatAttributeData.read(stack).ifPresent(profile -> CatAttributeData.set(cat, profile));
         CatTraitData.read(stack).ifPresent(profile -> CatTraitData.set(cat, profile));
         CatOutfitType outfit = CatPancakeItem.getOutfit(stack);

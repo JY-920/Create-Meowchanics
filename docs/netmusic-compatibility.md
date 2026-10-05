@@ -22,6 +22,7 @@ NetMusic 是可选兼容，不安装时普通唱片功能不变。多人游戏�
 - 本地文件唱片的路径必须在**每个收听客户端**上存在；服务端不会分发文件。
 - 晚加入收听范围从该曲开头播放，跟随服务器剩余时长切歌，不保证跨客户端采样级同步。这与原普通唱片的同步方式一致。
 - 单个曲目失败后会显示 NetMusic 的播放错误提示，不会每秒重复下载；轮到下一曲或重新放入后可再试。
+- 网络音源打开失败时，客户端日志额外记录 `Music cat playback failed: stage=network-open`、播放序号和异常类型链。不会记录歌曲 URL、异常消息或登录凭据。同一播放序号只记录一次；此诊断不改变 NetMusic 的解析、授权或重试规则。
 - 原版唱片、其他猫及普通唱片机的音源互不停止。
 - URL 最大 4096 字符，曲名最大 256 UTF-16 单位（不会截断表情字符的代理对）。
 
@@ -46,6 +47,8 @@ NetMusic 是可选兼容，不安装时普通唱片功能不变。多人游戏�
 .\gradlew.bat runGameTestServer --init-script ../tests/netmusic-probe.init.gradle --no-configuration-cache
 # 隐藏的隔离客户端：合成 MP3 测试音频，通过本机 HTTP 交给真实 NetMusic 解码为 PCM。
 .\gradlew.bat runClient --init-script ../tests/netmusic-probe.init.gradle --no-configuration-cache -PnetMusicClient "-PnetMusicJar=<NetMusic JAR 绝对路径>"
+# 可选：经用户指定后，用真实网络歌曲追加复测（仅接受数字 ID；会访问外部歌曲平台）。
+.\gradlew.bat runClient --init-script ../tests/netmusic-probe.init.gradle --no-configuration-cache -PnetMusicClient "-PnetMusicJar=<NetMusic JAR 绝对路径>" -PnetMusicExternalId=1439814454
 ```
 
 首次运行客户端探针前，在仓库根目录生成音频夹具（依赖只装入 build，不进入模组）：
@@ -55,7 +58,7 @@ npm install --prefix build/netmusic-test-tools --no-save --package-lock=false --
 node tests/generate-netmusic-fixture.mjs
 ```
 
-客户端探针使用真实 SoundEngine、实际 NetMusic 解码器，验证 PCM、各音源独立、加载途中取消、晚完成流关闭、移动位置与停播；不访问外部歌曲平台，也不替代玩家对实际网络歌曲的试听。
+客户端探针使用真实 SoundEngine、实际 NetMusic 解码器，验证 PCM、各音源独立、加载途中取消、晚完成流关闭、移动位置与停播。默认只访问本机音频夹具；显式传入 `netMusicExternalId` 才追加外部歌曲测试，验证实际 PCM、SoundEngine 播放、静止表演及移动退出。测试通过仅证明该时刻测试环境中的播放链路成立，不证明玩家原有实例的故障已定位，也不替代实际试听。
 
 源码检查：
 
@@ -63,6 +66,7 @@ node tests/generate-netmusic-fixture.mjs
 node tests/netmusic-compat-wiring.mjs
 node tests/music-career-wiring.mjs
 node tests/accessory-art-and-music-speed.mjs
+node tests/music-failure-diagnostics.mjs
 ```
 
 正式构建使用正常 `build`，保留 API 兼容与发布隔离验证；探针、测试音频、测试世界及 NetMusic JAR 均不进入运行包。

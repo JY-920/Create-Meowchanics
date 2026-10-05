@@ -1,0 +1,33 @@
+{
+  "schema": 3,
+  "kind": "standalone-boss-art-not-gameplay",
+  "id": "giant_tabby_boss",
+  "scale": 4,
+  "units_per_block": 16,
+  "neutral_ear_height_blocks": 3.025,
+  "body_width_blocks": 1,
+  "source_model": "source/vanilla_yellow_cat.bbmodel",
+  "texture": {
+    "width": 256,
+    "height": 256,
+    "texels_per_block": 16,
+    "base_uv": [
+      64,
+      32
+    ],
+    "source": "source/yellow_cat.png",
+    "filtering": "nearest",
+    "detail": "vanilla palette with sparse discrete 1-2 texel colour clusters; no fur, gradients or subtexel detail"
+  },
+  "counts": {
+    "cubes": 13,
+    "bones": 9,
+    "animations": 8
+  },
+  "notes": [
+    "Base head/body/limbs retain the supplied vanilla proportions.",
+    "One modest front belly and a projecting vanilla muzzle.",
+    "Standalone art only; no runtime entity or JAR changes.",
+    "Model is already 4x vanilla size; additional runtime scale changes texel density."
+  ]
+}

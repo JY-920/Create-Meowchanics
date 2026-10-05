@@ -20,7 +20,7 @@ public final class CatAccessoryRarity {
             "cat_fire_charm", "cat_followup_gear", "cat_ace_feather", "cat_blast_fuse",
             "cat_butter_cube", "cat_blue_flame_nozzle", "cat_concentrated_pouch",
             "cat_mixed_magazine", "cat_guard_bandage", "cat_medic_smoke_canister",
-            "cat_rebirth_ootheca", "cat_roly_poly", "cat_chew_bone");
+            "cat_rebirth_ootheca", "cat_roly_poly", "cat_chew_bone", "cat_giant_collar");
 
     public static Rarity forItem(String id) {
         String path = id.startsWith("laowu:") ? id.substring(6) : id;

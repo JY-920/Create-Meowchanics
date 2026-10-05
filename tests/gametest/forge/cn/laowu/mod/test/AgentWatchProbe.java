@@ -39,7 +39,7 @@ public final class AgentWatchProbe {
         if(seat!=null)cat.level().setBlockAndUpdate(seat,Blocks.AIR.defaultBlockState());
         CatAgentWatch.stop(cat);cat.discard();
     }
-    @GameTest(template="artillery_probe",batch="agent_watch_radius",timeoutTicks=95)
+    @GameTest(template="artillery_probe",batch="agent_watch_radius",timeoutTicks=176)
     public static void radiusHostilesAndWalls(GameTestHelper h) {
         var level=h.getLevel();var base=CareerSupportIntegrationProbe.floor(h).add(2,0,5);
         var cat=seated(h,base,50);var origin=cat.position();
@@ -56,11 +56,24 @@ public final class AgentWatchProbe {
         h.assertTrue(!cat.hasLineOfSight(near),"Fixture has a real opaque wall");
         // Forge entity-section visibility can lag addFreshEntity in newly ticketed chunks.
         // Start the geometry assertions only after every long-distance fixture is searchable.
+        // Budget asynchronous setup separately from the unchanged 66-tick behavior phase.
+        final long readinessStart=h.getTick();
+        final boolean[] ready={false};
+        h.runAfterDelay(101,()->h.assertTrue(ready[0],
+                "Watch fixture readiness exceeded 100 ticks; tick="+h.getTick()
+                        +", cat="+(level.getEntity(cat.getUUID())==cat)
+                        +", near="+(level.getEntity(near.getUUID())==near)
+                        +", mid="+(level.getEntity(mid.getUUID())==mid)
+                        +", edge="+(level.getEntity(edge.getUUID())==edge)
+                        +", outside="+(level.getEntity(outside.getUUID())==outside)));
         h.startSequence().thenWaitUntil(()->h.assertTrue(
                 level.getEntity(cat.getUUID())==cat && level.getEntity(near.getUUID())==near
                 && level.getEntity(mid.getUUID())==mid && level.getEntity(edge.getUUID())==edge
                 && level.getEntity(outside.getUUID())==outside,
                 "Waiting for tracked watch fixture entities")).thenExecute(()->{
+        h.assertTrue(h.getTick()-readinessStart<=100,"Watch fixture became ready within its setup budget");
+        ready[0]=true;
+        System.out.println("Watch fixture readiness ticks="+(h.getTick()-readinessStart));
         CatAgentWatch.stop(cat);CatAgentWatch.tick(cat);CatAgentWatch.flush(level);
         h.assertTrue(CatAgentWatch.marked(near)&&!CatAgentWatch.marked(mid)&&!CatAgentWatch.marked(edge),
                 "50 Intelligence has an exact 32-block radius, without a line-of-sight gate: radius="+CatAgentWatch.radius(cat)

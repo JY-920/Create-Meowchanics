@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "S",
+    "C",
+    "I"
+  ],
+  "key": {
+    "S": {
+      "item": "create:cogwheel"
+    },
+    "C": {
+      "item": "laowu:cat_casing"
+    },
+    "I": {
+      "item": "create:whisk"
+    }
+  },
+  "result": {
+    "item": "laowu:cat_mixer",
+    "count": 1
+  }
+}

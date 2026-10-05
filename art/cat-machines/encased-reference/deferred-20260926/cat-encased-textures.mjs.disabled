@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const {PNG}=createRequire(import.meta.url)('C:/Users/16611/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/pngjs');
+const mask=PNG.sync.read(readFileSync(path.join(root,'art/cat-machines/encased-reference/andesite_encased_cogwheel_side_connected.png')));
+for(const loader of ['forge-1.20.1','neoforge-1.21.1']) {
+  const dir=path.join(root,loader,'src/main/resources/assets/laowu');
+  const json=p=>JSON.parse(readFileSync(path.join(dir,p),'utf8'));
+  for(const type of ['block','item'])assert.equal(json(`models/${type}/cat_encased_shaft.json`).textures.opening,'laowu:block/cat_casing_shaft_opening');
+  for(const size of ['','_large'])for(const top of [false,true])for(const bottom of [false,true]) {
+    const model=json(`models/block/cat_encased${size}_cogwheel${top?'_top':''}${bottom?'_bottom':''}.json`);
+    assert.equal(model.textures['4'],'laowu:block/cat_casing_shaft_opening');
+    assert.equal(model.textures.side,`laowu:block/cat_encased_cogwheel_side${size?'_connected':''}`);
+  }
+  assert.equal(json('models/item/cat_encased_large_cogwheel.json').textures['4'],'create:block/large_cogwheel','Large gear item must keep its real gear texture, not sample the opening');
+  const connected=PNG.sync.read(readFileSync(path.join(dir,'textures/block/cat_encased_cogwheel_side_connected.png')));
+  assert.equal(connected.width,32);assert.equal(connected.height,32);
+  const side=PNG.sync.read(readFileSync(path.join(dir,'textures/block/cat_encased_cogwheel_side.png')));
+  assert.equal(side.width,16);assert.equal(side.height,16);
+  for(let y=0;y<32;y++)for(let x=0;x<32;x++) {
+    const i=(y*32+x)*4;
+    assert.equal(connected.data[i+3],mask.data[i+3],`Native slot alpha must survive at ${x},${y}`);
+    if(x<16&&y<16)assert.deepEqual([...connected.data.subarray(i,i+4)],[...side.data.subarray((y*16+x)*4,(y*16+x)*4+4)]);
+  }
+  const opening=PNG.sync.read(readFileSync(path.join(dir,'textures/block/cat_casing_shaft_opening.png')));
+  assert.equal(opening.width,16);assert.equal(opening.height,16);
+  let dark=[];
+  for(let y=0;y<16;y++)for(let x=0;x<16;x++){
+    const i=(y*16+x)*4;assert.equal(opening.data[i+3],255);
+    if(opening.data[i]<40&&opening.data[i+1]<40&&opening.data[i+2]<40)dark.push([x+.5,y+.5]);
+  }
+  assert(dark.length>=12,'Opening needs a contrasting shaft socket');
+  for(const axis of [0,1])assert(Math.abs(dark.reduce((n,p)=>n+p[axis],0)/dark.length-8)<.4,'Shaft opening must be centered');
+}
+console.log('PASS: cat encased socket, connected slot alpha and native gear item textures');

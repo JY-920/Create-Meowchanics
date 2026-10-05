@@ -1,0 +1,34 @@
+{
+  "time": "2026-10-04 20:23:24",
+  "version": "2.2.2",
+  "stamp": "20261004-202324-2.2.2-creature-transmitter",
+  "results": [
+    {
+      "loader": "forge-1.20.1",
+      "installed": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mods/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "sha256": "FA53F022521238C81CAD0268619DD25659A1EF764B52CC13989749CD3EF1829C",
+      "previousSha256": "192DA977A8B925D969AAA06AB340E96C3250F591049C6495B675823C62400F0C",
+      "activeLaowuCount": 1,
+      "verified": true
+    },
+    {
+      "loader": "neoforge-1.21.1",
+      "installed": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mods/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "sha256": "D8F726F10FF283B392643D07E6BC02D6B9F46A2BFF98EBD372B2D11E26F2ECEF",
+      "previousSha256": "FF163C685904AD8E933A5EA71BA721CE1CFBE18F1CB98D3235C3AF90A5530E30",
+      "activeLaowuCount": 1,
+      "verified": true
+    }
+  ],
+  "backupRelativeDirectory": "mod-backups/create-meowchanics/20261004-202324-2.2.2-creature-transmitter",
+  "verification": {
+    "serverTestsPerLoader": 6,
+    "clientLiveSyncAndScreenshots": "PASS both loaders",
+    "normalBuild": "PASS both loaders; API v3, trait v1, release isolation and 23270 checks",
+    "assets": "PASS transmitter, filter, six-way and 19 laser tests"
+  },
+  "knownLimitations": [
+    "Preview outline is the bounding cube of spherical detection; cube corners are outside actual range.",
+    "Existing category/entity-ID filters only; no new attribute predicates or unrequested recipe."
+  ]
+}

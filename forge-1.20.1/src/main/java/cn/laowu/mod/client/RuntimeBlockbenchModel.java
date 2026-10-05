@@ -99,6 +99,8 @@ public final class RuntimeBlockbenchModel {
     }
 
     public static void clearCache() {
+        GiantCatAnimation.clearCache();
+        GiantCatVisualHeading.clearCache();
         CACHE.clear();
         INFLATED_CACHE.clear();
         MIRRORED_OUTFIT_CACHE.clear();
@@ -642,6 +644,40 @@ public final class RuntimeBlockbenchModel {
     }
 
     /**
+     * Appends the exact authored/animated ancestor chain to a named group.
+     * The caller owns push/pop. A missing or hidden target leaves its pose untouched.
+     * This attaches external headwear without reimplementing the model hierarchy.
+     */
+    public boolean translateToGroup(PoseStack poseStack, String groupName, HeadMotion headMotion,
+                                    Map<String, GroupTransform> groupTransforms) {
+        List<GroupDef> chain = new ArrayList<>();
+        for (GroupDef root : roots) {
+            if (!findGroupChain(root, groupName, chain)) continue;
+            for (GroupDef group : chain) {
+                if (groupTransforms.get(group.name) == GroupTransform.HIDDEN) return false;
+            }
+            Vec parentOrigin = Vec.ROOT_PIVOT;
+            for (GroupDef group : chain) {
+                applyGroupPose(group, parentOrigin, poseStack, headMotion, GroupMotion.NONE,
+                        groupTransforms.getOrDefault(group.name, GroupTransform.IDENTITY));
+                parentOrigin = group.origin;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean findGroupChain(GroupDef group, String name, List<GroupDef> chain) {
+        chain.add(group);
+        if (group.name.equals(name)) return true;
+        for (GroupDef child : group.children) {
+            if (findGroupChain(child, name, chain)) return true;
+        }
+        chain.remove(chain.size() - 1);
+        return false;
+    }
+
+    /**
      * The supplied flight project places both its helmet and aircraft in one
      * generic root. Render the helmet UUID separately so it can inherit the
      * cat's live head bone while the remaining aircraft follows the body.
@@ -794,6 +830,30 @@ public final class RuntimeBlockbenchModel {
             poseStack.popPose();
             return;
         }
+        applyGroupPose(group, parentOrigin, poseStack, headMotion, groupMotion, animation);
+        ElementDef frontBody = selection == GroupSelection.FRONT_BODY_ONLY
+                ? group.elements.stream().max((a, b) -> Float.compare(a.origin.y, b.origin.y)).orElse(null)
+                : null;
+        for (ElementDef element : group.elements) {
+            if (selection == GroupSelection.FRONT_BODY_ONLY && element != frontBody) continue;
+            if (selection == GroupSelection.CAT_WITHOUT_EARS
+                    && (CAT_LEFT_EAR.equals(element.uuid)
+                    || CAT_RIGHT_EAR.equals(element.uuid))) continue;
+            renderElement(element, group.origin, poseStack, consumer, light, overlay,
+                    red, green, blue, alpha, textureFilter, normalDirection,
+                    reverseWinding);
+        }
+        for (GroupDef child : group.children) {
+            renderGroup(child, group.origin, poseStack, consumer, light, overlay, headMotion,
+                    groupMotion, groupTransforms, selection, red, green, blue, alpha,
+                    textureFilter, normalDirection, reverseWinding);
+        }
+        poseStack.popPose();
+    }
+
+    private static void applyGroupPose(GroupDef group, Vec parentOrigin, PoseStack poseStack,
+                                       HeadMotion headMotion, GroupMotion groupMotion,
+                                       GroupTransform animation) {
         poseStack.translate((group.origin.x - parentOrigin.x + animation.x) / 16.0F,
                 (parentOrigin.y - group.origin.y - animation.y) / 16.0F,
                 (group.origin.z - parentOrigin.z + animation.z) / 16.0F);
@@ -815,24 +875,6 @@ public final class RuntimeBlockbenchModel {
         z += animation.zRot;
         rotate(poseStack, x, y, z);
         poseStack.scale(animation.scaleX, animation.scaleY, animation.scaleZ);
-        ElementDef frontBody = selection == GroupSelection.FRONT_BODY_ONLY
-                ? group.elements.stream().max((a, b) -> Float.compare(a.origin.y, b.origin.y)).orElse(null)
-                : null;
-        for (ElementDef element : group.elements) {
-            if (selection == GroupSelection.FRONT_BODY_ONLY && element != frontBody) continue;
-            if (selection == GroupSelection.CAT_WITHOUT_EARS
-                    && (CAT_LEFT_EAR.equals(element.uuid)
-                    || CAT_RIGHT_EAR.equals(element.uuid))) continue;
-            renderElement(element, group.origin, poseStack, consumer, light, overlay,
-                    red, green, blue, alpha, textureFilter, normalDirection,
-                    reverseWinding);
-        }
-        for (GroupDef child : group.children) {
-            renderGroup(child, group.origin, poseStack, consumer, light, overlay, headMotion,
-                    groupMotion, groupTransforms, selection, red, green, blue, alpha,
-                    textureFilter, normalDirection, reverseWinding);
-        }
-        poseStack.popPose();
     }
 
     private static void renderElement(ElementDef element, Vec parentOrigin, PoseStack poseStack,

@@ -18,6 +18,18 @@ public abstract class PilotSkyhookPoseMixin {
     @Shadow(remap = false) private static void setHangingPose(boolean left, HumanoidModel<?> model) { throw new AssertionError(); }
     @Inject(method = "afterSetupAnim", at = @At("HEAD"), cancellable = true, remap = false)
     private static void laowu$pilotPose(Player player, HumanoidModel<?> model, CallbackInfo ci) {
+        if (player.getVehicle() instanceof cn.laowu.mod.entity.CatDivingCarrier diving) {
+            float partial=net.minecraft.client.Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+            float amount=diving.swimmingPose(partial);
+            if(amount>0) {
+                float heading=cn.laowu.mod.client.CatPilotFlightClient.viewYaw(diving,partial);
+                float body=net.minecraft.util.Mth.rotLerp(partial,player.yBodyRotO,player.yBodyRot);
+                cn.laowu.mod.client.CatDivingRiderPose.apply(model,player.tickCount+partial,amount,
+                        net.minecraft.util.Mth.wrapDegrees(heading-body));
+                ci.cancel();
+            }
+            return;
+        }
         if (!(player.getVehicle() instanceof CatFlightCarrier)) return;
         boolean left = (player.getMainArm() == HumanoidArm.LEFT) ^ !AllItems.WRENCH.isIn(player.getMainHandItem());
         setHangingPose(left, model);

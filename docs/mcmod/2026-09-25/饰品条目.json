@@ -1,0 +1,471 @@
+[
+  {
+    "id": "laowu:cat_taunt_bell",
+    "name": "铃铛",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。提高猫咪被附近作战敌人选作目标的倾向，与羊毛毡互斥。它不是强制嘲讽，仍受距离、视线和团队关系限制。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_taunt_bell.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_silent_bell",
+    "name": "羊毛毡",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。降低猫咪被附近作战敌人优先选作目标的倾向，与铃铛互斥。它不提供隐身或免战，也不会阻止敌人直接反击。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_silent_bell.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_stability_anchor",
+    "name": "船锚玩具",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。使猫咪免疫普通击退、钓鱼钩推退及本模组自爆产生的推力。该效果不免除攻击本身的伤害。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_stability_anchor.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_fire_charm",
+    "name": "隔热手套",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。使猫咪免疫燃烧、岩浆及带火焰标签的伤害。它不提供其他类型的伤害免疫。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_fire_charm.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_impact_core",
+    "name": "弹簧玩具",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。使远程职业猫咪的弹幕恢复正常击退。钓鱼钩原有的推退机制不受影响。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_impact_core.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_followup_gear",
+    "name": "齿轮玩具",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅激光猫咪生效，战斗力属性降低 20，成功命中后有 25% 概率追加一次单体攻击。追加攻击在 2 tick 后结算，可暴击但不会连锁触发；目标失效、距离超过 32 格或失去视线时取消。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_followup_gear.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_loot_magnet",
+    "name": "磁铁",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。将 3 格内的掉落物吸入猫咪的九格物品栏。拾取仍受延迟、拾取归属、遮挡及剩余容量限制，可搭配收纳袋筛选物品。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_loot_magnet.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_ace_feather",
+    "name": "羽毛玩具",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅飞行员猫咪生效，战斗力属性降低 20，每点有效速度提供 0.15% 的生物攻击闪避率，最高 80%。成功闪避免除该次攻击伤害，不拦截虚空、强制处死或反伤。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_ace_feather.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_blast_fuse",
+    "name": "自爆按钮",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅雷管猫咪生效，生命属性降低 20，自爆伤害倍率由原本的 5 倍提高至 10 倍。降低的是生命属性，不是固定扣除 20 点当前生命值。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_blast_fuse.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_health_badge",
+    "name": "生命挂饰",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。装备后生命属性增加 10。加成作用于有效属性，不改变基础属性、潜力上限或遗传结果。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_health_badge.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_attack_badge",
+    "name": "力量挂饰",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。装备后战斗力属性增加 10。它不是直接增加 10 点攻击伤害，也不改变基础属性或潜力上限。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_attack_badge.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_speed_badge",
+    "name": "迅捷挂饰",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。装备后速度属性增加 10。加成作用于有效属性，不是移动速度直接提高 10%。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_speed_badge.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_stamina_badge",
+    "name": "耐力挂饰",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。装备后耐力属性增加 10。加成不写入基础属性，也不提高潜力上限。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_stamina_badge.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_intelligence_badge",
+    "name": "智力挂饰",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。装备后智力属性增加 10。加成不写入基础属性，也不提高潜力上限。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_intelligence_badge.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_luck_badge",
+    "name": "幸运挂饰",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。装备后幸运属性增加 10。加成不写入基础属性，也不提高潜力上限。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_luck_badge.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_butter_cube",
+    "name": "黄油块",
+    "text": "史诗品质的猫咪饰品，由黄油猫以 25% 概率额外掉落 1 件，不进入心愿领养箱奖励池，无合成配方。装备后速度属性增加 10，水平移动速度超过 0.01 格/tick 时，受到的生物攻击伤害降低 25%。坐下、乘坐或处于猫饼状态时不触发，环境伤害和反伤也不在减伤范围内。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_butter_cube.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_reel_hook",
+    "name": "鱼钩",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅钓鱼猫咪生效，速度属性增加 10，鱼钩命中后的推退改为将敌人拉向猫咪。拉动仍受目标击退抗性影响。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_reel_hook.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_blue_flame_nozzle",
+    "name": "烈焰蛋糕",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅喷火猫咪生效，耐力属性降低 20，喷火改为蓝色超级火焰。喷火伤害为通常的 1.5 倍。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_blue_flame_nozzle.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_honey_stamp",
+    "name": "蜂蜜饮",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅采蜜猫咪生效，战斗力属性降低 10，命中后在目标脚下留下蜂蜜渍。蜂蜜渍半径 1.25 格、持续 5 秒，使接触生物获得缓慢 II，不替换原有地形。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_honey_stamp.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_concentrated_pouch",
+    "name": "加急快递",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅物流猫咪生效，速度属性降低 30，投送的支援药水提升至 II 级，也可升级目标已有的 I 级效果。原有药水种类、持续时间和投递冷却不变。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_concentrated_pouch.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_mixed_magazine",
+    "name": "工具箱",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅工程猫咪生效，速度属性降低 10，炮击有 60% 概率使用小齿轮，另各有 20% 概率使用大齿轮或传动杆。大齿轮产生半径 2.5 格的等伤害范围爆炸且不破坏方块；传动杆可贯穿生物，伤害增加 20%。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_mixed_magazine.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_guard_bandage",
+    "name": "守护绷带",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅医疗猫咪生效，智力属性降低 10，正在接受其治疗的目标受到的伤害降低 20%。坐垫诊疗的玩家和其他生物同样适用，多只医疗猫的此类保护不叠加，停止治疗或卸下后撤销。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_guard_bandage.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_rhythm_tambourine",
+    "name": "扩展音响",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅音乐猫咪生效，生命属性降低 10，被其音乐增幅的职业猫额外获得 20 点速度属性。该效果不是移动速度增加 20%，同类加成不叠加，不改写基础属性。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_rhythm_tambourine.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_medic_smoke_canister",
+    "name": "香草冰淇淋",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅特工猫咪生效，战斗力属性降低 10，撤退烟雾变为绿色治疗烟雾，并保留原有解除仇恨效果。烟雾持续 5 秒，为 3 格内自身及友方猫咪每秒恢复 2.5 点生命，与其他治疗按最强来源结算，不相加。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_medic_smoke_canister.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_purifying_filter",
+    "name": "牛奶饮",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅潜水员猫咪生效，战斗力属性降低 10，攻击喷水还能清除喷射范围内友方猫咪的负面药水效果。喷水不伤害友方，也不清除友方正面效果；原有驱散敌人正面效果的能力保留。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_purifying_filter.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_rebirth_ootheca",
+    "name": "爆珠奶茶",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。仅蟑螂猫咪生效，耐力属性降低 20，已驯养猫咪真正死亡时以两只幼年蟑螂猫替代死亡猫饼。两只幼猫各继承原猫基础六维属性的 50%（向下取整），保留潜力上限、主人、外观和项圈，并继承仍有效的敌对目标；不复制词条、物品或饰品，原物品按掉落规则掉落一次。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_rebirth_ootheca.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/CatCockroachSplit.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_chew_bone",
+    "name": "磨牙骨",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。连续命中同一目标会累积伤害加成，每层增加 4%，最多 5 层。每 0.5 秒最多获得一层，换目标或 4 秒未命中后清空；追加攻击和反伤不额外叠层。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_chew_bone.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_mouse_plush",
+    "name": "猫咪玩偶",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。攻击当前生命值高于最大生命值 90% 的敌人时，伤害增加 35%。当前内置效果没有独立触发冷却。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_mouse_plush.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_catnip_pouch",
+    "name": "猫薄荷饮",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。成功暴击后攻速提高 15%，持续 4 秒，冷却 8 秒。持续期间不会重复刷新，造成击杀的暴击也可触发。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_catnip_pouch.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_spiked_collar",
+    "name": "钉刺项圈",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。受到 3 格内敌对生物的近身攻击后，反弹实际扣血量的 50%，每秒最多一次。不会对玩家反伤，也不会暴击、触发追击或形成反伤连锁。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_spiked_collar.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_cork_vest",
+    "name": "软木护胸",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。生命由高于最大生命的 35% 跌至 35% 及以下且仍存活时，获得相当于最大生命 15% 的独立护盾，持续 6 秒。耐久为 50，每次成功触发消耗 1 点，冷却 15 秒，与金基咪互斥；最后一次触发仍提供完整护盾。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_cork_vest.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_roly_poly",
+    "name": "金基咪",
+    "text": "史诗品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。受到其他生物的一次攻击，结算伤害超过猫咪最大生命的 30% 时，将该次伤害压低至最大生命的 30%。耐久为 50，每次成功触发消耗 1 点，冷却 15 秒，与软木护胸互斥；不抵挡虚空等强制伤害或自身自爆。",
+    "rarity": "史诗",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_roly_poly.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_old_food_bowl",
+    "name": "旧饭碗",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。脱战 10 秒后，每 2 秒恢复 1 点生命。重新进入战斗即停止恢复，处于猫饼状态时不生效。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_old_food_bowl.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_warm_scarf",
+    "name": "暖绒围巾",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。受到的治疗量提高 20%。医疗猫、治疗烟雾和旧饭碗提供的治疗均可受益。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_warm_scarf.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_tracking_tag",
+    "name": "追踪吊牌",
+    "text": "稀有品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。主人存活、位于同一维度且与猫咪的三维距离不超过 4 格时，猫咪战斗力属性增加 30。离开范围即撤销，不是直接增加 30 点伤害，也不改变基础属性。",
+    "rarity": "稀有",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_tracking_tag.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  },
+  {
+    "id": "laowu:cat_sorting_pouch",
+    "name": "收纳袋",
+    "text": "普通品质的猫咪饰品，可通过心愿领养箱兑换，无合成配方。猫咪只自动拾取自身九格物品栏中已有同类物品的掉落物，饰品槽内物品不作为样品。可搭配磁铁进行远距离筛选拾取，但不增加物品栏容量，也不限制手动放入物品。",
+    "rarity": "普通",
+    "sourceFiles": [
+      "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+      "forge-1.20.1/src/main/resources/data/laowu/cat_accessories/cat_sorting_pouch.json",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryItems.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatAccessoryRarity.java",
+      "forge-1.20.1/src/main/java/cn/laowu/mod/accessory/CatCommonAccessories.java"
+    ]
+  }
+]

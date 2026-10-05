@@ -60,6 +60,8 @@ public final class DynamiteCatLastStand {
         }
 
         CompoundTag data = cat.getPersistentData();
+        // A fatal career transition keeps its last stand, but never carries its rider into combat.
+        CatGiantMount.release(cat);
         data.putBoolean(ACTIVE_TAG, true);
         data.remove(FINISHING_TAG);
         data.remove(FUSE_TICKS_TAG);

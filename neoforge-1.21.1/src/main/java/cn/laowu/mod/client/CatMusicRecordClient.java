@@ -24,6 +24,17 @@ public final class CatMusicRecordClient {
     private static Object world;
     private record Pending(MusicRecordPacket packet, long until) {}
     private static final Map<UUID, Pending> PENDING = new HashMap<>();
+    /** Preserve cause types, never provider messages: those often embed signed URLs or credentials. */
+    static String failureTypes(Throwable error) {
+        Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+        StringJoiner result = new StringJoiner(" -> ");
+        while (error != null) {
+            if (!seen.add(error)) { result.add("[cycle]"); break; }
+            result.add(error.getClass().getName());
+            error = error.getCause();
+        }
+        return result.toString();
+    }
     public static void receive(MusicRecordPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         checkWorld(mc);
@@ -166,6 +177,10 @@ public final class CatMusicRecordClient {
                     if (error == null || released) return;
                     Minecraft.getInstance().execute(() -> {
                         if (released) return;
+                        // Registered once when this sequence opens; heartbeats never repeat this warning.
+                        com.mojang.logging.LogUtils.getLogger().warn(
+                                "Music cat playback failed: stage=network-open, sequence={}, causes={}",
+                                sequence, failureTypes(error));
                         finish();
                         if (Minecraft.getInstance().level == cat.level())
                             Minecraft.getInstance().gui.setOverlayMessage(

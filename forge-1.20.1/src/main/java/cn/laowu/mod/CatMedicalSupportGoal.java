@@ -76,9 +76,10 @@ public final class CatMedicalSupportGoal extends Goal {
         double reach = channelStart < 0 && !aerial && recipient != cat
                 ? Math.min(CatSupportRules.MEDICAL_APPROACH_RANGE, radius) : radius;
         if (distanceSquared(cat, recipient) > reach * reach
-                || recipient != cat && !cat.hasLineOfSight(recipient) || !cat.onGround()) {
+                || recipient != cat && !cat.hasLineOfSight(recipient)
+                || !(CatGiantMount.carried(cat) ? cat.getVehicle().onGround() : cat.onGround())) {
             stopChannel();
-            if (--nextPath <= 0 && recipient != cat) {
+            if (--nextPath <= 0 && recipient != cat && !CatGiantMount.carried(cat)) {
                 nextPath = 8;
                 if (aerial) cat.getNavigation().moveTo(recipient.getX(), cat.getY(), recipient.getZ(), 1.15);
                 else cat.getNavigation().moveTo(recipient, 1.15);

@@ -235,7 +235,7 @@ public final class PilotAndTacticsProbe {
         restored.tick();
         h.assertTrue(!loaded.isRemoved()&&!loaded.isPassenger(),"Orphan root releases the saved cat safely");
         h.runAfterDelay(10,()->{
-            h.assertTrue(cat.getVehicle()==carrier&&carrier.gliding(),"Exhaustion switches to glide without detaching");
+            h.assertTrue(cat.getVehicle()==carrier&&carrier.gliding(),"Exhaustion switches to glide without detaching; ticks="+carrier.tickCount+", used="+cat.getPersistentData().getLong(CatPilotFlight.USED)+", vehicle="+cat.getVehicle()+", pos="+carrier.position());
             h.assertTrue(carrier.getDeltaMovement().y<0,"Glide descends even after powered ascent");
             h.assertTrue(cat.getPersistentData().getLong(CatPilotFlight.USED)==capacity&&carrier.seconds()==0,"Fuel stops at exhaustion");
             carrier.input(owner,1,0,-90,-90,true,false);

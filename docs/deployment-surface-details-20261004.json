@@ -1,0 +1,57 @@
+{
+  "Time": "2026-10-04 17:07:21",
+  "Version": "2.2.2",
+  "Stamp": "20261004-170721-2.2.2-surface-details",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "D8943BF3D0017117E04AA1441C3915E2F054C189130D613B8AB8F5736569BA91"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261004-170721-2.2.2-surface-details\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "CAA63128C4C167A17748553177C3F8DF0D96094FEF4D233C43E9E918BBD35591"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "15E16016E7BFF98C5800874AD058B32B58802A11BC140D451802D8098026F4EF"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261004-170721-2.2.2-surface-details\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "3EE470632844ADF303CFFC6D653E1BD2B8044F6A7DA38680CE455F2836B2DE7A"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Changes": [
+    "Editor statistics clearing stops before the original one-pixel right border",
+    "Restore authored left/right lid coordinates and pivots; crop one-pixel central overlap with corresponding UVs; outward opening follows restored sides",
+    "Remove four dynamic socket liner faces coplanar with baked interface walls"
+  ],
+  "Validation": [
+    "Original GUI regression failed exactly 60/180 right-border pixels; dual corrected GPU probes pass",
+    "Four lid/port surface asset regressions failed before fix and pass after fix",
+    "Dual six-way laser clients, aperture clearance, sustained beam, item transforms and close-up GPU snapshots pass",
+    "Dual normal build, 23270 accessory checks per port, API v3/trait v1/release isolation pass",
+    "Independent read-only review: no actionable findings"
+  ]
+}

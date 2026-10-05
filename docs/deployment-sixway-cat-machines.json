@@ -1,0 +1,45 @@
+{
+  "Time": "2026-09-25 18:46:49",
+  "Version": "2.2.1",
+  "Stamp": "20260925-184649-2.2.1-sixway-cat-machines",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "B4558DB2B83564A46D596A8110A546B7C50334B487E03DF795355FBE6ED03769"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20260925-184649-2.2.1-sixway-cat-machines\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "A00A9AB722D7CBFDCA48DB5AB4F369129E18FFE1AF685276B8101BCFA532EDDE"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "C822B7282388E8BA261A1D4BB58E4AF37FC6169A72265833206E84718EFADB00"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20260925-184649-2.2.1-sixway-cat-machines\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.1",
+        "Sha256": "44FA7EF20B73C05FE6BBE3E3638C2D1C96E74B80B30086FB5D74770EE2B447EB"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ]
+}

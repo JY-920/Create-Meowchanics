@@ -6,6 +6,8 @@ allprojects {
         def neo = p.extensions.findByName('neoForge') != null
         def client = p.hasProperty('netMusicClient')
         def jarPath = p.findProperty('netMusicJar')?.toString()
+        def externalId = p.findProperty('netMusicExternalId')?.toString() ?: ''
+        if (externalId && !(externalId ==~ /[0-9]{1,20}/)) throw new GradleException('netMusicExternalId must be a numeric NetEase song ID')
         def probe = p.sourceSets.create('netMusicProbe') {
             java.srcDir(p.file('../tests/netmusic/' + (neo ? 'neo' : 'forge')))
             java.include(client ? '**/NetMusicClientProbe.java' : '**/NetMusicServerProbe.java')
@@ -58,6 +60,7 @@ allprojects {
                 gameDirectory = runDir
                 systemProperty 'laowu.netmusic_expected', (jarPath != null).toString()
                 systemProperty 'laowu.netmusic_fixture', p.file('../build/netmusic-test-tools/tone.mp3').absolutePath
+                systemProperty 'laowu.netmusic_external_id', externalId
             }
         } else {
             p.dependencies.add('runtimeOnly', 'io.github.llamalad7:mixinextras-forge:0.4.1') { transitive = false }
@@ -65,6 +68,7 @@ allprojects {
                 workingDirectory runDir
                 property 'laowu.netmusic_expected', (jarPath != null).toString()
                 property 'laowu.netmusic_fixture', p.file('../build/netmusic-test-tools/tone.mp3').absolutePath
+                property 'laowu.netmusic_external_id', externalId
                 args '--mixin', 'laowu.mixins.json'
                 property 'mixin.env.remapRefMap', 'true'
                 property 'mixin.env.refMapRemappingFile', p.file('build/createSrgToMcp/output.srg').absolutePath

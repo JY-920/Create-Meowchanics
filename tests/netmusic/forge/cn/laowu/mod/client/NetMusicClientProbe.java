@@ -54,6 +54,7 @@ public final class NetMusicClientProbe {
     private static void verify(Minecraft mc) throws Exception {
         mc.submit(() -> verifyDeathSettings(mc)).get(10, TimeUnit.SECONDS);
         check(NetMusicDiscCompat.loaded(), "Real NetMusic mod must be loaded");
+        verifyExternalSource(mc);
         byte[] pcm = java.nio.file.Files.readAllBytes(java.nio.file.Path.of(System.getProperty("laowu.netmusic_fixture")));
         var entered = new CountDownLatch(1);
         var release = new CountDownLatch(1);
@@ -150,6 +151,43 @@ public final class NetMusicClientProbe {
             }).get(10, TimeUnit.SECONDS);
         } finally {
             release.countDown(); server.stop(0); http.shutdownNow();
+        }
+    }
+    /** Opt-in real endpoint check: no cookies, no downloaded files, no user world. */
+    private static void verifyExternalSource(Minecraft mc) throws Exception {
+        String id = System.getProperty("laowu.netmusic_external_id", "");
+        if (id.isEmpty()) return;
+        check(id.matches("[0-9]{1,20}"), "External fixture must be a numeric NetEase ID");
+        String source = "https://music.163.com/song/media/outer/url?id=" + id + ".mp3";
+        try (var request = new NetMusicAudioBridge.Request(source)) {
+            var stream = request.future().get(40, TimeUnit.SECONDS);
+            check(stream.getFormat().getSampleSizeInBits() == 16, "External song decodes to PCM");
+            var bytes = stream.read(4096);
+            check(bytes != null && bytes.remaining() > 0, "External song emits actual PCM data");
+        } catch (Throwable error) {
+            throw new AssertionError("External PCM id=" + id + " failed: " + CatMusicRecordClient.failureTypes(error));
+        }
+        EngineSound sound = mc.submit(() -> {
+            var value = new EngineSound(new Cat(EntityType.CAT, new AgentWatchVisualProbe.ProbeLevel()),
+                    source);
+            mc.options.getSoundSourceOptionInstance(net.minecraft.sounds.SoundSource.RECORDS).set(0.05);
+            mc.getSoundManager().play(value);
+            return value;
+        }).get(10, TimeUnit.SECONDS);
+        try {
+            AudioStream decoded = sound.opened.get(40, TimeUnit.SECONDS);
+            check(decoded.getFormat().getSampleSizeInBits() == 16, "External song decodes to PCM");
+            mc.submit(() -> {
+                sound.presentationTick(mc);
+                check(sound.presenting(), "External song drives real SoundEngine presentation");
+                verifyPerformance(sound);
+            }).get(10, TimeUnit.SECONDS);
+            System.out.println("PASS: NETMUSIC EXTERNAL id=" + id + " native PCM, SoundEngine, stationary dance and movement exit");
+        } catch (Throwable error) {
+            // Provider exception messages may contain redirect signatures. Never print the original.
+            throw new AssertionError("External song id=" + id + " failed: " + CatMusicRecordClient.failureTypes(error));
+        } finally {
+            mc.submit(() -> { sound.finish(); mc.getSoundManager().stop(sound); }).get(10, TimeUnit.SECONDS);
         }
     }
     private static void verifyDeathSettings(Minecraft mc) {

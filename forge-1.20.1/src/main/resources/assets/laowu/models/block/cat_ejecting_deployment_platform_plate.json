@@ -1,0 +1,79 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "0": "laowu:block/cat_ejecting_deployment_platform",
+    "particle": "laowu:block/cat_ejecting_deployment_platform"
+  },
+  "elements": [
+    {
+      "name": "cube",
+      "from": [
+        2,
+        12,
+        2
+      ],
+      "to": [
+        14,
+        14,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13,
+            9,
+            16,
+            9.5
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            13,
+            9,
+            16,
+            9.5
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            13,
+            9,
+            16,
+            9.5
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            13,
+            9,
+            16,
+            9.5
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            11,
+            3,
+            8,
+            0
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            11,
+            3,
+            8,
+            6
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "laowu:block/creature_transmitter"
+    }
+  }
+}

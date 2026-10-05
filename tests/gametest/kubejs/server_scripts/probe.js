@@ -38,7 +38,7 @@ CatAccessoryEvents.projectile(event => {
     return
   }
   event.context.setProjectileDamage(7)
-  event.context.scaleProjectileSpeed(0.5)
+  event.context.scaleProjectileSpeed(event.context.accessory('kubejs:accessory_probe').text('probe:state') === 'slow_work' ? 0.25 : 0.5)
 })
 CatAccessoryEvents.beforeExplosion(event => {
   if (!event.context.accessory('kubejs:accessory_probe')) return

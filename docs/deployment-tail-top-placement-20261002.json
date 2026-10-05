@@ -1,0 +1,162 @@
+{
+  "version": "2.2.1",
+  "changes": [
+    "Resting giant cat's two tail segments form a grounded, horizontal distal tail with connected joint; head tracking, torso floor, UVs and all non-tail geometry retained.",
+    "Cat depot's work-face interaction passes cat press/mixer items to standard placement before material insertion; normal and crouching clicks on cat depot/basin top place processors two cells along the work face with one-cell gap.",
+    "Ordinary depot material insertion/retrieval, placement events/permissions and creative count restoration retained."
+  ],
+  "tests": {
+    "red": {
+      "restTail": "Actual distal tail lower corner floated 4.205254057329079 model pixels above resting floor.",
+      "realServerClick": "ServerPlayerGameMode.useItemOn reproduced normal cat depot top click storing the held processor without placing it; direct ItemStack.useOn had missed block-first dispatch."
+    },
+    "assetChecks": {
+      "status": "passed",
+      "tests": [
+        "tests/giant-cat-mount-assets.mjs",
+        "tests/giant-cat-animation-sampler.mjs",
+        "tests/giant-rest-look.mjs",
+        "tests/giant-head-outfits.mjs",
+        "tests/giant-facing.mjs",
+        "tests/giant-boss-animation.mjs",
+        "tests/giant-cat-mount-exporter.mjs"
+      ],
+      "tailSlopeDegrees": 32.45701139074778,
+      "restTipMinModelY": 0,
+      "restTipCentreModelY": 0.78,
+      "jointError": 0,
+      "bbmodelSha256": "48EB54DE0F2FDF52E1ECC4A8EA78A6EC7C1B45EDF2A5B4BD94E3EA77237E26AC",
+      "curvesSha256": "92744139F07AC4DE2219F02D52543899A87E45151569051F601AB05ACEFCC9A4"
+    },
+    "actualClient": {
+      "forge": {
+        "exit": 0,
+        "log": "forge-1.20.1/build/tail-floor-client.log",
+        "marker": "PASS: GIANT VISUAL CLIENT"
+      },
+      "neo": {
+        "exit": 0,
+        "log": "neoforge-1.21.1/build/tail-floor-client.log",
+        "marker": "PASS: GIANT VISUAL CLIENT"
+      },
+      "coverage": "Real runtime matrices and GPU resting tail at 25/100/400 Health; existing rider/camera, rest head tracking, 13 career head outfits, facing, movement, jumps and boss phase rendering.",
+      "screenshot": "neoforge-1.21.1/build/cat-sixway-client-tail-floor-verify/giant-cat-frames/rest-tail-floor.png"
+    },
+    "full": {
+      "forge": {
+        "required": 199,
+        "passed": 199,
+        "exit": 0,
+        "log": "forge-1.20.1/build/tail-top-full-final.log"
+      },
+      "neo": {
+        "required": 199,
+        "passed": 199,
+        "exit": 0,
+        "log": "neoforge-1.21.1/build/tail-top-full-final.log"
+      },
+      "kubejsActualCallbacksPersistenceAndReload": "passed both ports"
+    },
+    "inventoryConservation": {
+      "forge": "Included in final full 199/199",
+      "neo": {
+        "required": 18,
+        "passed": 18,
+        "exit": 0,
+        "log": "neoforge-1.21.1/build/tail-top-inventory-final.log"
+      },
+      "coverage": "Real server click over all six work faces: material replacement returns diamond; empty hand retrieves all three ingots; blocked placement preserves hand and held contents; creative places without consumption."
+    },
+    "initialFullNotes": "Old crafting test asserted normal click inserts processors into cat depot, superseded by approved work-top processor placement. Updated to assert both click modes use gap while separately preserving material interactions. Initial Forge full also timed out in pre-existing liveAiSelectsSpecialAttacksWithoutMeleeAndHonorsRecoveries; fresh full rerun passed all 199 without changing Boss production code.",
+    "normalBuild": {
+      "forge": {
+        "exit": 0,
+        "log": "forge-1.20.1/build/tail-top-release.log"
+      },
+      "neo": {
+        "exit": 0,
+        "log": "neoforge-1.21.1/build/tail-top-release.log"
+      },
+      "checks": [
+        "Frozen accessory API v3 and 36 saved IDs",
+        "Frozen trait API v1 and 82 native IDs",
+        "Animation resources",
+        "Release isolation",
+        "23270 accessory assertions per port"
+      ]
+    },
+    "forgeProductionBoot": {
+      "exit": 0,
+      "launchTarget": "forgeclient",
+      "environment": "Actual Forge 47.4.22 SRG production launcher, complete installed mod set; separate probe only in isolated test fixture.",
+      "log": "forge-1.20.1/build/production-boot-tail-top-final/logs/latest.log",
+      "marker": "PASS: FORGE PRODUCTION JAR BOOT - actual SRG client, full installed mod set, title screen, clean shutdown",
+      "jarSha256": "126C77A512FDB09CDCC005F5CF527F6A923A2A9E535ED5A1B892EAF5C27ACAF3",
+      "probeNeverDeployed": true
+    }
+  },
+  "review": "Independent read-only review found no Critical or Important issues. Minor inventory conservation assertion gap addressed and tested on both ports.",
+  "packageValidation": {
+    "forge": {
+      "sha256": "126C77A512FDB09CDCC005F5CF527F6A923A2A9E535ED5A1B892EAF5C27ACAF3",
+      "modId": "laowu",
+      "version": "2.2.1",
+      "forbiddenEntries": 0
+    },
+    "neo": {
+      "sha256": "D14A60536E9B4DD9B06F8D05EB23938E42CCCE35A4D21150656B15BF1C8C3321",
+      "modId": "laowu",
+      "version": "2.2.1",
+      "forbiddenEntries": 0
+    },
+    "runtimeAssetsMatchVerifiedSources": true
+  },
+  "deployment": {
+    "time": "2026-10-02 22:55:45",
+    "stamp": "20261002-225545-2.2.1-tail-top-placement",
+    "targets": [
+      {
+        "Port": "forge-1.20.1",
+        "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "Installed": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+          "ModId": "laowu",
+          "Version": "2.2.1",
+          "Sha256": "126C77A512FDB09CDCC005F5CF527F6A923A2A9E535ED5A1B892EAF5C27ACAF3"
+        },
+        "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261002-225545-2.2.1-tail-top-placement\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+        "Previous": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.1-forge-1.20.1.jar",
+          "ModId": "laowu",
+          "Version": "2.2.1",
+          "Sha256": "43EB177B8932CF70945230431B3BB7595319B5079B679F71DC57E65487DB4AF4"
+        },
+        "ActiveLaowuCount": 1,
+        "Verified": true
+      },
+      {
+        "Port": "neoforge-1.21.1",
+        "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "Installed": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+          "ModId": "laowu",
+          "Version": "2.2.1",
+          "Sha256": "D14A60536E9B4DD9B06F8D05EB23938E42CCCE35A4D21150656B15BF1C8C3321"
+        },
+        "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261002-225545-2.2.1-tail-top-placement\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+        "Previous": {
+          "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.1-neoforge-1.21.1.jar",
+          "ModId": "laowu",
+          "Version": "2.2.1",
+          "Sha256": "90AF2AC99C89A9EC03170AB4593499F149006F8CC4BA676A53532E594F887F91"
+        },
+        "ActiveLaowuCount": 1,
+        "Verified": true
+      }
+    ],
+    "clientsStopped": true,
+    "backupHashesVerified": true,
+    "worldsConfigsOtherModsAndUserKubejsUnmodified": true,
+    "commitPushOrPublicVersionChange": false
+  }
+}

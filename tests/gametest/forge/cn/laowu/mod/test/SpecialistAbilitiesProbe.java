@@ -147,6 +147,10 @@ public final class SpecialistAbilitiesProbe {
             h.assertTrue(carrier.swimming()&&!carrier.surfacing()&&carrier.getDeltaMovement().y<0,
                     "Server movement really follows Ctrl underwater");
             h.assertTrue(cat.getAirSupply()>200&&owner.getAirSupply()>200,"Powered dive supports cat and rider breathing");
+            carrier.positionRider(cat);carrier.positionRider(owner);
+            var behind=owner.position().subtract(cat.position());
+            h.assertTrue(behind.z<-.3&&Math.abs(behind.x)<.01,
+                    "Water rider moves behind the real cat instead of staying on its back: "+behind);
             carrier.input(stub,1,0,0,0,true,false);carrier.input(owner,Float.NaN,0,0,0,true,false);
         });
         h.runAtTickTime(14,()->{

@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "item": "laowu:cat_giant_collar",
+  "effects": { "giant_mount": 1 }
+}

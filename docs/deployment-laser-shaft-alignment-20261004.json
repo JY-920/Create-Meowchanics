@@ -1,0 +1,27 @@
+{
+  "time": "2026-10-04 01:47:57",
+  "version": "2.2.2",
+  "stamp": "20261004-014757-2.2.2-laser-shaft-alignment",
+  "change": "Move automatic laser shaft one model pixel outward to meet the one-pixel recessed port; preserve shaft length, spin and all six placement frames.",
+  "verification": {
+    "red": "Actual NeoForge renderer captured inner depth 0.375000007 instead of 0.4375 before the fix",
+    "green": "Both actual clients passed six-way shaft/beam/world tests, 72 aim/geometry cases, moving targets, GUI bounds and resource reload",
+    "build": "Both normal builds passed accessory and trait API checks, release isolation and 23270 accessory checks each",
+    "review": "Passed",
+    "deployment": "Clients stopped; SHA256 matched build artifacts and one active laowu JAR per instance"
+  },
+  "results": [
+    {
+      "instance": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发",
+      "jar": "mods/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "sha256": "5F78D91C5E9510573BFD2D8C188AA07BA8DA89749AD65C1AD2CB00F0E581DEFC",
+      "backup": "mod-backups/create-meowchanics/20261004-014757-2.2.2-laser-shaft-alignment/create-meowchanics-2.2.2-forge-1.20.1.jar"
+    },
+    {
+      "instance": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发",
+      "jar": "mods/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "sha256": "35194ADBB90952703E3DC7E0BA3220F8832D2BDC1D8ADBE5E4818F4CA1A4EE3B",
+      "backup": "mod-backups/create-meowchanics/20261004-014757-2.2.2-laser-shaft-alignment/create-meowchanics-2.2.2-neoforge-1.21.1.jar"
+    }
+  ]
+}

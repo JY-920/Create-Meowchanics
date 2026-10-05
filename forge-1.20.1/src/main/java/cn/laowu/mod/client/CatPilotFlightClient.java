@@ -28,6 +28,9 @@ public final class CatPilotFlightClient {
     }
     /** Cosmetic prediction only: movement/collision and stamina remain server-authoritative. */
     public static float viewYaw(net.minecraft.world.entity.Entity carrier, float partialTick) {
+        // Underwater grip and passenger placement share the carrier's heading, including remote riders.
+        if(carrier instanceof cn.laowu.mod.entity.CatDivingCarrier)
+            return net.minecraft.util.Mth.rotLerp(partialTick,carrier.yRotO,carrier.getYRot());
         var local = Minecraft.getInstance().player;
         return local != null && local.getVehicle() == carrier ? local.getYRot()
                 : net.minecraft.util.Mth.rotLerp(partialTick, carrier.yRotO, carrier.getYRot());

@@ -1,0 +1,41 @@
+{
+  "time": "2026-10-04 23:01:22 +08:00",
+  "version": "2.2.2",
+  "internalBuild": "20261004-230121-2.2.2-creature-rules-v3",
+  "clientsStoppedBeforeDeployment": true,
+  "results": [
+    {
+      "loader": "forge-1.20.1",
+      "source": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/Create-Meowchanics-develop/forge-1.20.1/build/libs/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "installed": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mods/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "sha256": "A2804185D9ECA73B855CBBA4B83A6D8E06D5A728171BED7DD02D5E346E39A39E",
+      "previousSha256": "FA53F022521238C81CAD0268619DD25659A1EF764B52CC13989749CD3EF1829C",
+      "backup": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mod-backups/create-meowchanics/20261004-230121-2.2.2-creature-rules-v3/create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "activeLaowuCount": 1,
+      "hashVerified": true
+    },
+    {
+      "loader": "neoforge-1.21.1",
+      "source": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/Create-Meowchanics-develop/neoforge-1.21.1/build/libs/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "installed": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mods/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "sha256": "112C0341FC12F5D01D8B5E1C7FE2615BE4C4665395E4E00587DFA82FC7B4B816",
+      "previousSha256": "D8F726F10FF283B392643D07E6BC02D6B9F46A2BFF98EBD372B2D11E26F2ECEF",
+      "backup": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mod-backups/create-meowchanics/20261004-230121-2.2.2-creature-rules-v3/create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "activeLaowuCount": 1,
+      "hashVerified": true
+    }
+  ],
+  "verification": {
+    "filterGameTestsPerLoader": "11/11",
+    "transmitterGameTestsPerLoader": "7/7",
+    "filterNativeGuiAndLiveNetwork": "PASS both loaders; final Forge uses fresh isolated world",
+    "transmitterNativeGuiRangeAndGpuLights": "PASS both loaders",
+    "assetTests": "23/23",
+    "normalBuilds": "PASS both loaders",
+    "compatibilityAndIsolation": "accessory API v3, trait API v1, release isolation and 23270 accessory checks PASS both loaders",
+    "review": "Task reviews and final scoped review approved; all findings addressed",
+    "logs": ".superpowers/sdd/2026-10-04-creature-rules-extension"
+  },
+  "gitCommitOrPush": false,
+  "publicReleasePublished": false
+}

@@ -182,7 +182,8 @@ public final class CommonEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void preventPetTeamFriendlyFire(LivingAttackEvent event) {
-        if (event.getSource().getEntity() instanceof Cat supporter && CatClothesData.getOutfit(supporter).isSupport()
+        if (event.getSource().getEntity() instanceof Cat mounted && CatGiantMount.carried(mounted)
+                || event.getSource().getEntity() instanceof Cat supporter && CatClothesData.getOutfit(supporter).isSupport()
                 && !(event.getSource().is(DamageTypes.THORNS) && cn.laowu.mod.accessory.CatCommonAccessories.isReflecting())
                 || CatTeamRules.friendly(event.getSource().getEntity(), event.getEntity())) {
             event.setCanceled(true);
@@ -291,6 +292,7 @@ public final class CommonEvents {
     @SubscribeEvent
     public static void initializeCatTraits(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide() && event.getEntity() instanceof Cat cat) {
+            CatMaterialRegistry.excludeCopycatVariant(cat);
             PENDING_CAT_INITIALIZATION.add(cat);
         }
     }
@@ -308,6 +310,11 @@ public final class CommonEvents {
     @SubscribeEvent
     public static void resizeAppearanceTraitCat(EntityEvent.Size event) {
         if (!(event.getEntity() instanceof Cat cat)) return;
+        if (CatGiantMount.active(cat)) {
+            event.setNewSize(net.minecraft.world.entity.EntityDimensions.scalable(CatGiantMount.width(cat), CatGiantMount.height(cat)));
+            event.setNewEyeHeight(2.6F*CatGiantMount.sizeFactor(cat));
+            return;
+        }
         int level = CatTraitData.read(cat)
                 .map(profile -> profile.level(CatTrait.BIG_CHONKY_CAT))
                 .orElse(0);
@@ -661,6 +668,7 @@ public final class CommonEvents {
 
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+        if (event.getEntity() instanceof Cat sizedCat) CatGiantMount.tick(sizedCat);
         if (event.getEntity() instanceof Cat cat && !cat.level().isClientSide) {
             initializeCatAfterJoin(cat);
             if (CatTeamRules.friendly(cat, cat.getTarget())) cat.setTarget(null);
@@ -676,6 +684,14 @@ public final class CommonEvents {
             CatPilotFlight.recover(cat);
             CatDivingMount.recover(cat);
             CatMusicRecords.tick(cat);
+            // Keep public accessory/trait hooks and passive maintenance above live while airborne.
+            if(cn.laowu.mod.create.CatDeploymentFlight.tick(cat))return;
+            if (CatGiantMount.carried(cat)) {
+                cat.setTarget(null);
+                // The collar only owns locomotion. Career attributes, jobs and support AI remain live.
+                CareerCatBehavior.tick(cat);
+                return;
+            }
             if (CatPilotFlight.carried(cat) || CatDivingMount.carried(cat)) {
                 cat.setTarget(null);
                 CareerCatBehavior.tick(cat);
@@ -897,8 +913,9 @@ public final class CommonEvents {
             return;
         }
         if (!(event.getTarget() instanceof Cat cat)) return;
-        InteractionResult pilotRide = CatPilotFlight.interact(cat, event.getEntity(), event.getHand());
-        if (pilotRide == InteractionResult.PASS) pilotRide = CatDivingMount.interact(cat, event.getEntity(), event.getHand());
+        InteractionResult pilotRide = CatGiantMount.interact(cat, event.getEntity(), event.getHand());
+        if (pilotRide == InteractionResult.PASS && !CatGiantMount.active(cat)) pilotRide = CatPilotFlight.interact(cat, event.getEntity(), event.getHand());
+        if (pilotRide == InteractionResult.PASS && !CatGiantMount.active(cat)) pilotRide = CatDivingMount.interact(cat, event.getEntity(), event.getHand());
         if (pilotRide != InteractionResult.PASS) {
             event.setCancellationResult(pilotRide);
             event.setCanceled(true);

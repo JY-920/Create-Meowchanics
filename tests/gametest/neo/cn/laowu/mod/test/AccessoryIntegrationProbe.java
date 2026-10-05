@@ -24,7 +24,7 @@ public final class AccessoryIntegrationProbe {
         return CatAccessoryHooks.beforeDamage(cat,source,CatAccessories.mitigateMovingDamage(cat,source,amount));
     }
     private static ResourceLocation id(String value) { return ResourceLocation.parse(value); }
-    @GameTest(template = "artillery_probe", batch = "artillery", timeoutTicks = 220)
+    @GameTest(template = "artillery_probe", batch = "artillery", timeoutTicks = 400)
     public static void engineeringArtillery(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos origin = helper.absolutePos(new BlockPos(22, 1, 6));
@@ -32,6 +32,39 @@ public final class AccessoryIntegrationProbe {
             level.setBlockAndUpdate(origin.offset(x, -1, z), Blocks.STONE.defaultBlockState());
             for (int y = 0; y <= 4; y++) level.setBlockAndUpdate(origin.offset(x, y, z), Blocks.AIR.defaultBlockState());
         }
+        // This 72-block arena extends beyond GameTest's corner-centred ticking region.
+        // Wait for real entity tracking before issuing the original laser command.
+        var arenaChunks = new java.util.ArrayList<net.minecraft.world.level.ChunkPos>();
+        var newlyForced = new java.util.ArrayList<net.minecraft.world.level.ChunkPos>();
+        Runnable cleanup = () -> {
+            for (var chunk : newlyForced) level.setChunkForced(chunk.x, chunk.z, false);
+            newlyForced.clear();
+        };
+        helper.testInfo.addListener(new GameTestListener() {
+            public void testStructureLoaded(GameTestInfo info) {}
+            public void testPassed(GameTestInfo info, GameTestRunner runner) { cleanup.run(); }
+            public void testFailed(GameTestInfo info, GameTestRunner runner) { cleanup.run(); }
+            public void testAddedForRerun(GameTestInfo oldInfo, GameTestInfo newInfo, GameTestRunner runner) { cleanup.run(); }
+        });
+        var first = new net.minecraft.world.level.ChunkPos(origin.offset(-20, 0, -5));
+        var last = new net.minecraft.world.level.ChunkPos(origin.offset(45, 0, 5));
+        for (int x = first.x; x <= last.x; x++) for (int z = first.z; z <= last.z; z++) {
+            var chunk = new net.minecraft.world.level.ChunkPos(x, z);
+            arenaChunks.add(chunk);
+            if (!level.getForcedChunks().contains(chunk.toLong())) {
+                level.setChunkForced(x, z, true);
+                newlyForced.add(chunk);
+            }
+        }
+        helper.startSequence().thenWaitUntil(() -> {
+            for (var chunk : arenaChunks) helper.assertTrue(level.isPositionEntityTicking(
+                    new BlockPos(chunk.getMinBlockX(), origin.getY(), chunk.getMinBlockZ())),
+                    "Artillery arena is not entity-ticking yet: " + chunk);
+        }).thenExecute(() -> runEngineeringArtillery(helper, origin));
+    }
+
+    private static void runEngineeringArtillery(GameTestHelper helper, BlockPos origin) {
+        ServerLevel level = helper.getLevel();
         // A headless fixture has no negotiated client connection. Only owner lookup is stubbed;
         // the full vanilla/career goal set and real laser command implementation remain intact.
         var owner = net.neoforged.neoforge.common.util.FakePlayerFactory.get(level,
@@ -64,10 +97,24 @@ public final class AccessoryIntegrationProbe {
         level.addFreshEntity(enemy);
         helper.assertTrue(CatLaserCommands.issue(owner, new CatLaserTargeting.Aim(enemy.position(), enemy)) == 1,
                 "Real laser command selects the engineer for combat");
+        System.out.println("ARTILLERY_ORDER_ISSUE tracked="+(level.getEntity(enemy.getUUID())==enemy)
+                +", validOrder="+CatLaserCommands.hasOrder(cat)+", orderTarget="+CatLaserCommands.isAttackOrderTarget(cat,enemy)
+                +", ownerAlive="+owner.isAlive()+", resting="+CareerCatBehavior.isCombatResting(cat));
+        helper.runAfterDelay(1,()->System.out.println("ARTILLERY_ORDER_FIRST_TICK tracked="+(level.getEntity(enemy.getUUID())==enemy)
+                +", validOrder="+CatLaserCommands.hasOrder(cat)+", orderTarget="+CatLaserCommands.isAttackOrderTarget(cat,enemy)
+                +", targetMatches="+(cat.getTarget()==enemy)+", storedTarget="+cat.getPersistentData().hasUUID("LaoWuLaserTarget")
+                +", resting="+CareerCatBehavior.isCombatResting(cat)));
         var cannonRef = new java.util.concurrent.atomic.AtomicReference<cn.laowu.mod.entity.EngineeringCannon>();
         var damageAfterFirst = new java.util.concurrent.atomic.AtomicReference<Float>();
         var pursuitStart = new java.util.concurrent.atomic.AtomicReference<net.minecraft.world.phys.Vec3>();
         helper.runAfterDelay(10, () -> {
+            System.out.println("ARTILLERY_DEPLOY_CHECK deployed="+CatEngineeringCombat.deployed(cat)
+                    +", grounded="+cat.onGround()+", targetMatches="+(cat.getTarget()==enemy)
+                    +", targetAlive="+enemy.isAlive()+", canUse="+new CatEngineeringCombat(cat).canUse()
+                    +", canDeploy="+CatEngineeringCombat.canDeploy(cat)+", lineOfSight="+cat.hasLineOfSight(enemy)
+                    +", viewed="+CatProfileData.isBeingViewed(cat)+", orderedSit="+cat.isOrderedToSit()
+                    +", catPos="+cat.position()+", enemyPos="+enemy.position()
+                    +", intelligence="+cn.laowu.mod.genetics.CatAttributeEffects.effectiveValue(cat,cn.laowu.mod.genetics.CatStat.INTELLIGENCE));
             helper.assertTrue(CatEngineeringCombat.deployed(cat), "Deploys against an enemy within 32 blocks");
             helper.assertTrue(cn.laowu.mod.genetics.CatAttributeEffects.effectiveValue(cat, cn.laowu.mod.genetics.CatStat.ATTACK) == 50
                             && cn.laowu.mod.genetics.CatAttributeEffects.effectiveValue(cat, cn.laowu.mod.genetics.CatStat.LUCK) == 60
@@ -179,8 +226,8 @@ public final class AccessoryIntegrationProbe {
             helper.assertTrue(LaoWuMod.CAT_PROGRESSION_TAB.get().getDisplayItems().stream().anyMatch(stack -> stack.is(complete)),
                     "Keep completed suit visible: "+career);
         }
-        helper.assertTrue(tab.getDisplayItems().size() == 36 && tab.getSearchTabDisplayItems().size() == 36,
-                "Dedicated tab lists 36 distinct accessories in display and search");
+        helper.assertTrue(tab.getDisplayItems().size() == 37 && tab.getSearchTabDisplayItems().size() == 37,
+                "Dedicated tab lists 37 distinct accessories in display and search");
         helper.assertTrue(tab.getIconItem().is(BuiltInRegistries.ITEM.get(id("laowu:cat_taunt_bell"))),
                 "Creative icon is the redrawn bell");
         var marker = net.minecraft.network.chat.Component.translatable("cat_accessory.laowu.label");
@@ -234,7 +281,7 @@ public final class AccessoryIntegrationProbe {
         } finally {
             CatAccessoryRegistry.receive(original);
         }
-        System.out.println("PASS: accessory presentation: 36 unique creative entries, separate progression tab, ordered normal/custom/disabled tooltips");
+        System.out.println("PASS: accessory presentation: 37 unique creative entries, separate progression tab, ordered normal/custom/disabled tooltips");
         helper.succeed();
     }
 
@@ -267,6 +314,22 @@ public final class AccessoryIntegrationProbe {
         CatClothesData.unequip(cat);
         cat.setNoAi(true);
         var inventory = CatProfileData.openContainer(cat);
+        Item giantCollar = BuiltInRegistries.ITEM.get(id("laowu:cat_giant_collar"));
+        helper.assertTrue(giantCollar != Items.AIR
+                        && CatAccessoryItems.DEFAULTS.containsKey("laowu:cat_giant_collar")
+                        && CatAccessoryItems.DEFAULTS.get("laowu:cat_giant_collar").value("giant_mount") == 1,
+                "Giant collar has a registered item and native fallback definition");
+        inventory.setItem(0, new ItemStack(giantCollar));
+        helper.assertTrue(CatAccessoryApi.effectValue(cat, "giant_mount") == 1,
+                "Native giant collar activates from the equipped item");
+        CompoundTag giantSave = cat.saveWithoutId(new CompoundTag());
+        Cat giantRestored = EntityType.CAT.create(level);
+        giantRestored.load(giantSave);
+        ItemStack restoredCollar = CatProfileData.openContainer(giantRestored).getItem(0);
+        helper.assertTrue(restoredCollar.is(giantCollar)
+                        && CatAccessoryRegistry.find(restoredCollar, false).value("giant_mount") == 1,
+                "Giant collar item ID and effect survive cat save/load");
+        inventory.setItem(0, ItemStack.EMPTY);
         Item butter = CatAccessoryItems.butterReward();
         helper.assertTrue(butter == BuiltInRegistries.ITEM.get(id("laowu:cat_butter_cube")), "Boss reward registry ID");
         inventory.setItem(0, new ItemStack(butter));

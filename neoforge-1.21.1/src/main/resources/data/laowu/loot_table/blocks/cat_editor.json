@@ -1,0 +1,1 @@
+{"type":"minecraft:block","pools":[{"rolls":1,"entries":[{"type":"minecraft:item","name":"laowu:cat_editor"}],"conditions":[{"condition":"minecraft:survives_explosion"}]}]}

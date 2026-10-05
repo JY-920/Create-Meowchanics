@@ -32,7 +32,30 @@ public final class CatAccessoriesRegression {
                 defs.put(id, def);
             }
         }
-        check(defs.size() == 36, "36 accessories, thirteen career exclusive");
+        check(custom("giant_mount_on", "{\"giant_mount\":1}").value("giant_mount") == 1,
+                "giant_mount accepts numeric true");
+        check(defs.size() == 37, "37 native accessories including the additive giant collar");
+        check(defs.keySet().stream().filter(id -> !id.equals("laowu:cat_giant_collar")).count() == 36,
+                "Original 36 IDs remain alongside the new collar");
+        var giant = defs.get("laowu:cat_giant_collar");
+        check(giant != null && giant.item().equals("laowu:cat_giant_collar")
+                && giant.value("giant_mount") == 1, "Giant collar loads with its stable item ID and mount effect");
+        check(giant.equals(CatAccessoryDefinition.parse(giant.id(), giant.toJson())),
+                "Giant collar survives definition serialization");
+        check(CatAccessoryLoadout.resolve(List.of(giant), "none").effects().get("giant_mount") == 1,
+                "Equipping giant collar enables the mount mechanism");
+        check(CatAccessoryLoadout.resolve(List.of(giant, giant), "none").effects().get("giant_mount") == 1,
+                "Duplicate giant collars cannot stack the mount mechanism");
+        check(CatAccessoryLoadout.resolve(List.of(), "none").effects().get("giant_mount") == null,
+                "Removing giant collar clears the mount mechanism");
+        check(custom("giant_mount_off", "{\"giant_mount\":0}").value("giant_mount") == 0,
+                "giant_mount accepts numeric false");
+        check(CatAccessoryLoadout.resolve(List.of(
+                custom("giant_mount_off", "{\"giant_mount\":0}"),
+                custom("giant_mount_on", "{\"giant_mount\":1}")), "none")
+                .effects().get("giant_mount") == 1, "giant_mount combines as a boolean switch");
+        for (String bad : List.of("-1", "0.5", "2", "\"1\"", "true", "null"))
+            invalid("{\"schema_version\":1,\"item\":\"test:x\",\"effects\":{\"giant_mount\":" + bad + "}}");
         for (String id : List.of("cat_chew_bone", "cat_mouse_plush", "cat_catnip_pouch", "cat_spiked_collar", "cat_cork_vest", "cat_roly_poly", "cat_old_food_bowl", "cat_warm_scarf", "cat_tracking_tag", "cat_sorting_pouch")) {
             var general = defs.get("laowu:" + id);
             check(general != null && general.requiredOutfit().equals("any"), "General accessory usable by any cat: " + id);

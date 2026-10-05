@@ -1,0 +1,129 @@
+{
+  "variants": {
+    "bottom=down,facing=down": {
+      "model": "laowu:block/haji_basin"
+    },
+    "bottom=up,facing=down": {
+      "model": "laowu:block/haji_basin",
+      "x": 180
+    },
+    "bottom=north,facing=down": {
+      "model": "laowu:block/haji_basin",
+      "x": 270
+    },
+    "bottom=south,facing=down": {
+      "model": "laowu:block/haji_basin",
+      "x": 90
+    },
+    "bottom=east,facing=down": {
+      "model": "laowu:block/haji_basin",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=west,facing=down": {
+      "model": "laowu:block/haji_basin",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=down,facing=south": {
+      "model": "laowu:block/haji_basin_spout_south"
+    },
+    "bottom=up,facing=south": {
+      "model": "laowu:block/haji_basin_spout_south",
+      "x": 180
+    },
+    "bottom=north,facing=south": {
+      "model": "laowu:block/haji_basin_spout_south",
+      "x": 270
+    },
+    "bottom=south,facing=south": {
+      "model": "laowu:block/haji_basin_spout_south",
+      "x": 90
+    },
+    "bottom=east,facing=south": {
+      "model": "laowu:block/haji_basin_spout_south",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=west,facing=south": {
+      "model": "laowu:block/haji_basin_spout_south",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=down,facing=east": {
+      "model": "laowu:block/haji_basin_spout_east"
+    },
+    "bottom=up,facing=east": {
+      "model": "laowu:block/haji_basin_spout_east",
+      "x": 180
+    },
+    "bottom=north,facing=east": {
+      "model": "laowu:block/haji_basin_spout_east",
+      "x": 270
+    },
+    "bottom=south,facing=east": {
+      "model": "laowu:block/haji_basin_spout_east",
+      "x": 90
+    },
+    "bottom=east,facing=east": {
+      "model": "laowu:block/haji_basin_spout_east",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=west,facing=east": {
+      "model": "laowu:block/haji_basin_spout_east",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=down,facing=north": {
+      "model": "laowu:block/haji_basin_spout_north"
+    },
+    "bottom=up,facing=north": {
+      "model": "laowu:block/haji_basin_spout_north",
+      "x": 180
+    },
+    "bottom=north,facing=north": {
+      "model": "laowu:block/haji_basin_spout_north",
+      "x": 270
+    },
+    "bottom=south,facing=north": {
+      "model": "laowu:block/haji_basin_spout_north",
+      "x": 90
+    },
+    "bottom=east,facing=north": {
+      "model": "laowu:block/haji_basin_spout_north",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=west,facing=north": {
+      "model": "laowu:block/haji_basin_spout_north",
+      "x": 90,
+      "y": 90
+    },
+    "bottom=down,facing=west": {
+      "model": "laowu:block/haji_basin_spout_west"
+    },
+    "bottom=up,facing=west": {
+      "model": "laowu:block/haji_basin_spout_west",
+      "x": 180
+    },
+    "bottom=north,facing=west": {
+      "model": "laowu:block/haji_basin_spout_west",
+      "x": 270
+    },
+    "bottom=south,facing=west": {
+      "model": "laowu:block/haji_basin_spout_west",
+      "x": 90
+    },
+    "bottom=east,facing=west": {
+      "model": "laowu:block/haji_basin_spout_west",
+      "x": 90,
+      "y": 270
+    },
+    "bottom=west,facing=west": {
+      "model": "laowu:block/haji_basin_spout_west",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

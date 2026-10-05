@@ -21,13 +21,13 @@ public final class CatGenomeData {
     public static Optional<CatGenome> read(Cat cat) {
         CompoundTag data = cat.getPersistentData();
         if (!data.contains(TAG, Tag.TAG_COMPOUND)) return Optional.empty();
-        return CatGenome.load(data.getCompound(TAG));
+        return CatGenome.load(data.getCompound(TAG)).map(CatMaterialRegistry::sanitizeGenome);
     }
 
     public static Optional<CatGenome> read(ItemStack stack) {
         CompoundTag root = stack.getTag();
         if (root == null || !root.contains(TAG, Tag.TAG_COMPOUND)) return Optional.empty();
-        return CatGenome.load(root.getCompound(TAG));
+        return CatGenome.load(root.getCompound(TAG)).map(CatMaterialRegistry::sanitizeGenome);
     }
 
     public static CatGenome getOrFallback(Cat cat) {
@@ -42,11 +42,11 @@ public final class CatGenomeData {
     }
 
     public static void set(Cat cat, CatGenome genome) {
-        cat.getPersistentData().put(TAG, genome.save());
+        cat.getPersistentData().put(TAG, CatMaterialRegistry.sanitizeGenome(genome).save());
     }
 
     public static void set(ItemStack stack, CatGenome genome) {
-        stack.getOrCreateTag().put(TAG, genome.save());
+        stack.getOrCreateTag().put(TAG, CatMaterialRegistry.sanitizeGenome(genome).save());
     }
 
     public static CompoundTag serialized(Cat cat) {
@@ -67,7 +67,7 @@ public final class CatGenomeData {
 
     private static ResourceLocation variantId(Cat cat) {
         ResourceLocation id = BuiltInRegistries.CAT_VARIANT.getKey(cat.getVariant());
-        return id == null ? CatVariant.RED.location() : id;
+        return CatMaterialRegistry.isAllowedVariant(id) ? id : CatVariant.RED.location();
     }
 
     private CatGenomeData() {}

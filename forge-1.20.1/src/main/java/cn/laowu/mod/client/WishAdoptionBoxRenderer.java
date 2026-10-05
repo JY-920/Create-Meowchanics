@@ -34,6 +34,7 @@ public final class WishAdoptionBoxRenderer implements BlockEntityRenderer<WishAd
                     RuntimeBlockbenchModel.GroupSelection.ALL, RuntimeBlockbenchModel.HeadMotion.NONE);
             renderReward(box.rewardPreview(), pose, buffers, light, overlay);
         } finally { pose.popPose(); }
+        AdoptionPancakeRenderer.render(box.inputDisplays(), facing, pose, buffers, light, overlay);
     }
     public static void renderReward(ItemStack reward, PoseStack pose, MultiBufferSource buffers, int light, int overlay) {
         if (reward.isEmpty()) return;

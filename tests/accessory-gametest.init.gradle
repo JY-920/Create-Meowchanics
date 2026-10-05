@@ -11,6 +11,12 @@ allprojects {
         def loadingOnly = p.hasProperty('catLoadingProbeOnly')
         def smokeOnly = p.hasProperty('agentSmokeProbeOnly')
         def deathPancakeOnly = p.hasProperty('tamedDeathPancakeProbeOnly')
+        def machinesOnly = p.hasProperty('catMachinesProbeOnly')
+        def sixWayOnly = p.hasProperty('catSixWayProbeOnly')
+        def additionsOnly = p.hasProperty('catAdditionsProbeOnly')
+        def riderOnly = p.hasProperty('riderPlacementProbeOnly')
+        def giantOnly = p.hasProperty('giantCatProbeOnly')
+        def supportOnly = p.hasProperty('catSupportProbeOnly')
         def twilight = p.findProperty('catLoadingTwilight')?.toString()
         if (twilight) p.repositories.maven { url = uri('https://cursemaven.com') }
         if((examples36||sdkDemo||traitExamples)&&noScripts)throw new GradleException('Examples36 requires the real KubeJS runtime')
@@ -20,6 +26,32 @@ allprojects {
             if (loadingOnly) java.include('**/CatLoadingProbe.java')
             if (smokeOnly) java.include('**/AgentSmokeAggroProbe.java')
             if (deathPancakeOnly) java.include('**/TamedDeathPancakeProbe.java')
+            if (machinesOnly) java.include('**/CatMachinesProbe.java')
+            if (p.hasProperty('catEditorProbeOnly')) java.include('**/CatEditor*Probe.java')
+            if (p.hasProperty('catEditorRegistrationOnly')) java.include('**/CatEditorRegistrationProbe.java')
+            if (p.hasProperty('catDeploymentProbeOnly')) java.include('**/CatDeployment*Probe.java')
+            if (p.hasProperty('catDeploymentRegistrationOnly')) java.include('**/CatDeploymentRegistrationProbe.java')
+            if (p.hasProperty('catAutoLaserProbeOnly')) java.include('**/CatAutoLaserProbe.java')
+            if (p.hasProperty('creatureFilterProbeOnly')) java.include('**/CreatureFilterProbe.java')
+            if (p.hasProperty('creatureTransmitterProbeOnly')) java.include('**/CreatureTransmitterProbe.java')
+            if (p.hasProperty('catMaterialRemovalProbeOnly')) java.include('**/CatMaterialRemovalProbe.java')
+            if (p.hasProperty('catAutoLaserWorkProbeOnly')) java.include('**/CatLaserWorkProbe.java')
+            if (p.hasProperty('catAutoLaserProbeOnly') || p.hasProperty('catAutoLaserWorkProbeOnly')) java.include('**/CatAutoLaserTestArea.java')
+            if (sixWayOnly) java.include('**/CatSixWayProbe.java')
+            if (p.hasProperty('catInteractionRepairProbeOnly')) java.include('**/CatMachineInteractionProbe.java','**/CatBasinIntakeProbe.java','**/CatSixWayProbe.java','**/CatMachineCraftingProbe.java')
+            if (p.hasProperty('catBasinSpoutDiagnosticOnly')) java.include('**/CatBasinSpoutDiagnostic.java')
+            else java.exclude('**/CatBasinSpoutDiagnostic.java')
+            if (p.hasProperty('catMachineCraftingProbeOnly')) java.include('**/CatMachineCraftingProbe.java')
+            if (p.hasProperty('catHarvestJumpProbeOnly')) java.include('**/CatMachineCraftingProbe.java','**/GiantCatMountProbe.java')
+            if (additionsOnly) java.include('**/CatBeltProbe.java','**/CatDepotProbe.java','**/AdoptionInputDisplayProbe.java')
+            if (riderOnly) java.include('**/DivingRiderPlacementProbe.java')
+            if (giantOnly) java.include('**/GiantCatMountProbe.java')
+            if (p.hasProperty('giantBossProbeOnly')) java.include('**/GiantCatBossProbe.java','**/GiantCatBossCombatProbe.java')
+            if (p.hasProperty('accessoryIntegrationProbeOnly')) java.include('**/AccessoryIntegrationProbe.java')
+            if (p.hasProperty('accessoryRepairDiagnostic')) java.include('**/GuardDurabilityProbe.java','**/CareerSupportIntegrationProbe.java','**/AccessoryIntegrationProbe.java','**/SpecialistAbilitiesProbe.java')
+            if (p.hasProperty('pilotTacticsProbeOnly')) java.include('**/PilotAndTacticsProbe.java')
+            if (p.hasProperty('accessoryCompatibilityProbeOnly')) java.include('**/AccessoryExamples36Probe.java','**/AccessoryMechanical36Probe.java','**/AccessoryIntegrationProbe.java','**/CareerAccessoryProbe.java','**/GeneralAccessoryProbe.java','**/WishAdoptionProbe.java','**/CareerSupportIntegrationProbe.java')
+            if (supportOnly) java.include('**/CareerSupportIntegrationProbe.java')
             if (!noScripts) resources.srcDirs(p.file('../tests/gametest/resources'))
             compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
             runtimeClasspath += output + p.sourceSets.main.runtimeClasspath
@@ -65,6 +97,7 @@ allprojects {
             into new File(testRun, 'kubejs')
         }
         if (neo) {
+            if (p.hasProperty('catMaterialCopycats')) p.dependencies.add('localRuntime',p.files(p.property('catMaterialCopycats')))
             if (twilight) p.dependencies.add('localRuntime', twilight) { transitive = false }
             if (!noScripts) {
                 p.dependencies.add('localRuntime', 'dev.latvian.mods:kubejs-neoforge:2101.7.2-build.377') { transitive = false }
@@ -73,6 +106,7 @@ allprojects {
             p.neoForge.mods.named('laowu') { sourceSet(testSet) }
             p.neoForge.runs.named('gameTestServer') {
                 gameDirectory = testRun
+                systemProperty 'laowu.material_copycats', p.hasProperty('catMaterialCopycats').toString()
                 systemProperty 'laowu.trait_examples', traitExamples.toString()
                 systemProperty 'laowu.examples36', examples36.toString()
                 systemProperty 'laowu.sdk_demo', sdkDemo.toString()
@@ -93,6 +127,7 @@ allprojects {
             p.minecraft.runs.named('gameTestServer') {
                workingDirectory testRun
                 property 'laowu.trait_examples', traitExamples.toString()
+                property 'laowu.spout_diagnostic_warmup', p.hasProperty('catBasinDiagnosticWarmup').toString()
                 property 'laowu.examples36', examples36.toString()
                 property 'laowu.sdk_demo', sdkDemo.toString()
                 property 'laowu.chunk_loading_promotion', p.hasProperty('catLoadingPromotion').toString()

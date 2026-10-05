@@ -168,6 +168,34 @@ public final class CatStatsGoggleOverlay {
                                     int x, int y, boolean night, boolean day,
                                     @Nullable Cat liveCat,
                                     boolean profileNumberAlignment) {
+        renderPanel(graphics, profile, traits, revealLimits, x, y, night, day, liveCat,
+                profileNumberAlignment, false, false);
+    }
+
+    /** Values only: the editor supplies its own complete, unscaled noticeboard artwork. */
+    static void renderEditorPanel(GuiGraphics graphics, Cat cat, int x, int y, boolean maskNow, boolean maskMax) {
+        var profile=cat==null?null:CatAttributeData.read(cat).orElse(null);
+        var traits=cat==null?CatTraitProfile.EMPTY:CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY);
+        graphics.fill(x+2,y+11,x+61,y+71,0xFFF5DBB3);
+        for(int row=0;row<ROW_COUNT;row++) {
+            var stat=CatStat.values()[row];
+            int current=profile==null?-1:CatAttributeEffects.effectiveValue(cat,profile,traits,stat);
+            int limit=profile==null?-1:profile.potential(stat);
+            boolean badNow=profile==null||isCurrentAbnormal(current,limit);
+            boolean badMax=profile==null||isLimitAbnormal(current,limit);
+            int rowY=y+13+row*9;
+            graphics.blit(ATTRIBUTE_ICONS,x+2,rowY,attributeIconIndex(stat)*8,0,8,8,48,8);
+            renderConnectedNumberLeft(graphics,badNow||maskNow?"???":Integer.toString(current),x+11,rowY+1);
+            renderConnectedNumberLeft(graphics,badMax||maskMax?"???":Integer.toString(limit),x+36,rowY+1);
+            graphics.blit(TIER_ICONS,x+28,rowY+1,tierIndex(current,badNow)*6,0,6,6,42,6);
+            graphics.blit(TIER_ICONS,x+54,rowY+1,tierIndex(limit,badMax)*6,0,6,6,42,6);
+        }
+    }
+
+    private static void renderPanel(GuiGraphics graphics, @Nullable CatAttributeProfile profile,
+                                    CatTraitProfile traits, boolean revealLimits, int x, int y,
+                                    boolean night, boolean day, @Nullable Cat liveCat,
+                                    boolean profileNumberAlignment, boolean maskNow, boolean maskMax) {
         int panelWidth = revealLimits ? LIMITS_PANEL_WIDTH : PANEL_WIDTH;
         graphics.blit(revealLimits ? LIMITS_PANEL : PANEL, x, y, 0, 0,
                 panelWidth, PANEL_HEIGHT, panelWidth, PANEL_HEIGHT);
@@ -187,7 +215,7 @@ public final class CatStatsGoggleOverlay {
 
             graphics.blit(ATTRIBUTE_ICONS, x + ICON_X, rowY,
                     attributeIconIndex(stat) * 8, 0, 8, 8, 48, 8);
-            String currentText = currentAbnormal ? "???" : Integer.toString(current);
+            String currentText = currentAbnormal || maskNow ? "???" : Integer.toString(current);
             if (profileNumberAlignment) {
                 renderConnectedNumberLeft(graphics, currentText,
                         x + PROFILE_CURRENT_LEFT, rowY + 1);
@@ -198,7 +226,7 @@ public final class CatStatsGoggleOverlay {
             graphics.blit(TIER_ICONS, x + TIER_X, rowY + 1,
                     tierIndex(current, currentAbnormal) * 6, 0, 6, 6, 42, 6);
             renderConnectedNumber(graphics,
-                    revealLimits && !limitAbnormal ? Integer.toString(limit) : "???",
+                    revealLimits && !limitAbnormal && !maskMax ? Integer.toString(limit) : "???",
                     x + MAX_RIGHT, rowY + 1);
             if (revealLimits) {
                 graphics.blit(TIER_ICONS, x + MAX_TIER_X, rowY + 1,

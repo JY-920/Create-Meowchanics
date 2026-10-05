@@ -1,0 +1,267 @@
+{
+  "status": "仅供人工核验的参考草稿，未发布；不得绕过站点关于AIGC的限制提交",
+  "scope": "2026-09-25本地Forge 1.20.1源码快照，不代表已发布版本",
+  "count": 22,
+  "notes": [
+    "13种套装均使用已驯服且未穿套装的猫作为直接装备目标。数值可受世界配置、词条和饰品改变。",
+    "paper stick/纸棒未在已检查的注册与中文语言文件中找到，未创建该条目。",
+    "NeoForge分支未逐条复核；本文不宣称跨版本一致。"
+  ],
+  "entries": [
+    {
+      "id": "laowu:cat_pancake",
+      "name": "猫饼",
+      "description": "保存猫咪数据的物品形态，可保留猫咪的外观、主人、职业及属性信息。将猫饼放入运转中的机械动力鼓风机气流，可恢复为猫咪。猫袋收纳和死亡掉落并非同一种处理：死亡造成的属性损失取决于世界设置。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/CatPancakeItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/CatPouchItem.java"
+      ]
+    },
+    {
+      "id": "laowu:cat_pouch",
+      "name": "猫袋",
+      "description": "右键猫咪或处于猫饼姿势的猫，可将其收进猫袋；容量为128只。也可在物品栏内右键装入或取出猫饼，取出顺序为后放入的先取出。正在被查看、骑乘或处于部分特殊动作中的猫暂时不能收纳；普通收纳不会触发死亡属性惩罚。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/CatPouchItem.java"
+      ]
+    },
+    {
+      "id": "laowu:cat_filter",
+      "name": "猫咪过滤器",
+      "description": "用于按属性、属性上限、词条、成长状态、主人状态、职业和名称筛选猫饼。属性组与词条组可设置全部满足、任意满足和反向选择，身份条件始终需要全部满足。右键心愿领养箱会清空旧条件，并导入当前交易的NOW基础属性和MAX属性上限范围；非猫饼或没有属性数据的猫饼不能通过。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/CatFilterItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/CatFilterRules.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/CatFilterLogic.java"
+      ]
+    },
+    {
+      "id": "laowu:adoption_box",
+      "name": "领养箱",
+      "description": "放入猫饼后，等待领养完成可获得交易物资；猫咪属性会参与品质评分，影响领养处理。若箱体四个水平侧面紧邻的坐垫上坐有具备职业的村民，奖励按这些村民的职业生成，否则从随机职业生成。领养会消耗投入的猫饼，奖励区放不下时会等待腾出空间。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/AdoptionBoxBlockEntity.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/AdoptionRewardTable.java"
+      ]
+    },
+    {
+      "id": "laowu:wish_adoption_box",
+      "name": "心愿领养箱",
+      "description": "将满足本次全部条件的猫饼放入输入区，可立即兑换界面展示的饰品。NOW检查当前基础属性，不计词条、套装、饰品与临时加成；MAX检查属性上限。锁定交易后，成功兑换不会更换条件与奖励；猫饼及其携带物品会一并被领养。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/WishAdoptionBoxBlockEntity.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/WishAdoptionOffer.java"
+      ]
+    },
+    {
+      "id": "laowu:terminator_suit",
+      "name": "机械套装",
+      "description": "手持套装右键已驯服且没有穿套装的猫，可将其变为机械猫咪。机械猫咪使用远程激光攻击敌人，适合持续远程输出；当前没有专属工作能力。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CareerCatBehavior.java"
+      ]
+    },
+    {
+      "id": "laowu:fishing_suit",
+      "name": "钓鱼套装",
+      "description": "装备后，猫咪会使用鱼钩攻击敌人。让其坐在坐垫上，在坐垫旁放置容器，并使坐垫底部方块附近连接水域，可自动钓鱼；连通水域规模影响钓鱼间隔，幸运参与战利品判定。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CareerCatBehavior.java"
+      ]
+    },
+    {
+      "id": "laowu:flight_suit",
+      "name": "飞行套装",
+      "description": "装备后，猫咪可盘旋并俯冲攻击敌人。主人持扳手右键成年飞行猫，可由猫咪悬挂携带飞行；耐力影响可飞行时间，速度影响航速，体力耗尽后进入滑翔。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CareerCatBehavior.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatPilotFlight.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatPilotFlightRules.java"
+      ]
+    },
+    {
+      "id": "laowu:fire_suit",
+      "name": "喷火套装",
+      "description": "装备后，猫咪会近距离喷射范围火焰并点燃敌人。将猫咪安排在与烈焰人燃烧室水平相邻的坐垫上，可持续为燃烧室供热，不需要投喂燃料。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CareerCatBehavior.java"
+      ]
+    },
+    {
+      "id": "laowu:honey_suit",
+      "name": "采蜜套装",
+      "description": "装备后，猫咪会发射蜂蜜飞弹攻击并减速敌人。在蜂巢或蜂箱上放置坐垫，让采蜜猫坐上去，可逐步提高下方蜂巢或蜂箱的储蜜等级。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CareerCatBehavior.java"
+      ]
+    },
+    {
+      "id": "laowu:transport_suit",
+      "name": "物流套装",
+      "description": "物流猫属于辅助职业，不主动攻击，会为友方职业猫补充战斗增益。两只物流猫设置相同地址并分别坐在坐垫上后，可通过交换位置运送包裹。坐垫下方的打包机支持自动装卸：供电端装载包裹，未供电的目的端接收包裹。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatLogisticsBehavior.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CareerCatBehavior.java"
+      ]
+    },
+    {
+      "id": "laowu:dynamite_suit",
+      "name": "雷管套装",
+      "description": "装备后，猫咪会投掷雷管，对敌人造成范围伤害。濒死时可进入最后反击并冲向敌人自爆；当前没有专属工作能力。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CareerCatBehavior.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/DynamiteCatLastStand.java"
+      ]
+    },
+    {
+      "id": "laowu:engineering_suit",
+      "name": "工程套装",
+      "description": "工程猫架起炮台发射小齿轮，专属饰品可进一步解锁大齿轮和穿透传动杆弹药。把水平朝向的手摇曲柄安装在坐垫正上方，让工程猫坐下，可持续驱动曲柄；每点耐力提供128 SU应力容量。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatEngineeringCombat.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatEngineeringBehavior.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatCrankPower.java"
+      ]
+    },
+    {
+      "id": "laowu:medical_suit",
+      "name": "医疗套装",
+      "description": "医疗猫不主动攻击，会靠近伤猫后停下施法，治疗自己及附近友方职业猫；多只医疗猫同时治疗时取最高治疗速度。坐在坐垫上时，工作范围固定为周围3×3×3，可治疗无遮挡的受伤生物和玩家。治疗需要短暂准备，不是边跑边持续生效的治疗光环。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatMedicalHealing.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatMedicalWork.java"
+      ]
+    },
+    {
+      "id": "laowu:music_suit",
+      "name": "音乐套装",
+      "description": "音乐猫不主动攻击，会靠近友方职业猫并停下演奏，提高范围内队友的攻击频率；多只音乐猫的加成取最高值。在自身9格普通物品栏放入唱片，可按槽位顺序循环播放，无需坐垫，也不消耗唱片。取走当前唱片会切换到后续可播放唱片，取空或卸下套装会停止播放。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatMusicSupportGoal.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatMusicSupport.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatMusicRecords.java"
+      ]
+    },
+    {
+      "id": "laowu:agent_suit",
+      "name": "特工套装",
+      "description": "特工猫进行近战攻击，从背后命中时必定暴击；智力较高时会尝试绕后。被敌人锁定且附近有非辅助友方猫时，可释放烟雾掩护自己撤退；普通烟雾解除的是该特工猫的仇恨，不会给敌人施加失明，也不使全队无敌。坐在坐垫上时，可为警戒范围内的敌对生物显示红色外框，范围随智力增加。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatAgentCombatGoal.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatAgentSmoke.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatAgentWatch.java"
+      ]
+    },
+    {
+      "id": "laowu:diving_suit",
+      "name": "潜水套装",
+      "description": "潜水猫喷出范围水流攻击敌人，并移除命中敌人的正面药水效果。主人持扳手右键成年潜水猫，可骑乘进行水下移动；耐力耗尽后会自动上浮，陆地骑乘速度较慢。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatDivingAttack.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatDivingMount.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatDivingRules.java"
+      ]
+    },
+    {
+      "id": "laowu:cockroach_suit",
+      "name": "蟑螂套装",
+      "description": "蟑螂猫会展翅追击并跳跃扑击敌人；12格内每只其他友方蟑螂猫提供6点生命属性和6点战斗力属性，不增加耐力，也不改变遗传上限。空闲时每5秒进行一次施肥概率判定，概率随有效生命属性提高。在以猫咪所在方块为中心的9×9×9范围内寻找耕地，对其上方符合骨粉条件的一个作物触发生长，不消耗物品栏中的骨粉。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/item/TerminatorSuitItem.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatCockroachCombat.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatCockroachSwarm.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/CatCockroachFarming.java"
+      ]
+    },
+    {
+      "id": "laowu:cat_engine",
+      "name": "猫咪引擎",
+      "description": "通入哈气后产生旋转动力，内部最多容纳1000 mB哈气。工作时每游戏刻消耗1 mB，默认转速为96 RPM，应力容量为每RPM 64 SU，即6144 SU；可切换旋转方向。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/CatEngineBlockEntity.java"
+      ]
+    },
+    {
+      "id": "laowu:infiltration_tank",
+      "name": "渗透罐",
+      "description": "用于按渗透配方将液体与物品共同加工。内部输入液体容量为1000 mB，配方材料、液体及加热条件满足后开始计时处理。过滤位置用于指定合成产物，具体消耗和加工时长以对应配方为准。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/InfiltrationTankBlockEntity.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/recipe/InfiltratingRecipe.java"
+      ]
+    },
+    {
+      "id": "laowu:hissing_collector",
+      "name": "哈气收集网",
+      "description": "安装在机械动力鼓风机风口，在鼓风机吸气时收集作用范围内猫咪产生的哈气。也可输入液体，在鼓风机吹风时向外分散；水、熔岩和药水对应不同的范围处理效果。收集与分散依赖鼓风机及其气流，不能作为独立产气方块使用。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/HissingCollectorBlock.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/HissingCollectorBlockEntity.java"
+      ]
+    },
+    {
+      "id": "laowu:devouring_cat",
+      "name": "吞噬猫",
+      "description": "用于销毁输入的物品与液体，可接入物品或流体输送系统。输入内容会立即被丢弃而不是储存，无法从中取回；使用前应确认输送线路和过滤条件。",
+      "sourceFiles": [
+        "forge-1.20.1/src/main/resources/assets/laowu/lang/zh_cn.json",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/LaoWuMod.java",
+        "forge-1.20.1/src/main/java/cn/laowu/mod/create/DevouringCatBlockEntity.java"
+      ]
+    }
+  ]
+}

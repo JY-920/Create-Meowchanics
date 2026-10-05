@@ -57,6 +57,7 @@ public final class AdoptionBoxBlockEntity extends BlockEntity implements MenuPro
 
     private final int[] progress = new int[INPUT_COUNT];
     private boolean internalChange;
+    private List<ItemStack> inputDisplays = List.of();
     private final ItemStackHandler inventory = new ItemStackHandler(SLOT_COUNT) {
         @Override
         protected int getStackLimit(int slot, @NotNull ItemStack stack) {
@@ -251,6 +252,9 @@ public final class AdoptionBoxBlockEntity extends BlockEntity implements MenuPro
         return slot >= INPUT_START && slot < INPUT_START + INPUT_COUNT;
     }
 
+    public ItemStack inputDisplay() { return AdoptionPancakeDisplay.first(inputDisplays); }
+    public List<ItemStack> inputDisplays() { return inputDisplays; }
+
     @Override
     public Component getDisplayName() {
         return Component.translatable("container.laowu.adoption_box");
@@ -286,6 +290,7 @@ public final class AdoptionBoxBlockEntity extends BlockEntity implements MenuPro
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        inputDisplays = AdoptionPancakeDisplay.readAll(tag);
         if (tag.contains(INVENTORY_TAG)) {
             inventory.deserializeNBT(tag.getCompound(INVENTORY_TAG));
         }
@@ -296,7 +301,9 @@ public final class AdoptionBoxBlockEntity extends BlockEntity implements MenuPro
 
     @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        CompoundTag tag = new CompoundTag();
+        AdoptionPancakeDisplay.write(tag, inventory, INPUT_COUNT);
+        return tag;
     }
 
     @Nullable

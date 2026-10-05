@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "pack_format": 15,
+    "description": "Isolated production startup probe - never part of the runtime mod"
+  }
+}

@@ -26,7 +26,8 @@ public final class CatMedicalHealing {
         Visual v = VISUALS.get(cat);
         return v != null && v.castUntil > now(cat) && cat.isAlive() && !cat.isRemoved()
                 && CatClothesData.getOutfit(cat) == CatOutfitType.MEDICAL && !CatPoseData.isPancake(cat)
-                && (cat.level().isClientSide || v.stationed || !cat.isOrderedToSit() && !cat.isPassenger());
+                && (cat.level().isClientSide || v.stationed || !cat.isOrderedToSit()
+                && (!cat.isPassenger() || CatGiantMount.carried(cat)));
     }
     public static boolean glowing(LivingEntity entity) {
         Visual v = VISUALS.get(entity);

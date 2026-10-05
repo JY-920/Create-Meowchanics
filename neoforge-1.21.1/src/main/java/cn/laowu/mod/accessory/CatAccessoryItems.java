@@ -29,8 +29,10 @@ public final class CatAccessoryItems {
     public static ItemStack tabIcon() { return ITEMS.get("laowu:cat_taunt_bell").get().getDefaultInstance(); }
     /** Registry-backed boss reward; no crafting recipe. */
     public static Item butterReward() { return ITEMS.get("laowu:cat_butter_cube").get(); }
+    public static Item giantReward() { return ITEMS.get("laowu:cat_giant_collar").get(); }
     private static Map<String, CatAccessoryDefinition> defaults() {
         Map<String, CatAccessoryDefinition> result = new LinkedHashMap<>();
+        add(result, "laowu:cat_giant_collar", "{\"schema_version\":1,\"item\":\"laowu:cat_giant_collar\",\"effects\":{\"giant_mount\":1}}");
         add(result, "laowu:cat_taunt_bell", "{\"schema_version\":1,\"item\":\"laowu:cat_taunt_bell\",\"exclusive_group\":\"laowu:threat\",\"effects\":{\"aggro_bias\":3}}");
         add(result, "laowu:cat_silent_bell", "{\"schema_version\":1,\"item\":\"laowu:cat_silent_bell\",\"exclusive_group\":\"laowu:threat\",\"effects\":{\"aggro_bias\":-3}}");
         add(result, "laowu:cat_stability_anchor", "{\"schema_version\":1,\"item\":\"laowu:cat_stability_anchor\",\"effects\":{\"knockback_resistance\":1}}");

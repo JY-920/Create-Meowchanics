@@ -1,0 +1,65 @@
+{
+  "Time": "2026-10-04 19:34:44",
+  "Version": "2.2.2",
+  "Stamp": "20261004-193444-2.2.2-lid-author-interlock",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "192DA977A8B925D969AAA06AB340E96C3250F591049C6495B675823C62400F0C"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261004-193444-2.2.2-lid-author-interlock\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "8FF8FDAA76E38640CB38848A37FD74B9ED6A12EC838C610DE6FC50A1A6400AB9"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "FF163C685904AD8E933A5EA71BA721CE1CFBE18F1CB98D3235C3AF90A5530E30"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261004-193444-2.2.2-lid-author-interlock\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "073FF2FDB1DBACA4B2CE14AF19E714197AFD328AC344F722631ACA318285E1DF"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "RootCause": "The original 7px right lid deliberately overlaps the left by 1px; complementary transparent texels form interlocking teeth. Earlier cropping removed the teeth, and flipping V changed authored artwork. Removed both exporter overrides; source PNG/bbmodel unchanged.",
+  "Verification": {
+    "assetTests": 19,
+    "assetRedLog": "outputs-lid-interlock-red.log",
+    "assetGreenLog": "outputs-lid-interlock-green.log",
+    "clients": [
+      "outputs-lid-interlock-client-forge-final.log",
+      "outputs-lid-interlock-client-neo-final.log"
+    ],
+    "normalBuilds": [
+      "outputs-lid-interlock-build-forge.log",
+      "outputs-lid-interlock-build-neo.log"
+    ],
+    "packedGeometrySha256": "B3EB07F58E9CEBC907CF7FCDDC6816500B3DB21362A8928CD68789811738AADD",
+    "images": [
+      "forge-1.20.1/build/cat-sixway-client-lid-interlock/cat-auto-laser-lid-interlock.png",
+      "neoforge-1.21.1/build/cat-sixway-client-lid-interlock/cat-auto-laser-lid-interlock.png"
+    ],
+    "review": "Read-only review approved exact original UV/geometry and authored open bounds; actual closed/open GPU previews inspected on both loaders."
+  }
+}

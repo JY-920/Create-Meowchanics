@@ -33,6 +33,7 @@ public final class CatLaserEffects {
         var buffers = mc.renderBuffers().bufferSource();
         pose.pushPose();
         pose.translate(-camera.x, -camera.y, -camera.z);
+        CatDeploymentRenderer.renderTarget(pose,buffers);
 
         CatTeamPreview.render(pose, buffers, event.getCamera(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
         CatHealthBarRenderer.render(pose, buffers, event.getCamera(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
@@ -52,6 +53,12 @@ public final class CatLaserEffects {
 
     /** Six filled quads, full-bright vertex colour and normal depth testing; no wireframe or texture. */
     public static void solidBeam(PoseStack pose, VertexConsumer out, float length, int rgb) {
+        solidBeam(pose,out,length,rgb,255);
+    }
+
+    /** Alpha is consumed by the translucent beam render type; legacy callers remain opaque. */
+    public static void solidBeam(PoseStack pose, VertexConsumer out, float length, int rgb, int alpha) {
+        alpha=Math.max(0,Math.min(255,alpha));
         float w = .012F;
         float[][] corners = {
                 {-w,-w,0}, {w,-w,0}, {w,w,0}, {-w,w,0},
@@ -61,7 +68,7 @@ public final class CatLaserEffects {
         for (int[] face : faces) {
             for (int index : face) {
                 float[] v = corners[index];
-                out.addVertex(pose.last().pose(), v[0], v[1], v[2]).setColor(0xFF000000 | rgb);
+                out.addVertex(pose.last().pose(), v[0], v[1], v[2]).setColor((alpha << 24) | (rgb & 0xFFFFFF));
             }
         }
     }

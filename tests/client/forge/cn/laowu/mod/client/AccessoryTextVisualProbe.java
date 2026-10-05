@@ -36,7 +36,7 @@ public final class AccessoryTextVisualProbe {
                     }
                     count++;
                 }
-                check(count==36,"All accessory tooltips checked in "+language);
+                check(count==37,"All accessory tooltips checked in "+language);
                 var pilot=tooltip("cat_ace_feather").stream().map(Component::getString).toList();
                 check(pilot.stream().anyMatch(t->t.contains("0.15%")&&t.contains("80%")),"Dodge percentage and cap are actually substituted");
                 for(String guard:List.of("cat_cork_vest","cat_roly_poly")){
@@ -67,7 +67,7 @@ public final class AccessoryTextVisualProbe {
                     capture(mc,new ArrayList<>(expected.keySet()));
                 }
             }
-            System.out.println("PASS: all 36 accessory tooltips in both languages; exact eleven requested lines, no raw placeholders, Epic bone and custom amount substitution");
+            System.out.println("PASS: all 37 accessory tooltips in both languages; exact eleven requested lines, no raw placeholders, Epic bone and custom amount substitution");
         }finally{net.minecraft.locale.Language.inject(previous);}
     }
     private static void capture(Minecraft mc,List<String> ids)throws Exception{

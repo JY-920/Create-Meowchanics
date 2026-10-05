@@ -10,6 +10,7 @@ import cn.laowu.mod.ServerConfig;
 import cn.laowu.mod.entity.CatPancakeProjectile;
 import cn.laowu.mod.network.ModNetwork;
 import cn.laowu.mod.genetics.CatGenomeData;
+import cn.laowu.mod.genetics.CatMaterialRegistry;
 import cn.laowu.mod.genetics.CatAttributeData;
 import cn.laowu.mod.genetics.CatAttributeProfile;
 import cn.laowu.mod.genetics.CatStat;
@@ -85,6 +86,7 @@ public final class CatPancakeItem extends Item {
         CatTraitData.ensure(cat);
         CompoundTag root = pancake.getOrCreateTag();
         CompoundTag catData = cat.saveWithoutId(new CompoundTag());
+        cn.laowu.mod.create.CatDeploymentFlight.sanitizeSnapshot(catData);
         removePositionAndIdentity(catData);
         CatPancakeBehavior.sanitizeCapturedData(catData);
         clearTransientState(catData.getCompound("ForgeData"));
@@ -142,7 +144,7 @@ public final class CatPancakeItem extends Item {
         String value = root == null ? "" : root.getString(CAT_TEXTURE_TAG);
         ResourceLocation parsed = ResourceLocation.tryParse(value);
         CatVariant fallback = BuiltInRegistries.CAT_VARIANT.get(CatVariant.RED);
-        return parsed != null ? parsed : fallback.texture();
+        return CatMaterialRegistry.isAllowedTexture(parsed) ? parsed : fallback.texture();
     }
 
     /** Stable orange-cat representative used by the creative tab and recipe viewers. */
@@ -173,6 +175,7 @@ public final class CatPancakeItem extends Item {
     public static List<ItemStack> allVariantStacks() {
         List<ItemStack> result = new ArrayList<>();
         BuiltInRegistries.CAT_VARIANT.entrySet().forEach(entry -> {
+            if (!CatMaterialRegistry.isAllowedVariant(entry.getKey().location())) return;
             ItemStack stack = new ItemStack(LaoWuMod.CAT_PANCAKE.get());
             ResourceLocation id = entry.getKey().location();
             stack.getOrCreateTag().putString(CAT_VARIANT_TAG, id.toString());
@@ -184,6 +187,7 @@ public final class CatPancakeItem extends Item {
 
     /** Creates a usable pancake stack with the same variant/texture tags as a captured cat. */
     public static ItemStack variantStack(ResourceLocation variantId) {
+        if (!CatMaterialRegistry.isAllowedVariant(variantId)) variantId = DEFAULT_VARIANT;
         CatVariant variant = BuiltInRegistries.CAT_VARIANT.get(variantId);
         if (variant == null) variant = BuiltInRegistries.CAT_VARIANT.get(CatVariant.RED);
         ItemStack stack = new ItemStack(LaoWuMod.CAT_PANCAKE.get());
@@ -231,11 +235,13 @@ public final class CatPancakeItem extends Item {
         CompoundTag root = stack.getTag();
         if (root != null) {
             ResourceLocation saved = ResourceLocation.tryParse(root.getString(CAT_VARIANT_TAG));
+            if (saved != null && !CatMaterialRegistry.isAllowedVariant(saved)) return DEFAULT_VARIANT;
             if (saved != null && BuiltInRegistries.CAT_VARIANT.containsKey(saved)) return saved;
         }
         ResourceLocation renderedTexture = texture(stack);
         for (var entry : BuiltInRegistries.CAT_VARIANT.entrySet()) {
-            if (entry.getValue().texture().equals(renderedTexture)) return entry.getKey().location();
+            if (CatMaterialRegistry.isAllowedVariant(entry.getKey().location())
+                    && entry.getValue().texture().equals(renderedTexture)) return entry.getKey().location();
         }
         return CatVariant.RED.location();
     }
@@ -540,6 +546,37 @@ public final class CatPancakeItem extends Item {
         return false;
     }
 
+    /** Success-only machine restoration; input consumption is the caller's transaction. */
+    public static Cat deployCat(ServerLevel level, ItemStack stack, net.minecraft.world.phys.Vec3 position, float yaw) {
+        return deployCat(level,stack,position,yaw,null);
+    }
+    public static Cat deployCat(ServerLevel level, ItemStack stack, net.minecraft.world.phys.Vec3 position, float yaw,
+                                net.minecraft.world.phys.Vec3 landing) {
+        if (!stack.is(LaoWuMod.CAT_PANCAKE.get()) || !level.hasChunkAt(net.minecraft.core.BlockPos.containing(position))) return null;
+        Cat cat=createRestoredCat(level,stack);
+        if(cat==null)return null;
+        cat.moveTo(position.x,position.y,position.z,yaw,0);
+        var bounds=cat.getBoundingBox();
+        if(landing!=null){
+            var targetBounds=bounds.move(landing.subtract(position));
+            if(!level.hasChunksAt(net.minecraft.core.BlockPos.containing(targetBounds.minX,targetBounds.minY,targetBounds.minZ),
+                    net.minecraft.core.BlockPos.containing(targetBounds.maxX,targetBounds.maxY,targetBounds.maxZ))
+                    ||!level.getWorldBorder().isWithinBounds(targetBounds)||!level.noCollision(cat,targetBounds))return null;
+        }
+        if(!level.hasChunksAt(net.minecraft.core.BlockPos.containing(bounds.minX,bounds.minY,bounds.minZ),
+                net.minecraft.core.BlockPos.containing(bounds.maxX,bounds.maxY,bounds.maxZ))
+                ||!level.getWorldBorder().isWithinBounds(bounds)||!level.noCollision(cat,bounds)||!level.addFreshEntity(cat))return null;
+        ModNetwork.syncToTracking(cat,0);
+        ModNetwork.syncCatChestToTracking(cat);
+        ModNetwork.syncCatClothesToTracking(cat);
+        if(CatGenomeData.has(cat))ModNetwork.syncCatGenomeToTracking(cat);
+        ModNetwork.syncCatAttributesToTracking(cat);
+        ModNetwork.syncCatTraitsToTracking(cat);
+        level.sendParticles(ParticleTypes.POOF,cat.getX(),cat.getY()+.4,cat.getZ(),12,.2,.15,.2,.03);
+        level.playSound(null,cat.blockPosition(),SoundEvents.WOOL_BREAK,SoundSource.NEUTRAL,.7f,.7f);
+        return cat;
+    }
+
     private static Cat createRestoredCat(ServerLevel level, ItemStack stack) {
         Cat cat = EntityType.CAT.create(level);
         if (cat == null) return null;
@@ -547,6 +584,7 @@ public final class CatPancakeItem extends Item {
         CompoundTag root = stack.getTag();
         if (root != null && root.contains(CAT_DATA_TAG, Tag.TAG_COMPOUND)) {
             CompoundTag saved = root.getCompound(CAT_DATA_TAG).copy();
+            cn.laowu.mod.create.CatDeploymentFlight.sanitizeSnapshot(saved);
             removePositionAndIdentity(saved);
             cat.load(saved);
         } else if (root != null && root.contains(CAT_VARIANT_TAG)) {
@@ -570,6 +608,7 @@ public final class CatPancakeItem extends Item {
             cat.setAge(-24000);
         }
 
+        CatMaterialRegistry.excludeCopycatVariant(cat);
         clearTransientState(cat.getPersistentData());
         CatGenomeData.applyFromStack(stack, cat);
         CatAttributeData.applyFromStack(stack, cat);

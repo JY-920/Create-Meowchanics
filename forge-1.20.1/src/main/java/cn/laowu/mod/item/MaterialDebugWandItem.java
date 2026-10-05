@@ -75,9 +75,9 @@ public final class MaterialDebugWandItem extends Item {
         if (stack.hasTag()) {
             ResourceLocation parsed = ResourceLocation.tryParse(
                     stack.getTag().getString(SELECTED_MATERIAL));
-            if (parsed != null) return parsed;
+            if (CatMaterialRegistry.isSelectableMaterial(parsed)) return parsed;
         }
-        return CatMaterialRegistry.OBSIDIAN;
+        return net.minecraft.world.entity.animal.CatVariant.RED.location();
     }
 
     public static void setSelectedMaterial(ItemStack stack, ResourceLocation material) {

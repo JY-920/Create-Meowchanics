@@ -1,0 +1,54 @@
+{
+  "Time": "2026-10-03 23:19:53",
+  "Version": "2.2.2",
+  "Stamp": "20261003-231952-2.2.2-deployment-fluid",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "5CA4AD9B7DFD1A1F74E0E6330BF0DF55039C59CC5522962423BBB3E18AD8B28B"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261003-231952-2.2.2-deployment-fluid\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "7352031123C6EE16D0B5EC4AE915CF55D2CD4A4661EA3B2734398559B62676F4"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "E98317DBBC48409DD6727E097D8621DD19F8FA81C6CA610B8128FB7B07752215"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261003-231952-2.2.2-deployment-fluid\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2",
+        "Sha256": "922CA776A446EA0E28369CD0EC72F872E1487A91AF4EC59DDE00460CEEC74DEA"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Verification": {
+    "Client": "Both ports: fuel vertices empty/1000/2000/4000, four facings, roof bounds, half/full GPU window visibility, tooltip duplicates removed, existing animation/pancake probes pass.",
+    "Server": {
+      "Forge": 15,
+      "NeoForge": 16
+    },
+    "Build": "Normal dual build passes, each 23270 checks; frozen API and release isolation pass.",
+    "Notes": "Changed only summaries, duplicate platform tooltip lines and client liquid rendering. Tank capacity, storage, consumption and gameplay unchanged. Initial capture assumed vanilla translucent but Create uses PonderRenderTypes.fluid; test corrected after inspecting loader bytecode."
+  }
+}

@@ -57,6 +57,22 @@ public final class LaoWuJeiPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(LaoWuMod.INFILTRATION_TANK_ITEM.get(), InfiltratingJeiCategory.TYPE);
+        for(String category:new String[]{"pressing","packing","automatic_packing"})
+            registration.addRecipeCatalyst(cn.laowu.mod.create.CatMachineBlocks.CAT_PRESS_ITEM.get(),catMachineCategory(category));
+        for(String category:new String[]{"mixing","automatic_shapeless","automatic_brewing"})
+            registration.addRecipeCatalyst(cn.laowu.mod.create.CatMachineBlocks.CAT_MIXER_ITEM.get(),catMachineCategory(category));
+        for(String category:new String[]{"mixing","automatic_shapeless","automatic_brewing","packing","automatic_packing"})
+            registration.addRecipeCatalyst(cn.laowu.mod.create.CatMachineBlocks.HAJI_BASIN_ITEM.get(),catMachineCategory(category));
+        for(String category:new String[]{"pressing","deploying","spout_filling"})
+            registration.addRecipeCatalyst(cn.laowu.mod.create.CatDepotRegistration.CAT_DEPOT_ITEM.get(),catMachineCategory(category));
+    }
+    public static RecipeType<?> catMachineCategory(String path){
+        return switch(path){
+            case "pressing" -> RecipeType.create("create",path,com.simibubi.create.content.kinetics.press.PressingRecipe.class);
+            case "deploying" -> RecipeType.create("create",path,com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe.class);
+            case "spout_filling" -> RecipeType.create("create",path,com.simibubi.create.content.fluids.transfer.FillingRecipe.class);
+            default -> RecipeType.create("create",path,com.simibubi.create.content.processing.basin.BasinRecipe.class);
+        };
     }
 
     /**
@@ -67,8 +83,18 @@ public final class LaoWuJeiPlugin implements IModPlugin {
     @Override
     public void onRuntimeAvailable(IJeiRuntime runtime) {
         cn.laowu.mod.client.ClientWorldSettings.recipeRefresh = () -> updateVisibility(runtime);
+        hideLegacyBeltConnector(runtime);
         updateVisibility(runtime);
         hideNonOrangeCatPancakeRecipes(runtime);
+    }
+
+    private static void hideLegacyBeltConnector(IJeiRuntime runtime) {
+        var ingredients=runtime.getIngredientManager();
+        var legacy=ingredients.getAllItemStacks().stream()
+                .filter(stack -> stack.is(cn.laowu.mod.create.CatMachineBlocks.CAT_BELT_ITEM.get()))
+                .toList();
+        if(!legacy.isEmpty())
+            ingredients.removeIngredientsAtRuntime(mezz.jei.api.constants.VanillaTypes.ITEM_STACK,legacy);
     }
 
     /**
