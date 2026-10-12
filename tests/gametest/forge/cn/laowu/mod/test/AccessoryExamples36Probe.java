@@ -26,7 +26,8 @@ public final class AccessoryExamples36Probe {
         var p=CareerSupportIntegrationProbe.floor(h).add(4,0,4);
         int count=0;
         for(var original:CatAccessoryItems.DEFAULTS.values()){
-            if(original.id().equals("laowu:cat_giant_collar"))continue;
+            if(original.id().equals("laowu:cat_giant_collar")
+                    ||original.id().equals("laowu:cat_boxing_gloves"))continue;
             String path=original.item().substring(6);
             var stack=new ItemStack(BuiltInRegistries.ITEM.get(LaoWuMod.id(path)));
             var def=CatAccessoryRegistry.find(stack,false);
@@ -53,6 +54,10 @@ public final class AccessoryExamples36Probe {
         var giant=CatAccessoryRegistry.find(new ItemStack(BuiltInRegistries.ITEM.get(LaoWuMod.id("cat_giant_collar"))),false);
         h.assertTrue(giant!=null&&giant.script().isEmpty()&&giant.value("giant_mount")==1,
                 "Legacy 36-script replacement leaves the additive giant collar native");
+        var gloves=CatAccessoryRegistry.find(new ItemStack(BuiltInRegistries.ITEM.get(LaoWuMod.id("cat_boxing_gloves"))),false);
+        h.assertTrue(gloves!=null&&gloves.script().isEmpty()
+                        &&gloves.effects().equals(Map.of("melee_career_damage",30.0)),
+                "Legacy 36-script replacement leaves boxing gloves and their native combo intact");
         System.out.println("PASS: "+(scripts?"KubeJS replacement":"native")+" 36/36 definitions, outfit gates, exclusion and all six stat effects with no duplication");h.succeed();
     }
     @GameTest(template="artillery_probe",batch="examples36_fire",timeoutTicks=30)

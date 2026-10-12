@@ -34,9 +34,12 @@ public final class CatAccessoriesRegression {
         }
         check(custom("giant_mount_on", "{\"giant_mount\":1}").value("giant_mount") == 1,
                 "giant_mount accepts numeric true");
-        check(defs.size() == 37, "37 native accessories including the additive giant collar");
-        check(defs.keySet().stream().filter(id -> !id.equals("laowu:cat_giant_collar")).count() == 36,
-                "Original 36 IDs remain alongside the new collar");
+        check(defs.size() == 38, "38 native accessories including additive boss rewards");
+        check(defs.keySet().stream().filter(id -> !id.equals("laowu:cat_giant_collar") && !id.equals("laowu:cat_boxing_gloves")).count() == 36,
+                "Original 36 IDs remain alongside the collar and boxing gloves");
+        var gloves = defs.get("laowu:cat_boxing_gloves");
+        check(CatAccessoryLoadout.resolve(List.of(gloves, gloves), "none").effects().equals(Map.of("melee_career_damage",30.0)),
+                "Duplicate boxing gloves cannot double attack or combo bonuses");
         var giant = defs.get("laowu:cat_giant_collar");
         check(giant != null && giant.item().equals("laowu:cat_giant_collar")
                 && giant.value("giant_mount") == 1, "Giant collar loads with its stable item ID and mount effect");

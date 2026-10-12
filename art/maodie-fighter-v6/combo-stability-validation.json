@@ -1,0 +1,9 @@
+{
+  "samples": 174,
+  "maxLowerDisplacement": 0,
+  "armExcursions": {
+    "left": 5.763422581249939,
+    "right": 5.763422581249939
+  },
+  "maxExtendedPunchElevation": 6.709118640122551
+}

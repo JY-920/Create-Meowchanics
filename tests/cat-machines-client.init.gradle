@@ -3,7 +3,7 @@ allprojects {
     afterEvaluate { p ->
         def neo=p.extensions.findByName('neoForge')!=null
         // The recipe probe needs a loaded world and the six-way client route.
-        def sixway=p.hasProperty('catSixWayClient') || p.hasProperty('catMachineRecipeClient') || p.hasProperty('catAutoLaserWorldClient') || p.hasProperty('catDeploymentClient') || p.hasProperty('catEditorClient') || p.hasProperty('creatureTransmitterClient')
+        def sixway=p.hasProperty('catSixWayClient') || p.hasProperty('catMachineRecipeClient') || p.hasProperty('catAutoLaserWorldClient') || p.hasProperty('catDeploymentClient') || p.hasProperty('catEditorClient') || p.hasProperty('creatureTransmitterClient') || p.hasProperty('creatureFilterClient')
         def userPack=p.hasProperty('giantUserPack')
         def renderPack=p.hasProperty('giantRenderPack')
         def fixtureId=p.findProperty('catMachinesRunId')?.toString()
@@ -40,6 +40,7 @@ allprojects {
             p.neoForge.mods.named('laowu') { sourceSet(probe) }
             p.neoForge.runs.named('client') {
                 gameDirectory=runDir
+                if(p.hasProperty('creatureFilterClient')) { systemProperty 'laowu.creature_filter_probe','true' }
                 if(p.hasProperty('creatureTransmitterClient')) { systemProperty 'laowu.creature_transmitter_probe','true' }
                 if(p.hasProperty('catAutoLaserClient') || p.hasProperty('catAutoLaserWorldClient')) { systemProperty 'laowu.auto_laser_probe','true' }
                 if(p.hasProperty('catAutoLaserWorldClient')) { systemProperty 'laowu.auto_laser_world_probe','true' }
@@ -54,6 +55,7 @@ allprojects {
             p.dependencies.add('runtimeOnly','io.github.llamalad7:mixinextras-forge:0.4.1') { transitive=false }
             p.minecraft.runs.named('client') {
                 workingDirectory runDir
+                if(p.hasProperty('creatureFilterClient')) { property 'laowu.creature_filter_probe','true' }
                 if(p.hasProperty('creatureTransmitterClient')) { property 'laowu.creature_transmitter_probe','true' }
                 if(p.hasProperty('catAutoLaserClient') || p.hasProperty('catAutoLaserWorldClient')) { property 'laowu.auto_laser_probe','true' }
                 if(p.hasProperty('catAutoLaserWorldClient')) { property 'laowu.auto_laser_world_probe','true' }

@@ -4,6 +4,7 @@ import cn.laowu.mod.CareerCatBehavior;
 import cn.laowu.mod.CatOutfitType;
 import cn.laowu.mod.CatSuitSetting;
 import cn.laowu.mod.CatSuitSettings;
+import cn.laowu.mod.compat.create.CreateIntegration;
 import cn.laowu.mod.client.CatTooltipText;
 
 import net.minecraft.ChatFormatting;
@@ -54,10 +55,19 @@ public final class CareerSuitTooltip {
             // the live K, instead of Create caching the original percentage.
             for (int section = 1; section <= 3; section++) {
                 if (section > 1) event.getToolTip().add(insertionIndex++, Component.empty());
-                event.getToolTip().add(insertionIndex++, Component.translatable(
-                        item.getDescriptionId() + ".tooltip.condition" + section).withStyle(ChatFormatting.GRAY));
+                var title = Component.translatable(item.getDescriptionId() + ".tooltip.condition" + section);
                 String detail = Component.translatable(
                         item.getDescriptionId() + ".tooltip.behaviour" + section).getString();
+                if (section == 2 && !CreateIntegration.isLoaded()) {
+                    Component ability = standaloneAbility(outfit, item, true);
+                    if (ability != null) {
+                        title = Component.translatable("item.laowu.career_suit.exclusive_details");
+                        detail = ability.getString();
+                    } else {
+                        detail = Component.translatable("item.laowu.career_suit.no_work_without_create").getString();
+                    }
+                }
+                event.getToolTip().add(insertionIndex++, title.withStyle(ChatFormatting.GRAY));
                 if (section == 1 && !outfit.isSupport())
                     detail = Component.translatable("item.laowu.career_suit.damage_detail",
                             detail.replace("_K", "_" + coefficient)).getString();
@@ -84,11 +94,23 @@ public final class CareerSuitTooltip {
                 Component.translatable("item.laowu.career_suit.role." + outfit.role().name().toLowerCase(Locale.ROOT)))
                 .withStyle(ChatFormatting.GRAY));
         for (String section : List.of("combat", "work")) {
+            Component ability = section.equals("work") && !CreateIntegration.isLoaded()
+                    ? Component.translatable("item.laowu.career_suit.no_work_without_create")
+                    : Component.translatable(item.getDescriptionId() + ".tooltip." + section);
             String description = Component.translatable("item.laowu.career_suit." + section,
-                    Component.translatable(item.getDescriptionId() + ".tooltip." + section)).getString();
+                    ability).getString();
             var lines = CatTooltipText.cutStringTextComponent(description, PALETTE);
             event.getToolTip().addAll(insertionIndex, lines);
             insertionIndex += lines.size();
+        }
+        if (!CreateIntegration.isLoaded()) {
+            Component ability = standaloneAbility(outfit, item, false);
+            if (ability != null) {
+                var lines = CatTooltipText.cutStringTextComponent(Component.translatable(
+                        "item.laowu.career_suit.exclusive", ability).getString(), PALETTE);
+                event.getToolTip().addAll(insertionIndex, lines);
+                insertionIndex += lines.size();
+            }
         }
         event.getToolTip().add(insertionIndex++, Component.empty());
         List<Component> ctrlHint = CatTooltipText.cutStringTextComponent(
@@ -99,6 +121,17 @@ public final class CareerSuitTooltip {
         event.getToolTip().addAll(insertionIndex,
                 CatTooltipText.cutStringTextComponent(Component.translatable(
                         "item.laowu.career_suit.hold_shift").getString(), PALETTE));
+    }
+
+    /** Independent actions remain usable without industrial seats, package routing or machines. */
+    private static Component standaloneAbility(CatOutfitType outfit, Item item, boolean detailed) {
+        String key = switch (outfit) {
+            case FLIGHT, DIVING -> detailed ? ".tooltip.behaviour2" : ".tooltip.standalone";
+            case TRANSPORT -> ".tooltip.standalone";
+            case MUSIC, COCKROACH -> detailed ? ".tooltip.behaviour2" : ".tooltip.work";
+            default -> null;
+        };
+        return key == null ? null : Component.translatable(item.getDescriptionId() + key);
     }
 
     private static String bonusDescription(CatSuitSettings settings) {
@@ -151,7 +184,7 @@ public final class CareerSuitTooltip {
             index = addValue(tooltip, index, "music_haste", format(cn.laowu.mod.CatMusicRules.haste(speed) * 100));
             index = addValue(tooltip, index, "music_radius", format(cn.laowu.mod.CatMusicRules.radius(intelligence)));
         }
-        if (outfit == CatOutfitType.AGENT) {
+        if (outfit == CatOutfitType.AGENT && CreateIntegration.isLoaded()) {
             int intelligence = CatSuitSettings.current(outfit).attribute(attributeValue,
                     cn.laowu.mod.genetics.CatStat.INTELLIGENCE);
             index = addValue(tooltip, index, "watch_radius", format(cn.laowu.mod.CatAgentWatch.radius(intelligence)));

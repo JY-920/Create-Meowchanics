@@ -11,8 +11,6 @@ import cn.laowu.mod.genetics.CatTraitData;
 import cn.laowu.mod.genetics.CatTraitEffects;
 import cn.laowu.mod.genetics.CatTraitProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.infrastructure.config.AllConfigs;
-import com.simibubi.create.infrastructure.config.CClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -93,9 +91,12 @@ public final class CatStatsGoggleOverlay {
 
         boolean revealLimits = true;
         int panelWidth = LIMITS_PANEL_WIDTH;
-        CClient config = AllConfigs.client();
-        int x = screenWidth / 2 + config.overlayOffsetX.get();
-        int y = screenHeight / 2 - PANEL_HEIGHT / 2 + config.overlayOffsetY.get();
+        // Defaults match Create; resolve its config only when it is installed.
+        boolean createLoaded = cn.laowu.mod.compat.create.CreateIntegration.isLoaded();
+        int offsetX = createLoaded ? cn.laowu.mod.compat.create.CreateClientEvents.gogglesOffsetX() : 20;
+        int offsetY = createLoaded ? cn.laowu.mod.compat.create.CreateClientEvents.gogglesOffsetY() : 0;
+        int x = screenWidth / 2 + offsetX;
+        int y = screenHeight / 2 - PANEL_HEIGHT / 2 + offsetY;
         x = Mth.clamp(x, 4, Math.max(4, screenWidth - panelWidth - 4));
         y = Mth.clamp(y, 4, Math.max(4, screenHeight - PANEL_HEIGHT - 4));
 
@@ -104,7 +105,7 @@ public final class CatStatsGoggleOverlay {
         pose.pushPose();
         if (fade < 1.0F) {
             pose.translate(Math.pow(1.0F - fade, 3.0D)
-                    * Math.signum(config.overlayOffsetX.get() + 0.5F) * 8.0D,
+                    * Math.signum(offsetX + 0.5F) * 8.0D,
                     0.0D, 0.0D);
         }
         graphics.setColor(1.0F, 1.0F, 1.0F, fade);
@@ -290,7 +291,6 @@ public final class CatStatsGoggleOverlay {
     }
 
     static boolean isWearingCatGoggles(@Nullable Player player) {
-        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return false;
         return cn.laowu.mod.item.CatEngineerGogglesItem.isWornBy(player);
     }
 

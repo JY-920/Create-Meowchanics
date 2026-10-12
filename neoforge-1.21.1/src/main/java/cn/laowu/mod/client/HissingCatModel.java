@@ -88,6 +88,23 @@ public final class HissingCatModel extends CatModel<Cat> {
             part.xScale = part.yScale = part.zScale = 1.0F;
         }
         super.prepareMobModel(cat, limbSwing, limbSwingAmount, partialTick);
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat) {
+            // The seat's single clock chooses which geometry is visible. Ignore
+            // late vanilla sitting packets so returning from a hiss never flashes a standing cat.
+            for (ModelPart part : new ModelPart[]{head, body, leftHindLeg, rightHindLeg,
+                    leftFrontLeg, rightFrontLeg, tail1, tail2}) part.resetPose();
+            body.xRot=.7853982F;body.y=8;body.z=-5;
+            head.y=11.7F;head.z=-8;
+            tail1.y=23;tail1.z=6;tail1.xRot=1.7278761F;
+            tail2.y=22;tail2.z=13.2F;tail2.xRot=2.670354F;
+            leftHindLeg.xRot=rightHindLeg.xRot=-1.5707964F;
+            leftHindLeg.y=rightHindLeg.y=21;
+            leftFrontLeg.xRot = rightFrontLeg.xRot = 0;
+            leftFrontLeg.y = rightFrontLeg.y = 14.016F;
+            leftFrontLeg.z = rightFrontLeg.z = -4;
+            leftHindLeg.z = rightHindLeg.z = 4;
+            state=3;
+        }
         if (cn.laowu.mod.CatEngineeringCombat.deployed(cat) && !cat.isInSittingPose()) {
             // Vanilla seated geometry only: never set the server's stay/sit command flag.
             body.xRot = 0.7853982F; body.y -= 4; body.z += 5;
@@ -112,13 +129,19 @@ public final class HissingCatModel extends CatModel<Cat> {
         boolean music = combatMusic || CatMusicRecordClient.performing(cat);
         if (healing || music) { limbSwing = 0; limbSwingAmount = 0; }
         super.setupAnim(cat, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat) {
+            head.xRot=seat.headPitch()*(float)Math.PI/180;
+            head.yRot=seat.headYaw()*(float)Math.PI/180;
+            head.zRot=0;
+        }
         if (cn.laowu.mod.CatPilotFlight.carried(cat) || cn.laowu.mod.CatDivingMount.carried(cat)) {
             // The complete pilot follows the locally predicted body heading; no old network head yaw.
             head.xRot = head.yRot = 0;
         }
         liveHeadXRot = head.xRot;
         liveHeadYRot = head.yRot;
-        hissing = CatPoseData.isHissing(cat);
+        hissing = cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat
+                ? seat.hissing() : CatPoseData.isHissing(cat);
         pancake = CatPoseData.isPancake(cat);
         playingPipa = false;
         playingStreetDance = false;

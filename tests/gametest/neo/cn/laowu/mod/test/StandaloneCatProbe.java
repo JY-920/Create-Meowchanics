@@ -11,6 +11,14 @@ import net.neoforged.neoforge.gametest.*;
 @GameTestHolder("laowu")
 @PrefixGameTestTemplate(false)
 public final class StandaloneCatProbe {
+    @GameTest(template="artillery_probe",timeoutTicks=30)
+    public static void catCareFacilitiesStayAvailableWithoutCreate(GameTestHelper h) {
+        for (String id : java.util.List.of("basic_breeding_box", "intermediate_breeding_box", "advanced_breeding_box", "adoption_box", "wish_adoption_box", "cat_storage_box"))
+            h.assertTrue(BuiltInRegistries.ITEM.containsKey(LaoWuMod.id(id)), "Cat gameplay item must remain available without Create: " + id);
+        for (String id : java.util.List.of("basic_breeding_box", "intermediate_breeding_box", "advanced_breeding_box", "adoption_box", "wish_adoption_box"))
+            h.assertTrue(BuiltInRegistries.BLOCK.containsKey(LaoWuMod.id(id)), "Cat gameplay block must remain available without Create: " + id);
+        h.succeed();
+    }
     @GameTest(template="artillery_probe",timeoutTicks=600)
     public static void savedDeliveryCatResumesGravityWithoutLosingCargo(GameTestHelper h) {
         floor(h);

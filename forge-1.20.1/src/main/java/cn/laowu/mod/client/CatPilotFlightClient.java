@@ -12,10 +12,11 @@ public final class CatPilotFlightClient {
         var vehicle = player.getVehicle();
         if (!(vehicle instanceof CatFlightCarrier) && !(vehicle instanceof cn.laowu.mod.entity.CatDivingCarrier)) return;
         // Every tick (20 Hz), rather than adding a two-tick delay before the server can turn.
-        boolean active = minecraft.screen == null;
+        boolean active = minecraft.screen == null && minecraft.isWindowActive();
         ModNetwork.pilotFlightInput(active ? player.input.forwardImpulse : 0, active ? player.input.leftImpulse : 0,
                 player.getYRot(), player.getXRot(), active && minecraft.options.keyJump.isDown(),
-                active && ClientModEvents.PILOT_DESCEND.isDown());
+                active && (com.mojang.blaze3d.platform.InputConstants.isKeyDown(minecraft.getWindow().getWindow(), com.mojang.blaze3d.platform.InputConstants.KEY_LCONTROL)
+                        || com.mojang.blaze3d.platform.InputConstants.isKeyDown(minecraft.getWindow().getWindow(), com.mojang.blaze3d.platform.InputConstants.KEY_RCONTROL)));
         if (player.tickCount % 10 == 0) {
             if (vehicle instanceof CatFlightCarrier carrier)
                 player.displayClientMessage(carrier.gliding() ? Component.translatable("message.laowu.pilot_flight.gliding")

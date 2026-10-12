@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "P",
+    "I",
+    "C"
+  ],
+  "key": {
+    "C": {
+      "item": "laowu:cat_casing"
+    },
+    "P": {
+      "item": "create:cardboard"
+    },
+    "I": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_ejecting_deployment_platform",
+    "count": 1
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

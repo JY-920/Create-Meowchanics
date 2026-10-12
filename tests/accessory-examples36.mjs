@@ -23,8 +23,9 @@ for(const [loader,adapter] of [['forge-1.20.1','forge'],['neoforge-1.21.1','neof
  const entries=vm.runInContext('laowuExamples36.entries',context);
  check(entries.length===36&&outputs.size===36,loader+' emits exactly 36 definitions');
  const resources=loader+'/src/main/resources/data/laowu/cat_accessories/';
- check(readdirSync(new URL(resources,root)).filter(x=>x.endsWith('.json')).length===37,'36 frozen definitions plus one additive native definition');
+ check(readdirSync(new URL(resources,root)).filter(x=>x.endsWith('.json')).length===38,'36 frozen definitions plus two additive native definitions');
  check(!outputs.has('laowu:cat_accessories/cat_giant_collar.json'),'legacy scripts do not replace giant collar');
+ check(!outputs.has('laowu:cat_accessories/cat_boxing_gloves.json'),'legacy scripts do not replace boxing gloves');
  let scripted=0;
  for(const entry of entries){
   const path='laowu:cat_accessories/'+entry.id+'.json',data=outputs.get(path);

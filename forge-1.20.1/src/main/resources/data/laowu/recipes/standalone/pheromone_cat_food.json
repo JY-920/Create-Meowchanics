@@ -1,0 +1,13 @@
+{
+  "type": "laowu:pheromone_cat_food_crafting",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "create"
+      }
+    }
+  ]
+}

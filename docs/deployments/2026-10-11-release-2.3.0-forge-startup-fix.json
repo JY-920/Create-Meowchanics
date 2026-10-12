@@ -1,0 +1,43 @@
+{
+  "Time": "2026-10-11 10:24:34 Asia/Shanghai",
+  "Stamp": "20261011-102434-2.3.0-forge-startup-refmap-fix",
+  "Source": {
+    "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.3.0-forge-1.20.1.jar",
+    "Sha256": "CE7E0D1CC4C4D5BBF3E934ECE64E16AA4620A31236C055568DC9D7EEB0047C03",
+    "Bytes": 8233251,
+    "Version": "2.3.0",
+    "ModId": "laowu"
+  },
+  "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261011-102434-2.3.0-forge-startup-refmap-fix\\create-meowchanics-2.3.0-forge-1.20.1.jar",
+  "Port": "forge-1.20.1",
+  "Verified": true,
+  "Tests": {
+    "RedProductionBoot": "Old JAR reproduced both missing Mixin targets in actual SRG client",
+    "ReferenceMapper": "Old JAR fails; fixed packaged JAR passes in default and searge contexts",
+    "ForgeCreate": "Actual production client reached title screen and shut down",
+    "ForgeStandalone": "Actual production client without Create reached title screen and shut down",
+    "Build": "Both normal builds passed API contracts, release isolation and 23274 accessory checks"
+  },
+  "Previous": {
+    "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.0-forge-1.20.1.jar",
+    "Sha256": "602475787734C6364AD982A56613806760C2AF0B78E17B0A1A3577612A7F6C49",
+    "Bytes": 8233056,
+    "Version": "2.3.0",
+    "ModId": "laowu"
+  },
+  "NeoForge": {
+    "Reason": "Runtime JAR unchanged; active NeoForge client left untouched",
+    "Deployed": false,
+    "InstalledHash": "B15FB7DC58F2E8685882E7A28FD1E96A8A0113D3481D20AD8C60176F8E788D3B",
+    "Changed": false
+  },
+  "Version": "2.3.0",
+  "Installed": {
+    "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.0-forge-1.20.1.jar",
+    "Sha256": "CE7E0D1CC4C4D5BBF3E934ECE64E16AA4620A31236C055568DC9D7EEB0047C03",
+    "Bytes": 8233251,
+    "Version": "2.3.0",
+    "ModId": "laowu"
+  },
+  "ActiveLaowuCount": 1
+}

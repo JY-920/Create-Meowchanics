@@ -5,7 +5,6 @@ import cn.laowu.mod.WishAdoptionBoxMenu;
 import cn.laowu.mod.create.WishAdoptionOffer;
 import cn.laowu.mod.genetics.CatStat;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.simibubi.create.foundation.gui.AllGuiTextures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -68,7 +67,7 @@ public final class WishAdoptionBoxScreen extends AbstractContainerScreen<WishAdo
     @Override protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         g.blit(TEXTURE, leftPos + 16, topPos, 31, 46, 143, 164, 256, 256);
-        AllGuiTextures.PLAYER_INVENTORY.render(g, leftPos, topPos + WishAdoptionBoxMenu.PLAYER_PANEL_Y);
+        CatClientTextures.renderPlayerInventory(g, leftPos, topPos + WishAdoptionBoxMenu.PLAYER_PANEL_Y);
         var offer = menu.offer();
         if (offer != null) g.renderItem(offer.rewardStack(), leftPos + REWARD_X, topPos + REWARD_Y);
     }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:campfire_cooking",
+  "category": "food",
+  "ingredient": {
+    "item": "minecraft:cooked_salmon"
+  },
+  "result": "laowu:dried_fish",
+  "experience": 0.1,
+  "cookingtime": 600,
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "create"
+      }
+    }
+  ]
+}

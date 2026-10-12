@@ -8,9 +8,9 @@ for (const loader of ['forge-1.20.1', 'neoforge-1.21.1']) {
     const base = loader + '/src/main/';
     const code = name => read(base + 'java/cn/laowu/mod/' + name + '.java');
     verify(code('genetics/CatBreedingMode').includes('MUTATION(5, null, 0.40F)'), loader + ' mode');
-    verify(code('create/BreedingBoxBlockEntity').includes(
+    verify(code('create/BreedingBoxData').includes(
         'firstTraits, secondTraits, mode, mutationChance, level.random)'), loader + ' box passes actual food');
-    verify(code('create/BreedingBoxBlockEntity').includes(
+    verify(code('create/BreedingBoxData').includes(
         'tier().mutationChance(), mode, firstAttributes, firstTraits'), loader + ' shared effective chance');
     verify(code('genetics/CatTraitProfile').includes(
         'chooseWeightedTrait(mutationPool, mode, random)'), loader + ' mode reaches rarity draw');

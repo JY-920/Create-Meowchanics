@@ -25,6 +25,7 @@ public final class CreatureFilterClientProbe {
         var previousScreen=mc.screen;var previousMenu=mc.player.containerMenu;
         int slot=mc.player.getInventory().selected;var oldStack=mc.player.getInventory().getItem(slot);
         try {
+            exactSearchTargets(mc);
             var stack=new ItemStack(LaoWuMod.CREATURE_FILTER.get());mc.player.getInventory().setItem(slot,stack);
             var groupMenu=new CreatureFilterMenu(30000,mc.player.getInventory(),stack);
             var groupScreen=new CreatureFilterScreen(groupMenu,mc.player.getInventory(),Component.translatable("item.laowu.creature_filter"));
@@ -180,6 +181,43 @@ public final class CreatureFilterClientProbe {
             click(screen,reset);check(menu.rules().conditions().isEmpty(),"Native reset clears all conditions");
             System.out.println("[CreatureFilterClientProbe] PASS native dropdown/search synchronization, NAME_TAG, OR/AND/NOR, positive/inverted add, duplicate guard, native panel pixel-seam check, keyboard/wheel/focus, compact inventory");
         } finally {mc.player.getInventory().setItem(slot,oldStack);mc.player.containerMenu=previousMenu;mc.setScreen(previousScreen);}
+    }
+    private static void exactSearchTargets(Minecraft mc) throws Exception {
+        var pig=ResourceLocation.tryParse("minecraft:pig");
+        var hoglin=ResourceLocation.tryParse("minecraft:hoglin");
+        var piglin=ResourceLocation.tryParse("minecraft:piglin");
+        for(boolean grouped:List.of(true,false))for(boolean inverted:List.of(false,true)) {
+            var stack=new ItemStack(LaoWuMod.CREATURE_FILTER.get());
+            if(grouped)CreatureFilterRules.grouped(List.of(new CreatureFilterRules.Group(hoglin,
+                CreatureFilterRules.Mode.WHITELIST_ALL,List.of()))).write(stack);
+            else CreatureFilterRules.conditions(CreatureFilterRules.Mode.WHITELIST_ALL,List.of()).write(stack);
+            mc.player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,stack);
+            var menu=new CreatureFilterMenu(30003,mc.player.getInventory(),stack);
+            var catalogue=CreatureFilterMenu.class.getDeclaredField("catalog");catalogue.setAccessible(true);
+            catalogue.set(menu,List.of(
+                new CreatureFilterMenu.EntityEntry(hoglin,Component.literal("疣猪兽"),CreatureFilterRules.Category.HOSTILE),
+                new CreatureFilterMenu.EntityEntry(pig,Component.literal("猪"),CreatureFilterRules.Category.PASSIVE),
+                new CreatureFilterMenu.EntityEntry(piglin,Component.literal("猪灵"),CreatureFilterRules.Category.NEUTRAL)));
+            var screen=new CreatureFilterScreen(menu,mc.player.getInventory(),Component.literal("生物过滤器"));
+            mc.player.containerMenu=menu;mc.setScreen(screen);screen.init(mc,WIDTH,HEIGHT);
+            var input=field(screen,"search",EditBox.class);input.setValue("猪");
+            check(entries(screen).size()==3,"Partial names remain available for scrolling");
+            click(screen,field(screen,inverted?"addInverted":"add",IconButton.class));
+            boolean added=grouped?menu.rules().groups().stream().anyMatch(g->pig.equals(g.target())&&g.inverted()==inverted)
+                :menu.rules().conditions().contains(CreatureFilterRules.Condition.entity(pig,inverted));
+            check(added,"Exact Chinese name 猪 must add minecraft:pig, not hoglin; grouped="+grouped+", inverted="+inverted);
+            check(input.getValue().equals("猪"),"Add must reflect the actual selected pig");
+            input.setValue("minecraft:pig");
+            var wheel=field(screen,"selector",com.simibubi.create.foundation.gui.widget.SelectionScrollInput.class);
+            wheel.onChanged();
+            check(input.getValue().equals("猪"),"Exact full ID must beat piglin substring");
+            input.setValue("猪");
+            scroll(screen,wheel.getX()+10,wheel.getY()+8,-1);
+            check(input.getValue().equals("疣猪兽"),"Explicit wheel selection can still select the partial-name hoglin");
+            click(screen,field(screen,grouped?"addInverted":"add",IconButton.class));
+            check(input.getValue().equals("疣猪兽"),"Adding must preserve an explicitly browsed partial match");
+        }
+        System.out.println("[CreatureFilterClientProbe] PASS exact Chinese name/full ID, normal/inverted, saved partial match, deliberate wheel selection");
     }
     private static int originUnchecked(CreatureFilterScreen screen,String field){
         try{return origin(screen,field);}catch(Exception e){throw new RuntimeException(e);}

@@ -86,6 +86,7 @@ public final class CatPancakeItem extends Item {
         CatTraitData.ensure(cat);
         CompoundTag root = pancake.getOrCreateTag();
         CompoundTag catData = cat.saveWithoutId(new CompoundTag());
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat) seat.sanitizeSnapshot(catData);
         cn.laowu.mod.create.CatDeploymentFlight.sanitizeSnapshot(catData);
         removePositionAndIdentity(catData);
         CatPancakeBehavior.sanitizeCapturedData(catData);

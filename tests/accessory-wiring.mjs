@@ -13,9 +13,9 @@ for (const loader of ['forge-1.20.1','neoforge-1.21.1']) {
   const resources=loader+'/src/main/resources/';
   const defs=readdirSync(path.join(root,resources,'data/laowu/cat_accessories')).sort()
     .map(file=>[file,JSON.parse(read(resources+'data/laowu/cat_accessories/'+file))]);
-  check(defs.length===37,'37 definitions per loader, preserving thirteen career-exclusive effects');
+  check(defs.length===38,'38 definitions per loader, preserving thirteen career-exclusive effects');
   const frozen=JSON.parse(read('compatibility/cat-accessory-api-v3.json')).stable_builtin_ids;
-  const originalIds=defs.map(([file])=>'laowu:'+file.replace('.json','')).filter(id=>id!=='laowu:cat_giant_collar');
+  const originalIds=defs.map(([file])=>'laowu:'+file.replace('.json','')).filter(id=>!['laowu:cat_giant_collar','laowu:cat_boxing_gloves'].includes(id));
   check(JSON.stringify(originalIds)===JSON.stringify(frozen),'all original 36 item IDs remain frozen');
   const temporary=[...JSON.parse(read('art/career-accessories-v1/manifest.json')).items,...JSON.parse(read('art/general-accessories-v1/manifest.json')).items];
   if(reference) check(JSON.stringify(defs)===reference,'byte-equivalent effects across loaders');
@@ -66,7 +66,7 @@ for (const loader of ['forge-1.20.1','neoforge-1.21.1']) {
   check(java('client/CatAccessoryPreview').includes('nextPreviewId = -1_000_000')
     && java('client/BreedingBoxScreen').includes('CatAccessoryPreview.nextEntityId()'),
     'GUI previews cannot collide with real entity-ID keyed caches');
-  check(java('create/BreedingBoxBlockEntity').includes('CatPancakeItem.babyVariantStack'),
+  check(java('create/BreedingBoxData').includes('CatPancakeItem.babyVariantStack'),
     'breeding constructs a fresh child rather than copying equipped parent inventory');
   check(read(resources+'kubejs.classfilter.txt').trim()==='+cn.laowu.mod.api','stable script facade whitelist');
   check(!/kubejs|rhino|photon|ldlib/i.test(read(loader+'/gradle.properties')),'no new mandatory mod dependency');

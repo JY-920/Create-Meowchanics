@@ -1,0 +1,22 @@
+{
+  "Time": "2026-10-10 23:06:52 Asia/Shanghai",
+  "Version": "2.3.0",
+  "Stamp": "20261010-230651-2.3.0-release-2-3-0",
+  "ActiveLaowuCountPerInstance": 1,
+  "Targets": [
+    {
+      "Port": "forge-1.20.1",
+      "Installed": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mods/create-meowchanics-2.3.0-forge-1.20.1.jar",
+      "Sha256": "A87C2ED2AC5CB1E18BA8744C6690603B1B768B642D238724AE30877AA7B21AC1",
+      "PreviousVersion": "2.2.2-dev.boxing-v14.1",
+      "Backup": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mod-backups/create-meowchanics/20261010-230651-2.3.0-release-2-3-0/create-meowchanics-2.2.2-dev.boxing-v14.1-forge-1.20.1.jar"
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Installed": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mods/create-meowchanics-2.3.0-neoforge-1.21.1.jar",
+      "Sha256": "4141AF1A3009C7C8E8853744E7EFFE2CAAE373BC7AE39B414DD1C73B6E6EE9AA",
+      "PreviousVersion": "2.2.2-dev.boxing-v14.1",
+      "Backup": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mod-backups/create-meowchanics/20261010-230651-2.3.0-release-2-3-0/create-meowchanics-2.2.2-dev.boxing-v14.1-neoforge-1.21.1.jar"
+    }
+  ]
+}

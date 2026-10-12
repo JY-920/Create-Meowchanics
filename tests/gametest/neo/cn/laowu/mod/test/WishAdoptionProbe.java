@@ -79,8 +79,9 @@ public final class WishAdoptionProbe {
         h.assertTrue(counts.equals(Set.of(2,3,4))&&modes.size()==2,"Native rarity fixes requirements at 2/3/4; both NOW/MAX rolled");
         h.assertTrue(seen.equals(new HashSet<>(CatAccessoryRegistry.rewardItemIds())),"All non-Boss registered accessories eligible");
         h.assertTrue(seen.stream().filter(id->id.startsWith("laowu:")).count()==35
-                &&!seen.contains("laowu:cat_giant_collar")&&!seen.contains("laowu:cat_butter_cube"),
-                "35 eligible rewards; giant collar and butter are Boss-only");
+                &&!seen.contains("laowu:cat_giant_collar")&&!seen.contains("laowu:cat_butter_cube")
+                &&!seen.contains("laowu:cat_boxing_gloves"),
+                "35 eligible rewards; giant collar, butter and boxing gloves are Boss-only");
         h.assertTrue(seen.contains("laowu:cat_rebirth_ootheca"),"Milk tea included");
         var profile=CatAttributeData.read(cat(20,80)).orElseThrow();
         h.assertTrue(!offer(false).matches(profile)&&offer(true).matches(profile),"NOW checks current and MAX checks ceilings");

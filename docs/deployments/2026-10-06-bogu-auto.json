@@ -1,0 +1,45 @@
+{
+  "Time": "2026-10-06 19:39:46",
+  "Version": "2.2.2-dev.optional-create.9",
+  "Stamp": "20261006-193945-2.2.2-dev.optional-create.9-bogu-auto",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-dev.optional-create.9-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.9-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.optional-create.9",
+        "Sha256": "1B9EC0AF0F907C860B65369CDCDCA84BEACF3DD20996E8482A903785A1A0C567"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261006-193945-2.2.2-dev.optional-create.9-bogu-auto\\create-meowchanics-2.2.2-dev.optional-create.8-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.8-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.optional-create.8",
+        "Sha256": "8EE612C7E77B95A3EBD7ADE329826B6DB5A577844C732C8E01600871F4B420D2"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-dev.optional-create.9-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.9-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.optional-create.9",
+        "Sha256": "6848EC1734819157CCC52B4DF52860CC72ADD302F32065C385E5545BA6EE3378"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261006-193945-2.2.2-dev.optional-create.9-bogu-auto\\create-meowchanics-2.2.2-dev.optional-create.8-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.8-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.optional-create.8",
+        "Sha256": "FEC223F6F8D4887AF785CA59ACF88BAA2C4D01F6C96AD70AE627B61736BA3809"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ]
+}

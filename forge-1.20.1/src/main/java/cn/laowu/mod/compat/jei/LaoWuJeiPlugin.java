@@ -34,6 +34,22 @@ public final class LaoWuJeiPlugin implements IModPlugin {
     }
     @Override public void onRuntimeAvailable(IJeiRuntime argument) {
         if (CreateIntegration.isLoaded()) new CreateJeiIntegration().onRuntimeAvailable(argument);
+        else hideStandaloneIndustrialIngredients(argument);
+    }
+    private static void hideStandaloneIndustrialIngredients(IJeiRuntime runtime) {
+        // Keep the registries intact for old saves; remove only JEI display entries.
+        var ingredients = runtime.getIngredientManager();
+        var items = ingredients.getAllItemStacks().stream()
+                .filter(stack -> stack.is(LaoWuMod.CAT_SHELL.get()) || stack.is(LaoWuMod.CAT_GRENADE.get())
+                        || stack.is(LaoWuMod.HISSING_GAS_BUCKET.get()) || stack.is(LaoWuMod.LIQUID_CAT_BUCKET.get()))
+                .toList();
+        if (!items.isEmpty()) ingredients.removeIngredientsAtRuntime(mezz.jei.api.constants.VanillaTypes.ITEM_STACK, items);
+        var fluidType = mezz.jei.api.forge.ForgeTypes.FLUID_STACK;
+        var fluids = ingredients.getAllIngredients(fluidType).stream()
+                .filter(stack -> stack.getFluid() == LaoWuMod.HISSING_GAS.get() || stack.getFluid() == LaoWuMod.FLOWING_HISSING_GAS.get()
+                        || stack.getFluid() == LaoWuMod.LIQUID_CAT.get() || stack.getFluid() == LaoWuMod.FLOWING_LIQUID_CAT.get())
+                .toList();
+        if (!fluids.isEmpty()) ingredients.removeIngredientsAtRuntime(fluidType, fluids);
     }
     @Override public void onRuntimeUnavailable() {
         if (CreateIntegration.isLoaded()) new CreateJeiIntegration().onRuntimeUnavailable();

@@ -160,6 +160,7 @@ public final class AdoptionBoxBlockEntity extends BlockEntity implements MenuPro
     /** Only checked at adoption completion; no per-tick scans or remote chunk loads. */
     private List<net.minecraft.world.entity.npc.VillagerProfession> seatedProfessions() {
         List<net.minecraft.world.entity.npc.VillagerProfession> result = new ArrayList<>(4);
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) return result;
         for (Direction direction : Direction.Plane.HORIZONTAL) {
             BlockPos seatPos = worldPosition.relative(direction);
             if (!level.hasChunkAt(seatPos)

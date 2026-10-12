@@ -8,6 +8,9 @@ import cn.laowu.mod.client.RuntimeBlockbenchModel.GroupTransform;
 public final class GiantCatBossAnimation {
     private static final float PI = (float) Math.PI;
     private GiantCatBossAnimation() {}
+    public static float maodieGrowthScale(float summonTicks) {
+        return .64F + (4F-.64F)*smooth(summonTicks/20F);
+    }
 
     /** Phase numbers are the GiantCatBoss network contract; ticks are interpolated server phase age. */
     public static Map<String, GroupTransform> sample(byte phase, float ticks,
@@ -28,6 +31,9 @@ public final class GiantCatBossAnimation {
         Map<String, GroupTransform> target = new HashMap<>();
         float weight = 0;
         switch (phase) {
+            case 9 -> { target = maodieInhale(); weight = smooth(ticks / 20); }
+            case 10 -> { target = blend(maodieInhale(), maodieHiss(), smooth(ticks / 6)); weight = 1; }
+            case 11 -> { target = maodieHiss(); weight = 1 - smooth(ticks / 20); }
             case 3 -> { target = roll(PI / 2); weight = smooth(ticks / 16); }
             case 4 -> { target = rolling(ticks, locomotion); weight = 1; }
             case 5 -> {
@@ -131,6 +137,28 @@ public final class GiantCatBossAnimation {
         rotation(pose, "left_hind_leg", .42F, 0, -.12F);
         rotation(pose, "right_hind_leg", .42F, 0, .12F);
         rotation(pose, "head", -.14F, 0, 0);
+        return pose;
+    }
+
+    private static Map<String, GroupTransform> maodieInhale() {
+        Map<String, GroupTransform> pose = new HashMap<>();
+        put(pose, "group2", 0, 0, 0, -.04F, 0, 0, 1.04F, 1.12F, .96F);
+        rotation(pose, "head", -.26F, 0, 0);
+        rotation(pose, "tail1", -.6F, 0, 0);
+        rotation(pose, "tail2", -.35F, 0, 0);
+        return pose;
+    }
+
+    private static Map<String, GroupTransform> maodieHiss() {
+        Map<String, GroupTransform> pose = new HashMap<>();
+        put(pose, "group2", 0, 0, 0, .06F, 0, 0, 1.06F, 1.08F, .96F);
+        rotation(pose, "head", -.42F, 0, 0);
+        rotation(pose, "left_front_leg", -.16F, 0, -.12F);
+        rotation(pose, "right_front_leg", -.16F, 0, .12F);
+        rotation(pose, "left_hind_leg", .14F, 0, -.1F);
+        rotation(pose, "right_hind_leg", .14F, 0, .1F);
+        rotation(pose, "tail1", -.9F, 0, 0);
+        rotation(pose, "tail2", -.5F, 0, 0);
         return pose;
     }
 

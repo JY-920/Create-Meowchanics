@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " F ",
+    "MCM",
+    " F "
+  ],
+  "key": {
+    "F": {
+      "item": "laowu:cat_fur"
+    },
+    "M": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "laowu:cat_component"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "laowu:diving_suit"
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "create"
+      }
+    }
+  ]
+}

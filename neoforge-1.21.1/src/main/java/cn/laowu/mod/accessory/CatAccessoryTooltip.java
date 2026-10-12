@@ -27,10 +27,15 @@ public final class CatAccessoryTooltip {
             lines.add(Component.translatable("cat_accessory.laowu.disabled").withStyle(ChatFormatting.GRAY));
             return;
         }
-        if (def.id().equals("laowu:cat_butter_cube"))
-            lines.add(Component.translatable("cat_accessory.laowu.boss_drop").withStyle(ChatFormatting.DARK_PURPLE));
-        else if (def.id().equals("laowu:cat_giant_collar"))
-            lines.add(Component.translatable("cat_accessory.laowu.giant_boss_drop").withStyle(ChatFormatting.DARK_PURPLE));
+        String boss = switch (def.id()) {
+            case "laowu:cat_butter_cube" -> "entity.laowu.butter_cat";
+            case "laowu:cat_giant_collar" -> "entity.laowu.giant_cat_boss";
+            case "laowu:cat_boxing_gloves" -> "entity.laowu.maodie_fighter";
+            default -> null;
+        };
+        if (boss != null)
+            lines.add(Component.translatable("cat_accessory.laowu.boss_reward", Component.translatable(boss), 25)
+                    .withStyle(ChatFormatting.DARK_PURPLE));
         if (!def.description().isEmpty()) lines.add(Component.literal(def.description()).withStyle(ChatFormatting.GRAY));
         if(stack.getMaxDamage()>0)lines.add(Component.translatable("cat_accessory.laowu.durability",
                 Math.max(0,stack.getMaxDamage()-stack.getDamageValue()),stack.getMaxDamage()).withStyle(ChatFormatting.GRAY));

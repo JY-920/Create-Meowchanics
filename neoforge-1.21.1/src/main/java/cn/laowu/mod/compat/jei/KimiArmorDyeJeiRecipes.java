@@ -47,6 +47,18 @@ final class KimiArmorDyeJeiRecipes {
             result.add(new RecipeHolder<CraftingRecipe>(id,
                     new ShapelessRecipe("laser_dye",CraftingBookCategory.EQUIPMENT,out,inputs)));
         }
+        if (!cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) {
+            ItemStack nameTag = new ItemStack(Items.NAME_TAG);
+            var name = net.minecraft.network.chat.Component.translatable("ingredient.laowu.named_player_name_tag");
+            nameTag.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, name);
+            NonNullList<Ingredient> inputs = NonNullList.create();
+            inputs.add(Ingredient.of(LaoWuMod.CAT_FOOD.get()));
+            inputs.add(Ingredient.of(nameTag));
+            var out = cn.laowu.mod.item.PheromoneCatFoodItem.createForOwner(name.getString());
+            var id = LaoWuMod.id("jei/pheromone_cat_food_crafting");
+            result.add(new RecipeHolder<CraftingRecipe>(id,
+                    new ShapelessRecipe("pheromone_cat_food", CraftingBookCategory.MISC, out, inputs)));
+        }
         return result;
     }
     private KimiArmorDyeJeiRecipes() {}

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " F ",
+    "MCM",
+    " F "
+  ],
+  "key": {
+    "F": {
+      "item": "laowu:cat_fur"
+    },
+    "M": {
+      "item": "minecraft:bread"
+    },
+    "C": {
+      "item": "laowu:cat_component"
+    }
+  },
+  "result": {
+    "item": "laowu:cockroach_suit",
+    "count": 1
+  },
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "create"
+      }
+    }
+  ]
+}

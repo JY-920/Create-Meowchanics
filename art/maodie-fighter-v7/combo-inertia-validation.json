@@ -1,0 +1,58 @@
+[
+  {
+    "side": "left",
+    "windRear": -5.87835514052298,
+    "impactForward": 3.375275887948442,
+    "followDistance": 3.2689900830288825,
+    "continuedTorsoTurn": -19.660038159516645
+  },
+  {
+    "side": "right",
+    "windRear": -3.381135851130914,
+    "impactForward": 3.378696211982946,
+    "followDistance": 2.6539111639450983,
+    "continuedTorsoTurn": -11.394540449492418
+  },
+  {
+    "side": "left",
+    "windRear": -3.12410463764905,
+    "impactForward": 6.273497177641807,
+    "followDistance": 8.13279958851202,
+    "continuedTorsoTurn": -22.612282618126894
+  },
+  {
+    "side": "right",
+    "windRear": -6.389042665092145,
+    "impactForward": 3.5064433944512556,
+    "followDistance": 7.234746826203226,
+    "continuedTorsoTurn": -39.573995762445634
+  },
+  {
+    "side": "left",
+    "windRear": -3.3637094244592083,
+    "impactForward": 3.381135851130914,
+    "followDistance": 3.9804743566682954,
+    "continuedTorsoTurn": 23.70647028429002
+  },
+  {
+    "side": "right",
+    "windRear": -3.381135851130914,
+    "impactForward": 3.381135851130914,
+    "followDistance": 0,
+    "continuedTorsoTurn": 0
+  },
+  {
+    "side": "left",
+    "windRear": -3.381135851130914,
+    "impactForward": 3.381135851130914,
+    "followDistance": 0,
+    "continuedTorsoTurn": 0
+  },
+  {
+    "side": "right",
+    "windRear": -3.381135851130914,
+    "impactForward": 3.381135851130914,
+    "followDistance": 0,
+    "continuedTorsoTurn": 0
+  }
+]

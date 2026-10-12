@@ -25,8 +25,12 @@ public final class HissingAudioManager {
     private static final int LOOP_RESTART_DELAY_TICKS = 20;
     private static final int LOOP_SEGMENT_COUNT = 8;
     private static final Map<Integer, Session> SESSIONS = new HashMap<>();
+    private static final Map<Integer, ShelfHissSound> SHELF_SOUNDS = new HashMap<>();
 
     public static void start(int entityId) {
+        var level=Minecraft.getInstance().level;
+        Entity owner=level==null?null:level.getEntity(entityId);
+        if(owner!=null&&owner.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat)return;
         if (SESSIONS.containsKey(entityId)) return;
         Session session = new Session(entityId);
         SESSIONS.put(entityId, session);
@@ -55,9 +59,51 @@ public final class HissingAudioManager {
         if (Minecraft.getInstance().level == null) {
             SESSIONS.values().forEach(Session::stopCurrent);
             SESSIONS.clear();
+            SHELF_SOUNDS.values().forEach(ShelfHissSound::finish);
+            SHELF_SOUNDS.clear();
             return;
         }
         SESSIONS.values().removeIf(Session::tick);
+        tickShelfSounds();
+    }
+
+    private static void tickShelfSounds(){
+        Minecraft mc=Minecraft.getInstance();
+        SHELF_SOUNDS.values().removeIf(sound->{
+            if(sound.owner.level()!=mc.level||!sound.valid()){sound.finish();return true;}
+            return false;
+        });
+        for(Entity entity:mc.level.entitiesForRendering()){
+            if(!(entity instanceof net.minecraft.world.entity.animal.Cat cat)
+                    ||!(cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat)||!seat.hissing())continue;
+            ShelfHissSound existing=SHELF_SOUNDS.get(cat.getId());
+            if(existing!=null&&existing.start==seat.hissStartTick())continue;
+            if(existing!=null)existing.finish();
+            ShelfHissSound sound=new ShelfHissSound(cat,seat);
+            SHELF_SOUNDS.put(cat.getId(),sound);mc.getSoundManager().play(sound);
+        }
+    }
+
+    /** A shelf stroke is immediate and ends with that stroke; it has no intro, loop or tail session. */
+    private static final class ShelfHissSound extends AbstractSoundInstance implements TickableSoundInstance{
+        private final Entity owner;
+        private final cn.laowu.mod.entity.BoguShelfSeat seat;
+        private final long start;
+        private boolean stopped;
+        private ShelfHissSound(Entity owner,cn.laowu.mod.entity.BoguShelfSeat seat){
+            super(ResourceLocation.fromNamespaceAndPath("minecraft","entity.cat.hiss"),SoundSource.NEUTRAL,RandomSource.create());
+            this.owner=owner;this.seat=seat;this.start=seat.hissStartTick();
+            pitch=1.15F;looping=false;delay=0;relative=false;attenuation=SoundInstance.Attenuation.LINEAR;
+            x=owner.getX();y=owner.getY();z=owner.getZ();
+        }
+        private boolean valid(){return owner.isAlive()&&owner.getVehicle()==seat&&seat.hissing()&&seat.hissStartTick()==start;}
+        private void finish(){stopped=true;Minecraft.getInstance().getSoundManager().stop(this);}
+        @Override public void tick(){
+            if(!valid()){stopped=true;return;}
+            x=owner.getX();y=owner.getY();z=owner.getZ();
+        }
+        @Override public boolean isStopped(){return stopped;}
+        @Override public float getVolume(){return .65F*ClientConfig.HISSING_PAIR_VOLUME.get().floatValue();}
     }
 
     private enum Stage { INTRO_DELAY, INTRO, LOOP, WAIT }
@@ -76,7 +122,7 @@ public final class HissingAudioManager {
         private boolean tick() {
             Minecraft mc = Minecraft.getInstance();
             Entity owner = mc.level == null ? null : mc.level.getEntity(entityId);
-            if (owner == null || !owner.isAlive()) {
+            if (owner == null || !owner.isAlive()||owner.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat) {
                 stopCurrent();
                 return true;
             }

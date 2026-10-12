@@ -34,7 +34,7 @@ public final class ClientModEvents {
     public static final KeyMapping OPEN_HELD_ITEM_TRANSFORM = new KeyMapping(
             "key.laowu.held_item_transform",
             InputConstants.Type.KEYSYM,
-            InputConstants.KEY_K,
+            InputConstants.UNKNOWN.getValue(),
             "key.categories.laowu");
     public static final KeyMapping CAT_ARMOR_POUNCE = new KeyMapping(
             "key.laowu.cat_armor_pounce", InputConstants.Type.KEYSYM,
@@ -42,9 +42,6 @@ public final class ClientModEvents {
     public static final KeyMapping CAT_TOOL_EMPOWER = new KeyMapping(
             "key.laowu.cat_tool_empower", InputConstants.Type.KEYSYM,
             InputConstants.KEY_LALT, "key.categories.laowu");
-    public static final KeyMapping PILOT_DESCEND = new KeyMapping(
-            "key.laowu.pilot_descend", InputConstants.Type.KEYSYM, InputConstants.KEY_LCONTROL,
-            "key.categories.laowu");
     public static final KeyMapping HISSING_VOLUME = new KeyMapping(
             "key.laowu.hissing_volume",
             InputConstants.Type.KEYSYM,
@@ -57,7 +54,6 @@ public final class ClientModEvents {
         event.register(CAT_ARMOR_POUNCE);
         event.register(CAT_TOOL_EMPOWER);
         event.register(HISSING_VOLUME);
-        event.register(PILOT_DESCEND);
     }
 
     @SubscribeEvent
@@ -89,6 +85,9 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(LaoWuMod.BREEDING_BOX_MENU.get(), BreedingBoxScreen::new);
+        event.register(LaoWuMod.ADOPTION_BOX_MENU.get(), AdoptionBoxScreen::new);
+        event.register(LaoWuMod.WISH_ADOPTION_BOX_MENU.get(), WishAdoptionBoxScreen::new);
         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) cn.laowu.mod.compat.create.CreateClientEvents.menus(event);
         event.register(LaoWuMod.CAT_TRAIT_EDITOR_MENU.get(), CatTraitEditorScreen::new);
         event.register(LaoWuMod.CAT_ATTRIBUTE_EDITOR_MENU.get(), CatAttributeEditorScreen::new);
@@ -101,6 +100,8 @@ public final class ClientModEvents {
         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) cn.laowu.mod.compat.create.CreateClientEvents.initDeployment();
         event.enqueueWork(() -> {
             if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) cn.laowu.mod.compat.create.CreateClientEvents.setup();
+            if (net.neoforged.fml.ModList.get().isLoaded("curios"))
+                cn.laowu.mod.compat.curios.CatGogglesCuriosClientCompat.registerRenderer();
             for (var armor : java.util.List.of(LaoWuMod.CAT_HELMET.get(), LaoWuMod.CAT_CHESTPLATE.get(),
                     LaoWuMod.CAT_LEGGINGS.get(), LaoWuMod.CAT_BOOTS.get()))
                 ItemProperties.register(armor, LaoWuMod.id("kimi_dyed"),
@@ -110,6 +111,7 @@ public final class ClientModEvents {
             // Blockbench body in the normal BER and let Create's native shaft
             // visual provide the correctly lit, RPM-driven transmission rod.
 
+            ItemProperties.register(LaoWuMod.CAT_STORAGE_BOX.get(), LaoWuMod.id("filled"), (stack, level, entity, seed) -> cn.laowu.mod.item.CatStorageBoxItem.count(stack) > 0 ? 1F : 0F);
             ItemProperties.register(LaoWuMod.CAT_POUCH.get(), LaoWuMod.id("filled"),
                     (stack, level, entity, seed) -> cn.laowu.mod.item.CatPouchItem.count(stack) > 0 ? 1.0F : 0.0F);
 
@@ -143,8 +145,12 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), CatCareRenderers::breeding);
+        event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
+        event.registerBlockEntityRenderer(LaoWuMod.WISH_ADOPTION_BOX_BE.get(), WishAdoptionBoxRenderer::new);
         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) cn.laowu.mod.compat.create.CreateClientEvents.renderers(event);
         event.registerEntityRenderer(EntityType.CAT, HissingCatRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.BOGU_SHELF_SEAT.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(LaoWuMod.CAT_PANCAKE_PROJECTILE.get(),
                 context -> new ThrownItemRenderer<>(context, 1.1F, false));
         event.registerEntityRenderer(LaoWuMod.FISHING_ROD_PROJECTILE.get(),
@@ -171,6 +177,7 @@ public final class ClientModEvents {
                 CatBallEntityRenderer::new);
         event.registerEntityRenderer(LaoWuMod.BUTTER_CAT.get(), ButterCatRenderer::new);
         event.registerEntityRenderer(LaoWuMod.GIANT_CAT_BOSS.get(), GiantCatBossRenderer::new);
+        event.registerEntityRenderer(LaoWuMod.MAODIE_FIGHTER.get(), MaodieFighterRenderer::new);
 
 
 
@@ -228,6 +235,7 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(HissingCatModel.LAYER, HissingCatModel::createLayer);
+        event.registerLayerDefinition(MaodieFighterModel.LAYER, MaodieFighterModel::createLayer);
         event.registerLayerDefinition(CatAppearanceModel.LAYER,
                 CatAppearanceModel::createLayer);
         event.registerLayerDefinition(KimiArmorModel.LAYER, KimiArmorModel::createLayer);

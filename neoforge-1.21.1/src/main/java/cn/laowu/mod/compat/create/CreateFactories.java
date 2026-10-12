@@ -242,5 +242,6 @@ public final class CreateFactories {
     public static RecipeSerializer<RandomBabyCatPancakeFillingRecipe> recipe_serializers_random_baby_cat_pancake_filling() { return new StandardProcessingRecipe.Serializer<>(
                             RandomBabyCatPancakeFillingRecipe::new); }
     public static RecipeSerializer<PheromoneCatFoodMixingRecipe> recipe_serializers_pheromone_cat_food_mixing() { return new StandardProcessingRecipe.Serializer<>(PheromoneCatFoodMixingRecipe::new); }
+    public static net.minecraft.world.level.block.entity.BlockEntity newBreedingBox(net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) { return new BreedingBoxBlockEntity(pos,state); }
     private CreateFactories() {}
 }

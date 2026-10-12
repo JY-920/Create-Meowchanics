@@ -95,6 +95,7 @@ public final class CatPancakeItem extends Item implements ProjectileItem {
         CatTraitData.ensure(cat);
         CompoundTag root = new CompoundTag();
         CompoundTag catData = cat.saveWithoutId(new CompoundTag());
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat) seat.sanitizeSnapshot(catData);
         cn.laowu.mod.create.CatDeploymentFlight.sanitizeSnapshot(catData);
         removePositionAndIdentity(catData);
         CatPancakeBehavior.sanitizeCapturedData(catData);

@@ -1,0 +1,65 @@
+[
+  {
+    "name": "animation.maodie.guard",
+    "frames": 193,
+    "minimum_y": 0.07000076679361458,
+    "foot_minimum_y": 0.07000076679361458,
+    "maximum_y": 18.61572431508764
+  },
+  {
+    "name": "animation.maodie.jab",
+    "frames": 59,
+    "minimum_y": 0.07000076679361458,
+    "foot_minimum_y": 0.07000076679361458,
+    "maximum_y": 18.66947724748857
+  },
+  {
+    "name": "animation.maodie.uppercut",
+    "frames": 83,
+    "minimum_y": 0.06434443579434634,
+    "foot_minimum_y": 0.06434443579434634,
+    "maximum_y": 24.38936287952598
+  },
+  {
+    "name": "animation.maodie.combo",
+    "frames": 174,
+    "minimum_y": 0.0699925986893517,
+    "foot_minimum_y": 0.0699925986893517,
+    "maximum_y": 18.538129618530274
+  },
+  {
+    "name": "animation.maodie.block",
+    "frames": 64,
+    "minimum_y": 0.07000076679361458,
+    "foot_minimum_y": 0.07000076679361458,
+    "maximum_y": 18.651495277103475
+  },
+  {
+    "name": "animation.maodie.backstep",
+    "frames": 69,
+    "minimum_y": 0.06245561703645164,
+    "foot_minimum_y": 0.06245561703645164,
+    "maximum_y": 19.292009592922142
+  },
+  {
+    "name": "animation.maodie.roundhouse",
+    "frames": 112,
+    "minimum_y": 0.022749583068073176,
+    "foot_minimum_y": 0.022749583068073176,
+    "maximum_y": 19.3029445332536
+  },
+  {
+    "name": "animation.maodie.jump_slam",
+    "frames": 150,
+    "minimum_y": 0.06267315674289331,
+    "foot_minimum_y": 0.06267315674289331,
+    "maximum_y": 35.40220713988159
+  },
+  {
+    "name": "animation.maodie.combat_flow",
+    "frames": 820,
+    "minimum_y": 0.025604223885520194,
+    "foot_minimum_y": 0.025604223885520194,
+    "maximum_y": 35.40220713988159
+  }
+]

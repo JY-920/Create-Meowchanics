@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "L",
+    "B",
+    "G"
+  ],
+  "key": {
+    "L": {
+      "item": "laowu:cat_laser_pointer"
+    },
+    "B": {
+      "item": "laowu:cat_block"
+    },
+    "G": {
+      "item": "create:cogwheel"
+    }
+  },
+  "result": {
+    "item": "laowu:cat_auto_laser",
+    "count": 1
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

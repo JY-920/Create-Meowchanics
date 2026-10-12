@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    "III"
+  ],
+  "key": {
+    "B": {
+      "item": "create:empty_schematic"
+    },
+    "I": {
+      "item": "laowu:cat_ingot"
+    }
+  },
+  "result": {
+    "id": "laowu:cat_editor",
+    "count": 1
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

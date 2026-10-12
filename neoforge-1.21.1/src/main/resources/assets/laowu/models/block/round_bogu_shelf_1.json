@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/block",
+  "loader": "neoforge:obj",
+  "model": "laowu:models/block/round_bogu_shelf_1.obj",
+  "automatic_culling": false,
+  "shade_quads": true,
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "0": "laowu:block/round_bogu_shelf",
+    "particle": "laowu:block/round_bogu_shelf"
+  }
+}

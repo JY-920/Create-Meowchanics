@@ -36,7 +36,13 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
     @Override
     public void render(Cat cat,float yaw,float partialTick,PoseStack pose,
                        net.minecraft.client.renderer.MultiBufferSource buffers,int light) {
-        if (cn.laowu.mod.CatGiantMount.active(cat)) {
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat) {
+            shadowRadius=.256F;
+            pose.pushPose();
+            try {
+                super.render(cat,yaw,partialTick,pose,buffers,light);
+            } finally { pose.popPose(); }
+        } else if (cn.laowu.mod.CatGiantMount.active(cat)) {
             shadowRadius=1.1F*cn.laowu.mod.CatGiantMount.sizeFactor(cat);
             giant.render(cat,yaw,partialTick,pose,buffers,light);
         } else {
@@ -51,6 +57,10 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
         int level = CatTraitData.read(cat)
                 .map(profile -> profile.level(CatTrait.BIG_CHONKY_CAT))
                 .orElse(0);
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat) {
+            float traitScale=level>0?CatTrait.BIG_CHONKY_CAT.bigCatScalePercent(level)/100.0F:1F;
+            pose.scale(.64F/traitScale,.64F/traitScale,.64F/traitScale);
+        }
         if (level > 0) {
             float scale = CatTrait.BIG_CHONKY_CAT.bigCatScalePercent(level) / 100.0F;
             pose.scale(scale, scale, scale);
@@ -82,6 +92,10 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
     @Override
     protected void setupRotations(Cat cat, PoseStack pose, float ageInTicks,
                                   float bodyYaw, float partialTick) {
+        if(cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat){
+            super.setupRotations(cat,pose,ageInTicks,seat.getYRot(),partialTick);
+            return;
+        }
         boolean carried = cn.laowu.mod.CatPilotFlight.carried(cat) || cn.laowu.mod.CatDivingMount.carried(cat);
         bodyYaw = carried ? CatPilotFlightClient.viewYaw(cat.getVehicle(), partialTick)
                 : cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? CatEngineeringAnimation.prepare(cat, bodyYaw, partialTick) : bodyYaw;

@@ -37,8 +37,9 @@ public final class GiantCatBossProbe {
     @GameTest(template="accessory_probe",batch="giant_boss_trophy_tooltips")
     public static void trophiesShareOrderedSourceEffectAndAccessoryLabels(GameTestHelper h) {
         for (String[] entry : new String[][]{
-                {"cat_butter_cube","cat_accessory.laowu.boss_drop"},
-                {"cat_giant_collar","cat_accessory.laowu.giant_boss_drop"}}) {
+                {"cat_butter_cube","cat_accessory.laowu.boss_reward"},
+                {"cat_giant_collar","cat_accessory.laowu.boss_reward"},
+                {"cat_boxing_gloves","cat_accessory.laowu.boss_reward"}}) {
             var stack=new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("laowu",entry[0])));
             var lines=new java.util.ArrayList<net.minecraft.network.chat.Component>();
             lines.add(stack.getHoverName());

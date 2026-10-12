@@ -1,0 +1,21 @@
+{
+  "scope": "Preview-only leg length, roundhouse extension, raised/forward head; no Java runtime changes",
+  "previous_version": "v4",
+  "leg_length_pixels": {"previous": 5, "current": 7},
+  "visible_leg_pixels": {"previous": 2.6, "current": 4.6},
+  "head_offset_relative_to_torso_pixels": [0, 1, -1],
+  "native_roundhouse_horizontal_reach_pixels": {"previous": 7.766153600730179, "current": 12.655388660238662},
+  "regression": "Proportions check RED against v4, GREEN against v5; UV orientation and forward punch checks retained",
+  "verified_node_suites": 65,
+  "native_contact_samples": 1724,
+  "native_minimum_y_pixels": 0.004022901112515298,
+  "visual_checks": ["guard hero/front/side/rear", "roundhouse hero/side", "all native frames inside camera"],
+  "preview_playback_rate": 0.5,
+  "source_animation_timing_changed": false,
+  "video": {"width": 720, "height": 720, "fps": 60, "frames": 205, "duration_seconds": 3.416667},
+  "preview_url": "http://127.0.0.1:61356/preview.html",
+  "native_helper_endpoint": "http://127.0.0.1:9335",
+  "native_helper_recovery": "Old isolated preview renderer exited during validation after accumulated imports; regenerated and verified successfully in a fresh isolated profile. User Blockbench and games untouched.",
+  "browser_open_request": "queued; usable URL provided",
+  "runtime_deployed": false
+}

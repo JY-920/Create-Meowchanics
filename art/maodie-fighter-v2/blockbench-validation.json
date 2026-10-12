@@ -1,0 +1,15 @@
+{
+  "name": "耄耋格斗手 · 动作预览 v2",
+  "cubes": 21,
+  "bones": 20,
+  "animations": 8,
+  "euler_order": "ZYX",
+  "textures": [
+    {
+      "name": "original_yellow_cat.png",
+      "width": 64,
+      "height": 32,
+      "error": 0
+    }
+  ]
+}

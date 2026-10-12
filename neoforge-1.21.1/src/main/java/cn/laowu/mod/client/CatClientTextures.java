@@ -10,7 +10,8 @@ public final class CatClientTextures {
         if (CreateIntegration.isLoaded()) {
             cn.laowu.mod.compat.create.CreateClientEvents.renderPlayerInventory(graphics, x, y);
         } else {
-            graphics.fill(x, y, x + 176, y + 4, 0xffc6c6c6);
+            // Keep the vanilla rounded top corners; slots still start at y + 18.
+            graphics.blit(ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/generic_54.png"), x, y, 0, 0, 176, 4, 256, 256);
             graphics.blit(ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/generic_54.png"), x, y + 4, 0, 126, 176, 96, 256, 256);
         }
     }

@@ -123,7 +123,9 @@ public final class PheromoneCatFoodItem extends Item {
                         .withStyle(ChatFormatting.GRAY)));
         tooltip.addAll(CatTooltipText.cutStringTextComponent(
                 Component.translatable(
-                        "item.laowu.pheromone_cat_food.tooltip.summary").getString(),
+                        cn.laowu.mod.compat.create.CreateIntegration.isLoaded()
+                                ? "item.laowu.pheromone_cat_food.tooltip.summary"
+                                : "item.laowu.pheromone_cat_food.tooltip.standalone").getString(),
                 CatTooltipText.Palette.STANDARD_CREATE));
     }
 }

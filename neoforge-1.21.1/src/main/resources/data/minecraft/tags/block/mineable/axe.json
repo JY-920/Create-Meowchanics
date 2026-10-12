@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "laowu:round_bogu_shelf",
     {
       "id": "laowu:cat_editor",
       "required": false

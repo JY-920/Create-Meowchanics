@@ -1,0 +1,49 @@
+{
+  "InternalVersion": "2.2.2-dev.optional-create.6",
+  "DeployedAt": "2026-10-05T21:46:28+08:00",
+  "ClientCheck": "No Minecraft clients running",
+  "PublicRelease": false,
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "InstalledJar": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.6-forge-1.20.1.jar",
+      "Sha256": "9D4E67612DA15EAA06F348BB26660E7FBBA1E855044F43329264A4FFE8F10662",
+      "BackupJar": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261005-214628-124-optional-create.6\\create-meowchanics-2.2.2-dev.optional-create.5-forge-1.20.1.jar",
+      "PreviousVersion": "2.2.2-dev.optional-create.5",
+      "EnabledLaowuCount": 1
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "InstalledJar": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.6-neoforge-1.21.1.jar",
+      "Sha256": "CB7F4F20F9D9329418DDA5871017CD8598518A93740B66E1B95E98E508CDF6AE",
+      "BackupJar": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261005-214628-124-optional-create.6\\create-meowchanics-2.2.2-dev.optional-create.5-neoforge-1.21.1.jar",
+      "PreviousVersion": "2.2.2-dev.optional-create.5",
+      "EnabledLaowuCount": 1
+    }
+  ],
+  "Verification": {
+    "NormalBuilds": "Forge and NeoForge normal build passed, including API, animation resources, release isolation and 23,270 accessory state checks per loader.",
+    "Node": "52 new layout checks and both 58-recipe coverage/acquisition checks passed; all other 56 regression scripts passed. SDK bundle verifier requires a generated bundle argument and fixture generator is not a test.",
+    "GameTests": "Four isolated runs: Forge/NeoForge, with/without Create, 10/10 tests per run. Includes actual RecipeManager assembly of all 55 ordinary recipes, output/conflict checks, container remainders, explicit new layouts and loader gates.",
+    "RedGreen": "New sugar/layout tests failed against old recipe data first. Real Forge new-grid test failed on the old cat ingot. After edits, all layout tests passed. NeoForge test-fixture nine-slot assumption was corrected to normalized input.size after its observed failure; no gameplay code changed.",
+    "PackagedResources": "Both jars contain 58 standalone recipes; every packaged recipe SHA256 matches its source. No test/SDK payload.",
+    "ExistingRecipes": "All 284 non-standalone recipe files per loader preserved byte-for-byte; before/after aggregate SHA256 matched.",
+    "Review": "Read-only independent review found no actionable issues in inspected recipe/test/documentation scope."
+  },
+  "Scope": {
+    "ChangedRecipesPerLoader": 26,
+    "CreateInstalledRecipesChanged": false,
+    "GameplayJavaChanged": false,
+    "NetEaseChanged": false,
+    "CommittedOrPushed": false
+  },
+  "Unchanged": [
+    "user worlds",
+    "user configuration",
+    "other installed mods",
+    "NetEase project"
+  ],
+  "Limitations": [
+    "Live manual JEI viewing was not performed in this revision; crafting was checked against the actual game RecipeManager."
+  ]
+}

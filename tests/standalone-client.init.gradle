@@ -4,15 +4,56 @@ allprojects {
         def neo = p.extensions.findByName('neoForge') != null
         def probe = p.sourceSets.create('standaloneClient') {
             java.srcDir(p.file('../tests/standalone-client/' + (neo ? 'neo' : 'forge')))
+            if(p.hasProperty('boguShelfClientOnly')) java.include('**/BoguShelfClientProbe.java')
+            if(p.hasProperty('maodieClientOnly')) java.include('**/MaodieClientProbe.java')
+            if(p.hasProperty('maodieFighterClientOnly')) java.include('**/MaodieFighterClientProbe.java')
             compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
             runtimeClasspath += output + p.sourceSets.main.runtimeClasspath
         }
-        def runDir = p.layout.buildDirectory.dir('standalone-cat-client').get().asFile
+        def maodieId=p.findProperty('maodieClientRunId')?.toString()
+        if(maodieId && !(maodieId ==~ /[a-zA-Z0-9_-]+/))throw new GradleException('Invalid Maodie client run ID')
+        def runDir = p.layout.buildDirectory.dir(maodieId ? 'maodie-client-'+maodieId : 'standalone-cat-client').get().asFile
+        def shaderProbe=p.hasProperty('maodieShaderProbe')
+        def shaderFixture=p.tasks.register('prepareMaodieShaderFixture') {
+            onlyIf { shaderProbe }
+            doLast {
+                def source=p.file(neo?'D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发':'D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发')
+                def pack=neo?'ComplementaryReimagined_r5.9.zip':'ComplementaryReimagined_r5.8.1.zip'
+                p.copy { from new File(source,'shaderpacks/'+pack); into new File(runDir,'shaderpacks') }
+                if(neo){
+                    // Preserve Sodium's bootstrap + nested implementation; classpath-loading
+                    // the wrapper changes JarJar selection in a development launch.
+                    p.copy {
+                        from new File(source,'mods/[钠] sodium-neoforge-0.8.13-beta.2+mc1.21.1.jar')
+                        into new File(runDir,'mods')
+                    }
+                }
+                def config=new File(runDir,'config/'+(neo?'iris':'oculus')+'.properties');config.parentFile.mkdirs()
+                config.text='enableShaders=true\ndisableUpdateMessage=true\nmaxShadowRenderDistance=4\nshaderPack='+pack+'\n'
+            }
+        }
+        if(shaderProbe){
+            if(neo){
+                def mods=p.file('D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mods')
+                p.dependencies.add('localRuntime',p.files(new File(mods,'iris-neoforge-1.8.14-beta.1+mc1.21.1.jar')))
+            }else{
+                p.repositories.flatDir { dirs 'D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mods' }
+                p.dependencies.add('runtimeOnly',p.fg.deobf('local:embeddium:0.3.31+mc1.20.1')) { transitive=false }
+                p.dependencies.add('runtimeOnly',p.fg.deobf('local:oculus-mc1.20.1:1.8.0')) { transitive=false }
+            }
+        }
         def fixture = p.tasks.register('prepareStandaloneClientWorld', Copy) {
             onlyIf { !new File(runDir, 'saves/Standalone/level.dat').exists() }
             from p.layout.buildDirectory.dir('accessory-gametest/no-kubejs-standalone-phase2/world')
             into new File(runDir, 'saves/Standalone')
             exclude 'session.lock'
+        }
+        def maodieOptions=p.tasks.register('prepareMaodieClientOptions') {
+            onlyIf { maodieId && !new File(runDir,'options.txt').exists() }
+            doLast {
+                runDir.mkdirs()
+                new File(runDir,'options.txt').text='onboardAccessibility:false\nmaxFps:120\nrenderDistance:4\nsimulationDistance:5\npauseOnLostFocus:false\nnarrator:0\n'
+            }
         }
         if (neo) {
             p.neoForge.mods.named('laowu') { sourceSet(probe) }
@@ -20,6 +61,10 @@ allprojects {
                 gameDirectory = runDir
                 programArgument '--quickPlaySingleplayer'
                 programArgument 'Standalone'
+                systemProperty 'laowu.render_only', p.hasProperty('standaloneRenderOnly').toString()
+                systemProperty 'laowu.fighter_texture_only', p.hasProperty('fighterTextureOnly').toString()
+                systemProperty 'laowu.create_expected', (!p.hasProperty('withoutCreate')).toString()
+                systemProperty 'laowu.shader_probe', shaderProbe.toString()
             }
         } else {
             p.dependencies.add('runtimeOnly', 'io.github.llamalad7:mixinextras-forge:0.4.1') { transitive = false }
@@ -27,10 +72,14 @@ allprojects {
                 workingDirectory runDir
                 args '--quickPlaySingleplayer', 'Standalone', '--mixin', 'laowu.mixins.json'
                 property 'mixin.env.remapRefMap', 'true'
+                property 'laowu.render_only', p.hasProperty('standaloneRenderOnly').toString()
+                property 'laowu.fighter_texture_only', p.hasProperty('fighterTextureOnly').toString()
+                property 'laowu.create_expected', (!p.hasProperty('withoutCreate')).toString()
+                property 'laowu.shader_probe', shaderProbe.toString()
                 property 'mixin.env.refMapRemappingFile', p.file('build/createSrgToMcp/output.srg').absolutePath
                 mods.named('laowu') { source(probe) }
             }
         }
-        p.tasks.matching { it.name == 'runClient' }.configureEach { dependsOn p.tasks.named('standaloneClientClasses'), fixture }
+        p.tasks.matching { it.name == 'runClient' }.configureEach { dependsOn p.tasks.named('standaloneClientClasses'), fixture, maodieOptions, shaderFixture }
     }
 }

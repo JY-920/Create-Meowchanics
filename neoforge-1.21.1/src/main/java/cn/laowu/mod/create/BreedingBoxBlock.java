@@ -77,7 +77,8 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
                                            BlockPos pos, Player player, InteractionHand hand,
                                            BlockHitResult hit) {
         if (level.isClientSide) return ItemInteractionResult.SUCCESS;
-        if (!(level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box)) {
+        BreedingBoxData box = BreedingBoxData.at(level,pos);
+        if (box == null) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (tier == BreedingBoxTier.BASIC && player instanceof FakePlayer) {
@@ -93,7 +94,7 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
             return ItemInteractionResult.CONSUME;
         }
 
-        if (BreedingBoxBlockEntity.isAdultPancake(stack)) {
+        if (BreedingBoxData.isAdultPancake(stack)) {
             ItemStack offered = stack.copy();
             ItemStack remainder = box.insertParent(offered);
             int inserted = offered.getCount() - remainder.getCount();
@@ -125,7 +126,8 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
     public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                             Player player, BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
-        if (!(level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box)) {
+        BreedingBoxData box = BreedingBoxData.at(level,pos);
+        if (box == null) {
             return InteractionResult.PASS;
         }
         if (tier == BreedingBoxTier.BASIC && player instanceof FakePlayer) {
@@ -160,7 +162,8 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
     public void onRemove(BlockState oldState, Level level, BlockPos pos,
                          BlockState newState, boolean moving) {
         if (!oldState.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box) {
+            BreedingBoxData box = BreedingBoxData.at(level,pos);
+            if (box != null) {
                 if (!level.isClientSide) {
                     box.dropContents(level, pos);
                     box.destroy();
@@ -175,14 +178,14 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
                             @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
         if (stack.get(DataComponents.CUSTOM_NAME) != null
-                && level.getBlockEntity(pos) instanceof BreedingBoxBlockEntity box) {
-            box.setCustomName(stack.getHoverName());
+                && BreedingBoxData.at(level,pos) != null) {
+            BreedingBoxData.at(level,pos).setCustomName(stack.getHoverName());
         }
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new BreedingBoxBlockEntity(pos, state);
+        return LaoWuMod.BREEDING_BOX_BE.get().create(pos, state);
     }
 
     @Nullable
@@ -190,6 +193,6 @@ public final class BreedingBoxBlock extends BaseEntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             Level level, BlockState state, BlockEntityType<T> type) {
         return createTickerHelper(type, LaoWuMod.BREEDING_BOX_BE.get(),
-                BreedingBoxBlockEntity::tickBox);
+                BreedingBoxData::tickBox);
     }
 }

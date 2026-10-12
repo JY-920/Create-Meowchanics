@@ -78,6 +78,11 @@ public final class HissingCatGeometryLayer extends RenderLayer<Cat, CatModel<Cat
     }
 
     static RuntimeBlockbenchModel.HeadMotion headMotion(Cat cat, HissingCatModel model, float ageInTicks) {
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat) {
+            float elapsed=cat.level().getGameTime()-seat.hissStartTick()+ageInTicks-cat.tickCount;
+            float roll=30F*Mth.sin(Mth.clamp(elapsed/10F,0,1)*Mth.PI)*Mth.DEG_TO_RAD;
+            return new RuntimeBlockbenchModel.HeadMotion(model.liveHeadXRot(),model.liveHeadYRot(),roll);
+        }
         float roll = (30.0F + Mth.sin(ageInTicks * 0.12F + cat.getId() * 0.73F) * 6.0F)
                 * Mth.DEG_TO_RAD;
         return new RuntimeBlockbenchModel.HeadMotion(0.0F, model.liveHeadYRot(), roll);

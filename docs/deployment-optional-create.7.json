@@ -1,0 +1,69 @@
+{
+  "InternalVersion": "2.2.2-dev.optional-create.7",
+  "DeployedAt": "2026-10-05T22:49:31.0143002+08:00",
+  "ClientCheck": "No client using either deployment target; unrelated vanilla client not altered",
+  "PublicRelease": false,
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "InstalledJar": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.7-forge-1.20.1.jar",
+      "Sha256": "AAD88C30254D38E34E306E273DDB94CC2ABC27747FA41409E2CC90B3DEC46B03",
+      "BackupJar": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261005-224929-224-optional-create.7\\create-meowchanics-2.2.2-dev.optional-create.6-forge-1.20.1.jar",
+      "PreviousVersion": "2.2.2-dev.optional-create.6",
+      "EnabledLaowuCount": 1,
+      "PreservedAssetsAndData": 1000,
+      "PreservedRecipes": 342
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "InstalledJar": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.7-neoforge-1.21.1.jar",
+      "Sha256": "524291626128306F616A39AEED47EE5C633AF7BF168FB7A31D752EDC7FD081F3",
+      "BackupJar": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261005-224929-224-optional-create.7\\create-meowchanics-2.2.2-dev.optional-create.6-neoforge-1.21.1.jar",
+      "PreviousVersion": "2.2.2-dev.optional-create.6",
+      "EnabledLaowuCount": 1,
+      "PreservedAssetsAndData": 1002,
+      "PreservedRecipes": 342
+    }
+  ],
+  "Verification": {
+    "NormalBuilds": "Both normal builds passed: accessory API v3, trait API v1, animation resources, release isolation and 23,270 accessory state checks per loader. No test init script in production build.",
+    "Node": "All 58 top-level regression scripts passed; fixture generator and SDK bundle verifier requiring an input artifact were excluded as non-default tests.",
+    "RealClients": "Four isolated actual-client runs passed: Forge/NeoForge with/without Create, with real JEI/Curios. Actual JEI ingredient filter verifies four items and four fluid IDs absent without Create, four items/source fluids visible with Create, unrelated cat ingots visible. Standalone 55 crafts, named-food example, two fish recipes and client serialization remain passing.",
+    "GameTests": "Four successful isolated runs: Forge/NeoForge with/without Create, 11/11 each. Tests verify all creative display/search tabs and old item/fluid registry IDs, along with existing recipe and pancake behavior.",
+    "RedGreen": "Real Forge creative test initially failed on cat_shell. After creative hiding, both actual JEI clients failed on hissing_gas. JEI removal then passed both absent/present environments.",
+    "RuntimeResources": "All laowu assets/data match previous deployed .6 byte-for-byte: 1,000 Forge resources, 1,002 NeoForge resources; all 342 recipes per loader unchanged.",
+    "Review": "Read-only independent scoped review approved; no actionable findings."
+  },
+  "Scope": {
+    "CreateAbsentHiddenItems": [
+      "laowu:cat_shell",
+      "laowu:cat_grenade",
+      "laowu:hissing_gas_bucket",
+      "laowu:liquid_cat_bucket"
+    ],
+    "CreateAbsentHiddenFluids": [
+      "laowu:hissing_gas",
+      "laowu:flowing_hissing_gas",
+      "laowu:liquid_cat",
+      "laowu:flowing_liquid_cat"
+    ],
+    "RegistrationsRemoved": false,
+    "RecipesChanged": false,
+    "CreateInstalledBehaviorChanged": false,
+    "CatAmmoBoxChanged": false,
+    "NetEaseChanged": false,
+    "CommittedOrPushed": false
+  },
+  "TestInfrastructureNotes": [
+    "An initial NeoForge Curios fixture render ran before the camera was initialized. A guard was added only to both test fixtures; actual-client reruns passed.",
+    "Parallel Create-enabled server verification exhausted native JVM memory (NeoForge hs_err_pid14124.log; Forge launch also terminated). Both were rerun successfully one at a time with test JVM Xmx1536m, Gradle Xmx1G, ActiveProcessorCount=4, max-workers=2. No launcher/game/system memory settings changed.",
+    "Full synthetic item-render smoke runs retained pre-existing empty-texture-path warnings. Assets were unchanged; these warnings were not resolved by this scoped visibility change."
+  ],
+  "Unchanged": [
+    "user worlds",
+    "user configuration",
+    "other installed mods",
+    "unrelated Minecraft clients",
+    "NetEase project"
+  ]
+}

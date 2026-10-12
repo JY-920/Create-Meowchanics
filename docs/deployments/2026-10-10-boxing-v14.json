@@ -1,0 +1,29 @@
+{
+  "time": "2026-10-10 22:29:57 Asia/Shanghai",
+  "version": "2.2.2-dev.boxing-v14.1",
+  "stamp": "20261010-222956-2.2.2-dev.boxing-v14.1-boxing-v14",
+  "verification": {
+    "boxing_game_tests": { "forge": "11/11", "neoforge": "11/11" },
+    "kubejs_compatibility_game_tests": { "forge": "37/37", "neoforge": "37/37" },
+    "normal_build": { "forge": "passed", "neoforge": "passed" },
+    "machine_recipe_layouts": "10/10",
+    "accessory_wiring": "741 checks",
+    "release_isolation": "passed on both ports"
+  },
+  "targets": [
+    {
+      "port": "forge-1.20.1",
+      "sha256": "0077D58B351ABFA03BADDC3C8D644A0B7E011DAF5CEACB57C30FC8E13208F097",
+      "active_laowu_count": 1,
+      "previous": "2.2.2-dev.boxing-v13.1",
+      "backup": "D:/PCL2/PCL/.minecraft/versions/1.20.1-Forge模组开发/mod-backups/create-meowchanics/20261010-222956-2.2.2-dev.boxing-v14.1-boxing-v14/"
+    },
+    {
+      "port": "neoforge-1.21.1",
+      "sha256": "610F3B92477DCE981FC9854AE9C8326774615D59251A25CD4FB32D0FFD73A5DB",
+      "active_laowu_count": 1,
+      "previous": "2.2.2-dev.boxing-v13.1",
+      "backup": "D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/mod-backups/create-meowchanics/20261010-222956-2.2.2-dev.boxing-v14.1-boxing-v14/"
+    }
+  ]
+}

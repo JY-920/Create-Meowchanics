@@ -1,0 +1,4 @@
+allprojects { afterEvaluate { p ->
+ if(p.extensions.findByName('neoForge')!=null) p.neoForge.runs.configureEach { jvmArgument '-Xmx1536m'; jvmArgument '-XX:ActiveProcessorCount=4' }
+ else p.minecraft.runs.configureEach { jvmArgs '-Xmx1536m', '-XX:ActiveProcessorCount=4' }
+} }

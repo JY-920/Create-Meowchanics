@@ -84,9 +84,6 @@ public final class CreateStartup {
         registerAlwaysVisibleDescription(CAT_SCANNER.get());
         registerDescription(CAT_ENGINEER_GOGGLES.get());
         GogglesItem.addIsWearingPredicate(CatEngineerGogglesItem::isWornBy);
-        if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
-            cn.laowu.mod.compat.curios.CatGogglesCuriosCompat.registerCurio();
-        }
         registerDescription(CAT_HELMET.get());
         registerDescription(CAT_CHESTPLATE.get());
         registerDescription(CAT_LEGGINGS.get());

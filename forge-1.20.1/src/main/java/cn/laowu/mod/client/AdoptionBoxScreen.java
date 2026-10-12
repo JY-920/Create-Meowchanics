@@ -3,7 +3,6 @@ package cn.laowu.mod.client;
 import cn.laowu.mod.AdoptionBoxMenu;
 import cn.laowu.mod.LaoWuMod;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.simibubi.create.foundation.gui.AllGuiTextures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -40,7 +39,7 @@ public final class AdoptionBoxScreen extends AbstractContainerScreen<AdoptionBox
         graphics.blit(TEXTURE, leftPos + PANEL_X, topPos,
                 SOURCE_X, SOURCE_Y, PANEL_WIDTH, PANEL_HEIGHT,
                 TEXTURE_SIZE, TEXTURE_SIZE);
-        AllGuiTextures.PLAYER_INVENTORY.render(
+        CatClientTextures.renderPlayerInventory(
                 graphics, leftPos, topPos + AdoptionBoxMenu.PLAYER_PANEL_Y);
     }
 

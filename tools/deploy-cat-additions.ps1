@@ -1,6 +1,6 @@
 param(
     [ValidatePattern('^[a-z0-9-]+$')][string]$Label='cat-additions',
-    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version='2.2.2',
+    [ValidatePattern('^\d+\.\d+\.\d+(?:-dev\.[A-Za-z0-9]+(?:[.-][A-Za-z0-9]+)*)?$')][string]$Version='2.2.2',
     [ValidatePattern('^build(?:-[a-z0-9-]+)?$')][string]$BuildDirectory='build',
     [switch]$AllowFreshInstall
 )

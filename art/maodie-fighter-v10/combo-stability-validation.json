@@ -1,0 +1,9 @@
+{
+  "samples": 289,
+  "maxHipMovement": 0.5801281849729423,
+  "maxKneeMovement": 1.4360315284730591,
+  "maxAnkleSlide": 0.0010458359371736277,
+  "maxSoleHeight": 0.14045212837206522,
+  "maxRootRoll": 0,
+  "hipYawSpan": 20.192311250000003
+}

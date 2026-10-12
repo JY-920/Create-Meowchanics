@@ -1,0 +1,85 @@
+{
+  "Time": "2026-10-10 21:49:49",
+  "Version": "2.2.2-dev.boxing-v13.1",
+  "Stamp": "20261010-214949-2.2.2-dev.boxing-v13.1-boxing-v13",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-dev.boxing-v13.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-dev.boxing-v13.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.boxing-v13.1",
+        "Sha256": "CDBFCAADB793EDB4119ED7F8C4D86EAB588E3185BEAC6C3FFECD8F8BD9CC0AE4"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261010-214949-2.2.2-dev.boxing-v13.1-boxing-v13\\create-meowchanics-2.2.2-dev.fighter-v12.1-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-dev.fighter-v12.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.fighter-v12.1",
+        "Sha256": "DE80DE88EFD7B4FF6E7E09D49E69F7D20E2E8EED9660537FC2197D0E339DE2C5"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-dev.boxing-v13.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-dev.boxing-v13.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.boxing-v13.1",
+        "Sha256": "C3C2928BFACA82C503194EC1751D028C3835AB6A5A138C5A0CA2DD8E459441FF"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261010-214949-2.2.2-dev.boxing-v13.1-boxing-v13\\create-meowchanics-2.2.2-dev.fighter-v12.1-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-dev.fighter-v12.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.fighter-v12.1",
+        "Sha256": "0745E0A09C75BBAE90293C726DEEE554BF43ADF4DA7BD66E81783C5EF34B4DAF"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Validation": {
+    "forge": {
+      "gameTests": 93,
+      "log": "forge-1.20.1/build/boxing-kubejs.log",
+      "includes": "56 boxing/shelf/combat and 37 real KubeJS legacy accessory compatibility tests; Create installed",
+      "client": "forge-1.20.1/build/boxing-client.log",
+      "build": "forge-1.20.1/build/boxing-release2.log"
+    },
+    "neo": {
+      "gameTests": 56,
+      "log": "neoforge-1.21.1/build/boxing-green2.log",
+      "environment": "Create absent",
+      "kubejsTests": 37,
+      "kubejsLog": "neoforge-1.21.1/build/boxing-kubejs.log",
+      "client": "neoforge-1.21.1/build/boxing-client.log",
+      "build": "neoforge-1.21.1/build/boxing-release2.log"
+    },
+    "common": {
+      "accessoryChecksPerLoader": 23274,
+      "releaseIsolation": true,
+      "accessoryApiV3": true,
+      "traitApiV1": true,
+      "actualClientBossBarScreenshot": true,
+      "actualLocalizedTooltips": true,
+      "sourceReview": "No critical/important findings; doMobLoot=false and no duplicate corpse drops tests added and passed"
+    },
+    "redGreen": [
+      "Forge content tests failed before recipe/tab changes; Neo boss/gloves tests failed before registration/bar/reward implementation.",
+      "First Neo combat suite exposed random first-tick trait initialization changing fixture HP. Fixed test cat traits before join, retained exact no-damage assertion, rerun passed.",
+      "Initial formal builds rejected legacy fixed37 catalog assertion; updated to38 with original36 stable IDs preserved and duplicate-glove no-stacking check. Both normal builds then passed."
+    ],
+    "node": [
+      "accessory-wiring.mjs",
+      "accessory-examples36.mjs",
+      "accessory-scripting.mjs",
+      "accessory-text-wiring.mjs",
+      "accessory-art-and-careers.mjs",
+      "maodie-runtime-assets.mjs"
+    ]
+  }
+}

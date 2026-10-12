@@ -38,6 +38,15 @@ public final class CreateClientEvents {
     public static void renderPlayerInventory(net.minecraft.client.gui.GuiGraphics graphics, int x, int y) {
         com.simibubi.create.foundation.gui.AllGuiTextures.PLAYER_INVENTORY.render(graphics, x, y);
     }
+    public static int gogglesOffsetX() {
+        return com.simibubi.create.infrastructure.config.AllConfigs.client().overlayOffsetX.get();
+    }
+    public static int gogglesOffsetY() {
+        return com.simibubi.create.infrastructure.config.AllConfigs.client().overlayOffsetY.get();
+    }
+    public static net.minecraft.client.model.geom.ModelLayerLocation gogglesCurioLayer() {
+        return com.simibubi.create.compat.curios.GogglesCurioRenderer.LAYER;
+    }
     private static final ResourceLocation CAT_ENGINEER_GOGGLES_WORN_MODEL = LaoWuMod.id("item/cat_engineer_goggles_worn");
     public static void register(net.neoforged.bus.api.IEventBus bus) {
         bus.register(CatBeltModel.class);
@@ -53,13 +62,8 @@ public final class CreateClientEvents {
                     .factory(ShaftVisual::new)
                     .neverSkipVanillaRender()
                     .apply();
-            ItemProperties.register(LaoWuMod.CAT_STORAGE_BOX.get(), LaoWuMod.id("filled"),
-                    (stack, level, entity, seed) -> cn.laowu.mod.item.CatStorageBoxItem.count(stack) > 0 ? 1.0F : 0.0F);
             ItemBlockRenderTypes.setRenderLayer(LaoWuMod.HISSING_COLLECTOR.get(), RenderType.cutout());
 
-            if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
-                cn.laowu.mod.compat.curios.CatGogglesCuriosClientCompat.registerRenderer();
-            }
             registerCareerSuitDescription(LaoWuMod.TERMINATOR_SUIT.get());
 
             registerCareerSuitDescription(LaoWuMod.FISHING_SUIT.get());
@@ -91,11 +95,8 @@ public final class CreateClientEvents {
 
         event.register(LaoWuMod.CAT_PACKAGE_MENU.get(), CatPackageScreen::new);
 
-        event.register(LaoWuMod.BREEDING_BOX_MENU.get(), BreedingBoxScreen::new);
 
-        event.register(LaoWuMod.ADOPTION_BOX_MENU.get(), AdoptionBoxScreen::new);
 
-        event.register(LaoWuMod.WISH_ADOPTION_BOX_MENU.get(), WishAdoptionBoxScreen::new);
 
         event.register(LaoWuMod.CAT_EDITOR_MENU.get(), CatEditorScreen::new);
 
@@ -107,12 +108,11 @@ public final class CreateClientEvents {
         event.registerBlockEntityRenderer(LaoWuMod.CAT_ENGINE_BE.get(), CatEngineRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.DEVOURING_CAT_BE.get(), DevouringCatRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.INFILTRATION_TANK_BE.get(), InfiltrationTankRenderer::new);
-        event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), BreedingBoxRenderer::new);
-        event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
-        event.registerBlockEntityRenderer(LaoWuMod.WISH_ADOPTION_BOX_BE.get(), WishAdoptionBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_CARRIER_BE.get(), CatCarrierRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.CAT_DEPLOYMENT_BE.get(), CatDeploymentRenderer::new);
     }
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static net.minecraft.client.renderer.blockentity.BlockEntityRenderer<net.minecraft.world.level.block.entity.BlockEntity> breedingRenderer(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context context) { return (net.minecraft.client.renderer.blockentity.BlockEntityRenderer)new BreedingBoxRenderer(context); }
     public static void particles(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(LaoWuMod.NOZZLE_FLUID_PUFF.get(),
                 NozzleFluidPuffParticle.Provider::new);

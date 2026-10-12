@@ -33,6 +33,8 @@ public final class CatChestContainer extends SimpleContainer {
         }
     }
 
+    public boolean isFor(Cat candidate) { return cat == candidate; }
+
     @Override
     public boolean stillValid(Player player) {
         return cat.isAlive() && CatChestData.hasInventory(cat)

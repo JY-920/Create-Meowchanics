@@ -50,7 +50,6 @@ public final class CreatureFilterScreen extends AbstractFilterScreen<CreatureFil
         private EditBox value;
         private IconButton deleteGroup, removeLegacy;
         private boolean restoring;
-        private String reflectedText="";
         private int currentIndex() {
             if(filtered.isEmpty())return -1;
             var entry=filtered.get(selection);
@@ -74,13 +73,13 @@ public final class CreatureFilterScreen extends AbstractFilterScreen<CreatureFil
             selector=addRenderableWidget(new SelectionScrollInput(leftPos+15,topPos+26,144,18));
             selector.forOptions(List.of(Component.translatable("gui.laowu.creature_filter.no_results")));
             selector.titled(Component.translatable("gui.laowu.creature_filter.search"));
-            selector.calling(i->{selection=i;showSelection();reflectedText=search.getValue();restore();});
+            selector.calling(i->{selection=i;showSelection();restore();});
             search=addRenderableWidget(new EditBox(font,leftPos+19,topPos+31,132,10,
                 Component.translatable("gui.laowu.creature_filter.search")));
             search.setBordered(false);search.setTextColor(0xF3EBDE);search.setMaxLength(CreatureFilterRules.MAX_ID_LENGTH);
             search.setHint(Component.translatable("gui.laowu.creature_filter.search"));
             search.setResponder(text->{
-                if(reflectingSelection||text.equals(reflectedText))return;
+                if(reflectingSelection)return;
                 query=text;selection=0;displayingSelection=false;rebuildTargets();restore();
             });
             attributeMode=choice(14,43,"attribute_mode",List.of("match_all","match_any","match_none"),()->update(null));
@@ -95,7 +94,7 @@ public final class CreatureFilterScreen extends AbstractFilterScreen<CreatureFil
             if(!menu.rules().groups().isEmpty()) {
                 var first=menu.rules().groups().get(0);
                 for(int i=0;i<filtered.size();i++)if(Objects.equals(first.target(),filtered.get(i).id())&&first.category()==filtered.get(i).category()){selection=i;break;}
-                selector.setState(selection);showSelection();reflectedText=search.getValue();
+                selector.setState(selection);showSelection();
             }
             restore();
         }
@@ -119,8 +118,9 @@ public final class CreatureFilterScreen extends AbstractFilterScreen<CreatureFil
             var id=ResourceLocation.tryParse(query.trim());
             if(q.contains(":")&&id!=null&&!id.toString().equals("minecraft:player")&&filtered.stream().noneMatch(e->id.equals(e.id())))
                 filtered.add(new Entry(id,null,entityName(id)));
-            // Saved entries first, so the native wheel is also the configured-entity list.
-            filtered.sort(Comparator.comparingInt(e->menu.rules().groups().stream()
+            // Exact searches win; saved entries lead only among equally good matches.
+            filtered.sort(Comparator.comparingInt((Entry e)->searchRank(q,e))
+                .thenComparingInt(e->menu.rules().groups().stream()
                 .anyMatch(g->Objects.equals(g.target(),e.id())&&g.category()==e.category())?0:1));
             selection=Mth.clamp(selection,0,Math.max(0,filtered.size()-1));
             selector.forOptions(filtered.isEmpty()?List.of(Component.translatable("gui.laowu.creature_filter.no_results")):
@@ -211,7 +211,7 @@ public final class CreatureFilterScreen extends AbstractFilterScreen<CreatureFil
             cs.addAll(conditions("age"));cs.addAll(conditions("tame"));cs.addAll(conditions("health"));
             if(menu.rules().conditionCount()+cs.size()>CreatureFilterRules.MAX_CONDITIONS)return;
             gs.add(new CreatureFilterRules.Group(entry.id(),entry.category(),attributeMode(),cs,inverted));
-            commit(menu.rules().withGroups(gs));refreshCatalogue();showSelection();reflectedText=search.getValue();restore();
+            commit(menu.rules().withGroups(gs));refreshCatalogue();showSelection();restore();
         }
         void delete() {
             int i=currentIndex();if(i<0)return;
@@ -227,7 +227,7 @@ public final class CreatureFilterScreen extends AbstractFilterScreen<CreatureFil
         }
         void mode(CreatureFilterRules.Mode mode) {commit(menu.rules().withEntryMode(mode));}
         void clear() {
-            query="";reflectedText="";reflectingSelection=true;
+            query="";reflectingSelection=true;
             try{search.setValue("");}finally{reflectingSelection=false;}
             selection=0;rebuildTargets();restore();
         }
@@ -308,6 +308,7 @@ public final class CreatureFilterScreen extends AbstractFilterScreen<CreatureFil
         if(normalized.contains(":")&&manual!=null&&!manual.toString().equals("minecraft:player")
                 &&filtered.stream().noneMatch(entry->manual.equals(entry.id())))
             filtered.add(new Entry(manual,null,entityName(manual)));
+        filtered.sort(Comparator.comparingInt(entry->searchRank(normalized,entry)));
         selection=Mth.clamp(selection,0,Math.max(0,filtered.size()-1));
         selector.forOptions(filtered.isEmpty()?List.of(Component.translatable("gui.laowu.creature_filter.no_results"))
                 :filtered.stream().map(Entry::name).toList());
@@ -329,6 +330,11 @@ public final class CreatureFilterScreen extends AbstractFilterScreen<CreatureFil
     }
     private static boolean matches(String query,String id,Component name) {
         return id.contains(query)||name.getString().toLowerCase(Locale.ROOT).contains(query);
+    }
+    private static int searchRank(String query,Entry entry) {
+        if(query.isEmpty()||entry.name().getString().toLowerCase(Locale.ROOT).equals(query))return 0;
+        String id=entry.id()!=null?entry.id().toString():entry.category()!=null?entry.category().id():"*";
+        return id.equals(query)||id.substring(id.indexOf(':')+1).equals(query)?0:1;
     }
     private static Component entityName(ResourceLocation id) {
         return BuiltInRegistries.ENTITY_TYPE.getOptional(id).map(type->type.getDescription()).orElse(Component.literal(id.toString()));

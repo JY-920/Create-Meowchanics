@@ -24,8 +24,9 @@ public final class CatCommonAccessories {
     private static final ThreadLocal<Boolean> REFLECTING = ThreadLocal.withInitial(() -> false);
     private static final class State {
         UUID target;
-        int stacks, ownerBonus;
+        int stacks, ownerBonus, boxingHits;
         long lastHit = Long.MIN_VALUE / 2, lastStack = Long.MIN_VALUE / 2;
+        long lastBoxingHit = Long.MIN_VALUE / 2;
         long lastCombat, nextRestHeal;
         boolean mint;
         State(long time) { lastCombat = time; nextRestHeal = time + 200; }
@@ -87,6 +88,10 @@ public final class CatCommonAccessories {
             bonus += s.stacks * CatAccessories.value(cat, "damage_combo") / 100;
         }
         float result = (float)(amount * (1 + bonus));
+        CatOutfitType outfit = CatClothesData.getOutfit(cat);
+        if (source.getDirectEntity() == cat && outfit != CatOutfitType.NONE
+                && outfit.role() == CatCombatRole.MELEE && !outfit.isPreviewOnly())
+            result *= (float)(1 + CatAccessories.value(cat, "melee_career_damage") / 100);
         if (victim.getHealth() > victim.getMaxHealth() * .90F
                 && CatAccessories.value(cat, "opening_damage") > 0) {
             result *= (float)(1 + CatAccessories.value(cat, "opening_damage") / 100);
@@ -172,6 +177,22 @@ public final class CatCommonAccessories {
             }
             s.lastHit = now(cat);
         }
+        int uppercutInterval = (int) CatAccessories.value(cat, "boxing_uppercut");
+        if (uppercutInterval > 0 && source.getDirectEntity() == cat) {
+            if (now(cat) - s.lastBoxingHit >= 80) s.boxingHits = 0;
+            s.lastBoxingHit = now(cat);
+            if (++s.boxingHits >= uppercutInterval) {
+                s.boxingHits = 0;
+                if (victim.isAlive()) {
+                    double dx = victim.getX() - cat.getX(), dz = victim.getZ() - cat.getZ();
+                    double length = Math.max(0.001, Math.sqrt(dx * dx + dz * dz));
+                    victim.push(dx / length * .6, .48, dz / length * .6);
+                    victim.hurtMarked = true;
+                    particles(cat, ParticleTypes.CRIT);
+                    CatAccessoryDurability.spendEffect(cat, "boxing_uppercut");
+                }
+            }
+        }
         if (hit.critical && CatAccessories.value(cat, "critical_haste") > 0 && ready(cat, "MintReady")) {
             data(cat).putLong("MintUntil", now(cat) + 80);
             data(cat).putLong("MintReady", now(cat) + 160);
@@ -250,6 +271,7 @@ public final class CatCommonAccessories {
             }
         }
         if (CatAccessories.value(cat, "damage_combo") <= 0) { s.stacks = 0; s.target = null; }
+        if (CatAccessories.value(cat, "boxing_uppercut") <= 0 || now(cat) - s.lastBoxingHit >= 80) s.boxingHits = 0;
         if (CatAccessories.value(cat, "emergency_shield") <= 0 && !data(cat).getBoolean("ShieldLastUse")
                 || ready(cat,"ShieldUntil")) {data(cat).remove("Shield");data(cat).remove("ShieldLastUse");}
         if (CatAccessories.value(cat, "critical_haste") <= 0) data(cat).remove("MintUntil");
@@ -268,6 +290,7 @@ public final class CatCommonAccessories {
         // Taking an accessory off cannot preserve its temporary proc, but never resets its saved cooldown.
         State s = state(cat);
         if (CatAccessories.value(cat, "damage_combo") <= 0) { s.stacks = 0; s.target = null; }
+        if (CatAccessories.value(cat, "boxing_uppercut") <= 0) s.boxingHits = 0;
         if (CatAccessories.value(cat, "critical_haste") <= 0) data(cat).remove("MintUntil");
         if (CatAccessories.value(cat, "emergency_shield") <= 0 && !data(cat).getBoolean("ShieldLastUse")
                 || ready(cat,"ShieldUntil")) {data(cat).remove("Shield");data(cat).remove("ShieldLastUse");}

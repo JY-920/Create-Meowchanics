@@ -3,6 +3,7 @@ package cn.laowu.mod.entity;
 import cn.laowu.mod.LaoWuMod;
 import cn.laowu.mod.accessory.CatAccessoryItems;
 import cn.laowu.mod.genetics.CatGenome;
+import cn.laowu.mod.encounter.MaodieEncounter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -46,7 +47,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /** Four-times-size cat with server-authoritative, collision-aware roll and slam attacks. */
-public final class GiantCatBoss extends Monster {
+public final class GiantCatBoss extends Monster implements MaodieChallenge {
     public static final float MODEL_SCALE = 4.0F, BASE_WIDTH = 0.5F, BASE_HEIGHT = 0.75F;
     public static final float WIDTH = 2.0F, HEIGHT = 3.0F;
     public static final int SUMMON_DURATION_TICKS = 60;
@@ -78,6 +79,59 @@ public final class GiantCatBoss extends Monster {
     private float rollBodyStartYaw;
     private boolean clientHadRollFacing;
     private final PursuitMoveControl pursuitMoveControl;
+    private static final EntityDataAccessor<Boolean> DATA_MAODIE = SynchedEntityData.defineId(GiantCatBoss.class, EntityDataSerializers.BOOLEAN);
+    private CompoundTag maodieSource = new CompoundTag();
+    private BlockPos maodieShelf = BlockPos.ZERO;
+    private boolean maodiePending;
+    private int maodieAbsentTicks;
+    private static final EntityDataAccessor<Boolean> DATA_MAODIE_ENRAGED = SynchedEntityData.defineId(GiantCatBoss.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> DATA_HISS_YAW = SynchedEntityData.defineId(GiantCatBoss.class, EntityDataSerializers.FLOAT);
+    private final Set<java.util.UUID> hissHits = new HashSet<>();
+    private float hissBodyStartYaw;
+    private int maodieNextSpecial;
+    public boolean isMaodieEnraged() { return entityData.get(DATA_MAODIE_ENRAGED); }
+    public float hissYaw() { return entityData.get(DATA_HISS_YAW); }
+
+    public boolean isMaodie() { return entityData.get(DATA_MAODIE); }
+    public CompoundTag sourceCatSnapshot() { return maodieSource.copy(); }
+    public BlockPos maodieOrigin() { return maodieShelf; }
+    public boolean restorationPending() { return maodiePending; }
+    public int updateMaodieAbsence(boolean present) { return maodieAbsentTicks = present ? 0 : maodieAbsentTicks + 1; }
+    public int getSummonDurationTicks() { return isMaodie() ? 20 : SUMMON_DURATION_TICKS; }
+    public void configureMaodie(CompoundTag sourceCat, BlockPos origin) {
+        maodieSource = sourceCat.copy(); maodieShelf = origin.immutable();
+        entityData.set(DATA_MAODIE, true);
+        getAttribute(Attributes.MAX_HEALTH).setBaseValue(300); setHealth(300);
+        getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(6);
+        xpReward = 0;
+        setCustomName(net.minecraft.network.chat.Component.literal("耄耋·不许摸"));
+    }
+    public void markRestorationPending() {
+        maodiePending = true; setHealth(Math.max(1, getHealth())); setNoAi(true);
+        setTarget(null); getNavigation().stop(); setDeltaMovement(Vec3.ZERO);
+        setPhase(IDLE); bossEvent.removeAllPlayers(); bossEvent.setVisible(false);
+    }
+    @Override public void die(DamageSource source) {
+        if (isMaodie() && !level().isClientSide) { MaodieEncounter.requestEnd(this); return; }
+        super.die(source);
+    }
+    @Override public void kill() {
+        if (isMaodie() && !level().isClientSide) { MaodieEncounter.requestEnd(this); return; }
+        super.kill();
+    }
+    @Override public boolean hurt(DamageSource source, float amount) {
+        return !maodiePending && super.hurt(source, amount);
+    }
+    @Override public void checkDespawn() {
+        if (isMaodie()) {
+            // Vanilla Monster discards in Peaceful BEFORE persistence is checked.
+            // A challenge always owns a source cat backup; finish through the safe restore transaction.
+            if (!level().isClientSide && level().getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL && !maodiePending)
+                MaodieEncounter.requestEnd(this);
+            return;
+        }
+        super.checkDespawn();
+    }
 
     public GiantCatBoss(EntityType<? extends GiantCatBoss> type, Level level) {
         super(type, level);
@@ -104,6 +158,9 @@ public final class GiantCatBoss extends Monster {
         builder.define(DATA_RECOVERY_FROM_PHASE, IDLE);
         builder.define(DATA_RECOVERY_FROM_TICKS, 0);
         builder.define(DATA_GENOME, new CompoundTag());
+        builder.define(DATA_MAODIE, false);
+        builder.define(DATA_MAODIE_ENRAGED, false);
+        builder.define(DATA_HISS_YAW, 0F);
     }
 
     @Override
@@ -124,7 +181,7 @@ public final class GiantCatBoss extends Monster {
     public boolean isSummoning() { return getPhase() == SUMMON; }
 
     public float getSummonProgress(float partialTick) {
-        return isSummoning() ? Mth.clamp(getPhaseTicks(partialTick) / SUMMON_DURATION_TICKS, 0.0F, 1.0F) : 1.0F;
+        return isSummoning() ? Mth.clamp(getPhaseTicks(partialTick) / getSummonDurationTicks(), 0.0F, 1.0F) : 1.0F;
     }
 
     public void beginSummoning() {
@@ -145,6 +202,11 @@ public final class GiantCatBoss extends Monster {
     private void setPhase(byte phase) {
         byte previous = getPhase();
         if (phase == previous) return;
+        if (isMaodie() && phase == MaodieCombat.HISS_WINDUP) {
+            entityData.set(DATA_HISS_YAW, targetYaw(getTarget()));
+            hissBodyStartYaw = getYRot(); hissHits.clear();
+        }
+        if (isMaodie() && phase == MaodieCombat.HISS) playSound(SoundEvents.CAT_HISS, 2F, .5F);
         if (phase == ROLL_WINDUP) {
             this.rollYaw = targetYaw(this.getTarget());
             this.rollBodyStartYaw = this.getYRot();
@@ -164,13 +226,16 @@ public final class GiantCatBoss extends Monster {
         if (phase != ROLL && phase != JUMP) {
             this.setDeltaMovement(0.0D, Math.min(0.0D, this.getDeltaMovement().y), 0.0D);
         }
-        if (phase == IDLE) this.attackCooldown = Math.max(this.attackCooldown, Mth.nextInt(this.random, 80, 120));
+        if (phase == IDLE) this.attackCooldown = Math.max(this.attackCooldown,
+                isMaodieEnraged() ? Mth.nextInt(this.random, 40, 60) : Mth.nextInt(this.random, 80, 120));
         if (phase == ROLL) this.contacts.clearHits();
-        this.setAggressive(phase == ROLL_WINDUP || phase == ROLL || phase == JUMP_WINDUP || phase == JUMP);
+        this.setAggressive(phase == ROLL_WINDUP || phase == ROLL || phase == JUMP_WINDUP || phase == JUMP
+                || phase == MaodieCombat.HISS_WINDUP || phase == MaodieCombat.HISS);
     }
 
     @Override
     public void tick() {
+        if (!level().isClientSide && MaodieEncounter.tickBoss(this)) { if (!isRemoved()) super.tick(); return; }
         // Abort before travel, so toggling NoAI/death cannot grant one final damaging movement.
         if (!this.level().isClientSide && (!this.isAlive() || (this.isNoAi() && !isSummoning()))
                 && getPhase() != IDLE) {
@@ -181,7 +246,8 @@ public final class GiantCatBoss extends Monster {
         }
         super.tick();
         if (this.level().isClientSide) {
-            boolean rollFacing = getPhase() == ROLL_WINDUP || getPhase() == ROLL || getPhase() == ROLL_RECOVERY;
+            boolean rollFacing = getPhase() == ROLL_WINDUP || getPhase() == ROLL || getPhase() == ROLL_RECOVERY
+                    || (isMaodie() && getPhase() >= MaodieCombat.HISS_WINDUP && getPhase() <= MaodieCombat.HISS_RECOVERY);
             if (rollFacing || this.clientHadRollFacing) {
                 // Vanilla body control follows movement, which is perpendicular
                 // to our rolling body. Keep the first idle frame continuous too.
@@ -192,11 +258,12 @@ public final class GiantCatBoss extends Monster {
             return;
         }
         applyRollFacing();
+        checkMaodieEnrage();
         this.bossEvent.setProgress(Mth.clamp(this.getHealth() / this.getMaxHealth(), 0.0F, 1.0F));
         this.bossEvent.setName(this.getDisplayName());
         if (isSummoning() && this.isAlive()) {
             this.setTarget(null);
-            if (getPhaseTicks(0) >= SUMMON_DURATION_TICKS) finishSummoning();
+            if (getPhaseTicks(0) >= getSummonDurationTicks()) finishSummoning();
         }
         if (getPhase() == IDLE && this.isAlive() && !this.isNoAi()) {
             for (LivingEntity victim : this.level().getEntitiesOfClass(LivingEntity.class,
@@ -210,7 +277,7 @@ public final class GiantCatBoss extends Monster {
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-        if (isSummoning() || !this.isAlive()) return;
+        if (isSummoning() || !this.isAlive() || maodiePending) return;
         if (this.attackCooldown > 0) this.attackCooldown--;
         LivingEntity target = this.getTarget();
         if (!validVictim(target)) {
@@ -224,7 +291,8 @@ public final class GiantCatBoss extends Monster {
         // Anticipation keeps its entry aim: changing this endpoint mid-turn can
         // flip the shortest yaw arc. Only actual ROLL travel steers, once a tick.
         applyRollFacing();
-        byte next = GiantCatBossCombat.nextPhase(phase, elapsed, this.onGround(), false, target != null);
+        byte next = isMaodie() ? MaodieCombat.nextPhase(phase, elapsed, this.onGround(), false, target != null)
+                : GiantCatBossCombat.nextPhase(phase, elapsed, this.onGround(), false, target != null);
         if (next != phase) {
             if (next == ROLL) {
                 faceYaw(this.rollYaw + 90.0F);
@@ -236,8 +304,13 @@ public final class GiantCatBoss extends Monster {
             }
             return;
         }
+        if (isMaodie() && (phase == MaodieCombat.HISS_WINDUP || phase == MaodieCombat.HISS)) {
+            if (phase == MaodieCombat.HISS) performHiss();
+            hissParticles(phase == MaodieCombat.HISS);
+        }
         if (phase != IDLE) {
-            if (target != null && phase != ROLL_WINDUP && phase != ROLL_RECOVERY) {
+            if (target != null && phase != ROLL_WINDUP && phase != ROLL_RECOVERY
+                    && phase < MaodieCombat.HISS_WINDUP) {
                 this.getLookControl().setLookAt(target, 20.0F, 30.0F);
             }
             return;
@@ -250,8 +323,13 @@ public final class GiantCatBoss extends Monster {
         double distance = this.distanceToSqr(target);
         if (this.attackCooldown == 0 && this.onGround() && this.getSensing().hasLineOfSight(target)) {
             if (distance <= 22.0D * 22.0D) {
-                setPhase(this.nextSpecialIsJump ? JUMP_WINDUP : ROLL_WINDUP);
-                this.nextSpecialIsJump = !this.nextSpecialIsJump;
+                if (isMaodie()) {
+                    setPhase(switch (maodieNextSpecial) { case 1 -> JUMP_WINDUP; case 2 -> MaodieCombat.HISS_WINDUP; default -> ROLL_WINDUP; });
+                    maodieNextSpecial = (maodieNextSpecial + 1) % 3;
+                } else {
+                    setPhase(this.nextSpecialIsJump ? JUMP_WINDUP : ROLL_WINDUP);
+                    this.nextSpecialIsJump = !this.nextSpecialIsJump;
+                }
                 return;
             }
         }
@@ -400,7 +478,7 @@ public final class GiantCatBoss extends Monster {
     }
 
     private boolean validVictim(LivingEntity victim) {
-        return victim != null && victim != this && victim.isAlive() && !victim.isSpectator()
+        return !maodiePending && (!isMaodie() || victim instanceof Player) && victim != null && victim != this && victim.isAlive() && !victim.isSpectator()
                 && !(victim instanceof GiantCatBoss) && !this.isAlliedTo(victim)
                 && (!(victim instanceof Player player) || !player.getAbilities().instabuild);
     }
@@ -414,7 +492,7 @@ public final class GiantCatBoss extends Monster {
                 || !headTouchesVictim(target)
                 || !this.touchContacts.canHit(target.getUUID(), this.tickCount)
                 || !this.getSensing().hasLineOfSight(target)) return false;
-        boolean hit = target.hurt(this.damageSources().mobAttack(this), 8.0F);
+        boolean hit = target.hurt(this.damageSources().mobAttack(this), isMaodie() ? MaodieCombat.damageForPhase(IDLE) : 8.0F);
         if (hit) {
             this.touchContacts.recordHit(target.getUUID(), this.tickCount);
             // Successful bites add a visible shove; vanilla and this extra
@@ -445,6 +523,11 @@ public final class GiantCatBoss extends Monster {
     }
 
     private void applyRollFacing() {
+        if (isMaodie() && getPhase() >= MaodieCombat.HISS_WINDUP && getPhase() <= MaodieCombat.HISS_RECOVERY) {
+            float t = Mth.clamp(getPhaseTicks(0) / 20F, 0, 1);
+            faceYaw(getPhase() == MaodieCombat.HISS_WINDUP ? Mth.rotLerp(t*t*(3-2*t), hissBodyStartYaw, hissYaw()) : hissYaw());
+            return;
+        }
         switch (getPhase()) {
             case ROLL_WINDUP -> faceYaw(GiantCatBossCombat.rollWindupYaw(
                     this.rollBodyStartYaw, this.rollYaw, getPhaseTicks(0)));
@@ -526,12 +609,13 @@ public final class GiantCatBoss extends Monster {
     }
 
     private void performRollImpact(AABB previousBox, Vec3 actual) {
+        if (isMaodie() && (isNoAi() || maodiePending || !isAlive() || getPhase() != ROLL)) return;
         for (LivingEntity victim : this.level().getEntitiesOfClass(LivingEntity.class,
                 ButterCatCharge.sweptBox(previousBox, actual), this::validVictim)) {
             if (!this.contacts.canHit(victim.getUUID(), this.tickCount)
                     || !ButterCatCharge.touches(previousBox, actual, victim.getBoundingBox())
                     || !this.getSensing().hasLineOfSight(victim)) continue;
-            if (victim.hurt(this.damageSources().mobAttack(this), 12.0F)) {
+            if (victim.hurt(this.damageSources().mobAttack(this), isMaodie() ? MaodieCombat.damageForPhase(ROLL) : 12.0F)) {
                 this.contacts.recordHit(victim.getUUID(), this.tickCount);
                 victim.knockback(0.9D, this.getX() - victim.getX(), this.getZ() - victim.getZ());
             }
@@ -540,11 +624,12 @@ public final class GiantCatBoss extends Monster {
     }
 
     private void performSlam() {
+        if (isMaodie() && (isNoAi() || maodiePending || !isAlive() || getPhase() != JUMP)) return;
         for (LivingEntity victim : this.level().getEntitiesOfClass(LivingEntity.class,
                 this.getBoundingBox().inflate(4.0D, 1.5D, 4.0D), this::validVictim)) {
             double dx = victim.getX() - this.getX(), dz = victim.getZ() - this.getZ();
             if (dx * dx + dz * dz > 16.0D || !this.getSensing().hasLineOfSight(victim)) continue;
-            if (victim.hurt(this.damageSources().mobAttack(this), 18.0F)) {
+            if (victim.hurt(this.damageSources().mobAttack(this), isMaodie() ? MaodieCombat.damageForPhase(JUMP) : 18.0F)) {
                 victim.knockback(1.25D, -dx, -dz);
                 victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 0), this);
                 victim.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0), this);
@@ -558,6 +643,46 @@ public final class GiantCatBoss extends Monster {
                     35, 2.0D, 0.3D, 2.0D, 0.15D);
         }
         this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1.5F, 0.6F);
+    }
+
+    private void performHiss() {
+        if (!isMaodie() || isNoAi() || maodiePending || !isAlive() || getPhase() != MaodieCombat.HISS) return;
+        Vec3 origin = position().add(0, 1, 0);
+        for (LivingEntity victim : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(8,3,8), this::validVictim)) {
+            Vec3 point = victim.getBoundingBox().getCenter();
+            if (hissHits.contains(victim.getUUID()) || !MaodieCombat.inHissCone(origin, hissYaw(), point)
+                    || !hasLineOfSight(victim)) continue;
+            // Reserve the hit even when a shield or vanilla damage cooldown rejects it.
+            hissHits.add(victim.getUUID());
+            if (victim.hurt(damageSources().mobAttack(this), MaodieCombat.damageForPhase(MaodieCombat.HISS)))
+                victim.knockback(.5, getX()-victim.getX(), getZ()-victim.getZ());
+        }
+    }
+
+    private void hissParticles(boolean active) {
+        if (!(level() instanceof ServerLevel server) || tickCount % (active ? 2 : 4) != 0) return;
+        var dust = new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1,.83F,.4F), .8F);
+        Vec3 start = position().add(0, active ? 1.2 : .2, 0);
+        for (int i = 0; i < (active ? 7 : 2); i++) {
+            double radians = Math.toRadians(hissYaw() + (active ? -30 + i*10 : i == 0 ? -35 : 35));
+            Vec3 direction = new Vec3(-Math.sin(radians),0,Math.cos(radians));
+            for (int distance : new int[]{4,8}) {
+                Vec3 end = start.add(direction.scale(distance));
+                var hit = level().clip(new net.minecraft.world.level.ClipContext(start,end,
+                        net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE,this));
+                if (hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS) continue;
+                if (active) server.sendParticles(ParticleTypes.CLOUD,end.x,end.y,end.z,1,.12,.12,.12,.015);
+                else server.sendParticles(dust,end.x,end.y,end.z,1,0,0,0,0);
+            }
+        }
+    }
+
+    private void checkMaodieEnrage() {
+        if (!isMaodie() || isMaodieEnraged() || isSummoning() || maodiePending || !isAlive() || getHealth() > getMaxHealth()*.5F) return;
+        entityData.set(DATA_MAODIE_ENRAGED,true);
+        attackCooldown = Math.min(attackCooldown, Mth.nextInt(random,40,60));
+        playSound(SoundEvents.CAT_HISS,2F,.35F);
+        if (level() instanceof ServerLevel server) server.sendParticles(ParticleTypes.CRIT,getX(),getY()+1.5,getZ(),24,1.2,.8,1.2,.06);
     }
 
     private void finishSummoning() {
@@ -593,7 +718,7 @@ public final class GiantCatBoss extends Monster {
     public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
         this.trackingPlayers.add(player);
-        if (!isSummoning()) this.bossEvent.addPlayer(player);
+        if (!isSummoning() && !maodiePending) this.bossEvent.addPlayer(player);
     }
 
     @Override
@@ -612,6 +737,7 @@ public final class GiantCatBoss extends Monster {
 
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        if (isMaodie()) return;
         super.dropCustomDeathLoot(level, source, recentlyHit);
         // Preserve the existing seeded trophy roll independently of new rewards.
         boolean dropsTrophy = this.random.nextFloat() < 0.25F;
@@ -636,6 +762,13 @@ public final class GiantCatBoss extends Monster {
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
+        if (isMaodie()) {
+            tag.putBoolean("MaodieEncounter", true); tag.put("MaodieSourceCat", maodieSource.copy());
+            tag.putLong("MaodieShelf", maodieShelf.asLong()); tag.putBoolean("MaodiePending", maodiePending);
+            tag.putInt("MaodieAbsentTicks", maodieAbsentTicks);
+            tag.putBoolean("MaodieEnraged", isMaodieEnraged()); tag.putInt("MaodieNextSpecial",maodieNextSpecial);
+            tag.putFloat("MaodieHissYaw",hissYaw());
+        }
         tag.put("InheritedCatGenome", this.entityData.get(DATA_GENOME).copy());
         tag.putByte("GiantCatPhase", getPhase());
         tag.putInt("GiantCatPhaseTicks", (int) getPhaseTicks(0));
@@ -651,15 +784,27 @@ public final class GiantCatBoss extends Monster {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
+        entityData.set(DATA_MAODIE, tag.getBoolean("MaodieEncounter"));
+        maodieSource = tag.getCompound("MaodieSourceCat").copy();
+        maodieShelf = BlockPos.of(tag.getLong("MaodieShelf"));
+        maodiePending = isMaodie() && tag.getBoolean("MaodiePending");
+        maodieAbsentTicks = Mth.clamp(tag.getInt("MaodieAbsentTicks"), 0, 400);
+        entityData.set(DATA_MAODIE_ENRAGED, isMaodie() && tag.getBoolean("MaodieEnraged"));
+        maodieNextSpecial = Mth.clamp(tag.getInt("MaodieNextSpecial"),0,2);
+        float savedHissYaw=tag.getFloat("MaodieHissYaw");
+        entityData.set(DATA_HISS_YAW,Float.isFinite(savedHissYaw) ? savedHissYaw : getYRot());
+        hissBodyStartYaw=getYRot(); hissHits.clear();
+        if (isMaodie()) { xpReward = 0; bossEvent.setVisible(!maodiePending); }
         migrateLegacyAttributes();
         if (tag.contains("InheritedCatGenome", Tag.TAG_COMPOUND)) {
             this.entityData.set(DATA_GENOME, tag.getCompound("InheritedCatGenome").copy());
         }
-        this.attackCooldown = Mth.clamp(tag.getInt("GiantCatAttackCooldown"), 14, 100);
+        this.attackCooldown = Mth.clamp(tag.getInt("GiantCatAttackCooldown"), 14, isMaodie() ? 120 : 100);
         this.nextSpecialIsJump = tag.getBoolean("GiantCatNextJump");
         byte saved = tag.getByte("GiantCatPhase");
         boolean hadPhase = tag.contains("GiantCatPhase", Tag.TAG_BYTE);
-        byte restored = !hadPhase ? IDLE : saved == SUMMON ? SUMMON
+        byte restored = !hadPhase ? IDLE : isMaodie() && saved >= MaodieCombat.HISS_WINDUP && saved <= MaodieCombat.HISS_RECOVERY
+                ? MaodieCombat.HISS_RECOVERY : saved == SUMMON ? SUMMON
                 : (saved == ROLL || saved == ROLL_WINDUP || saved == ROLL_RECOVERY) ? ROLL_RECOVERY
                 : (saved == JUMP || saved == JUMP_WINDUP || saved == SLAM_RECOVERY) ? SLAM_RECOVERY : IDLE;
         this.rollYaw = tag.contains("GiantCatRollYaw", Tag.TAG_FLOAT)
@@ -669,9 +814,9 @@ public final class GiantCatBoss extends Monster {
                 ? tag.getFloat("GiantCatRollBodyStartYaw") : this.getYRot();
         if (!Float.isFinite(this.rollBodyStartYaw)) this.rollBodyStartYaw = this.getYRot();
         this.entityData.set(DATA_PHASE, restored);
-        boolean resumingRecovery = saved == restored && (restored == ROLL_RECOVERY || restored == SLAM_RECOVERY);
-        int duration = restored == ROLL_RECOVERY ? 30 : 40;
-        int elapsed = restored == SUMMON ? Mth.clamp(tag.getInt("GiantCatPhaseTicks"), 0, 60)
+        boolean resumingRecovery = saved == restored && (restored == ROLL_RECOVERY || restored == SLAM_RECOVERY || restored == MaodieCombat.HISS_RECOVERY);
+        int duration = restored == MaodieCombat.HISS_RECOVERY ? MaodieCombat.recoveryTicks() : restored == ROLL_RECOVERY ? 30 : 40;
+        int elapsed = restored == SUMMON ? Mth.clamp(tag.getInt("GiantCatPhaseTicks"), 0, getSummonDurationTicks())
                 : resumingRecovery ? Mth.clamp(tag.getInt("GiantCatPhaseTicks"), 0, duration) : 0;
         this.entityData.set(DATA_PHASE_START, this.level().getGameTime() - elapsed);
         int rollTicks = saved == ROLL ? tag.getInt("GiantCatPhaseTicks") : tag.getInt("GiantCatRollRecoveryStart");

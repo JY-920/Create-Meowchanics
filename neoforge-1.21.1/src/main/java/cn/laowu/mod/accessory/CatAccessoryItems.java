@@ -30,8 +30,10 @@ public final class CatAccessoryItems {
     /** Registry-backed boss reward; no crafting recipe. */
     public static Item butterReward() { return ITEMS.get("laowu:cat_butter_cube").get(); }
     public static Item giantReward() { return ITEMS.get("laowu:cat_giant_collar").get(); }
+    public static Item boxingReward() { return ITEMS.get("laowu:cat_boxing_gloves").get(); }
     private static Map<String, CatAccessoryDefinition> defaults() {
         Map<String, CatAccessoryDefinition> result = new LinkedHashMap<>();
+        add(result, "laowu:cat_boxing_gloves", "{\"schema_version\":1,\"item\":\"laowu:cat_boxing_gloves\",\"effects\":{\"melee_career_damage\":30}}");
         add(result, "laowu:cat_giant_collar", "{\"schema_version\":1,\"item\":\"laowu:cat_giant_collar\",\"effects\":{\"giant_mount\":1}}");
         add(result, "laowu:cat_taunt_bell", "{\"schema_version\":1,\"item\":\"laowu:cat_taunt_bell\",\"exclusive_group\":\"laowu:threat\",\"effects\":{\"aggro_bias\":3}}");
         add(result, "laowu:cat_silent_bell", "{\"schema_version\":1,\"item\":\"laowu:cat_silent_bell\",\"exclusive_group\":\"laowu:threat\",\"effects\":{\"aggro_bias\":-3}}");

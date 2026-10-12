@@ -178,6 +178,11 @@ public final class LaoWuMod {
     public static final RegistryObject<ParticleType<NozzleFluidPuffData>> NOZZLE_FLUID_PUFF =
             cn.laowu.mod.compat.create.CreateIntegration.register(PARTICLE_TYPES, "nozzle_fluid_puff", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::particle_types_nozzle_fluid_puff : null);
 
+    public static final RegistryObject<Block> BOGU_SHELF = BLOCKS.register("round_bogu_shelf", cn.laowu.mod.block.BoguShelfBlock::new);
+    public static final RegistryObject<Item> BOGU_SHELF_ITEM = ITEMS.register("round_bogu_shelf", () -> new cn.laowu.mod.item.BoguShelfBlockItem(BOGU_SHELF.get(), new Item.Properties()));
+    public static final RegistryObject<EntityType<cn.laowu.mod.entity.BoguShelfSeat>> BOGU_SHELF_SEAT = ENTITY_TYPES.register("bogu_shelf_seat", () -> EntityType.Builder
+            .<cn.laowu.mod.entity.BoguShelfSeat>of(cn.laowu.mod.entity.BoguShelfSeat::new, MobCategory.MISC)
+            .sized(.1F, .1F).clientTrackingRange(10).updateInterval(1).build("bogu_shelf_seat"));
     public static final RegistryObject<Block> CAT_BLOCK = BLOCKS.register("cat_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIAMOND_BLOCK)));
 
@@ -197,11 +202,11 @@ public final class LaoWuMod {
             cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_devouring_cat : null);
     public static final RegistryObject<BlockEntityType<DevouringCatBlockEntity>> DEVOURING_CAT_BE =
             cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "devouring_cat", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_devouring_cat : null);
-    public static final RegistryObject<Block> BASIC_BREEDING_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "basic_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_basic_breeding_box : null);
-    public static final RegistryObject<Block> INTERMEDIATE_BREEDING_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "intermediate_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_intermediate_breeding_box : null);
-    public static final RegistryObject<Block> ADVANCED_BREEDING_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "advanced_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_advanced_breeding_box : null);
-    public static final RegistryObject<BlockEntityType<BreedingBoxBlockEntity>> BREEDING_BOX_BE =
-            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_breeding_box : null);
+    public static final RegistryObject<Block> BASIC_BREEDING_BOX = BLOCKS.register("basic_breeding_box", cn.laowu.mod.create.CatCareFactories::blocks_basic_breeding_box);
+    public static final RegistryObject<Block> INTERMEDIATE_BREEDING_BOX = BLOCKS.register("intermediate_breeding_box", cn.laowu.mod.create.CatCareFactories::blocks_intermediate_breeding_box);
+    public static final RegistryObject<Block> ADVANCED_BREEDING_BOX = BLOCKS.register("advanced_breeding_box", cn.laowu.mod.create.CatCareFactories::blocks_advanced_breeding_box);
+    public static final RegistryObject<BlockEntityType<net.minecraft.world.level.block.entity.BlockEntity>> BREEDING_BOX_BE =
+            BLOCK_ENTITIES.register("breeding_box", cn.laowu.mod.create.CatCareFactories::block_entities_breeding_box);
     public static final RegistryObject<Block> CAT_CARRIER = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "cat_carrier",
             cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_cat_carrier : null);
     public static final RegistryObject<BlockEntityType<cn.laowu.mod.create.CatCarrierBlockEntity>> CAT_CARRIER_BE =
@@ -224,17 +229,18 @@ public final class LaoWuMod {
             cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_ejecting_deployment_platform : null);
     public static final RegistryObject<Item> CAT_LASER_POINTER = ITEMS.register("cat_laser_pointer",
             () -> new cn.laowu.mod.item.CatLaserPointerItem(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> CAT_STORAGE_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_storage_box",
-            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_storage_box : null);
+    public static final RegistryObject<Item> CAT_STORAGE_BOX = ITEMS.register("cat_storage_box", cn.laowu.mod.create.CatCareFactories::items_cat_storage_box);
 
-    public static final RegistryObject<Block> ADOPTION_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "adoption_box",
-            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_adoption_box : null);
+    public static final RegistryObject<Block> ADOPTION_BOX = BLOCKS.register("adoption_box", cn.laowu.mod.create.CatCareFactories::blocks_adoption_box);
     public static final RegistryObject<BlockEntityType<AdoptionBoxBlockEntity>> ADOPTION_BOX_BE =
-            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "adoption_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_adoption_box : null);
-    public static final RegistryObject<Block> WISH_ADOPTION_BOX = cn.laowu.mod.compat.create.CreateIntegration.registerBlock(BLOCKS, "wish_adoption_box",
-            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::blocks_wish_adoption_box : null);
+            BLOCK_ENTITIES.register("adoption_box", cn.laowu.mod.create.CatCareFactories::block_entities_adoption_box);
+    public static final RegistryObject<Block> WISH_ADOPTION_BOX = BLOCKS.register("wish_adoption_box", cn.laowu.mod.create.CatCareFactories::blocks_wish_adoption_box);
     public static final RegistryObject<BlockEntityType<WishAdoptionBoxBlockEntity>> WISH_ADOPTION_BOX_BE =
-            cn.laowu.mod.compat.create.CreateIntegration.register(BLOCK_ENTITIES, "wish_adoption_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::block_entities_wish_adoption_box : null);
+            BLOCK_ENTITIES.register("wish_adoption_box", cn.laowu.mod.create.CatCareFactories::block_entities_wish_adoption_box);
+    public static final RegistryObject<EntityType<cn.laowu.mod.entity.MaodieFighter>> MAODIE_FIGHTER =
+            ENTITY_TYPES.register("maodie_fighter", () -> EntityType.Builder
+                    .<cn.laowu.mod.entity.MaodieFighter>of(cn.laowu.mod.entity.MaodieFighter::new, MobCategory.MONSTER)
+                    .sized(.9F, 1.7F).clientTrackingRange(12).updateInterval(1).build("maodie_fighter"));
     public static final RegistryObject<EntityType<cn.laowu.mod.entity.GiantCatBoss>> GIANT_CAT_BOSS =
             ENTITY_TYPES.register("giant_cat_boss", () -> EntityType.Builder
                     .<cn.laowu.mod.entity.GiantCatBoss>of(cn.laowu.mod.entity.GiantCatBoss::new, MobCategory.MONSTER)
@@ -273,6 +279,13 @@ public final class LaoWuMod {
     public static final RegistryObject<Item> BUTTER_CAT_SPAWN_EGG = ITEMS.register(
             "butter_cat_spawn_egg", () -> new ForgeSpawnEggItem(
                     () -> BUTTER_CAT.get(), 0xE8B94F, 0xFFF1A3,
+                    new Item.Properties()));
+    public static final RegistryObject<Item> BOXING_CAT_SPAWN_EGG = ITEMS.register(
+            "boxing_cat_spawn_egg", () -> new ForgeSpawnEggItem(() -> MAODIE_FIGHTER.get(),
+                    0xDCA52D, 0xF1EEE1, new Item.Properties()));
+    public static final RegistryObject<Item> GIANT_CAT_BOSS_SPAWN_EGG = ITEMS.register(
+            "giant_cat_boss_spawn_egg", () -> new ForgeSpawnEggItem(
+                    () -> GIANT_CAT_BOSS.get(), 0xD6A55A, 0x594A3C,
                     new Item.Properties()));
     public static final RegistryObject<Item> TERMINATOR_SUIT = ITEMS.register("terminator_suit",
             () -> new TerminatorSuitItem(new Item.Properties(), CatOutfitType.TERMINATOR));
@@ -330,8 +343,8 @@ public final class LaoWuMod {
     public static final RegistryObject<Item> INCOMPLETE_COCKROACH_SUIT = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "incomplete_cockroach_suit", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_incomplete_cockroach_suit : null);
     public static final RegistryObject<Item> CAT_TOTEM = ITEMS.register("cat_totem",
             () -> new CatTotemItem(new Item.Properties()));
-    public static final RegistryObject<Item> CAT_ENGINEER_GOGGLES = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_engineer_goggles",
-            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_engineer_goggles : null);
+    public static final RegistryObject<Item> CAT_ENGINEER_GOGGLES = ITEMS.register("cat_engineer_goggles",
+            () -> new CatEngineerGogglesItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> CAT_BLOCK_ITEM = ITEMS.register("cat_block",
             () -> new BlockItem(CAT_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> CAT_UPGRADE_SMITHING_TEMPLATE = ITEMS.register(
@@ -504,13 +517,11 @@ public final class LaoWuMod {
             cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_hissing_collector : null);
     public static final RegistryObject<Item> DEVOURING_CAT_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "devouring_cat",
             cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_devouring_cat : null);
-    public static final RegistryObject<Item> BASIC_BREEDING_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "basic_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_basic_breeding_box : null);
-    public static final RegistryObject<Item> INTERMEDIATE_BREEDING_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "intermediate_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_intermediate_breeding_box : null);
-    public static final RegistryObject<Item> ADVANCED_BREEDING_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "advanced_breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_advanced_breeding_box : null);
-    public static final RegistryObject<Item> ADOPTION_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "adoption_box",
-            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_adoption_box : null);
-    public static final RegistryObject<Item> WISH_ADOPTION_BOX_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "wish_adoption_box",
-            cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_wish_adoption_box : null);
+    public static final RegistryObject<Item> BASIC_BREEDING_BOX_ITEM = ITEMS.register("basic_breeding_box", cn.laowu.mod.create.CatCareFactories::items_basic_breeding_box);
+    public static final RegistryObject<Item> INTERMEDIATE_BREEDING_BOX_ITEM = ITEMS.register("intermediate_breeding_box", cn.laowu.mod.create.CatCareFactories::items_intermediate_breeding_box);
+    public static final RegistryObject<Item> ADVANCED_BREEDING_BOX_ITEM = ITEMS.register("advanced_breeding_box", cn.laowu.mod.create.CatCareFactories::items_advanced_breeding_box);
+    public static final RegistryObject<Item> ADOPTION_BOX_ITEM = ITEMS.register("adoption_box", cn.laowu.mod.create.CatCareFactories::items_adoption_box);
+    public static final RegistryObject<Item> WISH_ADOPTION_BOX_ITEM = ITEMS.register("wish_adoption_box", cn.laowu.mod.create.CatCareFactories::items_wish_adoption_box);
     public static final RegistryObject<FluidType> HISSING_GAS_TYPE = FLUID_TYPES.register(
             "hissing_gas", HissingGasFluidType::new);
     public static final RegistryObject<FlowingFluid> HISSING_GAS = FLUIDS.register(
@@ -536,7 +547,7 @@ public final class LaoWuMod {
     public static final RegistryObject<CreativeModeTab> LAOWU_TAB = CREATIVE_TABS.register("laowu",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.laowu"))
-                    .icon(() -> (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? CAT_ENGINE_ITEM.get() : CAT_PANCAKE.get()).getDefaultInstance())
+                    .icon(() -> CAT_INGOT.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         if (CAT_ENGINE_ITEM.isPresent()) output.accept(CAT_ENGINE_ITEM.get());
                         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_CASING_ITEM.get());
@@ -549,8 +560,6 @@ public final class LaoWuMod {
                         if (INFILTRATION_TANK_ITEM.isPresent()) output.accept(INFILTRATION_TANK_ITEM.get());
                         if (HISSING_COLLECTOR_ITEM.isPresent()) output.accept(HISSING_COLLECTOR_ITEM.get());
                         if (DEVOURING_CAT_ITEM.isPresent()) output.accept(DEVOURING_CAT_ITEM.get());
-                        if (ADOPTION_BOX_ITEM.isPresent()) output.accept(ADOPTION_BOX_ITEM.get());
-                        if (WISH_ADOPTION_BOX_ITEM.isPresent()) output.accept(WISH_ADOPTION_BOX_ITEM.get());
                         if (CAT_CARRIER_ITEM.isPresent()) output.accept(CAT_CARRIER_ITEM.get());
                         if (CAT_EDITOR_ITEM.isPresent()) output.accept(CAT_EDITOR_ITEM.get());
                         if (CAT_DEPLOYMENT_PLATFORM_ITEM.isPresent()) output.accept(CAT_DEPLOYMENT_PLATFORM_ITEM.get());
@@ -586,13 +595,18 @@ public final class LaoWuMod {
                         output.accept(CatPancakeItem.defaultDisplayStack());
                         if (BUTTER_BREAD.isPresent()) output.accept(BUTTER_BREAD.get());
                         if (GIANT_CAT_TREAT.isPresent()) output.accept(GIANT_CAT_TREAT.get());
+                        output.accept(BOGU_SHELF_ITEM.get());
                         if (BUTTER_CAT_SPAWN_EGG.isPresent()) output.accept(BUTTER_CAT_SPAWN_EGG.get());
+                        output.accept(GIANT_CAT_BOSS_SPAWN_EGG.get());
+                        output.accept(BOXING_CAT_SPAWN_EGG.get());
                         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(AllItems.CARDBOARD_SWORD.get());
                         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(AllBlocks.SEATS.get(DyeColor.RED).get());
-                        if (CAT_GRENADE.isPresent()) output.accept(CAT_GRENADE.get());
-                        if (CAT_SHELL.isPresent()) output.accept(CAT_SHELL.get());
-                        if (HISSING_GAS_BUCKET.isPresent()) output.accept(HISSING_GAS_BUCKET.get());
-                        if (LIQUID_CAT_BUCKET.isPresent()) output.accept(LIQUID_CAT_BUCKET.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) {
+                            if (CAT_GRENADE.isPresent()) output.accept(CAT_GRENADE.get());
+                            if (CAT_SHELL.isPresent()) output.accept(CAT_SHELL.get());
+                            if (HISSING_GAS_BUCKET.isPresent()) output.accept(HISSING_GAS_BUCKET.get());
+                            if (LIQUID_CAT_BUCKET.isPresent()) output.accept(LIQUID_CAT_BUCKET.get());
+                        }
                         output.accept(PotionUtils.setPotion(
                                 new ItemStack(Items.POTION), HISSING_POTION.get()));
                         output.accept(PotionUtils.setPotion(
@@ -609,7 +623,9 @@ public final class LaoWuMod {
                             .displayItems((parameters, output) -> {
                                 if (BASIC_BREEDING_BOX_ITEM.isPresent()) output.accept(BASIC_BREEDING_BOX_ITEM.get());
                                 if (INTERMEDIATE_BREEDING_BOX_ITEM.isPresent()) output.accept(INTERMEDIATE_BREEDING_BOX_ITEM.get());
-                               if (ADVANCED_BREEDING_BOX_ITEM.isPresent()) output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                                if (ADVANCED_BREEDING_BOX_ITEM.isPresent()) output.accept(ADVANCED_BREEDING_BOX_ITEM.get());
+                                if (ADOPTION_BOX_ITEM.isPresent()) output.accept(ADOPTION_BOX_ITEM.get());
+                                if (WISH_ADOPTION_BOX_ITEM.isPresent()) output.accept(WISH_ADOPTION_BOX_ITEM.get());
                                 if (CAT_LASER_POINTER.isPresent()) output.accept(CAT_LASER_POINTER.get());
                                 if (CAT_STORAGE_BOX.isPresent()) output.accept(CAT_STORAGE_BOX.get());
 
@@ -676,9 +692,9 @@ public final class LaoWuMod {
                     .displayItems((parameters, output) -> cn.laowu.mod.accessory.CatAccessoryItems.display(output))
                     .build());
     public static final RegistryObject<MenuType<CatPackageMenu>> CAT_PACKAGE_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "cat_package", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_cat_package : null);
-    public static final RegistryObject<MenuType<BreedingBoxMenu>> BREEDING_BOX_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "breeding_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_breeding_box : null);
-    public static final RegistryObject<MenuType<AdoptionBoxMenu>> ADOPTION_BOX_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "adoption_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_adoption_box : null);
-    public static final RegistryObject<MenuType<WishAdoptionBoxMenu>> WISH_ADOPTION_BOX_MENU = cn.laowu.mod.compat.create.CreateIntegration.register(MENUS, "wish_adoption_box", cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::menus_wish_adoption_box : null);
+    public static final RegistryObject<MenuType<BreedingBoxMenu>> BREEDING_BOX_MENU = MENUS.register("breeding_box", cn.laowu.mod.create.CatCareFactories::menus_breeding_box);
+    public static final RegistryObject<MenuType<AdoptionBoxMenu>> ADOPTION_BOX_MENU = MENUS.register("adoption_box", cn.laowu.mod.create.CatCareFactories::menus_adoption_box);
+    public static final RegistryObject<MenuType<WishAdoptionBoxMenu>> WISH_ADOPTION_BOX_MENU = MENUS.register("wish_adoption_box", cn.laowu.mod.create.CatCareFactories::menus_wish_adoption_box);
     public static final RegistryObject<MenuType<CatAttributeEditorMenu>> CAT_ATTRIBUTE_EDITOR_MENU =
             MENUS.register("cat_attribute_editor",
                     () -> IForgeMenuType.create(CatAttributeEditorMenu::new));
@@ -806,6 +822,10 @@ public final class LaoWuMod {
     public static final RegistryObject<RecipeSerializer<cn.laowu.mod.recipe.LaserPointerDyeRecipe>>
             LASER_POINTER_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("laser_pointer_dye",
             () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(cn.laowu.mod.recipe.LaserPointerDyeRecipe::new));
+
+    public static final RegistryObject<net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<cn.laowu.mod.recipe.PheromoneCatFoodCraftingRecipe>> PHEROMONE_CAT_FOOD_CRAFTING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("pheromone_cat_food_crafting",
+                    () -> new net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer<>(cn.laowu.mod.recipe.PheromoneCatFoodCraftingRecipe::new));
 
     public LaoWuMod(FMLJavaModLoadingContext context) {
         CraftingHelper.register(id("cat_pancake"), CatPancakeIngredient.Serializer.INSTANCE);

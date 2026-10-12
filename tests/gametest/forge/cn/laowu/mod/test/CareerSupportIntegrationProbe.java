@@ -211,7 +211,7 @@ public final class CareerSupportIntegrationProbe {
             helper.assertTrue(critical.getHealth() > 3 && near.getHealth() > nearHealth,
                     "Medical AI approaches critical ally and heals both patients within its circle");
             helper.assertTrue(ordinary.getHealth() == 1 && enemy.getHealth() == 1,
-                    "No treatment of ordinary or enemy cats");
+                    "No treatment of ordinary or enemy cats: ordinary="+ordinary.getHealth()+", enemy="+enemy.getHealth());
             medic.setOrderedToSit(true);
             float beforeEndOfTick = critical.getHealth();
             // Offers already collected during this tick flush at server END. A GameTest

@@ -42,13 +42,16 @@ public final class CatStorageBoxItem extends Item {
     private static boolean busy(Cat cat, ServerLevel level) {
         if (CatProfileData.isBeingViewed(cat)) return true;
         for (ServerPlayer viewer : level.players()) {
-            if (viewer.containerMenu instanceof CatPackageMenu menu && menu.getCatId() == cat.getId()) return true;
+            if (viewer.containerMenu instanceof net.minecraft.world.inventory.ChestMenu chest
+                    && chest.getContainer() instanceof CatChestContainer cargo && cargo.isFor(cat)) return true;
+            if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && viewer.containerMenu instanceof CatPackageMenu menu && menu.getCatId() == cat.getId()) return true;
         }
         return false;
     }
 
     private static boolean onSeat(Cat cat) {
-        return cat.getVehicle() instanceof com.simibubi.create.content.contraptions.actors.seat.SeatEntity
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat) return true;
+        return cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && cat.getVehicle() instanceof com.simibubi.create.content.contraptions.actors.seat.SeatEntity
                 || CareerCatBehavior.findSeat(cat) != null;
     }
 

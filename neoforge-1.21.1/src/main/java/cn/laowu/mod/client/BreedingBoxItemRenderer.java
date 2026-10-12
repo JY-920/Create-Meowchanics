@@ -14,7 +14,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-/** Item-context companion to {@link BreedingBoxRenderer}. */
+/** Item-context renderer sharing only Create-independent model assets. */
 public final class BreedingBoxItemRenderer extends BlockEntityWithoutLevelRenderer {
     public BreedingBoxItemRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet models) {
         super(dispatcher, models);
@@ -53,9 +53,9 @@ public final class BreedingBoxItemRenderer extends BlockEntityWithoutLevelRender
         // solid box body appear slightly low even when the full mesh is drawn.
         pose.translate(0.0D, 1.0D, 0.0D);
         pose.scale(1.0F, -1.0F, 1.0F);
-        RuntimeBlockbenchModel.get(BreedingBoxRenderer.model(tier)).render(pose,
+        RuntimeBlockbenchModel.get(StandaloneBreedingBoxRenderer.model(tier)).render(pose,
                 buffers.getBuffer(RenderType.entityCutoutNoCull(
-                        BreedingBoxRenderer.texture(tier))),
+                        StandaloneBreedingBoxRenderer.texture(tier))),
                 light, overlay, RuntimeBlockbenchModel.GroupSelection.ALL,
                 RuntimeBlockbenchModel.HeadMotion.NONE);
         pose.popPose();

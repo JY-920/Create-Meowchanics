@@ -76,6 +76,51 @@ public final class CatGenomeTextureManager {
         return resolve(genome, fallback, false);
     }
 
+    /** The articulated boxer exposes caps hidden inside the ordinary cat model. */
+    public static synchronized ResourceLocation resolveFighter(CatGenome genome, ResourceLocation fallback) {
+        if (genome == null) return fallback;
+        String key = "fighter|" + genome.phenotypeKey();
+        ResourceLocation cached = COMPOSITES.get(key);
+        if (cached != null) return cached;
+        NativeImage image = null;
+        try {
+            image = genome.isUniform()
+                    ? copy(sourceImageForMaterial(genome.material(CatRegion.HEAD_PRIMARY), fallback))
+                    : compose(genome, fallback);
+            fillHiddenCaps(image);
+            ResourceLocation location = LaoWuMod.id("dynamic/cat/fighter/" + sha256(key));
+            Minecraft.getInstance().getTextureManager().register(location, new DynamicTexture(image));
+            image = null; // Ownership transferred to the texture manager.
+            COMPOSITES.put(key, location);
+            evictOldest();
+            return location;
+        } catch (Exception exception) {
+            LOGGER.error("Could not compose boxing cat texture {}", key, exception);
+            return fallback;
+        } finally {
+            if (image != null) image.close();
+        }
+    }
+
+    private static void fillHiddenCaps(NativeImage image) {
+        int width = image.getWidth(), height = image.getHeight();
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
+            pixels[y * width + x] = image.getPixelRGBA(x, y);
+        // Use original neighbours only, so newly filled pixels cannot smear a colour across the atlas.
+        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++) {
+            if ((pixels[y * width + x] >>> 24) != 0) continue;
+            int nearest = 0, distance = Integer.MAX_VALUE;
+            for (int index = 0; index < pixels.length; index++) {
+                if ((pixels[index] >>> 24) == 0) continue;
+                int dx = index % width - x, dy = index / width - y;
+                int candidate = dx * dx + dy * dy;
+                if (candidate < distance) { distance = candidate; nearest = pixels[index]; }
+            }
+            if (distance != Integer.MAX_VALUE) image.setPixelRGBA(x, y, nearest | 0xFF000000);
+        }
+    }
+
     private static synchronized ResourceLocation resolve(CatGenome genome,
                                                          ResourceLocation fallback,
                                                          boolean rainbow) {

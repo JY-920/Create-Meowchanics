@@ -62,6 +62,7 @@ import net.minecraft.sounds.SoundSource;
 import com.simibubi.create.AllDamageTypes;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -495,6 +496,15 @@ public final class CommonEvents {
             cn.laowu.mod.compat.create.CreateCommonEvents.explodeHighFuelCannonPancake(event);
     }
 
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void onPancakeToolAttack(AttackEntityEvent event) {
+        if (!(event.getTarget() instanceof Cat cat)
+                || !isPancakeTool(event.getEntity().getMainHandItem())) return;
+        // Cancel before damage, knockback or trait damage effects can run.
+        event.setCanceled(true);
+        if (!cat.level().isClientSide) CatPancakeBehavior.flatten(cat);
+    }
+
     @SubscribeEvent
     public static void onCatAttacked(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof Cat cat) || cat.level().isClientSide) return;
@@ -508,13 +518,19 @@ public final class CommonEvents {
 
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
 
-        var held = attacker.getMainHandItem();
-        var itemKey = ForgeRegistries.ITEMS.getKey(held.getItem());
-        if (itemKey == null || !itemKey.getNamespace().equals("create")
-                || !itemKey.getPath().equals("cardboard_sword")) return;
+        if (attacker.getMainHandItem().getItem() instanceof ShovelItem
+                && event.getSource().getDirectEntity() != attacker) return;
+        if (!isPancakeTool(attacker.getMainHandItem())) return;
 
         event.setCanceled(true);
         CatPancakeBehavior.flatten(cat);
+    }
+
+    private static boolean isPancakeTool(ItemStack stack) {
+        if (stack.getItem() instanceof ShovelItem) return true;
+        // Registry IDs preserve cardboard-sword compatibility without loading Create classes.
+        var key = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return key.getNamespace().equals("create") && key.getPath().equals("cardboard_sword");
     }
 
     @SubscribeEvent
@@ -548,6 +564,7 @@ public final class CommonEvents {
             CatPilotFlight.recover(cat);
             CatDivingMount.recover(cat);
             CatMusicRecords.tick(cat);
+            if (cn.laowu.mod.entity.BoguShelfSeat.tickCat(cat)) return;
             // Keep public accessory/trait hooks and passive maintenance above live while airborne.
             if(cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && cn.laowu.mod.create.CatDeploymentFlight.tick(cat))return;
             if (CatGiantMount.carried(cat)) {
@@ -777,6 +794,18 @@ public final class CommonEvents {
             return;
         }
         if (!(event.getTarget() instanceof Cat cat)) return;
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat) {
+            if (!cat.level().isClientSide && !seat.isSummoningMaodie()) {
+                seat.hissBriefly();
+                cn.laowu.mod.encounter.MaodieEncounter.onStroke(seat, event.getEntity(), event.getHand());
+            }
+            // Item interactions retain their normal route: feeding, outfits, scanner, etc.
+            if (event.getItemStack().isEmpty()) {
+                event.setCancellationResult(InteractionResult.sidedSuccess(cat.level().isClientSide));
+                event.setCanceled(true);
+                return;
+            }
+        }
         InteractionResult pilotRide = CatGiantMount.interact(cat, event.getEntity(), event.getHand());
         if (pilotRide == InteractionResult.PASS && !CatGiantMount.active(cat)) pilotRide = CatPilotFlight.interact(cat, event.getEntity(), event.getHand());
         if (pilotRide == InteractionResult.PASS && !CatGiantMount.active(cat)) pilotRide = CatDivingMount.interact(cat, event.getEntity(), event.getHand());

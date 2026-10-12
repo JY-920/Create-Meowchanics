@@ -77,7 +77,7 @@ public final class GiantCatBossRenderer extends EntityRenderer<GiantCatBoss> {
                         root.x(),root.y(),root.z(),root.xRot(),root.yRot(),root.zRot()+death*Mth.HALF_PI,
                         root.scaleX(),root.scaleY(),root.scaleZ()));
             }
-            float scale = boss.isSummoning() ? 1.0F : GiantCatBoss.MODEL_SCALE;
+            float scale = boss.isSummoning() ? (boss.isMaodie() ? GiantCatBossAnimation.maodieGrowthScale(boss.getPhaseTicks(partialTick)) : 1.0F) : GiantCatBoss.MODEL_SCALE;
             shadowRadius = scale * .3F;
             boolean sideRoll = boss.getPhase() == GiantCatBoss.ROLL_WINDUP
                     || boss.getPhase() == GiantCatBoss.ROLL || boss.getPhase() == GiantCatBoss.ROLL_RECOVERY;
@@ -105,7 +105,7 @@ public final class GiantCatBossRenderer extends EntityRenderer<GiantCatBoss> {
             pose.popPose();
         }
         super.render(boss, yaw, partialTick, pose, buffers, light);
-        if (boss.isSummoning()) renderSummonItem(boss, partialTick, pose, buffers, light);
+        if (boss.isSummoning() && !boss.isMaodie()) renderSummonItem(boss, partialTick, pose, buffers, light);
     }
 
     private void renderSummonItem(GiantCatBoss boss, float partialTick, PoseStack pose,

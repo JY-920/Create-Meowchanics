@@ -24,6 +24,19 @@ public final class CatMachinesClientProbe {
     public static final class Ticks {
         @SubscribeEvent public static void tick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {
             var mc=Minecraft.getInstance();
+            if(Boolean.getBoolean("laowu.creature_filter_probe")) {
+                if(ready&&!started&&mc.getOverlay()==null) {
+                    probeTicks++;
+                    if(probeTicks==200&&mc.level==null&&mc.getSingleplayerServer()==null&&!opened){opened=true;mc.createWorldOpenFlows().openWorld("Sixway",mc::stop);}
+                    if(probeTicks>1800){System.err.println("FAIL: CREATURE FILTER WORLD load timeout");mc.stop();return;}
+                }
+                if(!ready||started||mc.getOverlay()!=null||mc.level==null||mc.player==null||mc.screen!=null)return;
+                started=true;
+                try { CreatureFilterClientProbe.verify(mc); }
+                catch(Throwable failure){failure.printStackTrace();System.err.println("FAIL: CREATURE FILTER CLIENT");}
+                finally{mc.stop();}
+                return;
+            }
             if(Boolean.getBoolean("laowu.creature_transmitter_probe")) {
                 if(ready&&!started&&mc.getOverlay()==null){
                     probeTicks++;

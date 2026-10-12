@@ -61,7 +61,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.sounds.SoundSource;
-import com.simibubi.create.AllItems;
 import com.simibubi.create.AllDamageTypes;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
@@ -485,7 +484,9 @@ public final class CommonEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onCardboardSwordAttack(AttackEntityEvent event) {
         if (!(event.getTarget() instanceof Cat cat)
-                || !isCardboardSword(event.getEntity().getMainHandItem())) return;
+                || !isPancakeTool(event.getEntity().getMainHandItem())) return;
+        // Shovels respect protection/event cancellation; retain the legacy cardboard hook.
+        if (event.isCanceled() && event.getEntity().getMainHandItem().getItem() instanceof ShovelItem) return;
 
         // The cardboard sword can deal zero damage. NeoForge 1.21 may reject
         // that hit before LivingIncomingDamageEvent is posted, while the
@@ -524,14 +525,19 @@ public final class CommonEvents {
         }
 
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
-        if (!isCardboardSword(attacker.getMainHandItem())) return;
+        if (attacker.getMainHandItem().getItem() instanceof ShovelItem
+                && event.getSource().getDirectEntity() != attacker) return;
+        if (!isPancakeTool(attacker.getMainHandItem())) return;
 
         event.setCanceled(true);
         CatPancakeBehavior.flatten(cat);
     }
 
-    private static boolean isCardboardSword(ItemStack stack) {
-        return AllItems.CARDBOARD_SWORD.isIn(stack);
+    private static boolean isPancakeTool(ItemStack stack) {
+        if (stack.getItem() instanceof ShovelItem) return true;
+        // Registry IDs preserve cardboard-sword compatibility without loading Create classes.
+        var key = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return key.getNamespace().equals("create") && key.getPath().equals("cardboard_sword");
     }
 
     @SubscribeEvent
@@ -565,6 +571,7 @@ public final class CommonEvents {
             CatPilotFlight.recover(cat);
             CatDivingMount.recover(cat);
             CatMusicRecords.tick(cat);
+            if (cn.laowu.mod.entity.BoguShelfSeat.tickCat(cat)) return;
             // Keep public accessory/trait hooks and passive maintenance above live while airborne.
             if(cn.laowu.mod.compat.create.CreateIntegration.isLoaded() && cn.laowu.mod.create.CatDeploymentFlight.tick(cat))return;
             if (CatGiantMount.carried(cat)) {
@@ -784,6 +791,18 @@ public final class CommonEvents {
             return;
         }
         if (!(event.getTarget() instanceof Cat cat)) return;
+        if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat seat) {
+            if (!cat.level().isClientSide && !seat.isSummoningMaodie()) {
+                seat.hissBriefly();
+                cn.laowu.mod.encounter.MaodieEncounter.onStroke(seat, event.getEntity(), event.getHand());
+            }
+            // Item interactions retain their normal route: feeding, outfits, scanner, etc.
+            if (event.getItemStack().isEmpty()) {
+                event.setCancellationResult(InteractionResult.sidedSuccess(cat.level().isClientSide));
+                event.setCanceled(true);
+                return;
+            }
+        }
         InteractionResult pilotRide = CatGiantMount.interact(cat, event.getEntity(), event.getHand());
         if (pilotRide == InteractionResult.PASS && !CatGiantMount.active(cat)) pilotRide = CatPilotFlight.interact(cat, event.getEntity(), event.getHand());
         if (pilotRide == InteractionResult.PASS && !CatGiantMount.active(cat)) pilotRide = CatDivingMount.interact(cat, event.getEntity(), event.getHand());

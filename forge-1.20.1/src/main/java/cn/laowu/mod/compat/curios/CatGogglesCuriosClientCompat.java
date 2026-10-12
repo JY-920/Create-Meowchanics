@@ -1,19 +1,22 @@
 package cn.laowu.mod.compat.curios;
 
 import cn.laowu.mod.LaoWuMod;
-import com.simibubi.create.compat.curios.GogglesCurioRenderer;
+import cn.laowu.mod.compat.create.CreateIntegration;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
-/** Client-only renderer bridge using Create's own HEAD item render path. */
+/** Optional Curios renderer, with no mandatory Create model layer. */
 @OnlyIn(Dist.CLIENT)
 public final class CatGogglesCuriosClientCompat {
     public static void registerRenderer() {
         CuriosRendererRegistry.register(LaoWuMod.CAT_ENGINEER_GOGGLES.get(),
                 () -> new CatGogglesCurioRenderer(Minecraft.getInstance()
-                        .getEntityModels().bakeLayer(GogglesCurioRenderer.LAYER)));
+                        .getEntityModels().bakeLayer(CreateIntegration.isLoaded()
+                                ? cn.laowu.mod.compat.create.CreateClientEvents.gogglesCurioLayer()
+                                : ModelLayers.PLAYER)));
     }
 
     private CatGogglesCuriosClientCompat() {}

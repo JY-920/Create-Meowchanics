@@ -25,6 +25,14 @@ public final class CatMachinesClientProbe {
         @SubscribeEvent public static void tick(net.minecraftforge.event.TickEvent.ClientTickEvent event) {
             if (event.phase!=net.minecraftforge.event.TickEvent.Phase.END) return;
             var mc=Minecraft.getInstance();
+            if(Boolean.getBoolean("laowu.creature_filter_probe")) {
+                if(!ready||started||mc.getOverlay()!=null||mc.level==null||mc.player==null||mc.screen!=null)return;
+                started=true;
+                try { CreatureFilterClientProbe.verify(mc); }
+                catch(Throwable failure){failure.printStackTrace();System.err.println("FAIL: CREATURE FILTER CLIENT");}
+                finally{mc.stop();}
+                return;
+            }
             if(Boolean.getBoolean("laowu.creature_transmitter_probe")) {
                 if(!ready||mc.getOverlay()!=null||mc.level==null||mc.player==null)return;
                 if(!started&&mc.screen!=null)return;

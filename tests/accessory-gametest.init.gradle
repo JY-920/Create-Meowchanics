@@ -23,9 +23,23 @@ allprojects {
         def testSet = p.sourceSets.create('accessoryGameTest') {
             java.srcDirs(p.file("../tests/gametest/" + (neo ? "neo" : "forge")))
             if (traitOnly) java.include('**/CatTraitScriptProbe.java')
+            if (p.hasProperty('maodieProbeOnly')) java.include('**/MaodieStateProbe.java','**/MaodieEncounterProbe.java','**/MaodieFighterProbe.java','**/BoguShelfHissProbe.java','**/Boxing*Probe.java')
+            if (p.hasProperty('boxingProbeOnly')) java.include('**/Boxing*Probe.java')
+            if (p.hasProperty('boxingGlovesProbeOnly')) java.include('**/BoxingGlovesProbe.java')
+            if (p.hasProperty('maodieStateOnly')) java.include('**/MaodieStateProbe.java')
+            if (p.hasProperty('maodieEncounterOnly')) java.include('**/MaodieEncounterProbe.java')
+            if (p.hasProperty('maodieFighterOnly')) java.include('**/MaodieFighterProbe.java')
+            if (p.hasProperty('maodieCombatOnly')) java.include('**/MaodieCombatProbe.java')
+            if (p.hasProperty('maodieLegacyCombatOnly')) java.include('**/GiantCatBossCombatProbe.java')
+            if (p.hasProperty('boguShelfProbeOnly')) java.include('**/BoguShelfProbe.java','**/BoguShelfAutoProbe.java')
+            if (p.hasProperty('boguShelfAutoOnly')) java.include('**/BoguShelfAutoProbe.java')
             if (loadingOnly) java.include('**/CatLoadingProbe.java')
             if (p.hasProperty('createBoundaryProbeOnly')) java.include('**/CreateBoundaryProbe.java')
             if (p.hasProperty('standaloneCatProbeOnly')) java.include('**/StandaloneCatProbe.java')
+            if (p.hasProperty('standaloneExtrasProbeOnly')) java.include('**/StandaloneExtrasProbe.java')
+            if (p.hasProperty('standaloneRecipesProbeOnly')) java.include('**/StandaloneRecipesProbe.java','**/StandalonePancakeProbe.java')
+            if (p.hasProperty('catCareProbeOnly')) java.include('**/CatCareProbe.java','**/WishAdoptionProbe.java','**/AdoptionInputDisplayProbe.java')
+            if (p.hasProperty('createCatCareProbeOnly')) java.include('**/CreateCatCareProbe.java')
             if (smokeOnly) java.include('**/AgentSmokeAggroProbe.java')
             if (deathPancakeOnly) java.include('**/TamedDeathPancakeProbe.java')
             if (machinesOnly) java.include('**/CatMachinesProbe.java')
@@ -70,7 +84,7 @@ allprojects {
             outputs.file(new File(structures, 'data/laowu/' + (neo ? 'structure' : 'structures') + '/artillery_probe.nbt'))
             doLast {
                 // Keep every moving test entity inside its ticking, isolated fixture.
-                [accessory_probe: [5, 5, 5], artillery_probe: [72, 12, 14]].each { name, size ->
+                [accessory_probe: [5, 5, 5], artillery_probe: [72, 12, 14], maodie_probe: [32, 12, 32]].each { name, size ->
                     def path = new File(structures, 'data/laowu/' + (neo ? 'structure' : 'structures') + '/' + name + '.nbt')
                     path.parentFile.mkdirs()
                     def out = new DataOutputStream(new java.util.zip.GZIPOutputStream(new FileOutputStream(path)))

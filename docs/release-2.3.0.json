@@ -1,0 +1,44 @@
+{
+  "Version": "2.3.0",
+  "UpdatedAt": "2026-10-11 10:24:34 Asia/Shanghai",
+  "Revision": "forge-startup-refmap-fix",
+  "PublishedExternally": false,
+  "Path": "releases/create-meowchanics-2.3.0-dual-loader.zip",
+  "Sha256": "17557181A47E1047FB66EC4E79943E3B76F2CB569AA6BFCF484D6C6D0173A91A",
+  "Bytes": 15873466,
+  "Entries": [
+    "CHANGELOG.zh-CN.md",
+    "checksums.json",
+    "forge-1.20.1/create-meowchanics-2.3.0-forge-1.20.1.jar",
+    "neoforge-1.21.1/create-meowchanics-2.3.0-neoforge-1.21.1.jar",
+    "README.md"
+  ],
+  "EmbeddedJarHashesVerified": true,
+  "Tests": {
+    "NormalBuildAndReleaseIsolation": "Forge and NeoForge passed; API v3 and trait API v1 verified",
+    "CreatureFilterClient": "Both loaders passed exact Chinese name/full ID, positive/inverted add, saved partial match, wheel/keyboard and existing UI regressions",
+    "BoxingEncounterGameTests": "20/20 on both loaders, including Peaceful start/switch/final hiss/spawn egg",
+    "BoxingTextureClient": "Both loaders passed 11 native variants, blended genome and opaque articulated limb UVs without Create",
+    "RuntimeModelAssets": "Approved v11 model, atlas and eight animation clips unchanged",
+    "CreatureFilterAssets": "Original filter icon unchanged",
+    "ForgeStartupReferenceMapper": "Old production JAR failed both newly added selectors; repaired production JAR passes actual Mixin ReferenceMapper in default and searge contexts",
+    "ForgeProductionBoot": "Actual SRG production clients reached title screen and shut down with installed Create and without Create; old JAR reproduced the user's startup crash"
+  },
+  "BaseReleaseTests": {
+    "NormalBuildAndReleaseIsolation": "Forge and NeoForge passed",
+    "BoxingGlovesGameTests": "3/3 on both loaders",
+    "BoxingGameTests": "11/11 on both loaders",
+    "KubeJSCompatibilityGameTests": "37/37 on both loaders",
+    "MachineRecipeLayouts": "10/10 across both loaders",
+    "AccessoryWiring": "737 checks passed"
+  },
+  "Changelog": "docs/changelog-2.3.0.md",
+  "ChangelogRevision": {
+    "Summary": "Added functional introductions for the cat editor, both deployment platforms, automatic laser marker and creature transmitter; includes subsequent Forge startup fix notes",
+    "Verification": "Source, release-directory and ZIP changelogs identical; both embedded JAR hashes match checksums.json",
+    "PreviousZipBackup": "releases/backups/create-meowchanics-2.3.0-before-machine-changelog-20261011.zip"
+  },
+  "DeploymentRecord": "docs/deployments/2026-10-11-release-2.3.0-forge-startup-fix.json",
+  "PreviousDeploymentRecord": "docs/deployments/2026-10-11-release-2.3.0-filter-boxing-fixes.json",
+  "PreviousReleaseBackup": "releases/backups/create-meowchanics-2.3.0-before-forge-startup-fix-20261011.zip"
+}

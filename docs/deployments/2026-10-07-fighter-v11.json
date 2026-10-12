@@ -1,0 +1,45 @@
+{
+  "Time": "2026-10-07 18:20:13",
+  "Version": "2.2.2-dev.fighter-v11.1",
+  "Stamp": "20261007-182012-2.2.2-dev.fighter-v11.1-fighter-v11",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.2.2-dev.fighter-v11.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-dev.fighter-v11.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.fighter-v11.1",
+        "Sha256": "5A9EFFED068375AC5ACA186DEBCF2359E2932007F362A5FEB0704671333F694D"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261007-182012-2.2.2-dev.fighter-v11.1-fighter-v11\\create-meowchanics-2.2.2-dev.optional-create.11-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.11-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.optional-create.11",
+        "Sha256": "28E4950651EB0191DABE5FF2A8719394E4483773AA585AFAC994B6AF6CEBCF1B"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.2.2-dev.fighter-v11.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-dev.fighter-v11.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.fighter-v11.1",
+        "Sha256": "F94D9B1F5D11D86987549B422DA334719C47D20C6DC1270EA52FE9213755753D"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261007-182012-2.2.2-dev.fighter-v11.1-fighter-v11\\create-meowchanics-2.2.2-dev.optional-create.11-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.2.2-dev.optional-create.11-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.2.2-dev.optional-create.11",
+        "Sha256": "FE6F3FF10E43C83D46CB55F09181BC29142DEC1FE059A16454EE9F2E65056BFE"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ]
+}

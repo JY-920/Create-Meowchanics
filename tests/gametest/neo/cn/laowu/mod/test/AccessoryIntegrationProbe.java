@@ -226,8 +226,8 @@ public final class AccessoryIntegrationProbe {
             helper.assertTrue(LaoWuMod.CAT_PROGRESSION_TAB.get().getDisplayItems().stream().anyMatch(stack -> stack.is(complete)),
                     "Keep completed suit visible: "+career);
         }
-        helper.assertTrue(tab.getDisplayItems().size() == 37 && tab.getSearchTabDisplayItems().size() == 37,
-                "Dedicated tab lists 37 distinct accessories in display and search");
+        helper.assertTrue(tab.getDisplayItems().size() == 38 && tab.getSearchTabDisplayItems().size() == 38,
+                "Dedicated tab lists 38 distinct accessories in display and search");
         helper.assertTrue(tab.getIconItem().is(BuiltInRegistries.ITEM.get(id("laowu:cat_taunt_bell"))),
                 "Creative icon is the redrawn bell");
         var marker = net.minecraft.network.chat.Component.translatable("cat_accessory.laowu.label");
@@ -281,7 +281,7 @@ public final class AccessoryIntegrationProbe {
         } finally {
             CatAccessoryRegistry.receive(original);
         }
-        System.out.println("PASS: accessory presentation: 37 unique creative entries, separate progression tab, ordered normal/custom/disabled tooltips");
+        System.out.println("PASS: accessory presentation: 38 unique creative entries, separate progression tab, ordered normal/custom/disabled tooltips");
         helper.succeed();
     }
 

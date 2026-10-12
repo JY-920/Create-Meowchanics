@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>耄耋格斗手 · Blockbench 动作预览</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101719;color:#f2efe5;font:16px/1.6 system-ui,"Microsoft YaHei",sans-serif}main{max-width:1200px;margin:auto;padding:28px}h1{font-size:28px;margin:0}p{color:#aebfc2;margin:8px 0 24px}.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}nav{display:flex;flex-direction:column;gap:8px}button,select{font:inherit;color:inherit;background:#243034;border:1px solid #46575b;border-radius:8px;padding:11px;cursor:pointer}button[aria-pressed=true]{background:#775523;border-color:#e1ad50}button:hover{border-color:#e1ad50}.stage{background:linear-gradient(#e5e6dd,#c5cabf);border-radius:12px;overflow:hidden}.stage img{width:100%;height:auto;display:block;image-rendering:pixelated}.player{display:flex;gap:12px;align-items:center;padding:14px 0;flex-wrap:wrap}input{flex:1;min-width:120px;accent-color:#e1ad50}.info{color:#bccbcf;font-size:14px}footer{margin-top:22px;color:#aebfc2}a{color:#e1ad50}.views{display:flex;gap:8px;margin-top:12px}.views button{padding:6px 12px}@media(max-width:700px){main{padding:16px}.layout{display:block}nav{flex-direction:row;flex-wrap:wrap;margin:16px 0}nav button{padding:6px 10px;font-size:14px}}
+[hidden]{display:none!important}
+</style>
+<main><h1>耄耋格斗手 · 动作预览 v2</h1><p>Blockbench 原生模型逐帧渲染 · 长身体双段弯腰 · 本页只预览动画，尚未接入游戏</p>
+<div class="layout"><nav id="clips" aria-label="选择动作"></nav><section>
+<div class="stage"><img id="frame" alt="橘猫格斗动画"></div>
+<div class="player"><button id="play">暂停</button><select id="speed" aria-label="播放速度"><option value=".25">0.25× 慢放</option><option value=".5">0.5× 慢放</option><option value="1">1× 实际速度</option></select><input id="seek" type="range" min="0" max="1000" value="0" aria-label="逐帧时间轴"></div>
+<div class="info" id="status"></div><div class="views" id="views"></div>
+</section></div><footer>打开 <a href="maodie_fighter_v2.bbmodel">可编辑 Blockbench 模型（含全部动作）</a>。七种战斗动作分别为普通挥拳、上勾拳、连续出拳、格挡、后撤、回旋踢、腾空下砸。<br>游戏内震屏、持续哈气、正前方召唤、野猫限定及永久 Boss 等规则将在动作预览定稿后接入。</footer></main>
+<script src="preview-data.js"></script>
+<script>
+const clips=window.MAODIE_PREVIEW,nav=document.querySelector('#clips'),frame=document.querySelector('#frame'),seek=document.querySelector('#seek'),speed=document.querySelector('#speed'),play=document.querySelector('#play'),status=document.querySelector('#status'),views=document.querySelector('#views');
+let selected=clips.find(c=>c.name==='jab'),time=0,playing=true,last=0,current='',view='hero';
+for(const clip of clips){const b=document.createElement('button');b.textContent=clip.label;b.dataset.clip=clip.name;b.addEventListener('click',()=>{selected=clip;time=0;view='hero';update()});nav.append(b);for(const src of clip.frames){const im=new Image();im.src=src}}
+for(const v of [['hero','三分之四'],['front','正面'],['side','侧面'],['rear','背面']]){const b=document.createElement('button');b.textContent=v[1];b.addEventListener('click',()=>{view=v[0];update()});views.append(b)}
+function update(){let index=Math.min(selected.frames.length-1,Math.round(Math.min(time,selected.length)/selected.length*(selected.frames.length-1)));let src=selected.frames[index];if(selected.name==='guard')src='previews/guard_'+view+'.png';if(src!==current){frame.src=src;current=src}seek.value=Math.min(1000,time/selected.length*1000);status.textContent=selected.label+' · '+selected.length.toFixed(2)+' 秒 / 1× · 第 '+(index+1)+' / '+selected.frames.length+' 帧';play.textContent=playing?'暂停':'播放';for(const b of nav.children)b.setAttribute('aria-pressed',b.dataset.clip===selected.name);views.hidden=selected.name!=='guard'}
+play.addEventListener('click',()=>{playing=!playing;update()});seek.addEventListener('input',()=>{playing=false;time=seek.value/1000*selected.length;update()});
+function tick(now){if(last&&playing){time+=(now-last)/1000*Number(speed.value);if(time>selected.length+.25*Number(speed.value))time=0;update()}last=now;requestAnimationFrame(tick)}update();requestAnimationFrame(tick);
+</script></html>

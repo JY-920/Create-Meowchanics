@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$JarPath,
-    [ValidatePattern('^[a-z0-9-]+$')][string]$RunId='green'
+    [ValidatePattern('^[a-z0-9-]+$')][string]$RunId='green',
+    [switch]$WithoutCreate
 )
 $ErrorActionPreference='Stop'
 $projectRoot=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -16,7 +17,8 @@ $product=[IO.Path]::GetFullPath($JarPath)
 if(!(Test-Path -LiteralPath $probe)||!(Test-Path -LiteralPath $product)){throw 'Missing product or separate probe jar'}
 $mods=New-Item -ItemType Directory -Path (Join-Path $run 'mods')
 Get-ChildItem -LiteralPath (Join-Path $instance 'mods') -File -Filter '*.jar' |
-    Where-Object Name -NotMatch 'meowchanics' | Copy-Item -Destination $mods.FullName
+    Where-Object { $_.Name -notmatch 'meowchanics' -and (!$WithoutCreate -or $_.Name -notmatch 'create-|createdieselgenerators|flywheel-|Ponder-') } |
+    Copy-Item -Destination $mods.FullName
 Copy-Item -LiteralPath $product -Destination $mods.FullName
 Copy-Item -LiteralPath $probe -Destination $mods.FullName
 # Do not copy saves, accounts, configs, options, or user KubeJS scripts.
@@ -86,4 +88,4 @@ if($exitCode -ne 0 -or $output -notmatch 'PASS: FORGE PRODUCTION JAR BOOT') {
     $output -split '\r?\n' | Select-String -Pattern 'DivingCapeLayerMixin|InvalidInjectionException|Caused by:|ERROR|FATAL|Exception' | Select-Object -Last 14 | ForEach-Object {$_.Line}
     throw ('Production boot failed, exit '+$exitCode+'; full logs in '+$run+'/logs/latest.log')
 }
-Write-Output 'PASS: FORGE PRODUCTION JAR BOOT - actual SRG client, full installed mod set, title screen, clean shutdown'
+Write-Output ('PASS: FORGE PRODUCTION JAR BOOT - actual SRG client, Create '+$(if($WithoutCreate){'absent'}else{'installed'})+', title screen, clean shutdown')

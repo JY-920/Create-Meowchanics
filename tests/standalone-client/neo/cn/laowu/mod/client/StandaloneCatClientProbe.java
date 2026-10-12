@@ -11,17 +11,34 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @EventBusSubscriber(modid="laowu", value=Dist.CLIENT)
 public final class StandaloneCatClientProbe {
     private static int ticks, frames;
+    private static boolean failed;
     private static net.minecraft.world.entity.animal.Cat previewCat;
     @SubscribeEvent public static void tick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {
         
         var mc=Minecraft.getInstance();
+        if(failed)return;
         if (ticks==200 && mc.level==null && mc.getSingleplayerServer()==null) mc.createWorldOpenFlows().openWorld("Standalone",mc::stop);
         if (++ticks > 2400) { System.err.println("FAIL: STANDALONE CLIENT TIMEOUT"); mc.stop(); return; }
-        if(mc.getOverlay()!=null || mc.level==null || mc.player==null) return;
+        if(mc.getOverlay()!=null || mc.level==null || mc.player==null || !mc.gameRenderer.getMainCamera().isInitialized()) return;
         try {
             if(frames++==0) {
                 org.lwjgl.glfw.GLFW.glfwHideWindow(mc.getWindow().getWindow());
-                if(CreateIntegration.isLoaded()) throw new AssertionError("Create unexpectedly present");
+                mc.options.guiScale().set(2);
+                org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(),1280,900);
+                if(CreateIntegration.isLoaded()!=Boolean.getBoolean("laowu.create_expected")) throw new AssertionError("Unexpected Create environment");
+                var server=mc.getSingleplayerServer();
+                var playerId=mc.player.getUUID();
+                server.execute(()->{
+                    var player=server.getPlayerList().getPlayer(playerId);
+                    if(player!=null) {
+                        player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+                        player.setHealth(player.getMaxHealth());
+                        player.setAirSupply(300);
+                    }
+                });
+                OptionalCreateClientRegression.renderCoreItems(mc);
+                OptionalCreateClientRegression.verifyStandaloneExtras(mc);
+                if(!Boolean.getBoolean("laowu.render_only"))OptionalCreateClientRegression.verifyTooltipsAndIcon(mc);
                 var blockPos=mc.player.blockPosition().offset(2,0,0);
                 mc.level.setBlock(blockPos,net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState(),3);
                 var oldHit=mc.hitResult;
@@ -41,7 +58,7 @@ public final class StandaloneCatClientProbe {
                 var playerModel=new net.minecraft.client.model.PlayerModel<net.minecraft.world.entity.LivingEntity>(
                         mc.getEntityModels().bakeLayer(net.minecraft.client.model.geom.ModelLayers.PLAYER),false);
                 playerModel.setupAnim(mc.player,0,0,0,0,0);
-                if(playerModel.leftArm.xRot>-2.5F||playerModel.rightArm.xRot>-2.5F)
+                if(!CreateIntegration.isLoaded()&&(playerModel.leftArm.xRot>-2.5F||playerModel.rightArm.xRot>-2.5F))
                     throw new AssertionError("Standalone pilot rider pose missing");
                 mc.player.stopRiding();
                 var cannon=new cn.laowu.mod.entity.EngineeringCannon(LaoWuMod.ENGINEERING_CANNON.get(),mc.level);
@@ -60,11 +77,44 @@ public final class StandaloneCatClientProbe {
                 var outfit=outfits[(frames/3-1)%outfits.length];
                 previewCat.getPersistentData().putString(CatClothesData.OUTFIT_TAG,outfit.id());
             } else if (frames>=80) {
-                if(!(mc.screen instanceof CatProfileScreen))throw new AssertionError("Profile screen not retained");
-                net.minecraft.client.Screenshot.grab(mc.gameDirectory,mc.getMainRenderTarget(),message->{});
-                System.out.println("PASS: STANDALONE CAT CLIENT + PROFILE + ITEM MODEL");
-                mc.stop();
+                if (frames==81) {
+                    var pancake=cn.laowu.mod.item.CatPancakeItem.defaultDisplayStack();
+                    var texture=CatGenomeTextureManager.resolve(pancake,cn.laowu.mod.item.CatPancakeItem.texture(pancake));
+                    if(mc.getResourceManager().getResource(cn.laowu.mod.item.CatPancakeItem.texture(pancake)).isEmpty())
+                        throw new AssertionError("Default pancake texture missing: "+texture);
+                    System.out.println("PANCAKE TEXTURE: "+texture);
+                    mc.player.getInventory().setItem(0,pancake);
+                    mc.player.getInventory().setItem(1,new ItemStack(LaoWuMod.CAT_CAN.get()));
+                    mc.player.getInventory().setItem(2,new ItemStack(LaoWuMod.CAT_STORAGE_BOX.get()));
+                    for (var block:java.util.List.of(LaoWuMod.BASIC_BREEDING_BOX.get(),LaoWuMod.INTERMEDIATE_BREEDING_BOX.get(),LaoWuMod.ADVANCED_BREEDING_BOX.get(),LaoWuMod.ADOPTION_BOX.get(),LaoWuMod.WISH_ADOPTION_BOX.get())) {
+                        var pos=mc.player.blockPosition().offset(2,0,0);
+                        mc.level.setBlock(pos,block.defaultBlockState(),3);
+                        var entity=mc.level.getBlockEntity(pos);
+                        var renderer=mc.getBlockEntityRenderDispatcher().getRenderer(entity);
+                        if(renderer==null)throw new AssertionError("Core care renderer missing: "+block);
+                        renderer.render(entity,0,new com.mojang.blaze3d.vertex.PoseStack(),mc.renderBuffers().bufferSource(),net.minecraft.client.renderer.LightTexture.FULL_BRIGHT,net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY);
+                        mc.renderBuffers().bufferSource().endBatch();
+                    }
+                    mc.setScreen(net.minecraft.client.gui.screens.MenuScreens.getScreenFactory(LaoWuMod.ADOPTION_BOX_MENU.get()).orElseThrow().create(new AdoptionBoxMenu(92,mc.player.getInventory(),(cn.laowu.mod.create.AdoptionBoxBlockEntity)null),mc.player.getInventory(),Component.literal("领养箱")));
+                    if(!(mc.screen instanceof AdoptionBoxScreen))throw new AssertionError("Core adoption screen registration missing");
+                } else if(frames==100) {
+                    if(!(mc.screen instanceof AdoptionBoxScreen))throw new AssertionError("Adoption GUI not retained for actual rendering");
+                    net.minecraft.client.Screenshot.grab(mc.gameDirectory,mc.getMainRenderTarget(),message->{});
+                    mc.setScreen(net.minecraft.client.gui.screens.MenuScreens.getScreenFactory(LaoWuMod.WISH_ADOPTION_BOX_MENU.get()).orElseThrow().create(new WishAdoptionBoxMenu(93,mc.player.getInventory(),(cn.laowu.mod.create.WishAdoptionBoxBlockEntity)null),mc.player.getInventory(),Component.literal("心愿领养箱")));
+                    if(!(mc.screen instanceof WishAdoptionBoxScreen))throw new AssertionError("Core wish screen registration missing");
+                } else if(frames==120) {
+                    if(!(mc.screen instanceof WishAdoptionBoxScreen))throw new AssertionError("Wish GUI not retained for actual rendering");
+                    net.minecraft.client.Screenshot.grab(mc.gameDirectory,mc.getMainRenderTarget(),message->{});
+                    mc.setScreen(net.minecraft.client.gui.screens.MenuScreens.getScreenFactory(LaoWuMod.BREEDING_BOX_MENU.get()).orElseThrow().create(new BreedingBoxMenu(94,mc.player.getInventory(),(cn.laowu.mod.create.BreedingBoxData)null),mc.player.getInventory(),Component.literal("繁育箱")));
+                    if(!(mc.screen instanceof BreedingBoxScreen))throw new AssertionError("Core breeding screen registration missing");
+                } else if(frames>=140) {
+                    if (net.neoforged.fml.ModList.get().isLoaded("jei")) StandaloneRecipeJeiProbe.verify(mc);
+                    if(!(mc.screen instanceof BreedingBoxScreen))throw new AssertionError("Breeding GUI not retained for actual rendering");
+                    net.minecraft.client.Screenshot.grab(mc.gameDirectory,mc.getMainRenderTarget(),message->{});
+                    System.out.println("PASS: CAT CLIENT + ALL CARE GUI REGISTRATIONS + FIVE RENDERERS + PANCAKE TEXTURE; Create="+CreateIntegration.isLoaded());
+                    mc.stop();
+                }
             }
-        } catch(Throwable error) { error.printStackTrace();System.err.println("FAIL: STANDALONE CAT CLIENT");mc.stop(); }
+        } catch(Throwable error) { failed=true;error.printStackTrace();System.err.println("FAIL: STANDALONE CAT CLIENT");mc.stop(); }
     }
 }

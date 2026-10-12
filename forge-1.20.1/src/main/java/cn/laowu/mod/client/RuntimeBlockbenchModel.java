@@ -99,6 +99,7 @@ public final class RuntimeBlockbenchModel {
     }
 
     public static void clearCache() {
+        MaodieFighterAnimation.clearCache();
         GiantCatAnimation.clearCache();
         GiantCatVisualHeading.clearCache();
         CACHE.clear();
@@ -763,6 +764,14 @@ public final class RuntimeBlockbenchModel {
         render(poseStack, consumer, light, overlay, selection, headMotion,
                 GroupMotion.NONE, Map.of(), red, green, blue, alpha,
                 -1, 1.0F, false);
+    }
+
+    /** Authored animation with the living entity's hurt/invisibility tint. */
+    public void renderAnimatedTinted(PoseStack poseStack, VertexConsumer consumer, int light, int overlay,
+                                     Map<String, GroupTransform> transforms,
+                                     int red, int green, int blue, int alpha) {
+        render(poseStack, consumer, light, overlay, GroupSelection.ALL_GROUPS, HeadMotion.NONE,
+                GroupMotion.NONE, transforms, red, green, blue, alpha, -1, 1.0F, false);
     }
 
     /** Renders one model with only its lighting normals reversed. */

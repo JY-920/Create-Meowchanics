@@ -1,0 +1,56 @@
+[
+  {
+    "name": "guard",
+    "label": "灵动架势",
+    "length": 0.8,
+    "peak": 0
+  },
+  {
+    "name": "jab",
+    "label": "爆发直拳",
+    "length": 0.24,
+    "peak": 0.075
+  },
+  {
+    "name": "uppercut",
+    "label": "上勾拳",
+    "length": 0.34,
+    "peak": 0.14
+  },
+  {
+    "name": "combo",
+    "label": "高速连续出拳",
+    "length": 0.72,
+    "peak": 0.25
+  },
+  {
+    "name": "block",
+    "label": "急停格挡",
+    "length": 0.26,
+    "peak": 0.09
+  },
+  {
+    "name": "backstep",
+    "label": "闪身后撤",
+    "length": 0.28,
+    "peak": 0.105
+  },
+  {
+    "name": "roundhouse",
+    "label": "爆旋回旋踢",
+    "length": 0.46,
+    "peak": 0.2
+  },
+  {
+    "name": "jump_slam",
+    "label": "腾空重砸",
+    "length": 0.62,
+    "peak": 0.4
+  },
+  {
+    "name": "combat_flow",
+    "label": "连贯实战演示",
+    "length": 3.4099999999999997,
+    "peak": 0.5
+  }
+]
