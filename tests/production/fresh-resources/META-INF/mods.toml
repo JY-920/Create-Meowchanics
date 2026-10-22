@@ -1,0 +1,19 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+[[mods]]
+modId="laowu_fresh_probe"
+version="1.0"
+displayName="Isolated Fresh Animations production probe"
+[[dependencies.laowu_fresh_probe]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="CLIENT"
+[[dependencies.laowu_fresh_probe]]
+modId="laowu"
+mandatory=true
+versionRange="[0,)"
+ordering="AFTER"
+side="CLIENT"

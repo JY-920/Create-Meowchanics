@@ -12,6 +12,20 @@ allprojects {
             archiveFileName='laowu-release-boot-probe-forge.jar'
             destinationDirectory=p.layout.buildDirectory.dir('release-boot-probe')
         }
-        p.reobf { releaseBootProbeJar {} }
+        def fresh=p.sourceSets.create('freshAnimationProbe') {
+            java.srcDir(p.file('../tests/fresh-animation-client/forge'))
+            resources.srcDir(p.file('../tests/production/fresh-resources'))
+            compileClasspath+=p.sourceSets.main.output+p.sourceSets.main.compileClasspath
+        }
+        p.tasks.register('freshAnimationProbeJar',Jar) {
+            dependsOn p.tasks.named('freshAnimationProbeClasses')
+            from fresh.output
+            archiveFileName='laowu-fresh-animation-probe-forge.jar'
+            destinationDirectory=p.layout.buildDirectory.dir('release-boot-probe')
+        }
+        p.reobf {
+            releaseBootProbeJar {}
+            freshAnimationProbeJar {}
+        }
     }
 }

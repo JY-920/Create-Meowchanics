@@ -27,6 +27,7 @@ public final class MixinPackageRegression {
                             .getAsJsonObject();
                 }
                 String prefix = config.get("package").getAsString().replace('.', '/') + "/";
+                String plugin = config.has("plugin") ? config.get("plugin").getAsString().replace('.','/') : "";
                 Set<String> registered = new HashSet<>();
                 for (String section : new String[] {"mixins", "client", "server"}) {
                     if (config.has(section)) config.getAsJsonArray(section).forEach(
@@ -40,6 +41,11 @@ public final class MixinPackageRegression {
                     String name = entries.nextElement().getName();
                     if (!name.startsWith(prefix) || !name.endsWith(".class") || name.contains("$")) continue;
                     ClassInfo info = read(jar, name);
+                    if (name.equals(plugin + ".class")) {
+                        check(info.interfaces.contains("org/spongepowered/asm/mixin/extensibility/IMixinConfigPlugin"),
+                                "Configured plugin must implement the Mixin plugin contract");
+                        continue;
+                    }
                     // Mixin reserves the entire package, even for unregistered ordinary helpers.
                     check(info.mixin, "Ordinary runtime type in reserved mixin package: " + name);
                     check(registered.contains(name.substring(0, name.length() - 6)),
@@ -47,6 +53,10 @@ public final class MixinPackageRegression {
                 }
                 check(jar.getJarEntry(prefix + "CatNavigationAccessor.class") == null,
                         "Stale navigation bridge left in reserved package");
+                check(jar.getJarEntry(prefix + "CatCreativeSearchMixin.class") == null,
+                        "Stale creative-screen field shadow left in release JAR");
+                check(registered.contains(prefix + "JECharactersSearchMixin"),
+                        "Optional search-exit compatibility mixin must be registered");
                 ClassInfo bridge = read(jar, BRIDGE + ".class");
                 check(!bridge.mixin && (bridge.access & Opcodes.ACC_INTERFACE) != 0,
                         "Navigation bridge must be an ordinary public runtime interface");

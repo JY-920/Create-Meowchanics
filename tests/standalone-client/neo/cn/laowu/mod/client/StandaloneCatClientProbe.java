@@ -108,10 +108,22 @@ public final class StandaloneCatClientProbe {
                     mc.setScreen(net.minecraft.client.gui.screens.MenuScreens.getScreenFactory(LaoWuMod.BREEDING_BOX_MENU.get()).orElseThrow().create(new BreedingBoxMenu(94,mc.player.getInventory(),(cn.laowu.mod.create.BreedingBoxData)null),mc.player.getInventory(),Component.literal("繁育箱")));
                     if(!(mc.screen instanceof BreedingBoxScreen))throw new AssertionError("Core breeding screen registration missing");
                 } else if(frames>=140) {
+                    if(Boolean.getBoolean("laowu.jei_pancake_visual")&&frames>140) {
+                        if(frames>=175) {
+                            if(!mc.screen.getClass().getName().startsWith("mezz.jei."))
+                                throw new AssertionError("Actual JEI recipe screen did not open");
+                            net.minecraft.client.Screenshot.grab(mc.gameDirectory,"jei-orange-pancake.png",mc.getMainRenderTarget(),message->{});
+                            System.out.println("PASS: REAL JEI ORANGE PANCAKE SCREENSHOT");mc.stop();
+                        }
+                        return;
+                    }
                     if (net.neoforged.fml.ModList.get().isLoaded("jei")) StandaloneRecipeJeiProbe.verify(mc);
                     if(!(mc.screen instanceof BreedingBoxScreen))throw new AssertionError("Breeding GUI not retained for actual rendering");
                     net.minecraft.client.Screenshot.grab(mc.gameDirectory,mc.getMainRenderTarget(),message->{});
                     System.out.println("PASS: CAT CLIENT + ALL CARE GUI REGISTRATIONS + FIVE RENDERERS + PANCAKE TEXTURE; Create="+CreateIntegration.isLoaded());
+                    if(Boolean.getBoolean("laowu.jei_pancake_visual")) {
+                        StandaloneRecipeJeiProbe.showPancakeRecipe();return;
+                    }
                     mc.stop();
                 }
             }

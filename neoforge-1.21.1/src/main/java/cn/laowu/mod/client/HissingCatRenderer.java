@@ -14,8 +14,13 @@ import net.minecraft.world.entity.animal.Cat;
 
 public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
     private final GiantCatRenderer giant;
+    private final HissingCatModel resourceModel;
+    private final HissingCatModel nativeModel;
     public HissingCatRenderer(EntityRendererProvider.Context context) {
-        super(context, new HissingCatModel(context.bakeLayer(HissingCatModel.LAYER)), 0.4F);
+        super(context, CatResourceModelCompatibility.create(context), 0.4F);
+        resourceModel = (HissingCatModel) model;
+        nativeModel = resourceModel.usesResourcePackModel()
+                ? new HissingCatModel(context.bakeLayer(HissingCatModel.LAYER)) : resourceModel;
         giant = new GiantCatRenderer(context);
         addLayer(new HissingCatGeometryLayer(this));
         addLayer(new PancakeCatGeometryLayer(this));
@@ -30,12 +35,32 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
 
     @Override
     public ResourceLocation getTextureLocation(Cat cat) {
-        return CatGenomeTextureManager.resolve(cat);
+        return usesNativeGeometry(cat) ? CatGenomeTextureManager.resolveNativeGeometry(cat)
+                : resourceModel.usesResourcePackModel() ? CatGenomeTextureManager.resolveResourceGeometry(cat)
+                : CatGenomeTextureManager.resolve(cat);
+    }
+
+    private boolean usesNativeGeometry(Cat cat) {
+        if (!resourceModel.usesResourcePackModel()) return false;
+        if (cn.laowu.mod.CatPoseData.isHissing(cat) || cn.laowu.mod.CatPoseData.isPancake(cat)
+                || cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat
+                || cn.laowu.mod.CatClothesData.isEquipped(cat)
+                || cn.laowu.mod.CatMedicalHealing.casting(cat)
+                || cn.laowu.mod.CatMusicSupport.performing(cat) || CatMusicRecordClient.performing(cat)) return true;
+        return CatTraitData.read(cat).map(traits -> traits.has(CatTrait.NEKOMATA)
+                || traits.has(CatTrait.HIM) || traits.has(CatTrait.ISAAC)
+                || traits.has(CatTrait.PUSS_IN_BOOTS)
+                || (traits.has(CatTrait.ROUND_HEAD) && cn.laowu.mod.genetics.CatTraitEffects.isCombatActive(cat))
+                || (HissingCatModel.idlePerformanceEligible(cat,cat.walkAnimation.speed())
+                    && (traits.has(CatTrait.STREET_DANCE) && CatStreetDanceAnimation.isAvailable()
+                        || traits.has(CatTrait.PIPA_PERFORMANCE) && CatPipaAnimation.isAvailable()))).orElse(false);
     }
 
     @Override
     public void render(Cat cat,float yaw,float partialTick,PoseStack pose,
                        net.minecraft.client.renderer.MultiBufferSource buffers,int light) {
+        model = usesNativeGeometry(cat) ? nativeModel : resourceModel;
+        try {
         if (cat.getVehicle() instanceof cn.laowu.mod.entity.BoguShelfSeat) {
             shadowRadius=.256F;
             pose.pushPose();
@@ -49,6 +74,7 @@ public final class HissingCatRenderer extends MobRenderer<Cat, CatModel<Cat>> {
             shadowRadius=0.4F;
             super.render(cat,yaw,partialTick,pose,buffers,light);
         }
+        } finally { model = resourceModel; }
     }
 
     @Override

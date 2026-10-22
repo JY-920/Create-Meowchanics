@@ -1,0 +1,59 @@
+// Real optional-model client test. All fixture writes are inside the loader build directory.
+allprojects {
+    afterEvaluate { p ->
+        def neo = p.extensions.findByName('neoForge') != null
+        def id = p.findProperty('freshRunId')?.toString() ?: 'fresh-red'
+        if (!(id ==~ /[a-zA-Z0-9_-]+/)) throw new GradleException('Invalid freshRunId')
+        def runDir = p.layout.buildDirectory.dir('fresh-animation-client-' + id).get().asFile
+        def test = p.sourceSets.create('freshAnimationClient') {
+            java.srcDir(p.file('../tests/fresh-animation-client/' + (neo ? 'neo' : 'forge')))
+            compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+            runtimeClasspath += output + p.sourceSets.main.runtimeClasspath
+        }
+        def fixture = p.tasks.register('prepareFreshAnimationClient') {
+            doLast {
+                def world = new File(runDir, 'saves/Standalone')
+                if (!new File(world, 'level.dat').exists()) p.copy {
+                    from p.layout.buildDirectory.dir('accessory-gametest/no-kubejs-standalone-phase2/world')
+                    into world
+                    exclude 'session.lock'
+                }
+                def mods = p.file('D:/PCL2/PCL/.minecraft/versions/' + (neo ? '1.21.1-NeoForge模组开发' : '1.20.1-Forge模组开发') + '/mods')
+                if (neo) p.copy {
+                    from p.fileTree(mods) { include '*entity_model_features*.jar', '*entity_texture_features*.jar' }
+                    into new File(runDir, 'mods')
+                }
+                p.copy {
+                    from p.file('D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发/resourcepacks/FreshAnimations_v1.10.4.zip')
+                    into new File(runDir, 'resourcepacks')
+                }
+                runDir.mkdirs()
+                def options = new File(runDir, 'options.txt')
+                if (!options.exists()) options.text = 'onboardAccessibility:false\nmaxFps:60\nrenderDistance:3\nsimulationDistance:5\npauseOnLostFocus:false\nnarrator:0\nresourcePacks:["vanilla","file/FreshAnimations_v1.10.4.zip"]\n'
+            }
+        }
+        if (!neo) {
+            p.repositories.flatDir { dirs p.file('../tests/build/fresh-animation-deps/forge') }
+            p.dependencies.add('runtimeOnly',p.fg.deobf('local:entity_model_features:3.3.11-1.20.1-forge')) { transitive=false }
+            p.dependencies.add('runtimeOnly',p.fg.deobf('local:entity_texture_features:7.2.5-1.20.1-forge')) { transitive=false }
+            p.dependencies.add('runtimeOnly','io.github.llamalad7:mixinextras-forge:0.4.1') { transitive=false }
+        }
+        if (neo) {
+            p.neoForge.mods.named('laowu') { sourceSet(test) }
+            p.neoForge.runs.named('client') {
+                gameDirectory = runDir
+                programArgument '--quickPlaySingleplayer'
+                programArgument 'Standalone'
+            }
+        } else {
+            p.minecraft.runs.named('client') {
+                workingDirectory runDir
+                args '--quickPlaySingleplayer', 'Standalone', '--mixin', 'laowu.mixins.json'
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', p.file('build/createSrgToMcp/output.srg').absolutePath
+                mods.named('laowu') { source(test) }
+            }
+        }
+        p.tasks.matching { it.name == 'runClient' }.configureEach { dependsOn p.tasks.named('freshAnimationClientClasses'), fixture }
+    }
+}

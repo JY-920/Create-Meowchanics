@@ -40,7 +40,7 @@ public final class HissingCatGeometryLayer extends RenderLayer<Cat, CatModel<Cat
         // visibly sway only the head around that angle. Vanilla yaw tracking remains.
         RuntimeBlockbenchModel.HeadMotion headMotion = headMotion(cat, model, ageInTicks);
         var vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(
-                CatGenomeTextureManager.resolve(cat)));
+                getTextureLocation(cat)));
         var traits = CatTraitData.read(cat).orElse(null);
         boolean hideEars = CatTraitEffects.isCombatActive(cat)
                 && traits != null && traits.has(CatTrait.ROUND_HEAD);

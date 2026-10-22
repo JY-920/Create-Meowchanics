@@ -5,6 +5,7 @@
   "package": "cn.laowu.mod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "StandaloneCatDoughFurnaceMixin",
     "CatBasinOperatorMixin",
     "CatBasinFilterMixin",
     "CatBasinOrientationMixin",
@@ -42,7 +43,7 @@
     "PilotSkyhookPoseMixin",
     "StandaloneCatRiderPoseMixin",
     "DivingCapeLayerMixin",
-    "CatCreativeSearchMixin",
+    "JECharactersSearchMixin",
     "LaserHandFrameMixin",
     "LaserEntityFrameMixin",
     "LaserPointerOwnerMixin",

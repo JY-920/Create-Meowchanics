@@ -17,7 +17,7 @@ import java.util.*;
 @PrefixGameTestTemplate(false)
 public final class StandaloneRecipesProbe {
     private static final String[] BASE={
-        "cat_ingot","cat_sheet","cat_strip","cat_powder","cat_component",
+        "cat_ingot","cat_sheet","cat_strip","cat_powder","cat_component","cat_dough","cat_pancake_smelting",
         "basic_breeding_box","intermediate_breeding_box","advanced_breeding_box","adoption_box","wish_adoption_box",
         "cat_storage_box","cat_pouch","cat_laser_pointer","cat_engineer_goggles","material_debug_wand","cat_ball",
         "cat_food","breeding_cat_food","mutation_cat_food","pheromone_cat_food","cat_can","golden_cat_can",
@@ -50,7 +50,7 @@ public final class StandaloneRecipesProbe {
     @GameTest(template="artillery_probe",timeoutTicks=30)
     public static void recipesAreAbsentWhenCreateIsInstalled(GameTestHelper h) {
         boolean create=CreateIntegration.isLoaded();
-        h.assertTrue(recipeNames().size()==58,"Fixture covers all standalone recipes");
+        h.assertTrue(recipeNames().size()==60,"Fixture covers all standalone recipes");
         for(var name:recipeNames())
             h.assertTrue(h.getLevel().getRecipeManager().byKey(LaoWuMod.id("standalone/"+name)).isPresent()!=create,"Create-absent recipe gate: "+name);
         for(var name:List.of("cat_ingot_compacting","cat_storage_box","terminator_suit_sequenced_assembly"))
@@ -63,7 +63,7 @@ public final class StandaloneRecipesProbe {
         if(CreateIntegration.isLoaded()){h.succeed();return;}
         int crafted=0;
         for(var name:recipeNames()) {
-            if(name.startsWith("dried_fish")||name.equals("pheromone_cat_food"))continue;
+            if(name.startsWith("dried_fish")||name.equals("pheromone_cat_food")||name.equals("cat_pancake_smelting"))continue;
             var recipe=(CraftingRecipe)recipe(h,name);
             var stacks=NonNullList.withSize(9,ItemStack.EMPTY);
             var ingredients=recipe.getIngredients();
@@ -87,7 +87,7 @@ public final class StandaloneRecipesProbe {
             }
             crafted++;
         }
-        h.assertTrue(crafted==55,"All ordinary survival recipes assembled");
+        h.assertTrue(crafted==56,"All ordinary survival recipes assembled");
         for(var name:List.of("dried_fish_cod","dried_fish_salmon")) {
             var recipe=(CampfireCookingRecipe)recipe(h,name);
             var fish=new net.minecraft.world.SimpleContainer(new ItemStack(name.endsWith("cod")?Items.COOKED_COD:Items.COOKED_SALMON));
@@ -101,6 +101,10 @@ public final class StandaloneRecipesProbe {
     public static void explicitSurvivalLayoutsAndMaterialsMatch(GameTestHelper h) {
         if(CreateIntegration.isLoaded()){h.succeed();return;}
         var ingot=(CraftingRecipe)recipe(h,"cat_ingot");
+        var dough=(CraftingRecipe)recipe(h,"cat_dough");
+        h.assertTrue(dough.matches(input(List.of(new ItemStack(Items.WHEAT),new ItemStack(item("cat_fur")))),h.getLevel()),"One wheat plus one fur craft dough");
+        h.assertTrue(!dough.matches(input(List.of(new ItemStack(Items.WHEAT))),h.getLevel()),"Dough cannot omit cat fur");
+        h.assertTrue(!dough.matches(input(List.of(new ItemStack(Items.BREAD),new ItemStack(item("cat_fur")))),h.getLevel()),"Dough uses wheat, not bread");
         h.assertTrue(ingot.matches(input(List.of(new ItemStack(Items.IRON_INGOT),new ItemStack(item("cat_fur")),new ItemStack(Items.SUGAR))),h.getLevel()),"One sugar, iron and fur craft an ingot");
         h.assertTrue(!ingot.matches(input(List.of(new ItemStack(Items.IRON_INGOT),new ItemStack(item("cat_fur")))),h.getLevel()),"Ingot cannot omit sugar");
         var goggles=(CraftingRecipe)recipe(h,"cat_engineer_goggles");

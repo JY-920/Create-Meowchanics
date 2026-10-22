@@ -52,11 +52,14 @@ public final class CatGenomeTextureManager {
     private static final LinkedHashMap<String, ResourceLocation> COMPOSITES =
             new LinkedHashMap<>(32, 0.75F, true);
     private static final Map<ResourceLocation, NativeImage> SOURCE_IMAGES = new HashMap<>();
+    private static final Map<ResourceLocation, NativeImage> NATIVE_SOURCE_IMAGES = new HashMap<>();
     private static final LinkedHashMap<ResourceLocation, NativeImage> BLOCK_SOURCE_IMAGES =
             new LinkedHashMap<>(32, 0.75F, true);
     private static final LinkedHashMap<ResourceLocation, ResourceLocation> BLOCK_TEXTURES =
             new LinkedHashMap<>(32, 0.75F, true);
     private static NativeImage regionMap;
+    private static java.util.List<CemEyePixel> cemEyePixels;
+    private record CemEyePixel(int x, int y, CatRegion region, boolean pupil) {}
 
     public static ResourceLocation resolve(Cat cat) {
         boolean rainbow = CatTraitData.read(cat)
@@ -69,6 +72,21 @@ public final class CatGenomeTextureManager {
         boolean rainbow = CatTraitData.read(stack)
                 .map(profile -> profile.has(CatTrait.RAINBOW_CAT)).orElse(false);
         return resolve(CatGenomeData.read(stack).orElse(null), fallback, rainbow);
+    }
+
+    /** Our authored poses use vanilla UVs, not a CEM pack's separate eye planes. */
+    public static ResourceLocation resolveNativeGeometry(Cat cat) {
+        boolean rainbow = CatTraitData.read(cat)
+                .map(profile -> profile.has(CatTrait.RAINBOW_CAT)).orElse(false);
+        return resolve(CatGenomeData.read(cat).orElse(null),
+                cat.getVariant().texture(), rainbow, true);
+    }
+
+    public static ResourceLocation resolveResourceGeometry(Cat cat) {
+        boolean rainbow = CatTraitData.read(cat)
+                .map(profile -> profile.has(CatTrait.RAINBOW_CAT)).orElse(false);
+        return resolve(CatGenomeData.read(cat).orElse(null),
+                cat.getVariant().texture(), rainbow, false, true);
     }
 
     /** Resolves a stored phenotype for non-vanilla cat-shaped entities. */
@@ -124,27 +142,42 @@ public final class CatGenomeTextureManager {
     private static synchronized ResourceLocation resolve(CatGenome genome,
                                                          ResourceLocation fallback,
                                                          boolean rainbow) {
-        if (!rainbow && genome == null) return fallback;
-        if (!rainbow && genome.isUniform()) {
+        return resolve(genome, fallback, rainbow, false);
+    }
+
+    private static synchronized ResourceLocation resolve(CatGenome genome,
+                                                         ResourceLocation fallback,
+                                                         boolean rainbow, boolean nativeAtlas) {
+        return resolve(genome, fallback, rainbow, nativeAtlas, false);
+    }
+
+    private static synchronized ResourceLocation resolve(CatGenome genome,
+                                                         ResourceLocation fallback,
+                                                         boolean rainbow, boolean nativeAtlas,
+                                                         boolean resourceAtlas) {
+        if (!nativeAtlas && !rainbow && genome == null) return fallback;
+        if (!nativeAtlas && !resourceAtlas && !rainbow && genome.isUniform()) {
             return textureForMaterial(genome.material(CatRegion.HEAD_PRIMARY), fallback);
         }
 
         String key = (genome == null ? "fallback=" + fallback : genome.phenotypeKey())
-                + (rainbow ? "|appearance=rainbow" : "");
+                + (rainbow ? "|appearance=rainbow" : "") + (nativeAtlas ? "|native-atlas" : "")
+                + (resourceAtlas ? "|resource-atlas" : "");
         ResourceLocation cached = COMPOSITES.get(key);
         if (cached != null) return cached;
 
         try {
             NativeImage composed;
             if (genome == null) {
-                composed = copy(sourceImage(fallback));
+                composed = copy(sourceImage(fallback, nativeAtlas));
             } else if (genome.isUniform()) {
                 composed = copy(sourceImageForMaterial(
-                        genome.material(CatRegion.HEAD_PRIMARY), fallback));
+                        genome.material(CatRegion.HEAD_PRIMARY), fallback, nativeAtlas));
             } else {
-                composed = compose(genome, fallback);
+                composed = compose(genome, fallback, nativeAtlas, resourceAtlas);
             }
             if (rainbow) applyRainbow(composed);
+            if (resourceAtlas) applyCemEyeMaterials(composed, genome, fallback);
             ResourceLocation location = LaoWuMod.id("dynamic/cat/" + sha256(key));
             Minecraft.getInstance().getTextureManager().register(location, new DynamicTexture(composed));
             COMPOSITES.put(key, location);
@@ -157,20 +190,38 @@ public final class CatGenomeTextureManager {
     }
 
     private static NativeImage compose(CatGenome genome, ResourceLocation fallback) throws IOException {
+        return compose(genome, fallback, false);
+    }
+
+    private static NativeImage compose(CatGenome genome, ResourceLocation fallback,
+                                       boolean nativeAtlas) throws IOException {
+        return compose(genome, fallback, nativeAtlas, false);
+    }
+
+    private static NativeImage compose(CatGenome genome, ResourceLocation fallback,
+                                       boolean nativeAtlas, boolean resourceAtlas) throws IOException {
         NativeImage mask = regionMap();
         NativeImage output = new NativeImage(mask.getWidth(), mask.getHeight(), true);
+        NativeImage auxiliary = resourceAtlas
+                ? sourceImageForMaterial(genome.material(CatRegion.HEAD_PRIMARY), fallback) : null;
 
         for (int y = 0; y < mask.getHeight(); y++) {
             for (int x = 0; x < mask.getWidth(); x++) {
                 int alpha = Byte.toUnsignedInt(mask.getLuminanceOrAlpha(x, y));
-                if (alpha == 0) continue;
+                if (alpha == 0) {
+                    // CEM packs use atlas space outside our vanilla semantic mask.
+                    if (auxiliary != null) output.setPixelRGBA(x,y,auxiliary.getPixelRGBA(
+                            x * auxiliary.getWidth() / mask.getWidth(),
+                            y * auxiliary.getHeight() / mask.getHeight()));
+                    continue;
+                }
                 int rgb = Byte.toUnsignedInt(mask.getRedOrLuminance(x, y)) << 16
                         | Byte.toUnsignedInt(mask.getGreenOrLuminance(x, y)) << 8
                         | Byte.toUnsignedInt(mask.getBlueOrLuminance(x, y));
                 CatRegion region = CatRegion.fromMapRgb(rgb);
                 if (region == null) continue;
 
-                NativeImage source = sourceImageForMaterial(genome.material(region), fallback);
+                NativeImage source = sourceImageForMaterial(genome.material(region), fallback, nativeAtlas);
                 // The vanilla face axis is x=7. Mirror the right-eye lookup
                 // from the left-eye UV so every material produces matching
                 // eye size and pixel structure, even when the two eyes use
@@ -183,6 +234,61 @@ public final class CatGenomeTextureManager {
             }
         }
         return output;
+    }
+
+    private static void applyCemEyeMaterials(NativeImage output, CatGenome genome,
+                                             ResourceLocation fallback) throws IOException {
+        for (CemEyePixel pixel : cemEyePixels()) {
+            NativeImage source = genome == null ? sourceImage(fallback)
+                    : sourceImageForMaterial(genome.material(pixel.region()), fallback);
+            int colour = source.getPixelRGBA(pixel.x() * source.getWidth() / 64,
+                    pixel.y() * source.getHeight() / 32);
+            // Block/legacy materials only paint the vanilla eye locus.
+            if ((colour >>> 24) == 0) colour = source.getPixelRGBA(
+                    (pixel.pupil() ? 6 : 5) * source.getWidth() / 64,6 * source.getHeight() / 32);
+            output.setPixelRGBA(pixel.x() * output.getWidth() / 64,
+                    pixel.y() * output.getHeight() / 32,colour);
+        }
+    }
+
+    private static java.util.List<CemEyePixel> cemEyePixels() {
+        if (cemEyePixels != null) return cemEyePixels;
+        var pixels = new java.util.ArrayList<CemEyePixel>();
+        // Read the active pack's declared eye UVs rather than hardcoding Fresh's atlas.
+        try (var stream = Minecraft.getInstance().getResourceManager().open(
+                ResourceLocation.withDefaultNamespace("optifine/cem/cat.jem"));
+             var reader = new java.io.InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            collectCemEyePixels(com.google.gson.JsonParser.parseReader(reader), pixels);
+        } catch (IOException | RuntimeException ignored) {
+            // Unrecognised packs still retain their complete auxiliary head atlas.
+        }
+        cemEyePixels = java.util.List.copyOf(pixels);
+        return cemEyePixels;
+    }
+
+    private static void collectCemEyePixels(com.google.gson.JsonElement value,
+                                            java.util.List<CemEyePixel> pixels) {
+        if (value.isJsonArray()) {
+            value.getAsJsonArray().forEach(child -> collectCemEyePixels(child,pixels));
+        } else if (value.isJsonObject()) {
+            var object = value.getAsJsonObject();
+            String id = object.has("id") ? object.get("id").getAsString() : "";
+            boolean left = id.equals("l_pupil") || id.equals("l_eye_white");
+            boolean right = id.equals("r_pupil") || id.equals("r_eye_white");
+            if ((left || right) && object.has("boxes")) {
+                for (var box : object.getAsJsonArray("boxes")) {
+                    var face = box.getAsJsonObject().getAsJsonArray("uvNorth");
+                    if (face == null || face.size() != 4) continue;
+                    int x1=face.get(0).getAsInt(),y1=face.get(1).getAsInt();
+                    int x2=face.get(2).getAsInt(),y2=face.get(3).getAsInt();
+                    for(int y=Math.max(0,Math.min(y1,y2));y<Math.min(32,Math.max(y1,y2));y++)
+                        for(int x=Math.max(0,Math.min(x1,x2));x<Math.min(64,Math.max(x1,x2));x++)
+                            pixels.add(new CemEyePixel(x,y,left ? CatRegion.LEFT_EYE : CatRegion.RIGHT_EYE,
+                                    id.endsWith("pupil")));
+                }
+            }
+            object.entrySet().forEach(entry -> collectCemEyePixels(entry.getValue(),pixels));
+        }
     }
 
     private static NativeImage regionMap() throws IOException {
@@ -198,10 +304,32 @@ public final class CatGenomeTextureManager {
         return loaded;
     }
 
+    private static NativeImage sourceImage(ResourceLocation texture, boolean nativeAtlas) throws IOException {
+        if (!nativeAtlas) return sourceImage(texture);
+        NativeImage cached = NATIVE_SOURCE_IMAGES.get(texture);
+        if (cached != null) return cached;
+        for (var resource : Minecraft.getInstance().getResourceManager().getResourceStack(texture)) {
+            if (!"vanilla".equals(resource.sourcePackId())) continue;
+            try (InputStream stream = resource.open()) {
+                NativeImage loaded = NativeImage.read(stream);
+                NATIVE_SOURCE_IMAGES.put(texture, loaded);
+                return loaded;
+            }
+        }
+        // Custom materials without a vanilla resource still belong to their supplying pack.
+        return sourceImage(texture);
+    }
+
     private static NativeImage sourceImageForMaterial(ResourceLocation material,
                                                       ResourceLocation fallback) throws IOException {
+        return sourceImageForMaterial(material, fallback, false);
+    }
+
+    private static NativeImage sourceImageForMaterial(ResourceLocation material,
+                                                      ResourceLocation fallback,
+                                                      boolean nativeAtlas) throws IOException {
         ResourceLocation fixed = CatMaterialRegistry.fixedTexture(material).orElse(null);
-        if (fixed != null) return sourceImage(fixed);
+        if (fixed != null) return sourceImage(fixed, nativeAtlas);
 
         ResourceLocation blockId = CatMaterialRegistry.blockId(material).orElse(null);
         if (blockId != null) {
@@ -214,7 +342,7 @@ public final class CatGenomeTextureManager {
         }
 
         CatVariant variant = BuiltInRegistries.CAT_VARIANT.get(material);
-        return sourceImage(variant == null ? fallback : variant.texture());
+        return sourceImage(variant == null ? fallback : variant.texture(), nativeAtlas);
     }
 
     private static NativeImage load(ResourceLocation location) throws IOException {
@@ -466,6 +594,9 @@ public final class CatGenomeTextureManager {
         BLOCK_TEXTURES.clear();
         SOURCE_IMAGES.values().forEach(NativeImage::close);
         SOURCE_IMAGES.clear();
+        NATIVE_SOURCE_IMAGES.values().forEach(NativeImage::close);
+        NATIVE_SOURCE_IMAGES.clear();
+        cemEyePixels = null;
         BLOCK_SOURCE_IMAGES.values().forEach(NativeImage::close);
         BLOCK_SOURCE_IMAGES.clear();
         if (regionMap != null) {

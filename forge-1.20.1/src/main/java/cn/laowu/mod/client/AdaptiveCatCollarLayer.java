@@ -28,11 +28,17 @@ public final class AdaptiveCatCollarLayer extends RenderLayer<Cat, CatModel<Cat>
 
     private final ModelPart collarRoot;
     private final CatModel<Cat> collarModel;
+    private final ModelPart nativeCollarRoot;
+    private final CatModel<Cat> nativeCollarModel;
 
     public AdaptiveCatCollarLayer(RenderLayerParent<Cat, CatModel<Cat>> parent, EntityModelSet modelSet) {
         super(parent);
         collarRoot = modelSet.bakeLayer(ModelLayers.CAT_COLLAR);
         collarModel = new CatModel<>(collarRoot);
+        nativeCollarRoot = net.minecraft.client.model.geom.builders.LayerDefinition.create(
+                net.minecraft.client.model.OcelotModel.createBodyMesh(
+                        new net.minecraft.client.model.geom.builders.CubeDeformation(0.01F)),64,32).bakeRoot();
+        nativeCollarModel = new CatModel<>(nativeCollarRoot);
     }
 
     @Override
@@ -44,6 +50,8 @@ public final class AdaptiveCatCollarLayer extends RenderLayer<Cat, CatModel<Cat>
         if (!model.isHissing()) {
             // Copy AFTER the parent has evaluated vanilla/custom animation, without
             // calling prepareMobModel/setupAnim again on the separate collar model.
+            CatModel<Cat> collarModel = model.usesResourcePackModel() ? this.collarModel : nativeCollarModel;
+            ModelPart collarRoot = model.usesResourcePackModel() ? this.collarRoot : nativeCollarRoot;
             model.copyPoseTo(collarModel, collarRoot);
             float[] color = cat.getCollarColor().getTextureDiffuseColors();
             renderColoredCutoutModel(collarModel, COLLAR_TEXTURE, poseStack, buffer,

@@ -86,11 +86,11 @@ public final class CatAppearanceLayer extends RenderLayer<Cat, CatModel<Cat>> {
         }
     }
 
-    private static void renderTwinTails(PoseStack pose, MultiBufferSource buffers,
+    private void renderTwinTails(PoseStack pose, MultiBufferSource buffers,
                                         int packedLight, Cat cat,
                                         HissingCatModel model, float ageInTicks) {
         var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(
-                CatGenomeTextureManager.resolve(cat)));
+                getTextureLocation(cat)));
         pose.pushPose();
         if (model.isPancake()) {
             pose.translate(0.0D, 4.0D / 16.0D, 0.0D);

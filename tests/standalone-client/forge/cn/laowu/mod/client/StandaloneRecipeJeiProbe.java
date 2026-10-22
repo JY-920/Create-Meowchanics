@@ -24,7 +24,7 @@ public final class StandaloneRecipeJeiProbe implements IModPlugin {
         var manager = runtime.getRecipeManager();
         var crafts = manager.createRecipeLookup(mezz.jei.api.constants.RecipeTypes.CRAFTING).get().toList();
         long ordinary = crafts.stream().filter(r -> r.getId().toString().startsWith("laowu:standalone/")).count();
-        if (ordinary != 55) throw new AssertionError("JEI should show all 55 ordinary standalone crafts, got " + ordinary);
+        if (ordinary != 56) throw new AssertionError("JEI should show all 56 ordinary standalone crafts, got " + ordinary);
         var examples = crafts.stream().filter(r -> r.getId().equals(LaoWuMod.id("jei/pheromone_cat_food_crafting"))).toList();
         if (examples.size() != 1) throw new AssertionError("JEI named-food recipe missing or duplicated");
         var display = examples.get(0).getResultItem(mc.level.registryAccess());
@@ -40,7 +40,29 @@ public final class StandaloneRecipeJeiProbe implements IModPlugin {
                 .map(net.minecraft.network.chat.Component::getString).collect(java.util.stream.Collectors.joining(""));
         if (!text.replaceAll("\\s+", "").contains(net.minecraft.network.chat.Component.translatable("item.laowu.pheromone_cat_food.tooltip.standalone").getString().replaceAll("\\s+", "")))
             throw new AssertionError("Standalone recipe instructions are missing");
-        System.out.println("PASS: REAL JEI 55 CRAFTS + NAMED FOOD + TWO FISH RECIPES + CLIENT SERIALIZER");
+        long pancakes=manager.createRecipeLookup(mezz.jei.api.constants.RecipeTypes.SMELTING).get()
+                .filter(r -> r.getId().equals(LaoWuMod.id("standalone/cat_pancake_smelting"))).count();
+        if(pancakes!=1)throw new AssertionError("Standalone dough smelting must be visible exactly once");
+        var preview=manager.createRecipeLookup(mezz.jei.api.constants.RecipeTypes.SMELTING).get()
+                .filter(r -> r.getId().equals(LaoWuMod.id("standalone/cat_pancake_smelting"))).findFirst().orElseThrow()
+                .getResultItem(mc.level.registryAccess());
+        if(!cn.laowu.mod.item.CatPancakeItem.texture(preview).equals(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("minecraft","textures/entity/cat/red.png")))
+            throw new AssertionError("Real JEI recipe output must default to orange cat texture");
+        var pancakeText=new net.minecraft.world.item.ItemStack(LaoWuMod.CAT_PANCAKE.get())
+                .getTooltipLines(mc.player,net.minecraft.world.item.TooltipFlag.NORMAL).stream()
+                .map(net.minecraft.network.chat.Component::getString).toList();
+        if(!pancakeText.contains(net.minecraft.network.chat.Component.translatable("tooltip.laowu.cat_pancake.restore_standalone").getString()))
+            throw new AssertionError("Standalone pancake tooltip must describe block restoration");
+        System.out.println("PASS: REAL JEI 56 CRAFTS + NAMED FOOD + TWO FISH RECIPES + DOUGH SMELTING + CLIENT SERIALIZER");
+    }
+
+    static void showPancakeRecipe() {
+        if(runtime==null)throw new AssertionError("JEI not loaded for visual probe");
+        var focus=runtime.getJeiHelpers().getFocusFactory().createFocus(
+                mezz.jei.api.recipe.RecipeIngredientRole.OUTPUT,
+                mezz.jei.api.constants.VanillaTypes.ITEM_STACK,new net.minecraft.world.item.ItemStack(LaoWuMod.CAT_PANCAKE.get()));
+        runtime.getRecipesGui().show(focus);
     }
 
     private static void verifyIndustrialIngredientVisibility() {

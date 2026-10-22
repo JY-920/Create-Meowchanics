@@ -38,6 +38,7 @@ allprojects {
             if (p.hasProperty('standaloneCatProbeOnly')) java.include('**/StandaloneCatProbe.java')
             if (p.hasProperty('standaloneExtrasProbeOnly')) java.include('**/StandaloneExtrasProbe.java')
             if (p.hasProperty('standaloneRecipesProbeOnly')) java.include('**/StandaloneRecipesProbe.java','**/StandalonePancakeProbe.java')
+            if (p.hasProperty('standaloneDoughProbeOnly')) java.include('**/StandaloneDoughProbe.java')
             if (p.hasProperty('catCareProbeOnly')) java.include('**/CatCareProbe.java','**/WishAdoptionProbe.java','**/AdoptionInputDisplayProbe.java')
             if (p.hasProperty('createCatCareProbeOnly')) java.include('**/CreateCatCareProbe.java')
             if (smokeOnly) java.include('**/AgentSmokeAggroProbe.java')

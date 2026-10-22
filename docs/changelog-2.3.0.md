@@ -1,6 +1,6 @@
 # 2.3.0 更新日志
 
-适用：Minecraft 1.20.1 Forge / Minecraft 1.21.1 NeoForge。以下汇总 2.2.2 之后的主要更新；两端使用相同玩法和数据规则。
+适用：Minecraft 1.20.1 Forge / Minecraft 1.21.1 NeoForge。以下汇总 2.2.2 之后的主要更新；两端使用相同玩法和数据规则。后续兼容修复与无机械动力猫面团路线见 [2.3.1 更新日志](changelog-2.3.1.md)。
 
 ## 拳击猫与猫咪养成
 

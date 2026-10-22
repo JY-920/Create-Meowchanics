@@ -143,7 +143,9 @@ public final class CatPancakeItem extends Item {
     public static ResourceLocation texture(ItemStack stack) {
         CompoundTag root = stack.getTag();
         String value = root == null ? "" : root.getString(CAT_TEXTURE_TAG);
-        ResourceLocation parsed = ResourceLocation.tryParse(value);
+        // tryParse("") accepts an empty path; untagged recipe results need the
+        // ordinary orange-cat fallback instead of that nonexistent texture.
+        ResourceLocation parsed = value.isBlank() ? null : ResourceLocation.tryParse(value);
         CatVariant fallback = BuiltInRegistries.CAT_VARIANT.get(CatVariant.RED);
         return CatMaterialRegistry.isAllowedTexture(parsed) ? parsed : fallback.texture();
     }
@@ -201,6 +203,18 @@ public final class CatPancakeItem extends Item {
     public static ItemStack babyVariantStack(ResourceLocation variantId) {
         ItemStack stack = variantStack(variantId);
         stack.getOrCreateTag().putBoolean(BABY_TAG, true);
+        return stack;
+    }
+
+    /** Called only when a standalone furnace has successfully completed a burn. */
+    public static ItemStack randomVariantStack(RandomSource random) {
+        var variants = CatMaterialRegistry.catVariants();
+        ResourceLocation variant = variants.isEmpty() ? DEFAULT_VARIANT
+                : variants.get(random.nextInt(variants.size()));
+        ItemStack stack = variantStack(variant);
+        CatGenomeData.set(stack, cn.laowu.mod.genetics.CatGenome.uniform(variant));
+        CatAttributeData.set(stack, CatAttributeProfile.founder(random));
+        CatTraitData.set(stack, CatTraitProfile.founder(random));
         return stack;
     }
 
@@ -471,6 +485,28 @@ public final class CatPancakeItem extends Item {
     }
 
     @Override
+    public net.minecraft.world.InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
+        Player player = context.getPlayer();
+        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded() || player == null
+                || !player.isShiftKeyDown()) return super.useOn(context);
+        Level level = context.getLevel();
+        BlockPos destination = context.getClickedPos().relative(context.getClickedFace());
+        ItemStack stack = context.getItemInHand();
+        if (!level.mayInteract(player, context.getClickedPos())
+                || !player.mayUseItemAt(destination, context.getClickedFace(), stack))
+            return net.minecraft.world.InteractionResult.FAIL;
+        if (level.isClientSide) return net.minecraft.world.InteractionResult.SUCCESS;
+        if (!(level instanceof ServerLevel server)) return net.minecraft.world.InteractionResult.FAIL;
+        Cat restored = deployCat(server, stack,
+                new net.minecraft.world.phys.Vec3(destination.getX()+0.5D,destination.getY(),destination.getZ()+0.5D),
+                player.getYRot());
+        if (restored == null) return net.minecraft.world.InteractionResult.FAIL;
+        if (!player.getAbilities().instabuild) stack.shrink(1);
+        player.awardStat(Stats.ITEM_USED.get(this));
+        return net.minecraft.world.InteractionResult.CONSUME;
+    }
+
+    @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity user, int timeLeft) {
         if (!(user instanceof Player player)) return;
         int chargeTicks = getUseDuration(stack) - timeLeft;
@@ -686,7 +722,8 @@ public final class CatPancakeItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("tooltip.laowu.cat_pancake.fan")
+        tooltip.add(Component.translatable(cn.laowu.mod.compat.create.CreateIntegration.isLoaded()
+                        ? "tooltip.laowu.cat_pancake.fan" : "tooltip.laowu.cat_pancake.restore_standalone")
                 .withStyle(ChatFormatting.GRAY));
         CatPancakeDetails.append(stack, stack.getTag(), level, tooltip);
     }

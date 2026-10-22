@@ -53,13 +53,19 @@ public final class ReleaseBootProbe {
             // Skip only that settings page, never a mod-loading error screen.
             if(mc.screen instanceof AccessibilityOnboardingScreen){mc.setScreen(new TitleScreen());return;}
             if(!(mc.screen instanceof TitleScreen))return;
+            if(titleTicks==0) {
+                try { CreativeSearchClientProbe.run(); }
+                catch(ReflectiveOperationException failure){throw new AssertionError("Production creative search probe",failure);}
+            }
             // Prove this is SRG production Minecraft, not a named development launch.
             try { net.minecraft.client.renderer.entity.layers.CapeLayer.class.getDeclaredMethod("m_6494_",
                 com.mojang.blaze3d.vertex.PoseStack.class,net.minecraft.client.renderer.MultiBufferSource.class,
                 int.class,net.minecraft.client.player.AbstractClientPlayer.class,
                 float.class,float.class,float.class,float.class,float.class,float.class); }
             catch(ReflectiveOperationException failure){throw new AssertionError("Not a Forge SRG production client",failure);}
-            if(++titleTicks==20){System.out.println("PASS: FORGE PRODUCTION JAR BOOT - SRG client reached title screen");mc.stop();}
+            if(++titleTicks==20&&!Boolean.getBoolean("laowu.fresh_probe")){
+                System.out.println("PASS: FORGE PRODUCTION JAR BOOT - SRG client reached title screen");mc.stop();
+            }
         }
     }
 }

@@ -47,11 +47,35 @@ public final class HissingCatModel extends CatModel<Cat> {
     private float liveHeadYRot;
     private final ModelPart leftEar;
     private final ModelPart rightEar;
+    private final boolean resourcePackModel;
 
     public HissingCatModel(ModelPart root) {
+        this(root, false);
+    }
+
+    public HissingCatModel(ModelPart root, boolean resourcePackModel) {
         super(root);
-        leftEar = head.getChild("left_ear");
-        rightEar = head.getChild("right_ear");
+        this.resourcePackModel = resourcePackModel;
+        leftEar = findOptionalPart(root, "left_ear");
+        rightEar = findOptionalPart(root, "right_ear");
+    }
+
+    private static ModelPart findOptionalPart(ModelPart root, String name) {
+        // Resource packs may put ears below an animated head inside the body,
+        // or use an entirely different hierarchy. Missing custom ears are valid.
+        return root.getAllParts().filter(part -> part.hasChild(name))
+                .map(part -> part.getChild(name)).findFirst()
+                .orElseGet(() -> new ModelPart(List.of(), Map.of()));
+    }
+
+    public boolean usesResourcePackModel() {
+        return resourcePackModel;
+    }
+
+    static boolean idlePerformanceEligible(Cat cat, float limbSwingAmount) {
+        return cat.isAlive() && cat.onGround() && !cat.isInWater() && !cat.isPassenger()
+                && limbSwingAmount < 0.08F && cat.getLieDownAmount(0.0F) <= 0.0F
+                && !CatTraitEffects.isCombatActive(cat);
     }
 
     public static LayerDefinition createLayer() {
@@ -159,19 +183,13 @@ public final class HissingCatModel extends CatModel<Cat> {
         tail1.visible = vanillaVisible && !splitTail;
         tail2.visible = vanillaVisible && !splitTail;
         if (vanillaVisible && !healing && !music && traits != null && traits.has(CatTrait.STREET_DANCE)
-                && cat.isAlive() && cat.onGround() && !cat.isInWater()
-                && !cat.isPassenger() && limbSwingAmount < 0.08F
-                && cat.getLieDownAmount(0.0F) <= 0.0F
-                && !CatTraitEffects.isCombatActive(cat)) {
+                && idlePerformanceEligible(cat,limbSwingAmount)) {
             CatStreetDanceAnimation.apply(ageInTicks, head, body, leftHindLeg,
                     rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2);
             playingStreetDance = CatStreetDanceAnimation.isAvailable() && Float.isFinite(ageInTicks);
         }
         if (vanillaVisible && !healing && !music && traits != null && traits.has(CatTrait.PIPA_PERFORMANCE)
-                && cat.isAlive() && cat.onGround() && !cat.isInWater()
-                && !cat.isPassenger() && limbSwingAmount < 0.08F
-                && cat.getLieDownAmount(0.0F) <= 0.0F
-                && !CatTraitEffects.isCombatActive(cat)
+                && idlePerformanceEligible(cat,limbSwingAmount)
                 && CatPipaAnimation.isAvailable() && Float.isFinite(ageInTicks)) {
             CatPipaAnimation.apply(ageInTicks, head, body, leftHindLeg,
                     rightHindLeg, leftFrontLeg, rightFrontLeg, tail1, tail2, pipa, plectrum);

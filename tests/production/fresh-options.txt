@@ -1,0 +1,7 @@
+onboardAccessibility:false
+maxFps:60
+renderDistance:3
+simulationDistance:5
+pauseOnLostFocus:false
+narrator:0
+resourcePacks:["vanilla","file/FreshAnimations_v1.10.4.zip"]

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [{"item":"minecraft:wheat"},{"item":"laowu:cat_fur"}],
+  "result": {"id":"laowu:cat_dough","count":1},
+  "neoforge:conditions": [
+    {"type":"neoforge:not","value":{"type":"neoforge:mod_loaded","modid":"create"}}
+  ]
+}

@@ -2,11 +2,15 @@
 allprojects {
     afterEvaluate { p ->
         def neo = p.extensions.findByName('neoForge') != null
-        def probe = p.sourceSets.create('standaloneClient') {
+        def probeName=p.hasProperty('standaloneCareClientOnly') ? 'standaloneCareClient' : 'standaloneClient'
+        def probe = p.sourceSets.create(probeName) {
             java.srcDir(p.file('../tests/standalone-client/' + (neo ? 'neo' : 'forge')))
             if(p.hasProperty('boguShelfClientOnly')) java.include('**/BoguShelfClientProbe.java')
             if(p.hasProperty('maodieClientOnly')) java.include('**/MaodieClientProbe.java')
             if(p.hasProperty('maodieFighterClientOnly')) java.include('**/MaodieFighterClientProbe.java')
+            if(p.hasProperty('standaloneCareClientOnly')) java.include('**/StandaloneCatClientProbe.java',
+                    '**/OptionalCreateClientRegression.java','**/StandaloneRecipeJeiProbe.java',
+                    '**/StandaloneGogglesCuriosRegression.java')
             compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
             runtimeClasspath += output + p.sourceSets.main.runtimeClasspath
         }
@@ -55,6 +59,22 @@ allprojects {
                 new File(runDir,'options.txt').text='onboardAccessibility:false\nmaxFps:120\nrenderDistance:4\nsimulationDistance:5\npauseOnLostFocus:false\nnarrator:0\n'
             }
         }
+        def freshFixture=p.tasks.register('prepareStandaloneFreshFixture') {
+            onlyIf { neo && p.hasProperty('standaloneFreshAnimations') }
+            mustRunAfter maodieOptions
+            doLast {
+                def source=p.file('D:/PCL2/PCL/.minecraft/versions/1.21.1-NeoForge模组开发')
+                p.copy {
+                    from p.fileTree(new File(source,'mods')) { include '*entity_model_features*.jar','*entity_texture_features*.jar' }
+                    into new File(runDir,'mods')
+                }
+                p.copy {
+                    from new File(source,'resourcepacks/FreshAnimations_v1.10.4.zip')
+                    into new File(runDir,'resourcepacks')
+                }
+                new File(runDir,'options.txt').append('lang:zh_cn\nresourcePacks:["vanilla","file/FreshAnimations_v1.10.4.zip"]\n')
+            }
+        }
         if (neo) {
             p.neoForge.mods.named('laowu') { sourceSet(probe) }
             p.neoForge.runs.named('client') {
@@ -62,6 +82,7 @@ allprojects {
                 programArgument '--quickPlaySingleplayer'
                 programArgument 'Standalone'
                 systemProperty 'laowu.render_only', p.hasProperty('standaloneRenderOnly').toString()
+                systemProperty 'laowu.jei_pancake_visual', p.hasProperty('standalonePancakeJeiVisual').toString()
                 systemProperty 'laowu.fighter_texture_only', p.hasProperty('fighterTextureOnly').toString()
                 systemProperty 'laowu.create_expected', (!p.hasProperty('withoutCreate')).toString()
                 systemProperty 'laowu.shader_probe', shaderProbe.toString()
@@ -73,6 +94,7 @@ allprojects {
                 args '--quickPlaySingleplayer', 'Standalone', '--mixin', 'laowu.mixins.json'
                 property 'mixin.env.remapRefMap', 'true'
                 property 'laowu.render_only', p.hasProperty('standaloneRenderOnly').toString()
+                property 'laowu.jei_pancake_visual', p.hasProperty('standalonePancakeJeiVisual').toString()
                 property 'laowu.fighter_texture_only', p.hasProperty('fighterTextureOnly').toString()
                 property 'laowu.create_expected', (!p.hasProperty('withoutCreate')).toString()
                 property 'laowu.shader_probe', shaderProbe.toString()
@@ -80,6 +102,6 @@ allprojects {
                 mods.named('laowu') { source(probe) }
             }
         }
-        p.tasks.matching { it.name == 'runClient' }.configureEach { dependsOn p.tasks.named('standaloneClientClasses'), fixture, maodieOptions, shaderFixture }
+        p.tasks.matching { it.name == 'runClient' }.configureEach { dependsOn p.tasks.named(probeName+'Classes'), fixture, maodieOptions, shaderFixture, freshFixture }
     }
 }

@@ -40,7 +40,7 @@ public final class PancakeCatGeometryLayer extends RenderLayer<Cat, CatModel<Cat
             poseStack.translate(0.0D, 1.5D, 0.0D);
         }
         var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(
-                CatGenomeTextureManager.resolve(cat)));
+                getTextureLocation(cat)));
         RuntimeBlockbenchModel runtimeModel = RuntimeBlockbenchModel.get(MODEL);
         CatTraitProfile traits = CatTraitData.read(cat).orElse(CatTraitProfile.EMPTY);
         RuntimeBlockbenchModel.GroupSelection selection = traits.has(CatTrait.NEKOMATA)

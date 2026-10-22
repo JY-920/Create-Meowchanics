@@ -6,9 +6,9 @@
 
 已用实例中 JECharacters 4.5.27 的 `FakeArray` 复现：同一对象的 3 / 3 / 4 行文本分别包含“猫”时，搜索返回 3 个猫袋、3 个猫盒、4 个信息素猫粮，去重后仅 3 个对象。该适配器把每行命中直接作为一条结果返回。
 
-双端在原版创造搜索刷新完成后，仅对 `laowu` 物品按完整数据去重，保留首个结果的顺序并刷新可见格子。Forge 比较 Item + NBT；NeoForge 比较 Item + Data Components。不同颜色、主人、容器内容等合法变体仍独立显示。不会删除物品注册、修改玩家背包、改动 JECharacters 配置/jar，或引入对它的硬依赖。其他模组物品不处理。
+双端在 JECharacters 查询出口，仅对 `laowu` 物品按完整数据归一化重复结果，保留首个结果的顺序。Forge 比较 Item + NBT；NeoForge 比较 Item + Data Components。不同颜色、主人、容器内容等合法变体仍独立显示。不会删除物品注册、修改玩家背包、改动 JECharacters 配置/jar，或引入对它的硬依赖。其他模组物品和非物品泛型结果不处理。
 
-实现：`CatCreativeSearchResults`、仅客户端加载的 `CatCreativeSearchMixin`。Forge 的方法名和私有滚动字段同时兼容开发映射及 SRG 成品映射。
+实现：`CatCreativeSearchResults`、仅客户端加载的可选 `JECharactersSearchMixin`。2026-10-13 收集的 Forge 崩溃暴露了旧 `CatCreativeSearchMixin` 对创造栏滚动字段可见性的依赖；现已删除旧注入，不再读取或刷新该字段。未安装 JECharacters 时可选目标跳过，不影响原版搜索。
 
 ## 上天猫接到激光笔指令后悬停
 
@@ -48,5 +48,5 @@ Forge 的剪毛接口已计算词条，NeoForge 移植漏掉了这一段，返�
 
 - `tests/CreativeSearchProbe.java` 使用已安装 JECharacters 及其内嵌 PinIn 复现重复（可选测试依赖，仅提取至被忽略的 tests/build，不打包进模组）。
 - `tests/run-global-world-config.ps1` 继续执行原配置与过滤器回归，并运行 `CatInteractionFixesRegression`：多方向/高度飞行收敛、速度边界、剪毛等级产量；NeoForge 额外用真实 ItemStack 组件验证去重、顺序、颜色/主人/内容保留和不改变原堆叠。
-- 检查 Forge 成品 jar 中导航字段已映射为 `f_21344_` 和 `f_21342_`，搜索注入点兼容 `m_98630_` / `f_98508_`。
+- 检查 Forge 成品 jar 中导航字段已映射为 `f_21344_` 和 `f_21342_`；新搜索出口兼容 JECharacters 的 named / SRG 查询方法，不再使用 `f_98508_`。
 - 双端构建与离线回归不代替游戏实测。请检查创造栏搜索“猫”、上天猫从高处前往地面/高台及攻击敌人、职业猫的远程攻击，以及机械手对 I / VII 长毛护体猫剪毛。

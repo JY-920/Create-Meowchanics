@@ -899,6 +899,7 @@
   "item.laowu.smithing_template.base_slot": "Add a diamond tool, potato cannon or Engineer's Goggles",
   "item.laowu.smithing_template.addition_slot": "Add a cat ingot",
   "tooltip.laowu.cat_pancake.fan": "Place in a Create fan air current to restore the cat",
+  "tooltip.laowu.cat_pancake.restore_standalone": "Sneak-right-click a block to restore the cat",
   "block.laowu.cat_engine": "Cat Engine",
   "block.laowu.cat_block": "Cat Block",
   "container.laowu.cat_chest": "Cat Logistics",

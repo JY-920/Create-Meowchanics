@@ -877,6 +877,7 @@
   "item.laowu.smithing_template.base_slot": "放入钻石工具、土豆大炮或工程师护目镜",
   "item.laowu.smithing_template.addition_slot": "放入猫锭",
   "tooltip.laowu.cat_pancake.fan": "放进机械动力鼓风机的气流中可以恢复猫咪",
+  "tooltip.laowu.cat_pancake.restore_standalone": "蹲下右键方块还原猫咪",
   "tooltip.laowu.cat_pouch.count": "猫咪：%s/%s",
   "tooltip.laowu.cat_pouch.control": "右键猫咪或猫饼猫直接收纳；在物品栏内右键装入或取出猫饼",
   "tooltip.laowu.cat_box.count": "猫榴弹：%s/%s",
