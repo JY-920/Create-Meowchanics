@@ -815,9 +815,13 @@ public final class CommonEvents {
             return;
         }
 
+        // CUDDLE_ONLY (cannotBreed) must only block the breeding jar, NOT ordinary
+        // food. Otherwise a wild CUDDLE_ONLY cat can never be tamed with fish, because
+        // vanilla Cat#mobInteract (which handles fish taming) is cancelled here and the
+        // untamed-cat passthrough below never runs. ANORExia (refusesFood) still blocks
+        // all food as intended.
         if (CatBehaviorTraitEffects.refusesFood(cat, event.getItemStack())
-                || (!cat.isBaby() && (cat.isFood(event.getItemStack())
-                || event.getItemStack().getItem() instanceof BreedingOnlyCatCanItem)
+                || (!cat.isBaby() && event.getItemStack().getItem() instanceof BreedingOnlyCatCanItem
                 && CatBehaviorTraitEffects.cannotBreed(cat))) {
             event.setCancellationResult(InteractionResult.FAIL);
             event.setCanceled(true);

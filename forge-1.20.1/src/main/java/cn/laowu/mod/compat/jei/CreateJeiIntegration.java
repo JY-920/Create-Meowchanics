@@ -116,8 +116,16 @@ public final class CreateJeiIntegration implements IModPlugin {
             RecipeType type = category.getRecipeType();
             List hidden = recipeManager.createRecipeLookup(type)
                     .includeHidden().get()
-                    .filter(candidate -> candidate instanceof Recipe<?> recipe
-                            && containsNonOrangePancake(recipe, level.registryAccess()))
+                    .filter(candidate -> {
+                        if (!(candidate instanceof Recipe<?> recipe)) return false;
+                        // Defense in depth: never let one odd recipe from the
+                        // 100+ mod pack abort JEI init for the whole mod.
+                        try {
+                            return containsNonOrangePancake(recipe, level.registryAccess());
+                        } catch (RuntimeException ignored) {
+                            return false;
+                        }
+                    })
                     .toList();
             if (!hidden.isEmpty()) recipeManager.hideRecipes(type, hidden);
         }
@@ -135,8 +143,15 @@ public final class CreateJeiIntegration implements IModPlugin {
             for (var output : processing.getRollableResults()) {
                 if (isNonOrangePancake(output.getStack())) return true;
             }
-        } else if (isNonOrangePancake(recipe.getResultItem(registryAccess))) {
-            return true;
+        } else {
+            // Some recipes deliberately throw from getResultItem (e.g. Tinkers'
+            // Construct's DisplayPartRecipe, a JEI display stub). They can never
+            // carry a pancake result, so treat the throw as "no match" instead of
+            // letting it abort the whole JEI plugin init.
+            try {
+                if (isNonOrangePancake(recipe.getResultItem(registryAccess))) return true;
+            } catch (UnsupportedOperationException ignored) {
+            }
         }
         return false;
     }
