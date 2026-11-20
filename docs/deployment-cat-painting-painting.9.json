@@ -1,0 +1,45 @@
+{
+  "Time": "2026-11-10 22:26:54",
+  "Version": "2.3.2-dev.painting.9",
+  "Stamp": "20261110-222653-2.3.2-dev.painting.9-cat-painting-named",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.3.2-dev.painting.9-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.9-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.9",
+        "Sha256": "B5ACCB99351E532C03EB30760D57341B3F1DBC938E3F761E0416ED98E7CF6170"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261110-222653-2.3.2-dev.painting.9-cat-painting-named\\create-meowchanics-2.3.2-dev.painting.8-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.8-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.8",
+        "Sha256": "3320C0287386B674E82AB0FC5116888C7ACC158D1300180DAE82BCABA43E2853"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.3.2-dev.painting.9-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.9-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.9",
+        "Sha256": "E24401E251FE36DBBC44759DE83A2DE20AC75D40477DAF3D9850889C8DB60FEA"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261110-222653-2.3.2-dev.painting.9-cat-painting-named\\create-meowchanics-2.3.2-dev.painting.8-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.8-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.8",
+        "Sha256": "EB3B31F3E1E7CC7D0283212E52DBC3F3DE65BBCAB00C20E351AB9D5592620CC8"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ]
+}

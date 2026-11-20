@@ -47,8 +47,7 @@ public final class GiantCatBossRenderer extends EntityRenderer<GiantCatBoss> {
     }
 
     @Override public ResourceLocation getTextureLocation(GiantCatBoss boss) {
-        return boss.getInheritedGenome().map(genome -> CatGenomeTextureManager.resolve(genome, FALLBACK))
-                .orElse(FALLBACK);
+        return CatGenomeTextureManager.resolveGiantGeometry(boss.getInheritedGenome().orElse(null), FALLBACK);
     }
 
     @Override public void render(GiantCatBoss boss, float yaw, float partialTick,

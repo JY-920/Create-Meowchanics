@@ -13,6 +13,12 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
+    public static void painting(net.minecraft.server.level.ServerPlayer player,cn.laowu.mod.painting.PaintingWire.Message message) {
+        try { PacketDistributor.sendToPlayer(player,new PaintingPacket(cn.laowu.mod.painting.PaintingWire.encode(message))); } catch(java.io.IOException e) {throw new IllegalArgumentException(e);}
+    }
+    public static void painting(cn.laowu.mod.painting.PaintingWire.Message message) {
+        try { PacketDistributor.sendToServer(new PaintingPacket(cn.laowu.mod.painting.PaintingWire.encode(message))); } catch(java.io.IOException e) {throw new IllegalArgumentException(e);}
+    }
     public static void configureCreatureTransmitter(BlockPos pos,int radius,int lower,int upper,boolean inverted,boolean analog) {
         PacketDistributor.sendToServer(new ConfigureCreatureTransmitterPacket(pos,radius,lower,upper,inverted,analog,false));
     }
@@ -28,7 +34,7 @@ public final class ModNetwork {
     public static void setCreatureFilter(int containerId, int mask, boolean blacklist, java.util.List<net.minecraft.resources.ResourceLocation> ids) {
         PacketDistributor.sendToServer(new SetCreatureFilterPacket(containerId, mask, blacklist, ids));
     }
-    private static final String VERSION = "43";
+    private static final String VERSION = "46"; // Both sides must have the built-in cat painting gallery.
 
     public static void sendCatEditorAction(int containerId, int actionId) {
         PacketDistributor.sendToServer(new CatEditorActionPacket(containerId, actionId));
@@ -112,6 +118,7 @@ public final class ModNetwork {
 
     private static void registerPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(VERSION);
+        registrar.playBidirectional(PaintingPacket.TYPE,PaintingPacket.STREAM_CODEC,PaintingPacket::handle);
         registrar.playToServer(ConfigureCreatureTransmitterPacket.TYPE, ConfigureCreatureTransmitterPacket.STREAM_CODEC, ConfigureCreatureTransmitterPacket::handle);
         registrar.playToServer(SetCreatureFilterPacket.TYPE, SetCreatureFilterPacket.STREAM_CODEC, SetCreatureFilterPacket::handle);
         registrar.playToServer(GiantCatInputPacket.TYPE, GiantCatInputPacket.STREAM_CODEC, GiantCatInputPacket::handle);

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "laowu:block/cat_painting_table", "y": 180 },
+    "facing=east": { "model": "laowu:block/cat_painting_table", "y": 270 },
+    "facing=south": { "model": "laowu:block/cat_painting_table" },
+    "facing=west": { "model": "laowu:block/cat_painting_table", "y": 90 }
+  }
+}

@@ -813,8 +813,8 @@ public final class CommonEvents {
         }
 
         if (CatBehaviorTraitEffects.refusesFood(cat, event.getItemStack())
-                || (!cat.isBaby() && (cat.isFood(event.getItemStack())
-                || event.getItemStack().getItem() instanceof BreedingOnlyCatCanItem)
+                // CUDDLE_ONLY blocks breeding cans, not vanilla fish taming.
+                || (!cat.isBaby() && event.getItemStack().getItem() instanceof BreedingOnlyCatCanItem
                 && CatBehaviorTraitEffects.cannotBreed(cat))) {
             event.setCancellationResult(InteractionResult.FAIL);
             event.setCanceled(true);

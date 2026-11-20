@@ -20,6 +20,7 @@ public final class StandaloneRecipeJeiProbe implements IModPlugin {
     static void verify(Minecraft mc) {
         if (runtime == null) throw new AssertionError("JEI runtime not ready");
         verifyIndustrialIngredientVisibility();
+        if (CreateIntegration.isLoaded()) verifyUnsupportedDisplayRecipe(mc);
         if (CreateIntegration.isLoaded()) return;
         var manager = runtime.getRecipeManager();
         var crafts = manager.createRecipeLookup(mezz.jei.api.constants.RecipeTypes.CRAFTING).get().toList();
@@ -63,6 +64,29 @@ public final class StandaloneRecipeJeiProbe implements IModPlugin {
                 mezz.jei.api.recipe.RecipeIngredientRole.OUTPUT,
                 mezz.jei.api.constants.VanillaTypes.ITEM_STACK,new net.minecraft.world.item.ItemStack(LaoWuMod.CAT_PANCAKE.get()));
         runtime.getRecipesGui().show(focus);
+    }
+
+    private static void verifyUnsupportedDisplayRecipe(Minecraft mc) {
+        // An external display recipe has no real result. Exercise our scanner,
+        // not JEI's internals, using the same throwing interface contract.
+        var recipe=(Recipe<?>)java.lang.reflect.Proxy.newProxyInstance(Recipe.class.getClassLoader(),new Class<?>[]{Recipe.class},
+                (proxy,method,args)->switch(method.getName()) {
+                    case "getIngredients" -> net.minecraft.core.NonNullList.create();
+                    case "getResultItem" -> throw new UnsupportedOperationException("display-only recipe");
+                    default -> throw new AssertionError("Unexpected recipe method: "+method.getName());
+                });
+        try {
+            var scanner=cn.laowu.mod.compat.jei.CreateJeiIntegration.class.getDeclaredMethod("containsNonOrangePancake",Object.class,net.minecraft.core.HolderLookup.Provider.class);
+            scanner.setAccessible(true);
+            if(!Boolean.FALSE.equals(scanner.invoke(null,recipe,mc.level.registryAccess())))
+                throw new AssertionError("Display-only recipe must be ignored by pancake scanner");
+            var wrapped=new RecipeHolder<>(LaoWuMod.id("test/display_only"),recipe);
+            if(!Boolean.FALSE.equals(scanner.invoke(null,wrapped,mc.level.registryAccess())))
+                throw new AssertionError("Wrapped display-only recipe must also be ignored");
+        } catch(ReflectiveOperationException failure) {
+            throw new AssertionError("Display-only recipe must not abort JEI pancake scanning",failure);
+        }
+        System.out.println("PASS: JEI DISPLAY-ONLY RECIPE DOES NOT ABORT PANCAKE SCANNER");
     }
 
     private static void verifyIndustrialIngredientVisibility() {

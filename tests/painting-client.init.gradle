@@ -1,0 +1,54 @@
+// Isolated real client test; no user saves, configs or mods are modified.
+allprojects {
+ afterEvaluate { p ->
+  def neo=p.extensions.findByName('neoForge')!=null
+  def id=p.findProperty('paintingClientRunId')?.toString()?:'smoke'
+  if(!(id==~ /[a-zA-Z0-9_-]+/))throw new GradleException('Invalid fixture id')
+  def run=p.layout.buildDirectory.dir('painting-client-'+id).get().asFile
+  def probe=p.sourceSets.create('paintingClient'){
+   java.srcDir(p.file('../tests/painting-client/'+(neo?'neo':'forge')))
+   if(p.hasProperty('paintingGalleryProbe'))java.include('**/CatPaintingGalleryClientProbe.java')
+   if(p.hasProperty('paintingNamedProbe'))java.include('**/CatPaintingNamedClientProbe.java')
+   compileClasspath+=p.sourceSets.main.output+p.sourceSets.main.compileClasspath
+   runtimeClasspath+=output+p.sourceSets.main.runtimeClasspath
+  }
+  def fixture=p.tasks.register('preparePaintingClientWorld',Copy){
+   from p.layout.buildDirectory.dir('accessory-gametest/no-kubejs-'+(p.hasProperty('withoutCreate')?'painting-no-create-green':'painting-entity-green')+'/world')
+   into new File(run,'saves/Painting')
+   exclude 'session.lock'
+   onlyIf{!new File(run,'saves/Painting/level.dat').exists()}
+  }
+  def options=p.tasks.register('preparePaintingOptions'){
+   doLast{
+    run.mkdirs()
+    if(!new File(run,'options.txt').exists())new File(run,'options.txt').text='onboardAccessibility:false\nlang:zh_cn\nguiScale:2\nmaxFps:60\nrenderDistance:4\nsimulationDistance:4\npauseOnLostFocus:false\nnarrator:0\n'
+   }
+  }
+  if(neo){
+   p.neoForge.mods.named('laowu'){sourceSet(probe)}
+   p.neoForge.runs.named('client'){
+    gameDirectory=run
+    programArgument '--quickPlaySingleplayer';programArgument 'Painting'
+    systemProperty 'laowu.painting_probe',(!p.hasProperty('paintingGalleryProbe')&&!p.hasProperty('paintingNamedProbe')).toString()
+    systemProperty 'laowu.painting_named_probe',p.hasProperty('paintingNamedProbe').toString()
+    systemProperty 'laowu.painting_gallery_probe',p.hasProperty('paintingGalleryProbe').toString()
+    systemProperty 'laowu.painting_without_create',p.hasProperty('withoutCreate').toString()
+   }
+  }else{
+   p.dependencies.add('runtimeOnly','io.github.llamalad7:mixinextras-forge:0.4.1'){transitive=false}
+   p.minecraft.runs.named('client'){
+    workingDirectory run
+    args '--quickPlaySingleplayer','Painting','--mixin','laowu.mixins.json'
+    property 'laowu.painting_probe',(!p.hasProperty('paintingGalleryProbe')&&!p.hasProperty('paintingNamedProbe')).toString()
+    property 'laowu.painting_named_probe',p.hasProperty('paintingNamedProbe').toString()
+    property 'laowu.painting_gallery_probe',p.hasProperty('paintingGalleryProbe').toString()
+    property 'laowu.painting_without_create',p.hasProperty('withoutCreate').toString()
+    property 'mixin.env.remapRefMap','true'
+    property 'mixin.env.refMapRemappingFile',p.file('build/createSrgToMcp/output.srg').absolutePath
+    mods.named('laowu'){source(probe)}
+   }
+  }
+  p.tasks.matching{it.name=='runClient'}.configureEach{dependsOn fixture,options,p.tasks.named('paintingClientClasses')}
+ }
+}
+

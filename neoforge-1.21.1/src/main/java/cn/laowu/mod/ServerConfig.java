@@ -30,6 +30,7 @@ public final class ServerConfig {
     public static final ModConfigSpec.IntValue DEATH_ATTRIBUTE_LOSS;
     public static final ModConfigSpec.IntValue INTERNAL_BALANCE_REVISION;
     public static final ModConfigSpec SPEC;
+    public static final ModConfigSpec.LongValue PAINTING_QUOTA_BYTES;
     public static final Map<CatStat, ModConfigSpec.DoubleValue> MULTIPLIERS = new EnumMap<>(CatStat.class);
     public static final Map<CatOutfitType, ModConfigSpec.DoubleValue> CAREER_DAMAGE_COEFFICIENTS = new EnumMap<>(CatOutfitType.class);
     public static final Map<CatOutfitType, Map<CatSuitSetting, ModConfigSpec.ConfigValue<Number>>> CAREER_SETTINGS = new EnumMap<>(CatOutfitType.class);
@@ -93,6 +94,8 @@ public final class ServerConfig {
                         value -> CatTraitConfig.validList(value, false));
         INTERNAL_BALANCE_REVISION = b.comment("内部平衡迁移标记；只升级仍完整等于旧默认的相关参数组，不覆盖自定义值；钓鱼猫不迁移。")
                 .defineInRange("internal_balance_revision", 0, 0, Integer.MAX_VALUE);
+        PAINTING_QUOTA_BYTES = b.comment("Maximum world cat painting PNG storage in bytes; existing paintings are never deleted.")
+                .defineInRange("painting_world_quota_bytes", 1073741824L, 0L, 1099511627776L);
         SPEC = b.build();
     }
 

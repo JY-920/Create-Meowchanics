@@ -82,6 +82,72 @@ public final class CatGenomeTextureManager {
                 cat.getVariant().value().texture(), rainbow, true);
     }
 
+    /** Retains pack fur while projecting CEM eye materials onto our authored giant face UVs. */
+    public static ResourceLocation resolveGiantGeometry(Cat cat) {
+        boolean rainbow = CatTraitData.read(cat)
+                .map(profile -> profile.has(CatTrait.RAINBOW_CAT)).orElse(false);
+        return resolveGiantGeometry(CatGenomeData.read(cat).orElse(null),
+                cat.getVariant().value().texture(), rainbow);
+    }
+
+    public static ResourceLocation resolveGiantGeometry(CatGenome genome, ResourceLocation fallback) {
+        return resolveGiantGeometry(genome, fallback, false);
+    }
+
+    private static synchronized ResourceLocation resolveGiantGeometry(CatGenome genome,
+            ResourceLocation fallback, boolean rainbow) {
+        ResourceLocation ordinary = resolve(genome, fallback, rainbow);
+        if (cemEyePixels().isEmpty()) return ordinary;
+        String key = "giant-eyes|" + (genome == null ? fallback : genome.phenotypeKey())
+                + (rainbow ? "|rainbow" : "");
+        ResourceLocation cached = COMPOSITES.get(key);
+        if (cached != null) return cached;
+        NativeImage image = null;
+        try {
+            var texture = Minecraft.getInstance().getTextureManager().getTexture(ordinary);
+            image = copy(texture instanceof DynamicTexture dynamic ? dynamic.getPixels() : sourceImage(ordinary));
+            NativeImage mask = regionMap();
+            for (int y = 0; y < mask.getHeight(); y++) for (int x = 0; x < mask.getWidth(); x++) {
+                int rgb = Byte.toUnsignedInt(mask.getRedOrLuminance(x, y)) << 16
+                        | Byte.toUnsignedInt(mask.getGreenOrLuminance(x, y)) << 8
+                        | Byte.toUnsignedInt(mask.getBlueOrLuminance(x, y));
+                CatRegion region = CatRegion.fromMapRgb(rgb);
+                if (region != CatRegion.LEFT_EYE && region != CatRegion.RIGHT_EYE) continue;
+                int materialX = region == CatRegion.RIGHT_EYE ? 14 - x : x;
+                NativeImage source = genome == null ? sourceImage(fallback)
+                        : sourceImageForMaterial(genome.material(region), fallback);
+                int colour = 0;
+                for (CemEyePixel eye : cemEyePixels()) {
+                    if (eye.region() != region || eye.pupil() != (materialX == 6)) continue;
+                    colour = source.getPixelRGBA(eye.x() * source.getWidth() / 64,
+                            eye.y() * source.getHeight() / 32);
+                    if ((colour >>> 24) != 0) break;
+                }
+                // Legacy/block materials have no CEM eye planes; retain their native eye pixels.
+                if ((colour >>> 24) == 0) {
+                    NativeImage nativeSource = genome == null ? sourceImage(fallback, true)
+                            : sourceImageForMaterial(genome.material(region), fallback, true);
+                    colour = nativeSource.getPixelRGBA(materialX * nativeSource.getWidth() / 64,
+                            y * nativeSource.getHeight() / 32);
+                }
+                for (int py = y * image.getHeight() / 32; py < (y + 1) * image.getHeight() / 32; py++)
+                    for (int px = x * image.getWidth() / 64; px < (x + 1) * image.getWidth() / 64; px++)
+                        image.setPixelRGBA(px, py, colour);
+            }
+            ResourceLocation location = LaoWuMod.id("dynamic/cat/" + sha256(key));
+            Minecraft.getInstance().getTextureManager().register(location, new DynamicTexture(image));
+            image = null;
+            COMPOSITES.put(key, location);
+            evictOldest();
+            return location;
+        } catch (Exception exception) {
+            LOGGER.error("Could not project giant cat eye materials {}", key, exception);
+            return ordinary;
+        } finally {
+            if (image != null) image.close();
+        }
+    }
+
     public static ResourceLocation resolveResourceGeometry(Cat cat) {
         boolean rainbow = CatTraitData.read(cat)
                 .map(profile -> profile.has(CatTrait.RAINBOW_CAT)).orElse(false);

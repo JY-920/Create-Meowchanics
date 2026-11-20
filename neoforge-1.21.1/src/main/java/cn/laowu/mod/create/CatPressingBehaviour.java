@@ -8,7 +8,8 @@ public final class CatPressingBehaviour extends PressingBehaviour {
     private boolean isTarget(com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour inventory){
         var state=blockEntity.getBlockState();
         return inventory!=null&&inventory.getPos().equals(getPos().relative(CatMachineOrientation.bottom(state),2))
-            &&inventory.blockEntity.getBlockState().getBlock() instanceof com.simibubi.create.content.logistics.depot.DepotBlock
+            &&(inventory.blockEntity.getBlockState().getBlock() instanceof com.simibubi.create.content.logistics.depot.DepotBlock
+                ||inventory.blockEntity.getBlockState().getBlock() instanceof com.simibubi.create.content.kinetics.belt.BeltBlock)
             &&CatProcessorPlacement.validTarget(getWorld(),getPos(),state,false);
     }
     @Override public ProcessingResult handleReceivedItem(com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack stack,

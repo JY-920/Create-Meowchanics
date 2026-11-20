@@ -1,0 +1,87 @@
+{
+  "version": "2.3.2-dev.painting.6",
+  "date": "2026-11-07",
+  "pureRegression": {
+    "ports": [
+      "Forge 1.20.1",
+      "NeoForge 1.21.1"
+    ],
+    "suites": [
+      "Builtin",
+      "Cache",
+      "Disk",
+      "Frame",
+      "Images",
+      "Import",
+      "Preview",
+      "Storage",
+      "Wire"
+    ],
+    "result": "PASS"
+  },
+  "gameTests": {
+    "forge": {
+      "required": 14,
+      "passed": 14,
+      "fixture": "forge-1.20.1/build/accessory-gametest/no-kubejs-painting6-gallery"
+    },
+    "neoforge": {
+      "required": 14,
+      "passed": 14,
+      "fixture": "neoforge-1.21.1/build/accessory-gametest/no-kubejs-painting6-gallery"
+    }
+  },
+  "visualChecks": [
+    {
+      "port": "forge-1.20.1",
+      "create": true,
+      "result": "PASS",
+      "fixture": "build/painting-client-gallery6-lit",
+      "screenshot": "art/cat-painting-gallery/previews/forge-with-create.png"
+    },
+    {
+      "port": "neoforge-1.21.1",
+      "create": false,
+      "result": "PASS",
+      "fixture": "build/painting-client-gallery6-standalone-clean",
+      "screenshot": "art/cat-painting-gallery/previews/neoforge-without-create.png"
+    }
+  ],
+  "clientAssertions": [
+    "All twelve entity identities synced",
+    "Every packaged texture decoded at exact dimensions",
+    "Direct texture resolution without uploads",
+    "All twelve paintings visually inspected on a clear wall",
+    "Resource reload preserved gallery"
+  ],
+  "artifactChecks": {
+    "runtimeTexturesPerPort": 12,
+    "totalPngBytesPerPort": 22004,
+    "portByteParity": true,
+    "jarByteParity": true,
+    "translations": [
+      "zh_cn",
+      "en_us"
+    ]
+  },
+  "builds": {
+    "forge": "PASS build -Pinternal_build=painting.6",
+    "neoforge": "PASS build -Pinternal_build=painting.6",
+    "compatibility": [
+      "accessory API v3",
+      "trait API v1 / 82 saved IDs",
+      "animation resources",
+      "release isolation",
+      "23274 accessory checks per port"
+    ]
+  },
+  "correctedTestIssues": [
+    "Gallery-only client fixture now excludes the older editor probe whose method signature references Create; no production workaround required.",
+    "Screenshots wait for loading-screen exit and usable world lighting; support lights added to the test scene.",
+    "PowerShell internal_build argument quoted to prevent .6 from being parsed as another task."
+  ],
+  "limitations": [
+    "No separate two-client remote multiplayer session was run for this increment."
+  ],
+  "deploymentReport": "deployment-cat-painting-painting.6.json"
+}

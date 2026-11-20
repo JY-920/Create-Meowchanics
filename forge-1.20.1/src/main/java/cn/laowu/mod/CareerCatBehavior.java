@@ -557,7 +557,7 @@ public final class CareerCatBehavior {
 
     private static void tickFishing(ServerLevel level, Cat cat) {
         // Capabilities and the cached water calculation need no per-tick polling.
-        if (cat.tickCount % 10 != 0) return;
+        if (Math.floorMod(cat.tickCount + cat.getId(), 10) != 0) return;
         BlockPos seat = findSeat(cat);
         if (seat == null) {
             resetFishing(cat);
@@ -611,7 +611,7 @@ public final class CareerCatBehavior {
         LootParams params = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(water))
                 .withParameter(LootContextParams.TOOL, new ItemStack(Items.FISHING_ROD))
-                .withParameter(LootContextParams.THIS_ENTITY, cat)
+                .withParameter(LootContextParams.THIS_ENTITY, new cn.laowu.mod.entity.CatFishingLootContext(level))
                 .withLuck(CatAttributeEffects.fishingLootLuck(cat))
                 .create(LootContextParamSets.FISHING);
         var table = level.getServer().getLootData().getLootTable(BuiltInLootTables.FISHING);

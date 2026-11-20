@@ -106,7 +106,8 @@ public final class FreshAnimationClientProbe {
                         mc.getResourcePackRepository().setSelected(List.of("vanilla","file/FreshAnimations_v1.10.4.zip"));
                         reloadStage=2; reload=mc.reloadResourcePacks(); return;
                     }
-                    System.out.println("PASS: FRESH ANIMATION CLIENT - live pupils, animation, native pose eyes, outfit, collar and pack reload");
+                    GiantFreshEyesProbe.verify(mc);
+                    System.out.println("PASS: FRESH ANIMATION CLIENT - live pupils, animation, native pose eyes, giant eyes, outfit, collar and pack reload");
                     done=true;mc.stop();return;
                 }
                 graphics.fill(0,0,width,height,0xff282d35);
@@ -119,6 +120,7 @@ public final class FreshAnimationClientProbe {
                 graphics.flush();
                 if(frames==5)net.minecraft.client.Screenshot.grab(mc.gameDirectory,"fresh-standing-walking.png",mc.getMainRenderTarget(),message->{});
                 if(frames++==8){
+                    GiantFreshEyesProbe.verify(mc);
                     var model=liveModel(mc,standing);
                     root=model.getClass().getMethod("emf$getEMFRootModel").invoke(model);
                     check(root!=null,"Cat renderer has no EMF model root; only resource-pack textures were used");
@@ -182,6 +184,8 @@ public final class FreshAnimationClientProbe {
                     standing.getPersistentData().remove(cn.laowu.mod.CatClothesData.OUTFIT_TAG);
                 }
                 if(frames==180){
+                    GiantFreshEyesProbe.draw(mc,graphics,width,height);
+                    net.minecraft.client.Screenshot.grab(mc.gameDirectory,"fresh-giant-eyes.png",mc.getMainRenderTarget(),message->{});
                     net.minecraft.client.Screenshot.grab(mc.gameDirectory,"fresh-return-to-normal.png",mc.getMainRenderTarget(),message->{});
                     check(liveModel(mc,standing).usesResourcePackModel(),"Normal cat did not return to resource-pack model");
                     mc.getResourcePackRepository().setSelected(List.of("vanilla"));

@@ -46,6 +46,25 @@ function Assert-ClientsStopped {
                 }
             }
         } elseif($window -match 'Minecraft') {
+            # Launchers can hide command-line arguments. Inspect only the JVM's
+            # working directory before deciding this is one of our instances.
+            $javaPath=(Get-Process -Id $process.ProcessId -ErrorAction SilentlyContinue).Path
+            $jcmd=if($javaPath){Join-Path (Split-Path $javaPath) 'jcmd.exe'}else{$null}
+            if($jcmd -and (Test-Path -LiteralPath $jcmd)) {
+                $dirLine=@(& $jcmd $process.ProcessId VM.system_properties 2>$null |
+                    Where-Object {$_ -like 'user.dir=*'})
+                if($LASTEXITCODE -eq 0 -and $dirLine.Count -eq 1) {
+                    $working=$dirLine[0].Substring(9).Replace('\:',':').Replace('\\','\')
+                    if([IO.Path]::IsPathFullyQualified($working) -and (Test-Path -LiteralPath $working)) {
+                        $resolved=[IO.Path]::GetFullPath($working).TrimEnd('\','/')
+                        $inTarget=@($targets | Where-Object {
+                            $targetPath=[IO.Path]::GetFullPath($_.Instance).TrimEnd('\','/')
+                            $resolved -eq $targetPath -or $resolved.StartsWith($targetPath+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)
+                        })
+                        if($inTarget.Count -eq 0){continue}
+                    }
+                }
+            }
             throw "Minecraft with unknown game directory, PID $($process.ProcessId)"
         }
     }

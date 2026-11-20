@@ -212,8 +212,11 @@ public final class CatTraitProfile {
     }
     /** Stored ownership/level, including missing custom definitions. */
     public int rawLevel(CatTraitType trait) {
-        return trait == null ? 0 : traits.stream().filter(instance -> instance.trait().id().equals(trait.id()))
-                .mapToInt(CatTraitInstance::level).findFirst().orElse(0);
+        if (trait == null) return 0;
+        for (var instance : traits) {
+            if (instance.trait().id().equals(trait.id())) return instance.level();
+        }
+        return 0;
     }
 
     /**

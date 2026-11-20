@@ -26,6 +26,30 @@ import java.util.*;
 @PrefixGameTestTemplate(false)
 public final class StandaloneDoughProbe {
     @GameTest(template="artillery_probe",timeoutTicks=30)
+    public static void cuddleOnlyAllowsFishTamingButStillBlocksBreedingCan(GameTestHelper h) {
+        var cat=EntityType.CAT.create(h.getLevel());
+        cat.setAge(0);
+        CatTraitData.set(cat,CatTraitProfile.EMPTY.withLevel(CatTrait.CUDDLE_ONLY,1));
+        var player=FakePlayerFactory.get(h.getLevel(),new GameProfile(UUID.randomUUID(),"fish-taming"));
+        player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Items.COD));
+        var fish=new net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract(player,InteractionHand.MAIN_HAND,cat);
+        CommonEvents.onCatInteract(fish);
+        h.assertTrue(!fish.isCanceled(),"CUDDLE_ONLY must let vanilla fish taming run");
+        var can=net.minecraft.core.registries.BuiltInRegistries.ITEM.stream()
+                .filter(i->i instanceof cn.laowu.mod.item.BreedingOnlyCatCanItem).findFirst().orElseThrow();
+        player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(can));
+        var breeding=new net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract(player,InteractionHand.MAIN_HAND,cat);
+        CommonEvents.onCatInteract(breeding);
+        h.assertTrue(breeding.isCanceled()&&breeding.getCancellationResult()==InteractionResult.FAIL,"Breeding can remains blocked");
+        CatTraitData.set(cat,CatTraitProfile.EMPTY.withLevel(CatTrait.ANOREXIA,1));
+        player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Items.COD));
+        var refused=new net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract(player,InteractionHand.MAIN_HAND,cat);
+        CommonEvents.onCatInteract(refused);
+        h.assertTrue(refused.isCanceled(),"ANOREXIA must still refuse food");
+        h.succeed();
+    }
+
+    @GameTest(template="artillery_probe",timeoutTicks=30)
     public static void bareRecipePreviewUsesOrangeTextureWithoutChangingRealCoats(GameTestHelper h) {
         var orange=net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("minecraft","textures/entity/cat/red.png");
         var bare=new ItemStack(LaoWuMod.CAT_PANCAKE.get());

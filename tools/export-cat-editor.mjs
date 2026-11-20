@@ -9,7 +9,7 @@ const round = n => Math.round(n * 1e10) / 1e10;
 
 // Same face winding/UV conventions as RuntimeBlockbenchModel and Java cube faces.
 // Keep the signed from/to coordinates: sorting changes winding and mirrored UVs.
-function faceVertices(direction, a, b, uv) {
+export function faceVertices(direction, a, b, uv) {
   const [x0, y0, z0] = a, [x1, y1, z1] = b, [u1, v1, u2, v2] = uv;
   const faces = {
     east: [[x1,y1,z0,u2,v1], [x1,y1,z1,u1,v1], [x1,y0,z1,u1,v2], [x1,y0,z0,u2,v2]],

@@ -1,0 +1,98 @@
+[
+  {
+    "id": "silver_loaf",
+    "width": 32,
+    "height": 32,
+    "bytes": 3031,
+    "sourceSha256": "462f96d3e3769825c391c4aeac5c97f09262fe77faafbb89562c02766fff416f",
+    "textureSha256": "ec9cec11b53ed2cde9f47670e1bfbabeb34037462cbf0af746a971e60564de4e"
+  },
+  {
+    "id": "white_stare",
+    "width": 32,
+    "height": 32,
+    "bytes": 1745,
+    "sourceSha256": "cd27d52abded91ef9e44af471550484754ef391e7f9ed1cb0d38cfa468e92347",
+    "textureSha256": "cb938e21d002d7d53943531a9337c413638ab89f182be6df2b216d86ed14d641"
+  },
+  {
+    "id": "grass_cat",
+    "width": 32,
+    "height": 32,
+    "bytes": 3138,
+    "sourceSha256": "d91d1c916ab72f347c87195a68acdf75f0298b8553484f5a810517725f91e79c",
+    "textureSha256": "2933b30a7892d25dc9eca86ddb48012d44d3112ddfb3cda6de790fac29827696"
+  },
+  {
+    "id": "angry_kitten",
+    "width": 32,
+    "height": 32,
+    "bytes": 2537,
+    "sourceSha256": "94e351d379ee22e07ca4c5d051cc5e98be1de87392aafa16b36ad3ec61ad1808",
+    "textureSha256": "92a44ac487c32b5dd039e13410dbff89e5ae24ced4f127b09dfaf89dc92eb6ff"
+  },
+  {
+    "id": "teary_cat",
+    "width": 32,
+    "height": 32,
+    "bytes": 2716,
+    "sourceSha256": "523668954131ca43566224f0ab72ea9e7303af53e5bc7f69a35aca6a22da41bd",
+    "textureSha256": "2cd4d8b8ed6251830e2478f4f6dc9c3e8cabef44041e1251f2c0317a43c4572e"
+  },
+  {
+    "id": "banana_cat",
+    "width": 32,
+    "height": 16,
+    "bytes": 976,
+    "sourceSha256": "11be9dd3c7584287084d60379d749f4305619b4d5d443315f288b8058d2782cf",
+    "textureSha256": "279df9943b0050318a539705cbe2bfd32a4a5cde0a6b36f9688ca287a05afeb2"
+  },
+  {
+    "id": "side_eye",
+    "width": 32,
+    "height": 32,
+    "bytes": 2350,
+    "sourceSha256": "4bf0782c14d58669fc77468024db8a1041d1fb82102998ca009230943d58fa67",
+    "textureSha256": "915a51883ae5fa540ce7e5672f6c70b4ddd970b9cbc888c840008fe958a7e17c"
+  },
+  {
+    "id": "cap_cat",
+    "width": 32,
+    "height": 32,
+    "bytes": 2589,
+    "sourceSha256": "f6a7d0262a8887a29edfb06c65efd098e32435db67f7ed1c73fcc56bdecc0f1b",
+    "textureSha256": "e18bda0beb1e553c0d1c2b3e468be2a43691597bc2fc6ff211e8b6f976398c64"
+  },
+  {
+    "id": "folded_ears",
+    "width": 48,
+    "height": 48,
+    "bytes": 6145,
+    "sourceSha256": "e38710e0d2bb6ce95309e59aa9ce20f7d85789cce8d43bd700c894be91460a67",
+    "textureSha256": "f0783bb3572325c92cc3339454f189c00cf122eb054036905399446d64a49b5f"
+  },
+  {
+    "id": "round_tabby",
+    "width": 16,
+    "height": 16,
+    "bytes": 787,
+    "sourceSha256": "50284c2b1f399b482ed89e90dca4786735d2ffbddff20e62ad8e8dd7d787d988",
+    "textureSha256": "50374ec80f201e5ca2c644ca25e56f8c95b14a8c058b5013997e178189856eae"
+  },
+  {
+    "id": "wide_eyes",
+    "width": 32,
+    "height": 32,
+    "bytes": 3022,
+    "sourceSha256": "a9c624e9c733993598e417360147441140523c71ba9bd14e892936932a271ea6",
+    "textureSha256": "3c7dcd47781edc23b51b4fd59e104323f07a464729db0b2e2a77ad4a53c03de1"
+  },
+  {
+    "id": "cowboy_cat",
+    "width": 48,
+    "height": 48,
+    "bytes": 5605,
+    "sourceSha256": "a59a7401035e5dce730f04b6e8c53c496ed0065b546b1c79d7cd2fbd715b6303",
+    "textureSha256": "fc81f3beb1d8f3533172f0efbcf05525ef6f79f10b387148ebfbe9e63d62e555"
+  }
+]

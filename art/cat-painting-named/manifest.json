@@ -1,0 +1,35 @@
+{
+  "version": "2.3.2-dev.painting.10",
+  "date": "2026-11-10",
+  "mode": "ORIGINAL",
+  "pipeline": "Production PaintingImages.prepare + validateUpload on both loaders",
+  "randomPool": false,
+  "aiRedraw": false,
+  "entries": [
+    {
+      "id": "naiyou",
+      "name": "奶油",
+      "source": "../../assets-source/cat-painting/named/naiyou.jpg",
+      "sourceSha256": "81658c82127b1f66714449461646ac0f6fe038911b962011d9b5529c0262a404",
+      "blocks": [3, 2],
+      "crop": "KEEP_HEIGHT",
+      "pngPixels": [1281, 854],
+      "pngBytes": 1788117,
+      "pngSha256": "d19c811edce7c600a1bd32d4d543d15b951196898362feda904003a7ff547c12"
+    },
+    {
+      "id": "xiaomi",
+      "name": "小米",
+      "source": "../../assets-source/cat-painting/named/xiaomi.jpg",
+      "sourceSha256": "85ec98f33f512efa87aa6d2fb3d846d7a721f2f61379dad3bac8667a934807e9",
+      "blocks": [3, 4],
+      "crop": "KEEP_HEIGHT",
+      "pngPixels": [1281, 1708],
+      "pngBytes": 2080261,
+      "pngSha256": "4c0c8fb68dad24d4bd9afeceff3ea9e81b59b2a81b375624aadf0416723e69d1"
+    }
+  ],
+  "resourcePattern": "assets/laowu/textures/painting/builtin/{id}.png",
+  "regenerate": "tools/painting/build-named-paintings.ps1",
+  "verify": "tools/painting/build-named-paintings.ps1 -Check"
+}

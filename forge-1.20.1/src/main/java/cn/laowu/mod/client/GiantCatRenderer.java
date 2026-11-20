@@ -29,7 +29,7 @@ public final class GiantCatRenderer extends EntityRenderer<Cat> {
         Facing(float age,float yaw){this.age=age;this.yaw=yaw;}
     }
     public GiantCatRenderer(EntityRendererProvider.Context context) { super(context); }
-    @Override public ResourceLocation getTextureLocation(Cat cat) { return CatGenomeTextureManager.resolve(cat); }
+    @Override public ResourceLocation getTextureLocation(Cat cat) { return CatGenomeTextureManager.resolveGiantGeometry(cat); }
     @Override public void render(Cat cat,float yaw,float partialTick,PoseStack pose,MultiBufferSource buffers,int light) {
         var mc=Minecraft.getInstance();
         if (!cat.isInvisible() || mc.player!=null && !cat.isInvisibleTo(mc.player) || mc.shouldEntityAppearGlowing(cat)) {

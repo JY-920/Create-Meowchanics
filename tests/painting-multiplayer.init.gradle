@@ -1,0 +1,52 @@
+// Three independent runtime fixtures using offline test identities; production jars stay unchanged.
+allprojects{
+ afterEvaluate{p->
+  def neo=p.extensions.findByName('neoForge')!=null
+  def role=p.findProperty('paintingRole')?.toString()?:'server'
+  def id=p.findProperty('paintingRunId')?.toString()?:'multi1'
+  def port=p.findProperty('paintingPort')?.toString()?:'25761'
+  if(!(role in ['server','a','b','b2'])||!(id==~/[a-zA-Z0-9_-]+/)||!(port==~/[0-9]{4,5}/))throw new GradleException('Bad painting fixture arguments')
+  def base=p.layout.buildDirectory.dir('painting-multiplayer-'+id).get().asFile
+  def run=new File(base,role=='server'?'server':role)
+  def probe=p.sourceSets.create('paintingMultiplayer'){
+   java.srcDir(p.file('../tests/painting-multiplayer/'+(neo?'neo':'forge')))
+   compileClasspath+=p.sourceSets.main.output+p.sourceSets.main.compileClasspath
+   runtimeClasspath+=output+p.sourceSets.main.runtimeClasspath
+  }
+  def world=p.tasks.register('preparePaintingMultiplayerWorld',Copy){
+   onlyIf{role=='server'&&!new File(run,'world/level.dat').exists()}
+   from p.layout.buildDirectory.dir('accessory-gametest/no-kubejs-painting-entity-green/world')
+   into new File(run,'world');exclude 'session.lock'
+  }
+  def config=p.tasks.register('preparePaintingMultiplayerConfig'){
+   doLast{
+    run.mkdirs()
+    if(role=='server'){
+     new File(run,'eula.txt').text='eula=true\n'
+     new File(run,'server.properties').text='server-ip=127.0.0.1\nserver-port='+port+'\nonline-mode=false\nenforce-secure-profile=false\nspawn-protection=0\nview-distance=4\nsimulation-distance=4\nmax-players=4\ngamemode=creative\ndifficulty=peaceful\nlevel-name=world\n'
+    }else if(!new File(run,'options.txt').exists())new File(run,'options.txt').text='onboardAccessibility:false\nlang:zh_cn\nguiScale:2\nmaxFps:40\nrenderDistance:4\nsimulationDistance:4\npauseOnLostFocus:false\nnarrator:0\n'
+   }
+  }
+  if(neo){
+   p.neoForge.mods.named('laowu'){sourceSet(probe)}
+   p.neoForge.runs.named(role=='server'?'server':'client'){
+    gameDirectory=run
+    systemProperty 'laowu.painting_multi',role
+    if(role!='server'){programArgument '--quickPlayMultiplayer';programArgument '127.0.0.1:'+port;programArgument '--username';programArgument (role=='a'?'PainterA':role=='b'?'PainterB':'PainterB2')}
+   }
+  }else{
+   p.dependencies.add('runtimeOnly','io.github.llamalad7:mixinextras-forge:0.4.1'){transitive=false}
+   p.minecraft.runs.named(role=='server'?'server':'client'){
+    workingDirectory run
+    property 'laowu.painting_multi',role
+    args '--mixin','laowu.mixins.json'
+    if(role!='server')args '--quickPlayMultiplayer','127.0.0.1:'+port,'--username',(role=='a'?'PainterA':role=='b'?'PainterB':'PainterB2')
+    property 'mixin.env.remapRefMap','true'
+    property 'mixin.env.refMapRemappingFile',p.file('build/createSrgToMcp/output.srg').absolutePath
+    mods.named('laowu'){source(probe)}
+   }
+  }
+  p.tasks.matching{it.name==(role=='server'?'runServer':'runClient')}.configureEach{dependsOn config,world,p.tasks.named('paintingMultiplayerClasses')}
+ }
+}
+

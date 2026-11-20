@@ -1,0 +1,103 @@
+{
+  "Time": "2026-11-06 23:49:11",
+  "Version": "2.3.2-dev.compat.1",
+  "Stamp": "20261106-234911-2.3.2-dev.compat.1-press-belt-giant-eyes",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.3.2-dev.compat.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.2-dev.compat.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.compat.1",
+        "Sha256": "4BD94235065351F38DE648295ACDA72D2BE6B42983EFE570571F709545AEC08A"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261106-234911-2.3.2-dev.compat.1-press-belt-giant-eyes\\create-meowchanics-2.3.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2",
+        "Sha256": "ADD83665043CEB9CCF601603B602A5F35917C332DD24A7142EB9DE0CEF68EF4B"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.3.2-dev.compat.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.2-dev.compat.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.compat.1",
+        "Sha256": "CBEED2A7A10BC1FA7576820EE9276AC2D2FD3234B5151D27CA86E738B8D0FDA8"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261106-234911-2.3.2-dev.compat.1-press-belt-giant-eyes\\create-meowchanics-2.3.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2",
+        "Sha256": "1A059A95EC68EA0D891746AD466844AB7897ED14D05DFAABC3B94F9F52EBE52F"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Validation": {
+    "MachineTests": {
+      "perLoaderPassed": 23,
+      "logs": [
+        "forge-1.20.1/build/press-belt-final.log",
+        "neoforge-1.21.1/build/press-belt-final2.log"
+      ],
+      "coverage": [
+        "Native versus cat press over real motor-powered moving belts",
+        "Exact iron-to-sheet conservation and simulation nonmutation",
+        "All press directions and native belt slopes, no mixer belt target",
+        "Existing six-way basin/depot and processor regression"
+      ]
+    },
+    "FreshClient": {
+      "loader": "NeoForge 1.21.1",
+      "pack": "Fresh Animations 1.10.4",
+      "log": "neoforge-1.21.1/build/giant-eyes-final-20261106.log",
+      "passed": true,
+      "configurationCache": false,
+      "screenshot": "neoforge-1.21.1/build/fresh-animation-client-giant-eyes-final-20261106/screenshots/fresh-giant-eyes.png",
+      "coverage": [
+        "Giant pet and boss exact genetic left/right CEM eye pixels",
+        "Pack body preserved outside four authored eye pixels",
+        "Uniform and missing-genome branches",
+        "Normal-cat Fresh animations, native poses, outfits and resource reload"
+      ]
+    },
+    "ForgeFreshProbe": "forge-1.20.1/build/giant-eyes-forge-probe-compile.log (compiled, not executed)",
+    "BuildLogs": [
+      "forge-1.20.1/build/press-giant-compat1-build.log",
+      "neoforge-1.21.1/build/press-giant-compat1-build-final.log"
+    ],
+    "AccessoryChecksPerLoader": 23274,
+    "MixinChecks": 408,
+    "ApiAndIsolation": "Passed both loaders",
+    "RedLogs": [
+      "forge-1.20.1/build/press-belt-red.log",
+      "neoforge-1.21.1/build/giant-eyes-red-20261106.log"
+    ],
+    "Review": "No Critical or Important production findings in focused independent review",
+    "Limits": [
+      "Giant retains authored geometry and animations; Fresh eye artwork is remapped, not replaced with animated CEM eye planes.",
+      "Block-material/rainbow/HD edge cases not newly exercised.",
+      "Ground-item press processing and item auto-placement shortcut remain unchanged."
+    ]
+  },
+  "TestSetupFailures": [
+    "Initial Neo moving-belt test used Forge-only AABB(BlockPos, BlockPos) overload; changed test bounds to Vec3 and final2 passed.",
+    "Earlier Fresh game assertions passed but Gradle failed configuration-cache serialization; final client run with --no-configuration-cache passed and exited cleanly.",
+    "First Neo package build overlapped client processResources and could not read a transient build resource; serialized final package build passed."
+  ],
+  "DeploymentNote": "First deployment preflight blocked a transient Minecraft process PID 40176; no files were moved then. Rechecked after process exited; subsequent deployment succeeded.",
+  "Git": {
+    "Committed": false,
+    "Pushed": false,
+    "MainChanged": false
+  }
+}

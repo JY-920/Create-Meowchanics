@@ -1,0 +1,67 @@
+{
+  "Time": "2026-10-31 10:48:21",
+  "Version": "2.3.2",
+  "Stamp": "20261031-104820-2.3.2-release-232",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.3.2-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2",
+        "Sha256": "ADD83665043CEB9CCF601603B602A5F35917C332DD24A7142EB9DE0CEF68EF4B"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261031-104820-2.3.2-release-232\\create-meowchanics-2.3.1-dev.portfix.2-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.1-dev.portfix.2-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.1-dev.portfix.2",
+        "Sha256": "0A35968BDAAA7322404DC6173A0B2F118FA4971A5B9E10B43CE01B03FCFDF216"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.3.2-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2",
+        "Sha256": "1A059A95EC68EA0D891746AD466844AB7897ED14D05DFAABC3B94F9F52EBE52F"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261031-104820-2.3.2-release-232\\create-meowchanics-2.3.1-dev.portfix.2-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.1-dev.portfix.2-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.1-dev.portfix.2",
+        "Sha256": "9CEF048EF9346CB0C46DA461CD4B6951D3779DD809D9FBC33C87FB94FC703C02"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Validation": {
+    "Scope": "Formal version and changelog update; no new gameplay changes in this task.",
+    "BuildLogs": [
+      "forge-1.20.1/build/release-232-build.log",
+      "neoforge-1.21.1/build/release-232-build.log"
+    ],
+    "ApiAndReleaseIsolation": "Passed for both loaders",
+    "AccessoryChecksPerLoader": 23274,
+    "MixinPackageChecks": 408,
+    "FunctionalEvidence": [
+      "docs/deployment-neo-parity-portfix.1.json",
+      "docs/deployment-cat-depot-arm-portfix.2.json"
+    ],
+    "Changelog": "docs/changelog-2.3.2.md",
+    "VersionProperties": {
+      "mod_version": "2.3.2",
+      "internal_build": ""
+    },
+    "GitCommitted": false,
+    "GitPushed": false,
+    "MainChanged": false
+  }
+}

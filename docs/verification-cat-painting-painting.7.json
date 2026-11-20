@@ -1,0 +1,88 @@
+{
+  "version": "2.3.2-dev.painting.7",
+  "date": "2026-11-07",
+  "scope": "Asset-only correction: original photographs processed through the actual in-game pixel conversion; no runtime Java behavior changes.",
+  "sourceDirectory": "assets-source/cat-painting",
+  "converter": {
+    "implementation": "cn.laowu.mod.painting.PaintingImages",
+    "pipeline": [
+      "prepare",
+      "validateUpload"
+    ],
+    "mode": "PIXEL",
+    "crop": "KEEP_WIDTH",
+    "pixelsPerBlock": 16,
+    "aiRedraw": false,
+    "additionalPaletteReduction": false
+  },
+  "regression": {
+    "red": "Old AI-redrawn textures failed the original-photo comparison for all twelve entries.",
+    "green": "Both ports match preview pixel-for-pixel and printed/server-validated PNG byte-for-byte.",
+    "imagesPerPort": 12,
+    "pixelsComparedPerPort": 13312,
+    "script": "tools/painting/build-gallery.mjs --check"
+  },
+  "purePaintingSuites": {
+    "names": [
+      "Builtin",
+      "Cache",
+      "Disk",
+      "Frame",
+      "Images",
+      "Import",
+      "Preview",
+      "Storage",
+      "Wire"
+    ],
+    "ports": [
+      "forge-1.20.1",
+      "neoforge-1.21.1"
+    ],
+    "result": "PASS"
+  },
+  "runtimeClassComparison": {
+    "baseline": "2.3.2-dev.painting.6",
+    "forgeClasses": 871,
+    "neoforgeClasses": 862,
+    "changed": 0,
+    "result": "PASS: class names and bytes identical"
+  },
+  "artifactChecks": {
+    "texturesPerPort": 12,
+    "pngBytesPerPort": 33973,
+    "dimensions": "block dimensions * 16",
+    "catalogIdsAndDimensionsUnchanged": true,
+    "portByteParity": true,
+    "jarByteParity": true,
+    "translations": [
+      "zh_cn",
+      "en_us"
+    ],
+    "result": "PASS"
+  },
+  "builds": {
+    "forge": "PASS normal build -Pinternal_build=painting.7",
+    "neoforge": "PASS normal build -Pinternal_build=painting.7",
+    "compatibility": [
+      "accessory API v3",
+      "trait API v1 / 82 saved IDs",
+      "animation resources",
+      "release isolation",
+      "23274 accessory checks per port"
+    ]
+  },
+  "visualCheck": {
+    "contactSheet": "art/cat-painting-gallery/native-pixel-contact-sheet.png",
+    "inspected": true,
+    "newGameSessionRun": false
+  },
+  "validationNote": "An initial JAR check overlapped Forge reobfuscation and saw an incomplete ZIP. After both builds exited successfully, the same packaged texture check and runtime class comparison passed.",
+  "limitations": [
+    "No new game-client or multiplayer session was launched for this asset-only correction. The previous version's game screenshots contain the rejected artwork and are not evidence of these replacement textures."
+  ],
+  "codeReview": {
+    "result": "No Critical or Important findings in the exporter, test, manifest and production converter review.",
+    "nonBlockingNote": "The generator copies each validated pair immediately; a later input failure could leave a partially refreshed source asset directory. This run completed all entries and verified final resources and jars successfully."
+  },
+  "deploymentReport": "deployment-cat-painting-painting.7.json"
+}

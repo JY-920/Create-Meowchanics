@@ -155,8 +155,14 @@ public final class CreateJeiIntegration implements IModPlugin {
             RecipeType type = category.getRecipeType();
             List hidden = recipeManager.createRecipeLookup(type)
                     .includeHidden().get()
-                    .filter(candidate -> containsNonOrangePancake(
-                            candidate, level.registryAccess()))
+                    .filter(candidate -> {
+                        // One unusual third-party recipe must not abort JEI init.
+                        try {
+                            return containsNonOrangePancake(candidate, level.registryAccess());
+                        } catch (RuntimeException ignored) {
+                            return false;
+                        }
+                    })
                     .toList();
             if (!hidden.isEmpty()) recipeManager.hideRecipes(type, hidden);
         }
@@ -182,8 +188,12 @@ public final class CreateJeiIntegration implements IModPlugin {
             for (var output : processing.getRollableResults()) {
                 if (isNonOrangePancake(output.getStack())) return true;
             }
-        } else if (isNonOrangePancake(recipe.getResultItem(registries))) {
-            return true;
+        } else {
+            // Display-only recipes may deliberately have no usable result item.
+            try {
+                if (isNonOrangePancake(recipe.getResultItem(registries))) return true;
+            } catch (UnsupportedOperationException ignored) {
+            }
         }
         return false;
     }

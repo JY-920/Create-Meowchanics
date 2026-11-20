@@ -13,6 +13,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public final class CatDepotRegistration {
+    private static final DeferredRegister<com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointType> ARM_POINTS =
+            DeferredRegister.create(com.simibubi.create.api.registry.CreateRegistries.ARM_INTERACTION_POINT_TYPE, LaoWuMod.MOD_ID);
+    static { ARM_POINTS.register("cat_depot", CatDepotArmType::new); }
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, LaoWuMod.MOD_ID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, LaoWuMod.MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, LaoWuMod.MOD_ID);
@@ -25,6 +28,8 @@ public final class CatDepotRegistration {
             () -> BlockEntityType.Builder.of(CatDepotBlockEntity::new, CAT_DEPOT.get()).build(null));
 
     public static void register(IEventBus bus) {
+        // Create's depot matcher only accepts its own block IDs, not subclasses.
+        ARM_POINTS.register(bus);
         BLOCKS.register(bus);
         ITEMS.register(bus);
         ENTITIES.register(bus);

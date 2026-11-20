@@ -183,6 +183,10 @@ public final class LaoWuMod {
     public static final RegistryObject<EntityType<cn.laowu.mod.entity.BoguShelfSeat>> BOGU_SHELF_SEAT = ENTITY_TYPES.register("bogu_shelf_seat", () -> EntityType.Builder
             .<cn.laowu.mod.entity.BoguShelfSeat>of(cn.laowu.mod.entity.BoguShelfSeat::new, MobCategory.MISC)
             .sized(.1F, .1F).clientTrackingRange(10).updateInterval(1).build("bogu_shelf_seat"));
+    public static final RegistryObject<Item> CAT_PAINTING = ITEMS.register("cat_painting", () -> new cn.laowu.mod.item.CatPaintingItem(new Item.Properties()));
+    public static final RegistryObject<EntityType<cn.laowu.mod.entity.CatPaintingEntity>> CAT_PAINTING_ENTITY = ENTITY_TYPES.register("cat_painting", () -> EntityType.Builder
+            .<cn.laowu.mod.entity.CatPaintingEntity>of(cn.laowu.mod.entity.CatPaintingEntity::new, MobCategory.MISC)
+            .sized(.5F,.5F).clientTrackingRange(16).updateInterval(Integer.MAX_VALUE).build("cat_painting"));
     public static final RegistryObject<Block> CAT_BLOCK = BLOCKS.register("cat_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIAMOND_BLOCK)));
 
@@ -557,6 +561,7 @@ public final class LaoWuMod {
                         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_PRESS_ITEM.get());
                         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatMachineBlocks.CAT_MIXER_ITEM.get());
                         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatDepotRegistration.CAT_DEPOT_ITEM.get());
+                        if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) output.accept(cn.laowu.mod.create.CatPaintingTableRegistration.ITEM.get());
                         if (INFILTRATION_TANK_ITEM.isPresent()) output.accept(INFILTRATION_TANK_ITEM.get());
                         if (HISSING_COLLECTOR_ITEM.isPresent()) output.accept(HISSING_COLLECTOR_ITEM.get());
                         if (DEVOURING_CAT_ITEM.isPresent()) output.accept(DEVOURING_CAT_ITEM.get());
@@ -596,6 +601,7 @@ public final class LaoWuMod {
                         if (BUTTER_BREAD.isPresent()) output.accept(BUTTER_BREAD.get());
                         if (GIANT_CAT_TREAT.isPresent()) output.accept(GIANT_CAT_TREAT.get());
                         output.accept(BOGU_SHELF_ITEM.get());
+                        output.accept(CAT_PAINTING.get());
                         if (BUTTER_CAT_SPAWN_EGG.isPresent()) output.accept(BUTTER_CAT_SPAWN_EGG.get());
                         output.accept(GIANT_CAT_BOSS_SPAWN_EGG.get());
                         output.accept(BOXING_CAT_SPAWN_EGG.get());

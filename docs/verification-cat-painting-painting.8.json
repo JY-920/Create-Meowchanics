@@ -1,0 +1,146 @@
+{
+  "version": "2.3.2-dev.painting.8",
+  "date": "2026-11-07",
+  "changes": [
+    {
+      "id": "cowboy_cat",
+      "oldBlocks": [
+        4,
+        4
+      ],
+      "newBlocks": [
+        3,
+        3
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "grass_cat",
+      "oldBlocks": [
+        2,
+        2
+      ],
+      "newBlocks": [
+        2,
+        2
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "crop": "KEEP_HEIGHT"
+    },
+    {
+      "id": "white_stare",
+      "oldBlocks": [
+        1,
+        1
+      ],
+      "newBlocks": [
+        2,
+        2
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "folded_ears",
+      "oldBlocks": [
+        2,
+        2
+      ],
+      "newBlocks": [
+        3,
+        3
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "screen": "CatPaintingTableScreen",
+      "fix": "Register decorative filename and settings labels as render-only, so they cannot intercept wheel input."
+    }
+  ],
+  "pixelValidation": {
+    "source": "Original photos via production PaintingImages.prepare and validateUpload",
+    "pixelsPerBlock": 16,
+    "aiRedraw": false,
+    "imagesPerPort": 12,
+    "pixelsComparedPerPort": 13568,
+    "pngBytesPerPort": 34641,
+    "changedImages": 4,
+    "otherEightUnchanged": true,
+    "result": "PASS both ports"
+  },
+  "pureRegression": {
+    "suites": [
+      "Builtin",
+      "Cache",
+      "Disk",
+      "Frame",
+      "Images",
+      "Import",
+      "Preview",
+      "Storage",
+      "Wire"
+    ],
+    "result": "PASS both ports"
+  },
+  "legacyCompatibility": {
+    "policy": "Preserve shipped old specs and existing occupied wall bounds; newly placed blank items use updated catalog sizes.",
+    "identitiesPinnedFrom": "Actual Forge and NeoForge painting.7 JAR execution",
+    "acceptance": "Only exact current specs or the four previously shipped specs; arbitrary sizes and modes rejected."
+  },
+  "clientRegression": {
+    "ports": [
+      "forge-1.20.1",
+      "neoforge-1.21.1"
+    ],
+    "withCreate": true,
+    "red": "Right/middle advanced but left failed: [182:true/1, 110:true/1, 50:false/0].",
+    "green": [
+      "File wheel works over left, middle, right",
+      "Inactive selector and outside wheel do not change file",
+      "Width and height work over their text",
+      "Real preview, print, right output click, wall placement and resource reload succeed"
+    ],
+    "result": "PASS both ports",
+    "logs": "<port>/build/scroll8-{red,green}.log",
+    "note": "Client test failures log an assertion and request normal exit; explicit PASS/FAIL markers, not Gradle exit code alone, were checked."
+  },
+  "gameTests": {
+    "fixture": "<port>/build/accessory-gametest/no-kubejs-painting8-gallery",
+    "requiredPerPort": 15,
+    "neoforge": "PASS",
+    "forge": "PASS"
+  },
+  "builds": {
+    "neoforge": "PASS normal build -Pinternal_build=painting.8",
+    "forge": "PASS normal build -Pinternal_build=painting.8",
+    "compatibility": ["accessory API v3", "trait API v1", "animation resources", "release isolation", "23274 accessory checks per port"]
+  },
+  "artifactChecks": {
+    "runtimeJars": "PASS: 24 exact-size packaged textures, catalog/crop/language consistency and port/JAR byte parity",
+    "runtimeClassScope": "Exactly four intended classes changed per port from painting.7: CatPaintingTableScreen, CatPaintingData, PaintingBuiltinCatalog and its Entry; no extra classes"
+  },
+  "visualChecks": [
+    "art/cat-painting-gallery/painting8-preview.png",
+    "art/cat-painting-gallery/previews/painting8-forge-editor.png",
+    "art/cat-painting-gallery/previews/painting8-neoforge-editor.png"
+  ],
+  "codeReview": "Both review findings addressed: legacy fixtures now use pinned shipped hashes, and grass-cat focused regression checks the complete unchanged-size/changed-crop spec. No remaining findings.",
+  "limitations": [
+    "No separate remote two-client multiplayer session was run. No new gallery world screenshot was captured; gallery review used the exact generated texture contact sheet. Both editor screenshots are from actual corrected clients."
+  ],
+  "deploymentReport": "deployment-cat-painting-painting.8.json"
+}

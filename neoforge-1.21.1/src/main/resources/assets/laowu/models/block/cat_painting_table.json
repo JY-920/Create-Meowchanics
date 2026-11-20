@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:block/block",
+  "loader": "neoforge:obj",
+  "model": "laowu:models/block/cat_painting_table.obj",
+  "automatic_culling": false,
+  "shade_quads": true,
+  "flip_v": true,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "0": "laowu:block/cat_painting_table_0",
+    "1": "laowu:block/cat_painting_table_1",
+    "2": "laowu:block/cat_painting_table_2",
+    "particle": "laowu:block/cat_painting_table_0"
+  }
+}

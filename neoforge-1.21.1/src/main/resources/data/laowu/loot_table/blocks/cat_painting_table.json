@@ -1,0 +1,1 @@
+{"type":"minecraft:block","neoforge:conditions":[{"type":"neoforge:mod_loaded","modid":"create"}],"pools":[{"rolls":1,"entries":[{"type":"minecraft:item","name":"laowu:cat_painting_table"}],"conditions":[{"condition":"minecraft:survives_explosion"}]}]}

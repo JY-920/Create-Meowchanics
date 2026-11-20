@@ -1,0 +1,70 @@
+{
+  "version": "2.3.2-dev.painting.1",
+  "deploymentTime": "2026-11-07 11:05:24",
+  "publicVersion": "2.3.2",
+  "git": {
+    "branch": "develop",
+    "head": "a982df697c86e16c43caebd2983f325cff12e301",
+    "committed": false,
+    "pushed": false
+  },
+  "checks": {
+    "coreRegressionGroups": [
+      "Images (84 checks per loader)",
+      "Storage",
+      "Wire",
+      "Import",
+      "Upload correlation",
+      "Disk cache",
+      "Preview coalescing"
+    ],
+    "jdk": [
+      17,
+      21
+    ],
+    "gameTests": {
+      "forge": "11 required tests passed; forge-1.20.1/build/painting-final-green.log",
+      "neo": "11 required tests passed; neoforge-1.21.1/build/painting-condition-green.log"
+    },
+    "clients": {
+      "forge": "GUI preview/upload/swap/wall/resource reload after source deletion; painting-client-final-cache.log",
+      "neo": "GUI preview/upload/swap/wall/resource reload after source deletion; painting-client-final-cache.log",
+      "withoutCreate": "Both loaders fetched/rendered core world paintings; final no-Create screenshots inspected"
+    },
+    "multiplayer": {
+      "forge": "multi2 A/B PNG/JPG/native/pixel/crops; restarted same world with fresh B2/native launch username",
+      "neo": "tests/run-painting-multiplayer.ps1 -Loader neo -RunId automated-final; successful server/A/B/restart/fresh B2"
+    },
+    "release": [
+      "verifyCatAccessoryApiV3",
+      "verifyCatTraitApiV1",
+      "verifyReleaseIsolation",
+      "both normal build",
+      "forbidden test artifacts = 0",
+      "original user icon SHA-256 unchanged"
+    ],
+    "review": "One read-only fresh-context review, Important findings fixed and regression-covered; no second review."
+  },
+  "deployed": [
+    {
+      "loader": "forge-1.20.1",
+      "hash": "5B75A13D07150AAFA85268014146A193B41886A16EAD0658D85F143A9329F7FE",
+      "enabledLaowuCount": 1,
+      "verified": true,
+      "backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261107-110523-2.3.2-dev.painting.1-cat-painting\\create-meowchanics-2.3.2-dev.compat.1-forge-1.20.1.jar"
+    },
+    {
+      "loader": "neoforge-1.21.1",
+      "hash": "54087FE90FFFC0382E3FFFC277F2ADF62C2F51F2E4E023594EBF89E2D418DC3C",
+      "enabledLaowuCount": 1,
+      "verified": true,
+      "backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261107-110523-2.3.2-dev.painting.1-cat-painting\\create-meowchanics-2.3.2-dev.compat.1-neoforge-1.21.1.jar"
+    }
+  ],
+  "limits": [
+    "Creative-only acquisition; no recipes in this feature build",
+    "Editor table requires Create; core paintings/storage/rendering do not",
+    "No GIF/video/web URLs or arbitrary file paths",
+    "Power-loss/fsync and deliberately hostile server native decoders not fault-injection-tested"
+  ]
+}

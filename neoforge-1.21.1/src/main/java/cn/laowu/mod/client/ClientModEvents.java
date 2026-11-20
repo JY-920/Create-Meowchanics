@@ -72,6 +72,8 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
+                net.minecraft.client.Minecraft.getInstance().execute(cn.laowu.mod.client.painting.PaintingClientCache::reload));
         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded()) cn.laowu.mod.compat.create.CreateClientEvents.reloads(event);
         event.registerReloadListener((ResourceManagerReloadListener) resourceManager ->
                 CatTraitTokenItemRenderer.clearCache());
@@ -145,6 +147,7 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(LaoWuMod.CAT_PAINTING_ENTITY.get(), cn.laowu.mod.client.painting.CatPaintingRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.BREEDING_BOX_BE.get(), CatCareRenderers::breeding);
         event.registerBlockEntityRenderer(LaoWuMod.ADOPTION_BOX_BE.get(), AdoptionBoxRenderer::new);
         event.registerBlockEntityRenderer(LaoWuMod.WISH_ADOPTION_BOX_BE.get(), WishAdoptionBoxRenderer::new);

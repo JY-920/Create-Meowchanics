@@ -61,6 +61,7 @@ public final class CatMachineBlocks {
 
     public static void register(IEventBus bus) {
         CatDepotRegistration.register(bus);
+        CatPaintingTableRegistration.register(bus);
         CreatureTransmitterRegistration.register(bus);
         BLOCKS.register(bus);
         ITEMS.register(bus);

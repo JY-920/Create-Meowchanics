@@ -18,6 +18,12 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
+    public static void painting(net.minecraft.server.level.ServerPlayer player,cn.laowu.mod.painting.PaintingWire.Message message) {
+        try { CHANNEL.send(PacketDistributor.PLAYER.with(()->player),new PaintingPacket(cn.laowu.mod.painting.PaintingWire.encode(message))); } catch(java.io.IOException e) {throw new IllegalArgumentException(e);}
+    }
+    public static void painting(cn.laowu.mod.painting.PaintingWire.Message message) {
+        try { CHANNEL.sendToServer(new PaintingPacket(cn.laowu.mod.painting.PaintingWire.encode(message))); } catch(java.io.IOException e) {throw new IllegalArgumentException(e);}
+    }
     public static void configureCreatureTransmitter(BlockPos pos,int radius,int lower,int upper,boolean inverted,boolean analog) {
         CHANNEL.sendToServer(new ConfigureCreatureTransmitterPacket(pos,radius,lower,upper,inverted,analog,false));
     }
@@ -33,7 +39,7 @@ public final class ModNetwork {
     public static void setCreatureFilter(int containerId, int mask, boolean blacklist, java.util.List<net.minecraft.resources.ResourceLocation> ids) {
         CHANNEL.sendToServer(new SetCreatureFilterPacket(containerId, mask, blacklist, ids));
     }
-    private static final String VERSION = "50";
+    private static final String VERSION = "53"; // Both sides must have the built-in cat painting gallery.
 
     public static void sendCatEditorAction(int containerId, int actionId) {
         CHANNEL.sendToServer(new CatEditorActionPacket(containerId, actionId));
@@ -115,6 +121,7 @@ public final class ModNetwork {
             () -> VERSION, VERSION::equals, VERSION::equals);
 
     public static void register() {
+        CHANNEL.registerMessage(35,PaintingPacket.class,PaintingPacket::encode,PaintingPacket::decode,PaintingPacket::handle);
         CHANNEL.registerMessage(34, ConfigureCreatureTransmitterPacket.class, ConfigureCreatureTransmitterPacket::encode,
                 ConfigureCreatureTransmitterPacket::decode, ConfigureCreatureTransmitterPacket::handle,
                 java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));

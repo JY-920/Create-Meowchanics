@@ -1,0 +1,45 @@
+{
+  "Time": "2026-11-07 17:06:42",
+  "Version": "2.3.2-dev.painting.7",
+  "Stamp": "20261107-170641-2.3.2-dev.painting.7-cat-painting-native-pixels",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.3.2-dev.painting.7-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.7-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.7",
+        "Sha256": "A0F20D32BE07A052663A824DFF2206FD773EB77D6EC63D00A06CEB0140374E53"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261107-170641-2.3.2-dev.painting.7-cat-painting-native-pixels\\create-meowchanics-2.3.2-dev.painting.6-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.6-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.6",
+        "Sha256": "263C611475A6A64E8FBCCF536B84E56EA550EE4A77DAAC4D5EB9AC31ADFE6DDA"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.3.2-dev.painting.7-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.7-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.7",
+        "Sha256": "8E79D6C594A71489F7CD19892967E45DF29DC0D904A3D1E040023092FC18922E"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261107-170641-2.3.2-dev.painting.7-cat-painting-native-pixels\\create-meowchanics-2.3.2-dev.painting.6-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.6-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.6",
+        "Sha256": "538F5F80E701413B7A6F610816B758FE6DD7D5B96FD2A60D0445A7F97F08A646"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ]
+}

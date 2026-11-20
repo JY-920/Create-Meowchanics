@@ -1,0 +1,81 @@
+{
+  "Time": "2026-10-31 10:07:19",
+  "Version": "2.3.1-dev.portfix.1",
+  "Stamp": "20261031-100718-2.3.1-dev.portfix.1-neo-forge-parity",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.3.1-dev.portfix.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.1-dev.portfix.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.1-dev.portfix.1",
+        "Sha256": "87C52C870801BCBE5CD22C1C1642F5467F91CEC0F580D40A73B0386ABBA1754D"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261031-100718-2.3.1-dev.portfix.1-neo-forge-parity\\create-meowchanics-2.3.1-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.1",
+        "Sha256": "25FD300D2311AB953B7112B5A9B0E6EAD0E2DEBB49B8201CDE5285AD1B68F612"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.3.1-dev.portfix.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.1-dev.portfix.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.1-dev.portfix.1",
+        "Sha256": "A66DE41E35FF63B386C09B82F800283426407E61453AA4E18CACCC3D8D7B6A41"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261031-100718-2.3.1-dev.portfix.1-neo-forge-parity\\create-meowchanics-2.3.1-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.1",
+        "Sha256": "C817B7E3655BF7A17EF494037065E3DDA29CC6E2D56791FE4E983A98708841F8"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Reconciliation": {
+    "Head": "a982df697c86e16c43caebd2983f325cff12e301",
+    "OriginDevelop": "a982df697c86e16c43caebd2983f325cff12e301",
+    "NewRemoteCommits": 0,
+    "PortedForgeCommits": [
+      "9a1e59a",
+      "579bbd2"
+    ],
+    "GitCommitted": false,
+    "GitPushed": false,
+    "MainChanged": false
+  },
+  "Validation": {
+    "NeoGameTests": {
+      "log": "neoforge-1.21.1/build/port-fixes-green.log",
+      "passed": 17
+    },
+    "NeoJeiClient": {
+      "log": "neoforge-1.21.1/build/port-jei-green.log",
+      "assertion": "PASS: JEI DISPLAY-ONLY RECIPE DOES NOT ABORT PANCAKE SCANNER",
+      "createInstalled": true
+    },
+    "RedEvidence": [
+      "neoforge-1.21.1/build/port-fixes-red.log",
+      "neoforge-1.21.1/build/port-jei-red2.log"
+    ],
+    "BuildLogs": [
+      "forge-1.20.1/build/portfix1-build.log",
+      "neoforge-1.21.1/build/portfix1-build.log"
+    ],
+    "MixinPackageChecks": 408,
+    "KnownTestSetupLimitations": [
+      "The first JEI client run port-jei-red used render-only mode and skipped the JEI assertion; it is not evidence of the fix.",
+      "The initial Forge build invocation split the unquoted dotted property into task .1; the quoted property invocation succeeded."
+    ]
+  }
+}

@@ -3,7 +3,7 @@
 **机械动力：老吴学** is a playful Minecraft add-on that turns cats into an
 absurd Create-powered production, logistics, and combat system.
 
-Version 2.3.1 also runs **without Create**:
+Version 2.3.3 also runs **without Create**:
 cat traits, outfits, accessories, bosses, mounts and the scanner remain available.
 Industrial machines, filters and Create jobs are enabled only when Create is installed.
 Standalone recipes cover cat care, outfits and materials, including dough smelting
@@ -12,7 +12,9 @@ See [standalone compatibility notes](docs/optional-create.md) before testing an 
 
 ## Changelog
 
-See the [2.3.1 Chinese changelog](docs/changelog-2.3.1.md) for standalone pancake acquisition, JEI previews, Fresh Animations and search compatibility fixes. The [2.3.0 changelog](docs/changelog-2.3.0.md) covers the boxing cat and industrial machines; [2.2.1](docs/changelog-2.2.1.md), [2.2.0](docs/changelog-2.2.0.md), [2.1.4](docs/changelog-2.1.4.md) and [2.1.3](docs/changelog-2.1.3.md) are retained for reference.
+See the [2.3.3 Chinese changelog](docs/changelog-2.3.3.md) for cat paintings and the editor table, named portraits, fishing treasure fixes, belt pressing and giant-cat eye compatibility.
+
+See the [2.3.2 Chinese changelog](docs/changelog-2.3.2.md) for cat depot mechanical-arm support, fish-taming fixes and JEI recipe compatibility. The [2.3.1 changelog](docs/changelog-2.3.1.md) covers standalone pancake acquisition, JEI previews, Fresh Animations and search compatibility. The [2.3.0 changelog](docs/changelog-2.3.0.md) covers the boxing cat and industrial machines; [2.2.1](docs/changelog-2.2.1.md), [2.2.0](docs/changelog-2.2.0.md), [2.1.4](docs/changelog-2.1.4.md) and [2.1.3](docs/changelog-2.1.3.md) are retained for reference.
 
 ## Cat scripting
 
@@ -23,7 +25,7 @@ The existing accessory API v1–v3 remains supported.
 
 ## Source trees
 
-Version 2.3.1 builds on the cat-care and industrial development series. [Earlier development notes](docs/changelog-develop.md) remain as historical records; the versioned changelog describes the final behavior. Internal build IDs are separate from [public release versions](docs/versioning.md).
+Version 2.3.3 builds on the cat-care and industrial development series. [Earlier development notes](docs/changelog-develop.md) remain as historical records; the versioned changelog describes the final behavior. Internal build IDs are separate from [public release versions](docs/versioning.md).
 
 | Directory | Minecraft | Loader | Create | Java | Status |
 | --- | --- | --- | --- | --- | --- |

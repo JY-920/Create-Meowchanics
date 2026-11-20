@@ -1,0 +1,131 @@
+{
+  "version": "2.3.2-dev.painting.9",
+  "date": "2026-11-10",
+  "feature": "Exact-name-only Naiyou and Xiaomi original photos, enchanted glint, excluded from the unchanged 12-image random pool.",
+  "assets": {
+    "sourceManifest": "../art/cat-painting-named/manifest.json",
+    "sourceBytesUnchanged": true,
+    "aiRedraw": false,
+    "originalMode": true,
+    "forgeNeoPngByteParity": true,
+    "productionAlgorithmRecheck": "PASS both ports: build-named-paintings.ps1 -Check",
+    "runtimeJarValidation": "PASS 28 textures total: both port catalogs, language keys, dimensions, hashes and source/JAR byte parity"
+  },
+  "pureRegression": {
+    "result": "PASS both ports",
+    "suites": [
+      "Named",
+      "Builtin",
+      "Images",
+      "Frame",
+      "Cache",
+      "Disk",
+      "Import",
+      "Preview",
+      "Storage",
+      "Wire"
+    ],
+    "log": "../build/painting9-core.log"
+  },
+  "gameTests": {
+    "requiredPerRun": 18,
+    "totalRequired": 72,
+    "forgeWithCreate": "PASS",
+    "forgeWithoutCreate": "PASS",
+    "neoforgeWithCreate": "PASS",
+    "neoforgeWithoutCreate": "PASS",
+    "logs": [
+      "<port>/build/painting9-gametest.log",
+      "<port>/build/painting9-gametest-no-create.log"
+    ],
+    "coverage": [
+      "Actual AnvilMenu output and immediate glint for both plain and bracketed names",
+      "Invalid partial names remain ordinary",
+      "Actual UseOnContext placement, exact named hash, one-item consumption",
+      "Persistence, pick, single drop and replacement",
+      "Remove or change name, preserve pre-existing printed data until placement",
+      "Too-small wall never consumes item or falls back to random",
+      "Existing random gallery, menu, upload transaction and storage regressions"
+    ]
+  },
+  "clientRegression": {
+    "result": "PASS explicit probe markers and screenshot inspection",
+    "runs": [
+      {
+        "port": "forge-1.20.1",
+        "withCreate": true,
+        "log": "../forge-1.20.1/build/painting9-client-lit.log"
+      },
+      {
+        "port": "neoforge-1.21.1",
+        "withCreate": true,
+        "log": "../neoforge-1.21.1/build/painting9-client.log"
+      },
+      {
+        "port": "neoforge-1.21.1",
+        "withCreate": false,
+        "log": "../neoforge-1.21.1/build/painting9-client-no-create.log"
+      }
+    ],
+    "checks": [
+      "Actual server item placement and client entity sync",
+      "Direct packaged HD texture resolution without uploading",
+      "Real world and inventory rendering; both named items glint, ordinary item does not",
+      "Resource reload retains the photographs"
+    ],
+    "visuals": [
+      "../art/cat-painting-named/previews/forge-world.png",
+      "../art/cat-painting-named/previews/forge-inventory.png",
+      "../art/cat-painting-named/previews/neoforge-without-create-world.png",
+      "../art/cat-painting-named/previews/neoforge-without-create-inventory.png"
+    ],
+    "fixtureCorrection": "Initial Forge image was dark because new high-altitude chunks had not completed lighting. Final probe waits for actual client illumination before both screenshots; final log records sky=15 for both pictures. No production lighting changes."
+  },
+  "builds": {
+    "forge": "PASS normal build, Java 17, offline cached dependencies",
+    "neoforge": "PASS normal build, Java 21",
+    "checks": [
+      "Accessory API v3",
+      "Trait API v1",
+      "Animation resources",
+      "Release isolation",
+      "23274 accessory checks per port"
+    ],
+    "forgeEnvironmentNote": "ForgeGradle repository certificate preflight failed; --offline with invocation-scoped -Dnet.minecraftforge.gradle.check.certs=false used cached dependencies only. No global TLS settings or build configuration changed."
+  },
+  "runtimeClassDiffFromInstalledPainting8": {
+    "bothPortsExactly": [
+      "cn/laowu/mod/entity/CatPaintingEntity.class",
+      "cn/laowu/mod/item/CatPaintingItem.class",
+      "cn/laowu/mod/painting/CatPaintingData.class",
+      "cn/laowu/mod/painting/PaintingBuiltinCatalog$Entry.class",
+      "cn/laowu/mod/painting/PaintingBuiltinCatalog.class"
+    ],
+    "added": [],
+    "removed": []
+  },
+  "installed": [
+    {
+      "port": "forge-1.20.1",
+      "version": "2.3.2-dev.painting.9",
+      "sha256": "B5ACCB99351E532C03EB30760D57341B3F1DBC938E3F761E0416ED98E7CF6170",
+      "activeLaowuCount": 1,
+      "backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261110-222653-2.3.2-dev.painting.9-cat-painting-named\\create-meowchanics-2.3.2-dev.painting.8-forge-1.20.1.jar",
+      "verified": true
+    },
+    {
+      "port": "neoforge-1.21.1",
+      "version": "2.3.2-dev.painting.9",
+      "sha256": "E24401E251FE36DBBC44759DE83A2DE20AC75D40477DAF3D9850889C8DB60FEA",
+      "activeLaowuCount": 1,
+      "backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261110-222653-2.3.2-dev.painting.9-cat-painting-named\\create-meowchanics-2.3.2-dev.painting.8-neoforge-1.21.1.jar",
+      "verified": true
+    }
+  ],
+  "deploymentReport": "deployment-cat-painting-painting.9.json",
+  "limitations": [
+    "No separate two-remote-client multiplayer session was run; integrated-client synchronization and dedicated GameTests were verified.",
+    "Forge without Create was tested on the dedicated GameTest server, not as a separate visual client run.",
+    "No Git commit, push or public release was made."
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "version": "2.3.2-dev.painting.10",
+  "date": "2026-11-12",
+  "gameTests": {
+    "requiredPerPort": 19,
+    "forge": "PASS",
+    "neoforge": "PASS",
+    "logs": "<port>/build/painting10-test.log",
+    "fishing": {
+      "rollsPerLuckPerPort": 4000,
+      "luckValues": [
+        0,
+        3
+      ],
+      "forge": {
+        "books": [
+          29,
+          64
+        ],
+        "selectedTreasure": [
+          160,
+          374
+        ]
+      },
+      "neoforge": {
+        "books": [
+          38,
+          69
+        ],
+        "selectedTreasure": [
+          176,
+          365
+        ]
+      }
+    }
+  },
+  "builds": "Both normal builds passed including release isolation and compatibility checks",
+  "core": "Named, Builtin, Images, Frame passed both ports",
+  "assets": "28 packaged painting textures validated; exact supplied table exported as 8 parts / 45 quads / 3 original embedded textures",
+  "clients": {
+    "forge": "PASS",
+    "neoforge": "PASS",
+    "logs": "<port>/build/painting10-client.log",
+    "screenshots": "<port>/build/painting-client-painting10-table/screenshots/cat-painting-named-reloaded.png",
+    "limitations": "World screenshot validates new tabletop and decorations but lower table is outside the screenshot; no dedicated remote multiplayer trial."
+  },
+  "recipes": "Both loader recipe matrices and result identifiers checked; Create conditions guard cardboard recipes",
+  "performance": "Removed short-lived Stream pipeline in rawLevel and staggered fishing polls. No quantified server performance claim.",
+  "logConflict": "User explicitly deferred repair; no exception swallowing, field translation or third-party mod changes.",
+  "deployment": "deployment-cat-painting-painting.10.json"
+}

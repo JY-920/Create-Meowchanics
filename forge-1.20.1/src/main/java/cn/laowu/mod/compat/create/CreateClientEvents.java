@@ -64,6 +64,7 @@ public final class CreateClientEvents {
 
     }
     public static void menus() {
+        MenuScreens.register(cn.laowu.mod.create.CatPaintingTableRegistration.MENU.get(),cn.laowu.mod.compat.create.client.CatPaintingTableScreen::new);
 
             MenuScreens.register(LaoWuMod.CAT_PACKAGE_MENU.get(), CatPackageScreen::new);
 

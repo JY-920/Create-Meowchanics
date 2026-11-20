@@ -1,0 +1,93 @@
+{
+  "method": "Original photos -> actual in-game PaintingImages.prepare(PIXEL) -> PaintingImages.validateUpload. No AI redraw, palette reduction, stretching, or additional filtering.",
+  "processor": "cn.laowu.mod.painting.PaintingImages",
+  "sourceDirectory": "assets-source/cat-painting",
+  "pixelsPerBlock": 16,
+  "entries": [
+    {
+      "id": "silver_loaf",
+      "width": 2,
+      "height": 2,
+      "source": "0f59f915ebfee34718027b69450e0bb9.jpg",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "white_stare",
+      "width": 2,
+      "height": 2,
+      "source": "IMG_20261107_160138.jpg",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "grass_cat",
+      "width": 2,
+      "height": 2,
+      "source": "222715eee6855007c853ab5838dc1a9d.jpg",
+      "crop": "KEEP_HEIGHT"
+    },
+    {
+      "id": "angry_kitten",
+      "width": 2,
+      "height": 2,
+      "source": "PixPin_2026-11-07_15-54-24.png",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "teary_cat",
+      "width": 2,
+      "height": 2,
+      "source": "PixPin_2026-11-07_15-54-53.png",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "banana_cat",
+      "width": 2,
+      "height": 1,
+      "source": "PixPin_2026-11-07_15-54-59.png",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "side_eye",
+      "width": 2,
+      "height": 2,
+      "source": "PixPin_2026-11-07_15-55-14.png",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "cap_cat",
+      "width": 2,
+      "height": 2,
+      "source": "PixPin_2026-11-07_15-55-47.png",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "folded_ears",
+      "width": 3,
+      "height": 3,
+      "source": "PixPin_2026-11-07_15-57-55.png",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "round_tabby",
+      "width": 1,
+      "height": 1,
+      "source": "1727594607229.png",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "wide_eyes",
+      "width": 2,
+      "height": 2,
+      "source": "1778413440676.png",
+      "crop": "KEEP_WIDTH"
+    },
+    {
+      "id": "cowboy_cat",
+      "width": 3,
+      "height": 3,
+      "source": "2b9a803263a9f36fda92db8c8aea38d3.jpg",
+      "crop": "KEEP_WIDTH"
+    }
+  ],
+  "legacyGeneratedDirectory": "generated/ contains the rejected painting.6 drafts only; not read by the build and not shipped."
+}

@@ -1,0 +1,54 @@
+{
+  "Time": "2026-11-12 21:35:36",
+  "Version": "2.3.3",
+  "Stamp": "20261112-213535-2.3.3-release",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.3.3-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.3-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.3",
+        "Sha256": "47E0E499E85F1018B2B5619AEF454D84E93C96A5CEBA69A0F5991E3C811379B0"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261112-213535-2.3.3-release\\create-meowchanics-2.3.2-dev.painting.10-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.10-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.10",
+        "Sha256": "A0B08C9AE5B6FA972133813B6B73BCDAEB22F36192049666F341A3BFB3E6354D"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.3.3-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.3-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.3",
+        "Sha256": "604583897425BED16567D2388BACF3ED461A858939513D04277D80BA4682701F"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261112-213535-2.3.3-release\\create-meowchanics-2.3.2-dev.painting.10-neoforge-1.21.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.2-dev.painting.10-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.2-dev.painting.10",
+        "Sha256": "761B4807DD34CE78163352D71AA11A9ADA878159ECC1CC823FC97CB755EFB0CE"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Validation": {
+    "Builds": "Forge and NeoForge normal build and printModVersion PASS: 2.3.3",
+    "Checks": "Both ports: accessory API v3, trait API v1, animation resources, release isolation, 23274 accessory checks",
+    "PaintingCore": "Both ports: Named, Builtin, Images (91 checks), Frame PASS",
+    "RuntimePayload": "1957 Forge / 1958 NeoForge entries byte-identical to verified painting.10 excluding MANIFEST and loader metadata",
+    "PriorGameplayEvidence": "verification-cat-painting-painting.10.json; gameplay clients not relaunched for version-only change",
+    "BuildNote": "Forge first offline build failed plugin certificate probe; cached offline retry skipped the plugin probe via per-command -Dnet.minecraftforge.gradle.check.certs=false. No persistent trust settings changed.",
+    "Git": "Not committed or pushed"
+  }
+}
