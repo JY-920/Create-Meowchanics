@@ -3,14 +3,16 @@
 **机械动力：老吴学** is a playful Minecraft add-on that turns cats into an
 absurd Create-powered production, logistics, and combat system.
 
-Version 2.3.3 also runs **without Create**:
-cat traits, outfits, accessories, bosses, mounts and the scanner remain available.
+Version 2.3.4 also runs **without Create**. Standalone play includes
+cat traits, outfits, accessories, bosses, mounts and the scanner.
 Industrial machines, filters and Create jobs are enabled only when Create is installed.
 Standalone recipes cover cat care, outfits and materials, including dough smelting
 into random cat pancakes and sneak-use restoration.
 See [standalone compatibility notes](docs/optional-create.md) before testing an existing world.
 
 ## Changelog
+
+Version 2.3.4 adds brewing stand recipes for all three tiers of the Potion of Hissing in standalone play. Redstone extends each tier, including splash and lingering potions. [2.3.4 Chinese changelog](docs/changelog-2.3.4.md)
 
 See the [2.3.3 Chinese changelog](docs/changelog-2.3.3.md) for cat paintings and the editor table, named portraits, fishing treasure fixes, belt pressing and giant-cat eye compatibility.
 
@@ -25,7 +27,7 @@ The existing accessory API v1–v3 remains supported.
 
 ## Source trees
 
-Version 2.3.3 builds on the cat-care and industrial development series. [Earlier development notes](docs/changelog-develop.md) remain as historical records; the versioned changelog describes the final behavior. Internal build IDs are separate from [public release versions](docs/versioning.md).
+Version 2.3.4 builds on the cat-care and industrial development series. Earlier work is recorded in the [development notes](docs/changelog-develop.md). For internal build IDs and public release versions, see [versioning](docs/versioning.md).
 
 | Directory | Minecraft | Loader | Create | Java | Status |
 | --- | --- | --- | --- | --- | --- |
