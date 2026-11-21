@@ -1,5 +1,6 @@
 package cn.laowu.mod;
 
+import cn.laowu.mod.recipe.HissingBrewing;
 import cn.laowu.mod.item.CatPancakeItem;
 import cn.laowu.mod.item.CatFilterItem;
 import cn.laowu.mod.item.CreatureFilterItem;
@@ -502,16 +503,12 @@ public final class LaoWuMod {
                     new Item.Properties().durability(Items.DIAMOND_BOOTS.getDefaultInstance().getMaxDamage())));
     public static final DeferredHolder<MobEffect, HissingAttackEffect> HISSING_ATTACK = MOB_EFFECTS.register(
             "hissing_attack", HissingAttackEffect::new);
-    /** Three minutes; amplifier zero is potion level I. */
-    public static final DeferredHolder<Potion, Potion> HISSING_POTION = POTIONS.register("hissing",
-            () -> new Potion("hissing",
-                    new MobEffectInstance(HISSING_ATTACK, 20 * 60 * 3, 0)));
-    public static final DeferredHolder<Potion, Potion> STRONG_HISSING_POTION = POTIONS.register("strong_hissing",
-            () -> new Potion("hissing",
-                    new MobEffectInstance(HISSING_ATTACK, 20 * 60 * 3, 1)));
-    public static final DeferredHolder<Potion, Potion> POWERFUL_HISSING_POTION = POTIONS.register("powerful_hissing",
-            () -> new Potion("hissing",
-                    new MobEffectInstance(HISSING_ATTACK, 20 * 60 * 3, 2)));
+    public static final DeferredHolder<Potion, Potion> HISSING_POTION = hissingPotion("hissing", 0, 3);
+    public static final DeferredHolder<Potion, Potion> STRONG_HISSING_POTION = hissingPotion("strong_hissing", 1, 3);
+    public static final DeferredHolder<Potion, Potion> POWERFUL_HISSING_POTION = hissingPotion("powerful_hissing", 2, 3);
+    public static final DeferredHolder<Potion, Potion> LONG_HISSING_POTION = hissingPotion("long_hissing", 0, 8);
+    public static final DeferredHolder<Potion, Potion> LONG_STRONG_HISSING_POTION = hissingPotion("long_strong_hissing", 1, 8);
+    public static final DeferredHolder<Potion, Potion> LONG_POWERFUL_HISSING_POTION = hissingPotion("long_powerful_hissing", 2, 8);
     public static final DeferredItem<CatEngineBlockItem> CAT_ENGINE_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "cat_engine",
             cn.laowu.mod.compat.create.CreateIntegration.isLoaded() ? cn.laowu.mod.compat.create.CreateFactories::items_cat_engine : null);
     public static final DeferredItem<BlockItem> INFILTRATION_TANK_ITEM = cn.laowu.mod.compat.create.CreateIntegration.registerItem(ITEMS, "infiltration_tank",
@@ -852,6 +849,7 @@ public final class LaoWuMod {
         });
         modContainer.registerConfig(ModConfig.Type.COMMON, GlobalConfig.SPEC, GlobalConfig.FILE_NAME);
         NeoForge.EVENT_BUS.register(CommonEvents.class);
+        NeoForge.EVENT_BUS.addListener(HissingBrewing::register);
         if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
             NeoForge.EVENT_BUS.register(cn.laowu.mod.compat.create.CreateProcessingEvents.class);
         NeoForge.EVENT_BUS.register(cn.laowu.mod.accessory.CatAccessoryEvents.class);
@@ -866,6 +864,11 @@ public final class LaoWuMod {
                     if (cn.laowu.mod.compat.create.CreateIntegration.isLoaded())
                         cn.laowu.mod.compat.create.CreateStartup.initialize();
                 }));
+    }
+
+    private static DeferredHolder<Potion, Potion> hissingPotion(String id, int amplifier, int minutes) {
+        return POTIONS.register(id, () -> new Potion("hissing",
+                new MobEffectInstance(HISSING_ATTACK, minutes * 60 * 20, amplifier)));
     }
 
     public static ResourceLocation id(String path) {

@@ -22,6 +22,8 @@ allprojects {
         if((examples36||sdkDemo||traitExamples)&&noScripts)throw new GradleException('Examples36 requires the real KubeJS runtime')
         def testSet = p.sourceSets.create('accessoryGameTest') {
             java.srcDirs(p.file("../tests/gametest/" + (neo ? "neo" : "forge")))
+            java.srcDir(p.file('../tests/gametest/shared'))
+            if (p.hasProperty('hissingBrewingProbeOnly')) java.include('**/HissingBrewing*.java')
             if (traitOnly) java.include('**/CatTraitScriptProbe.java')
             if (p.hasProperty('paintingProbe')) java.include('**/CatPainting*Probe.java')
             if (p.hasProperty('maodieProbeOnly')) java.include('**/MaodieStateProbe.java','**/MaodieEncounterProbe.java','**/MaodieFighterProbe.java','**/BoguShelfHissProbe.java','**/Boxing*Probe.java')

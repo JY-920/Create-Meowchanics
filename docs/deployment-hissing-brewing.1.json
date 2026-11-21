@@ -1,0 +1,57 @@
+{
+  "Time": "2026-11-21 18:21:44",
+  "Version": "2.3.3-dev.brewing.1",
+  "Stamp": "20261121-182140-2.3.3-dev.brewing.1-hissing-brewing",
+  "Results": [
+    {
+      "Port": "forge-1.20.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\forge-1.20.1\\build\\libs\\create-meowchanics-2.3.3-dev.brewing.1-forge-1.20.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.3-dev.brewing.1-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.3-dev.brewing.1",
+        "Sha256": "213A8AA58645466C4C7433F6DF81F6F136CB695303B7934F29BF4B7B7C84DC45"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mod-backups\\create-meowchanics\\20261121-182140-2.3.3-dev.brewing.1-hissing-brewing\\create-meowchanics-2.3.3-forge-1.20.1.jar",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\mods\\create-meowchanics-2.3.3-forge-1.20.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.3",
+        "Sha256": "47E0E499E85F1018B2B5619AEF454D84E93C96A5CEBA69A0F5991E3C811379B0"
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    },
+    {
+      "Port": "neoforge-1.21.1",
+      "Source": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.20.1-Forge模组开发\\Create-Meowchanics-develop\\neoforge-1.21.1\\build\\libs\\create-meowchanics-2.3.3-dev.brewing.1-neoforge-1.21.1.jar",
+      "Installed": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.3-dev.brewing.1-neoforge-1.21.1.jar",
+        "ModId": "laowu",
+        "Version": "2.3.3-dev.brewing.1",
+        "Sha256": "326CBCC9FEF10E0DAECF3769ACC235A31B802F754A3684009FB72A43B22FF9FF"
+      },
+      "Backup": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mod-backups\\create-meowchanics\\20261121-182140-2.3.3-dev.brewing.1-hissing-brewing\\create-meowchanics-2.3.3-neoforge-1.21.1.jar.disabled",
+      "Previous": {
+        "Path": "D:\\PCL2\\PCL\\.minecraft\\versions\\1.21.1-NeoForge模组开发\\mods\\create-meowchanics-2.3.3-neoforge-1.21.1.jar.disabled",
+        "ModId": "laowu",
+        "Version": "2.3.3",
+        "Sha256": "604583897425BED16567D2388BACF3ED461A858939513D04277D80BA4682701F",
+        "Enabled": false
+      },
+      "ActiveLaowuCount": 1,
+      "Verified": true
+    }
+  ],
+  "Validation": {
+    "GameTests": {
+      "ForgeWithoutCreate": "3/3",
+      "ForgeWithCreate": "3/3",
+      "NeoForgeWithoutCreate": "3/3",
+      "NeoForgeWithCreate": "3/3"
+    },
+    "StandaloneRecipeRegression": "53/53",
+    "NormalBuilds": "Forge 1.20.1 and NeoForge 1.21.1 passed build and printModVersion, including both release-isolation checks",
+    "ArtifactComparison": "Both runtime jars retain all 2.3.3 resource files. The original industrial recipe JSON files and 14 cat painting textures match byte for byte."
+  }
+}
